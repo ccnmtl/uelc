@@ -1,0 +1,14 @@
+._*
+*~
+*.pyc
+*.DS_Store
+ve
+**/.DS_Store
+.coverage
+media/CACHE
+reports
+local_settings.py
+.project
+.pydevproject
+.settings
+.idea
