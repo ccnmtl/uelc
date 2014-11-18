@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.views.generic import TemplateView
+from rest_framework import routers
 from pagetree.generic.views import PageView, EditView, InstructorView
 from uelc.main import views
 import os.path
@@ -23,10 +24,20 @@ if hasattr(settings, 'CAS_BASE'):
         'djangowind.views.logout',
         {'next_page': redirect_after_logout})
 
+router = routers.DefaultRouter()
+#router.register(r'course', CourseViewSet)
+#router.register(r'user', UserViewSet)
+#router.register(r'document', DocumentViewSet)
+#router.register(r'student', StudentViewSet)
+
+
 urlpatterns = patterns(
     '',
     auth_urls,
     logout_page,
+    url(r'^api/', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
     (r'^registration/', include('registration.backends.default.urls')),
     (r'^$', views.IndexView.as_view()),
     (r'^admin/', include(admin.site.urls)),
