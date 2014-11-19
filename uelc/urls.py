@@ -1,9 +1,10 @@
 from django.conf.urls import patterns, include, url
+from django.contrib.auth.models import User
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.views.generic import TemplateView
-from rest_framework import routers
+from rest_framework import routers, serializers, viewsets
 from pagetree.generic.views import PageView, EditView, InstructorView
 from uelc.main import views
 import os.path
@@ -24,9 +25,23 @@ if hasattr(settings, 'CAS_BASE'):
         'djangowind.views.logout',
         {'next_page': redirect_after_logout})
 
+
+# Serializers define the API representation.
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ('url', 'username', 'email', 'is_staff')
+
+
+# ViewSets define the view behavior.
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
 router = routers.DefaultRouter()
 #router.register(r'course', CourseViewSet)
-#router.register(r'user', UserViewSet)
+router.register(r'user', UserViewSet)
 #router.register(r'document', DocumentViewSet)
 #router.register(r'student', StudentViewSet)
 
