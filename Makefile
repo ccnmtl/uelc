@@ -12,7 +12,7 @@ test: ./ve/bin/python
 	$(MANAGE) jenkins
 
 flake8: ./ve/bin/python
-	$(FLAKE8) $(APP) --max-complexity=10
+	$(FLAKE8) $(APP) --max-complexity=10 --exclude=migrations
 
 runserver: ./ve/bin/python validate
 	$(MANAGE) runserver

@@ -1,5 +1,5 @@
 from django.db import models
-from django.forms import ModelForm
+#from django.forms import ModelForm
 from django.contrib.auth.models import User
 
 
@@ -29,4 +29,3 @@ class UserProfile(models.Model):
 
     def is_group_user(self):
         return self.profile_type == 'GU'
-
