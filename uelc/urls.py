@@ -7,6 +7,7 @@ from django.views.generic import TemplateView
 from rest_framework import routers, serializers, viewsets
 from pagetree.generic.views import PageView, EditView, InstructorView
 from uelc.main import views
+from uelc.main.models import UserProfile
 import os.path
 admin.autodiscover()
 
@@ -27,10 +28,18 @@ if hasattr(settings, 'CAS_BASE'):
 
 
 # Serializers define the API representation.
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('profile_type',)
+
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    profile = UserProfileSerializer(many=False)
+
     class Meta:
         model = User
-        fields = ('url', 'username', 'email', 'is_staff')
+        fields = ("url", "username", "email", "profile")
 
 
 # ViewSets define the view behavior.
@@ -40,11 +49,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 router = routers.DefaultRouter()
-#router.register(r'course', CourseViewSet)
 router.register(r'user', UserViewSet)
-#router.register(r'document', DocumentViewSet)
-#router.register(r'student', StudentViewSet)
-
 
 urlpatterns = patterns(
     '',
