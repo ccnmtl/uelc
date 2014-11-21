@@ -5,9 +5,10 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import routers, serializers, viewsets
-from pagetree.generic.views import PageView, EditView, InstructorView
+from pagetree.generic.views import EditView, InstructorView
 from uelc.main import views
 from uelc.main.models import UserProfile
+from uelc.main.views import UELCPageView
 import os.path
 admin.autodiscover()
 
@@ -77,7 +78,7 @@ urlpatterns = patterns(
         login_required(InstructorView.as_view(
             hierarchy_name="main",
             hierarchy_base="/pages/"))),
-    (r'^pages/(?P<path>.*)$', PageView.as_view(
+    (r'^pages/(?P<path>.*)$', UELCPageView.as_view(
         hierarchy_name="main",
         hierarchy_base="/pages/")),
 )

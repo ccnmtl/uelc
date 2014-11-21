@@ -27,8 +27,8 @@
 </head>
 <body class="{% block bodyclass %}{% endblock %}" id="{% block bodyid %}{% endblock %}">
 <a class="sr-only" href="#content">Skip navigation</a>
-
 {% block topnavbar %}
+
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
   <!-- Brand and toggle get grouped for better mobile display -->
   <div class="container">
@@ -46,6 +46,13 @@
   <div class="collapse navbar-collapse navbar-ex1-collapse">
     <ul class="nav navbar-nav">
       {% block topnavbarleftitems %}{% endblock %}
+      {% block moduletabs %}
+      <ul class="nav navbar-nav">
+        {% for section in modules %}
+        <li{% ifequal section.id module.id %} class="active"{% endifequal %}><a href="{{section.get_absolute_url}}">{{section.label}}</a></li>
+        {% endfor %}
+      </ul>
+      {% endblock %}
     </ul>
 
 <!-- 
@@ -70,11 +77,26 @@
             {% else %}
               <b>{{ request.user.username }}</b>
             {% endif %}
-{% if request.user.is_superuser %}
+            {% if request.user.is_superuser %}
+          {% if instructor_link %}
+               <a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>
+           {% endif %}
+          {% block edit-or-view-page %}
+          {% if is_view %}
+            <a href="{{section.get_edit_url}}" class="btn btn-primary">Edit Page</a>
+          {% else %}
+            <a href="{{section.get_absolute_url}}" class="btn btn-primary">View Page</a>
+          {% endif %} 
+            
+            
+          {% endblock %}
           <a href="{% url 'impersonate-list' %}" class="btn btn-default">impersonate</a>
 {% endif %}
           <a href="/accounts/logout/" class="btn btn-default">logout</a>
           {% endif %}
+
+
+
 {% endblock %}
        </p>
 
@@ -166,7 +188,7 @@
 <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 
 <script src="{% bootstrap_javascript_url %}"></script>
-
+<script src="{{STATIC_URL}}js/uelc_admin.js"></script>
 {% block js %}{% endblock %}
 
 {% if STAGING_ENV %}
