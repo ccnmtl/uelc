@@ -14,6 +14,9 @@ test: ./ve/bin/python
 flake8: ./ve/bin/python
 	$(FLAKE8) $(APP) --max-complexity=10 --exclude=migrations
 
+jshint: node_modules/jshint/bin/jshint
+	./node_modules/jshint/bin/jshint media/js/uelc_admin media/quizblock_random/
+
 runserver: ./ve/bin/python validate
 	$(MANAGE) runserver
 

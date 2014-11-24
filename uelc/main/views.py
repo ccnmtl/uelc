@@ -1,9 +1,11 @@
 from django.views.generic.base import TemplateView
-from pagetree.generic.views import PageView
+from pagetree.generic.views import PageView, EditView
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
-from pagetree.models import UserPageVisit
+from pagetree.models import UserPageVisit, Hierarchy
+from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
+from django.http.response import HttpResponseNotFound
 
 
 class LoggedInMixinSuperuser(object):
@@ -29,7 +31,19 @@ def has_responses(section):
     return quizzes != []
 
 
-class UELCPageView(LoggedInMixin, PageView):
+class DynamicHierarchyMixin(object):
+    def dispatch(self, *args, **kwargs):
+        name = kwargs.pop('hierarchy_name', None)
+        if name is None:
+            msg = "No hierarchy named %s found" % name
+            return HttpResponseNotFound(msg)
+        else:
+            self.hierarchy_name = name
+            self.hierarchy_base = Hierarchy.objects.get(name=name).base_url
+        return super(DynamicHierarchyMixin, self).dispatch(*args, **kwargs)
+
+
+class UELCPageView(LoggedInMixin, DynamicHierarchyMixin, PageView):
     template_name = "pagetree/page.html"
     gated = True
 
@@ -80,3 +94,21 @@ class UELCPageView(LoggedInMixin, PageView):
             except AttributeError:
                 status = 'incomplete'
         return {'menu': menu, 'page_status': status}
+
+
+class UELCEditView(LoggedInMixinSuperuser,
+                   DynamicHierarchyMixin,
+                   EditView):
+    template_name = "pagetree/edit_page.html"
+
+
+@login_required
+def pages_save_edit(request, hierarchy_name, path):
+    # do auth on the request if you need the user to be logged in
+    # or only want some particular users to be able to get here
+    return generic_edit_page(request, path, hierarchy=hierarchy_name)
+
+
+@login_required
+def instructor_page(request, hierarchy_name, path):
+    return generic_instructor_page(request, path, hierarchy=hierarchy_name)

@@ -1,19 +1,19 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.models import User
 from django.contrib import admin
-from django.contrib.auth.decorators import login_required
+#from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import routers, serializers, viewsets
-from pagetree.generic.views import EditView, InstructorView
+#from pagetree.generic.views import EditView, InstructorView
 from uelc.main import views
+
 from uelc.main.models import UserProfile
-from uelc.main.views import UELCPageView
+from uelc.main.views import UELCPageView, UELCEditView
 import os.path
 admin.autodiscover()
 
 site_media_root = os.path.join(os.path.dirname(__file__), "../media")
-
 redirect_after_logout = getattr(settings, 'LOGOUT_REDIRECT_URL', None)
 auth_urls = (r'^accounts/', include('django.contrib.auth.urls'))
 logout_page = (
@@ -70,17 +70,15 @@ urlpatterns = patterns(
      'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     (r'^pagetree/', include('pagetree.urls')),
     (r'^quizblock/', include('quizblock.urls')),
-    (r'^pages/edit/(?P<path>.*)$', login_required(EditView.as_view(
-        hierarchy_name="main",
-        hierarchy_base="/pages/")),
-     {}, 'edit-page'),
-    (r'^pages/instructor/(?P<path>.*)$',
-        login_required(InstructorView.as_view(
-            hierarchy_name="main",
-            hierarchy_base="/pages/"))),
-    (r'^pages/(?P<path>.*)$', UELCPageView.as_view(
-        hierarchy_name="main",
-        hierarchy_base="/pages/")),
+
+    (r'^pages_save_edit/(?P<hierarchy_name>[-\w]+)/(?P<path>.*)$',
+        'uelc.main.views.pages_save_edit'),
+    (r'^pages/(?P<hierarchy_name>[-\w]+)/edit/(?P<path>.*)$',
+     UELCEditView.as_view()),
+    (r'^pages/(?P<hierarchy_name>[-\w]+)/instructor/(?P<path>.*)$',
+     'uelc.main.views.instructor_page'),
+    (r'^pages/(?P<hierarchy_name>[-\w]+)/(?P<path>.*)$',
+     UELCPageView.as_view()),
 )
 
 if settings.DEBUG:
