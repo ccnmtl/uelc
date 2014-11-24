@@ -14,7 +14,7 @@ STATICMEDIA_MOUNTS = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'uelc',
+        'NAME': 'uelc_staging',
         'HOST': '',
         'PORT': 6432,
         'USER': '',
