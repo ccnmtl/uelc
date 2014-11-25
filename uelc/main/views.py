@@ -23,6 +23,12 @@ class LoggedInMixin(object):
 class IndexView(TemplateView):
     template_name = "main/index.html"
 
+    def get(self, request):
+        roots = [(hierarchy.get_absolute_url(), hierarchy.name)
+                 for hierarchy in Hierarchy.objects.all()]
+        context = dict(roots=roots)
+        return render(request, self.template_name, context)
+
 
 def has_responses(section):
     quizzes = [p.block() for p in section.pageblock_set.all()
