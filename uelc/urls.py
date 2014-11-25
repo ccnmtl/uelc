@@ -26,6 +26,9 @@ if hasattr(settings, 'CAS_BASE'):
         r'^accounts/logout/$',
         'djangowind.views.logout',
         {'next_page': redirect_after_logout})
+    admin_logout_page = (r'^admin/logout/$',
+                         'djangowind.views.logout',
+                         {'next_page': redirect_after_logout})
 
 
 # Serializers define the API representation.
@@ -54,8 +57,9 @@ router.register(r'user', UserViewSet)
 
 urlpatterns = patterns(
     '',
-    auth_urls,
     logout_page,
+    admin_logout_page,
+    auth_urls,
     url(r'^api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),

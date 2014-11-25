@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="jumbotron">
-    <h2>Case List</h2>
-    <ul class="case-index-list">
-    {% for root in roots %}
-        {% ifnotequal root.0 '/' %}
-            <li><a href="{{ root.0 }}">{{root.1}}</a></li>
-        {% endifnotequal %}
-    {% endfor %}
-    </ul>
-</div>
+
+{% if not request.user.is_anonymous %}
+    <h2>Choose Your Case</h2>
+    <div class="jumbotron"/>
+        <h2>Case List</h2>
+        <ul class="case-index-list">
+        {% for root in roots %}
+            {% ifnotequal root.0 '/' %}
+                <li><a href="{{ root.0 }}">{{root.1}}</a></li>
+            {% endifnotequal %}
+        {% endfor %}
+        </ul>
+    </div>
+{% else %}
+<h1>Welcome to UELC!</h1>
+<p>Intro info can go here...</p>
+{% endif %}
 {% endblock %}
