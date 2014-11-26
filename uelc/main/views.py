@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.http.response import HttpResponseNotFound
 from django.contrib.auth.models import User
 from uelc.main.models import Case
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class LoggedInMixinSuperuser(object):
@@ -26,7 +27,7 @@ class IndexView(TemplateView):
     template_name = "main/index.html"
 
     def get(self, request):
-        if request.user.id:
+        try:
             user = User.objects.get(id=request.user.id)
             cohorts = user.profile.cohorts
             cohort_names = cohorts.split(', ')
@@ -34,7 +35,7 @@ class IndexView(TemplateView):
             roots = [(case.hierarchy.get_absolute_url(), case.hierarchy.name)
                      for case in cases]
             context = dict(roots=roots)
-        else:
+        except ObjectDoesNotExist:
             context = dict()
         return render(request, self.template_name, context)
 
