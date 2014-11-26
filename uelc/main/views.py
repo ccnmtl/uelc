@@ -6,6 +6,8 @@ from pagetree.models import UserPageVisit, Hierarchy
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
 from django.http.response import HttpResponseNotFound
+from django.contrib.auth.models import User
+from uelc.main.models import Case
 
 
 class LoggedInMixinSuperuser(object):
@@ -24,9 +26,16 @@ class IndexView(TemplateView):
     template_name = "main/index.html"
 
     def get(self, request):
-        roots = [(hierarchy.get_absolute_url(), hierarchy.name)
-                 for hierarchy in Hierarchy.objects.all()]
-        context = dict(roots=roots)
+        if request.user.id:
+            user = User.objects.get(id=request.user.id)
+            cohorts = user.profile.cohorts
+            cohort_names = cohorts.split(', ')
+            cases = Case.objects.filter(cohort__name__in=cohort_names)
+            roots = [(case.hierarchy.get_absolute_url(), case.hierarchy.name)
+                     for case in cases]
+            context = dict(roots=roots)
+        else:
+            context = dict()
         return render(request, self.template_name, context)
 
 
