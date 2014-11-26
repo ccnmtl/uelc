@@ -7,7 +7,6 @@ from django.views.generic import TemplateView
 from rest_framework import routers, serializers, viewsets
 #from pagetree.generic.views import EditView, InstructorView
 from uelc.main import views
-
 from uelc.main.models import UserProfile
 from uelc.main.views import UELCPageView, UELCEditView
 import os.path
@@ -33,9 +32,11 @@ if hasattr(settings, 'CAS_BASE'):
 
 # Serializers define the API representation.
 class UserProfileSerializer(serializers.ModelSerializer):
+    cohorts = serializers.Field()
+
     class Meta:
         model = UserProfile
-        fields = ('profile_type',)
+        fields = ('profile_type', 'cohorts',)
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

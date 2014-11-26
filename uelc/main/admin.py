@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from uelc.main.models import UserProfile
+from uelc.main.models import UserProfile, Case, Cohort
 from pagetree.models import Hierarchy
 
 
@@ -9,6 +9,7 @@ from pagetree.models import Hierarchy
 # which acts a bit like a singleton
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
+    readonly_fields = ('cohorts',)
     can_delete = True
     verbose_name_plural = 'profile'
 
@@ -26,3 +27,5 @@ section_hierarchy.short_description = 'Hierarchy'
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Hierarchy)
+admin.site.register(Case)
+admin.site.register(Cohort)
