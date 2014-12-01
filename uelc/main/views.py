@@ -5,10 +5,11 @@ from django.utils.decorators import method_decorator
 from pagetree.models import UserPageVisit, Hierarchy
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
-from django.http.response import HttpResponseNotFound
 from django.contrib.auth.models import User
 from uelc.main.models import Case
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
+from django.http.response import HttpResponseNotFound
 
 
 class LoggedInMixinSuperuser(object):
@@ -23,20 +24,31 @@ class LoggedInMixin(object):
         return super(LoggedInMixin, self).dispatch(*args, **kwargs)
 
 
+def get_cases(request):
+    try:
+        user = User.objects.get(id=request.user.id)
+        cohorts = user.profile.cohorts
+        cohort_names = cohorts.split(', ')
+        cases = Case.objects.filter(cohort__name__in=cohort_names)
+        return cases
+    except ObjectDoesNotExist:
+        return
+
+
 class IndexView(TemplateView):
     template_name = "main/index.html"
 
     def get(self, request):
+        context = dict()
         try:
-            user = User.objects.get(id=request.user.id)
-            cohorts = user.profile.cohorts
-            cohort_names = cohorts.split(', ')
-            cases = Case.objects.filter(cohort__name__in=cohort_names)
-            roots = [(case.hierarchy.get_absolute_url(), case.hierarchy.name)
-                     for case in cases]
-            context = dict(roots=roots)
+            cases = get_cases(request)
+            if cases:
+                roots = [(case.hierarchy.get_absolute_url(),
+                          case.hierarchy.name)
+                         for case in cases]
+                context = dict(roots=roots)
         except ObjectDoesNotExist:
-            context = dict()
+            pass
         return render(request, self.template_name, context)
 
 
@@ -59,7 +71,23 @@ class DynamicHierarchyMixin(object):
         return super(DynamicHierarchyMixin, self).dispatch(*args, **kwargs)
 
 
-class UELCPageView(LoggedInMixin, DynamicHierarchyMixin, PageView):
+class RestrictedModuleMixin(object):
+    def dispatch(self, *args, **kwargs):
+        cases = get_cases(self.request)
+        if cases:
+            for case in cases:
+                case_hier_id = case.hierarchy_id
+                case_hier = Hierarchy.objects.get(id=case_hier_id)
+                if not case_hier.name == self.hierarchy_name:
+                    return HttpResponse("you don't have permission")
+            return super(RestrictedModuleMixin, self).dispatch(*args, **kwargs)
+        return HttpResponse("you don't have permission")
+
+
+class UELCPageView(LoggedInMixin,
+                   DynamicHierarchyMixin,
+                   RestrictedModuleMixin,
+                   PageView):
     template_name = "pagetree/page.html"
     gated = True
 
