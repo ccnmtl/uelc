@@ -78,9 +78,9 @@ class RestrictedModuleMixin(object):
             for case in cases:
                 case_hier_id = case.hierarchy_id
                 case_hier = Hierarchy.objects.get(id=case_hier_id)
-                if not case_hier.name == self.hierarchy_name:
-                    return HttpResponse("you don't have permission")
-            return super(RestrictedModuleMixin, self).dispatch(*args, **kwargs)
+                if case_hier.name == self.hierarchy_name:
+                    return super(RestrictedModuleMixin,
+                                 self).dispatch(*args, **kwargs)
         return HttpResponse("you don't have permission")
 
 
