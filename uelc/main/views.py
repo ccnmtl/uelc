@@ -98,6 +98,11 @@ class UELCPageView(LoggedInMixin,
             allow_redo = self.section.allow_redo()
         self.upv.visit()
         instructor_link = has_responses(self.section)
+        gateblock = False
+        for block in self.section.pageblock_set.all():
+            if (hasattr(block.block(), 'needs_submit') and
+                    block.block().display_name == 'Gate Block'):
+                    gateblock = True
         context = dict(
             section=self.section,
             module=self.module,
@@ -108,6 +113,7 @@ class UELCPageView(LoggedInMixin,
             root=self.section.hierarchy.get_root(),
             instructor_link=instructor_link,
             is_view=True,
+            gateblock=gateblock,
         )
         context.update(self.get_extra_context())
         return render(request, self.template_name, context)

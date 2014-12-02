@@ -1,4 +1,6 @@
 from django.db import models
+from datetime import datetime
+from django.contrib.auth.models import User
 from pagetree.models import PageBlock
 from django.conf import settings
 from django.contrib.contenttypes import generic
@@ -9,15 +11,29 @@ import os
 class GateBlock(models.Model):
     pageblocks = generic.GenericRelation(PageBlock)
     body = models.TextField(blank=True)
-
     template_file = "gate_block/gateblock.html"
     display_name = "Gate Block"
 
     def __unicode__(self):
         return unicode(self.pageblock())
 
+    def redirect_to_self_on_submit(self):
+        return True
+
+    def clear_user_submissions(self, user):
+        Submission.objects.filter(gateblock_id=self.id, gate_user_id=user.id).delete()
+
     def pageblock(self):
         return self.pageblocks.all()[0]
+
+    def needs_submit(self):
+        return True
+
+    def allow_redo(self):
+        return False
+
+    def unlocked(self, user):
+        return Submission.objects.filter(gateblock_id=self.id, gate_user_id=user.id).count() > 0
 
     @classmethod
     def add_form(self):
@@ -52,3 +68,17 @@ class GateBlock(models.Model):
             return self.body
         else:
             return self.body[:61] + "..."
+
+    def submit(self, user, data):
+        s = Submission.objects.create(gateblock_id=self.id, gate_user_id=user.id)
+
+
+class Submission(models.Model):
+    gateblock = models.ForeignKey(GateBlock)
+    gate_user = models.ForeignKey(User, related_name='gate_user')
+    submitted = models.DateTimeField(default=datetime.now)
+
+    def __unicode__(self):
+        return "gate %d submission by %s at %s" % (self.quiz.id,
+                                                   unicode(self.user),
+                                                   self.submitted)

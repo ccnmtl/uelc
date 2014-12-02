@@ -56,24 +56,44 @@
 </div>
 {% endfor %}
 
+{% if gateblock %}
+    {% if needs_submit %}
+    {% if request.user.is_anonymous %}
+    {% else %}
 
-{% if needs_submit %}
-{% if request.user.is_anonymous %}
+        {% if is_submitted %}
+        <form action="." method="post">
+        <input type="hidden" name="action" value="reset" />
+        <input type="submit" value="Lock" class="btn" />
+        </form>
+        {% else %}
+        <input type="submit" value="Unlock" class="btn btn-primary" />
+
+        </form>
+        {% endif %}
+
+    {% endif %}
+    {% endif %}
 {% else %}
+    {% if needs_submit %}
+    {% if request.user.is_anonymous %}
+    {% else %}
+    
+        {% if is_submitted %}
+        {% if allow_redo %}
+        <form action="." method="post">
+        <input type="hidden" name="action" value="reset" />
+        <input type="submit" value="clear your answers and try again" class="btn" />
+        </form>
+        {% endif %}
+        {% else %}
+        <input type="submit" value="Submit" class="btn btn-primary" />
 
-{% if is_submitted %}
-{% if allow_redo %}
-<form action="." method="post">
-<input type="hidden" name="action" value="reset" />
-<input type="submit" value="clear your answers and try again" class="btn" />
-</form>
-{% endif %}
-{% else %}
-<input type="submit" value="Submit" class="btn btn-primary" />
-
-</form>
-{% endif %}
-{% endif %}
+        </form>
+        {% endif %}
+    
+    {% endif %}
+    {% endif %}
 {% endif %}
 
 {% include "pagetree/toc.html" %}

@@ -165,3 +165,12 @@ body > .container {
 .col-md-10 {
     width: 53.333333%;
 }
+
+ul.pager li.next a.disabled {
+        color: #999;
+        cursor: not-allowed;
+    }
+    
+ul.pager li.next a.disabled:active {
+    box-shadow: none;
+}
