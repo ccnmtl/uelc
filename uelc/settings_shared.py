@@ -47,6 +47,7 @@ JENKINS_TASKS = (
 )
 PROJECT_APPS = [
     'uelc.main',
+    'gate_block',
 ]
 
 ALLOWED_HOSTS = ['localhost', '.ccnmtl.columbia.edu']
@@ -129,6 +130,7 @@ INSTALLED_APPS = [
     'quizblock',
     'gunicorn',
     'uelc.main',
+    'gate_block',
 ]
 
 PAGEBLOCKS = ['pageblocks.TextBlock',
@@ -137,6 +139,7 @@ PAGEBLOCKS = ['pageblocks.TextBlock',
               'pageblocks.ImageBlock',
               'pageblocks.ImagePullQuoteBlock',
               'quizblock.Quiz',
+              'gate_block.GateBlock'
               ]
 
 
