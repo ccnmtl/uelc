@@ -2,6 +2,25 @@
 {% block content %}
 {{request.user.profile.profile_type}}
 <div id="content">
-asdsada
+    <ul class="gate_section">
+    {% for sec in gate_sections %}
+        <!-- section - gate {{ sec.0.get_absolute_url }}-->
+        <li class="lock-button">
+             <input type="submit" value="Unlock - {{ sec.1.pageblock.label }}" class="btn btn-primary">
+             <input class="post" type="hidden" value="{{sec.0.get_absolute_url}}"> 
+        </li>
+    {% endfor %}
+    </ul>
 </div>
+
+<script>
+jQuery(document).ready(function(){
+    jQuery('.lock-button').click(function(){
+        var post_elm = jQuery(this).children('.post');
+        var post_url = post_elm.attr('value');
+        $.post(post_url);
+    })
+})
+</script>
+
 {% endblock %}

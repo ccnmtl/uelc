@@ -7,6 +7,7 @@ from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from uelc.main.models import Case
+from gate_block.models import GateBlock
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.http.response import HttpResponseNotFound
@@ -173,7 +174,11 @@ class FacilitatorView(LoggedInMixinSuperuser,
                       SectionMixin):
     template_name = "pagetree/facilitator.html"
     extra_context = dict()
-
+    '''
+    * get the section of each gateblock
+    * determine number of levels in tree
+    * determine the level and place of the section in the tree
+    '''
     def dispatch(self, request, *args, **kwargs):
         path = kwargs['path']
         rv = self.perform_checks(request, path)
@@ -185,12 +190,14 @@ class FacilitatorView(LoggedInMixinSuperuser,
         path = kwargs['path']
         section = self.get_section(path)
         root = section.hierarchy.get_root()
-
+        gateblocks = GateBlock.objects.all()
+        gate_sections = [(g.pageblock().section, g) for g in gateblocks]
         quizzes = [p.block() for p in section.pageblock_set.all()
                    if hasattr(p.block(), 'needs_submit')
                    and p.block().needs_submit()]
         context = dict(section=section,
                        quizzes=quizzes,
+                       gate_sections=gate_sections,
                        module=section.get_module(),
                        modules=root.get_children(),
                        root=section.hierarchy.get_root())
