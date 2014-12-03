@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+{{request.user.profile.profile_type}}
 {% if not request.user.is_anonymous %}
     <h2>Choose Your Case</h2>
     <div class="jumbotron"/>
@@ -13,7 +13,19 @@
             {% endifnotequal %}
         {% endfor %}
         </ul>
-    </div>
+        {% ifequal request.user.profile.profile_type  'admin' %}
+            <div class="admin-section">
+                 <h2>Case control for facilitator</h2>
+                <ul>
+                {% for root in roots %}
+                    {% ifnotequal root.0 '/' %}
+                        <li><a href="{{ root.0 }}facilitator/">{{root.1}}</a></li>
+                    {% endifnotequal %}
+                {% endfor %}
+                </ul>
+            </div>
+        {% endifequal %}
+    </div><!--end jumbotron-->
 {% else %}
 <h1>Welcome to UELC!</h1>
 <p>Intro info can go here...</p>

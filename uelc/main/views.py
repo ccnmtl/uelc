@@ -10,6 +10,7 @@ from uelc.main.models import Case
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.http.response import HttpResponseNotFound
+from pagetree.helpers import get_section_from_path
 
 
 class LoggedInMixinSuperuser(object):
@@ -22,6 +23,20 @@ class LoggedInMixin(object):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LoggedInMixin, self).dispatch(*args, **kwargs)
+
+
+class SectionMixin(object):
+    def get_section(self, path):
+        return get_section_from_path(
+            path,
+            hierarchy_name=self.hierarchy_name,
+            hierarchy_base=self.hierarchy_base)
+
+    def get_extra_context(self):
+        return self.extra_context
+
+    def perform_checks(self, request, path):
+        return None
 
 
 def get_cases(request):
@@ -150,6 +165,37 @@ class UELCEditView(LoggedInMixinSuperuser,
                    DynamicHierarchyMixin,
                    EditView):
     template_name = "pagetree/edit_page.html"
+
+
+class FacilitatorView(LoggedInMixinSuperuser,
+                      DynamicHierarchyMixin,
+                      TemplateView,
+                      SectionMixin):
+    template_name = "pagetree/facilitator.html"
+    extra_context = dict()
+
+    def dispatch(self, request, *args, **kwargs):
+        path = kwargs['path']
+        rv = self.perform_checks(request, path)
+        if rv is not None:
+            return rv
+        return super(FacilitatorView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        path = kwargs['path']
+        section = self.get_section(path)
+        root = section.hierarchy.get_root()
+
+        quizzes = [p.block() for p in section.pageblock_set.all()
+                   if hasattr(p.block(), 'needs_submit')
+                   and p.block().needs_submit()]
+        context = dict(section=section,
+                       quizzes=quizzes,
+                       module=section.get_module(),
+                       modules=root.get_children(),
+                       root=section.hierarchy.get_root())
+        context.update(self.get_extra_context())
+        return context
 
 
 @login_required

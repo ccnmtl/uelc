@@ -8,7 +8,7 @@ from rest_framework import routers, serializers, viewsets
 #from pagetree.generic.views import EditView, InstructorView
 from uelc.main import views
 from uelc.main.models import UserProfile
-from uelc.main.views import UELCPageView, UELCEditView
+from uelc.main.views import UELCPageView, UELCEditView, FacilitatorView
 import os.path
 admin.autodiscover()
 
@@ -82,6 +82,8 @@ urlpatterns = patterns(
      UELCEditView.as_view()),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/instructor/(?P<path>.*)$',
      'uelc.main.views.instructor_page'),
+    (r'^pages/(?P<hierarchy_name>[-\w]+)/facilitator/(?P<path>.*)$',
+     FacilitatorView.as_view()),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/(?P<path>.*)$',
      UELCPageView.as_view()),
 )
