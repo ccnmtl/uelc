@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from uelc.main.models import Case
 from gate_block.models import GateBlock
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseNotFound
 from pagetree.helpers import get_section_from_path
 
@@ -49,6 +49,25 @@ def get_cases(request):
         return cases
     except ObjectDoesNotExist:
         return
+
+
+def page_submit(section, request):
+    proceed = section.submit(request.POST, request.user)
+    if proceed:
+        next_section = section.get_next()
+        if next_section:
+            return HttpResponseRedirect(next_section.get_absolute_url())
+        else:
+            # they are on the "last" section of the site
+            # all we can really do is send them back to this page
+            return HttpResponseRedirect(section.get_absolute_url())
+    # giving them feedback before they proceed
+    return HttpResponseRedirect(section.get_absolute_url())
+
+
+def reset_page(section, request):
+    section.reset(request.user)
+    return HttpResponseRedirect(section.get_absolute_url())
 
 
 class IndexView(TemplateView):
@@ -106,6 +125,15 @@ class UELCPageView(LoggedInMixin,
                    PageView):
     template_name = "pagetree/page.html"
     gated = True
+
+    def post(self, request, path):
+        # need to override the user if submitted by facilitator
+        # user or facilitator has submitted a form. deal with it
+        if request.POST.get('action', '') == 'reset':
+            self.upv.visit(status="incomplete")
+            return reset_page(self.section, request)
+        self.upv.visit(status="complete")
+        return page_submit(self.section, request)
 
     def get(self, request, path):
         allow_redo = False
@@ -188,16 +216,28 @@ class FacilitatorView(LoggedInMixinSuperuser,
 
     def get_context_data(self, *args, **kwargs):
         path = kwargs['path']
+        user = self.request.user
         section = self.get_section(path)
         root = section.hierarchy.get_root()
+        hierarchy = section.hierarchy
+        case = Case.objects.get(hierarchy=hierarchy)
+        # is there really only going to be one cohort per case?
+        cohorts = case.cohort.all()
+        cohort = cohorts[0]
+        cohort_users = cohort.user.all()
+
         gateblocks = GateBlock.objects.all()
-        gate_sections = [(g.pageblock().section, g) for g in gateblocks]
+        user_sections = []
+        for user in cohort_users:
+            gate_sections = [(g.pageblock().section, g, g.unlocked(user))
+                             for g in gateblocks]
+            user_sections.append([user, gate_sections])
         quizzes = [p.block() for p in section.pageblock_set.all()
                    if hasattr(p.block(), 'needs_submit')
                    and p.block().needs_submit()]
         context = dict(section=section,
                        quizzes=quizzes,
-                       gate_sections=gate_sections,
+                       user_sections=user_sections,
                        module=section.get_module(),
                        modules=root.get_children(),
                        root=section.hierarchy.get_root())
