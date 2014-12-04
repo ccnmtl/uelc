@@ -37,28 +37,4 @@
     {% endfor %}
 </div>
 
-<script>
-jQuery(document).ready(function(){
-    /*
-    jQuery('.gate-button').click(function(){
-        var form = jQuery(this).children('form');
-        var post_elm = form.children('input.post');
-        var post_url = post_elm.attr('value');
-        $.post(post_url, form.serialize())
-        .fail(function(xhr, status, error){
-            console.log(error);
-            alert('error');
-        }).always(function(xhr, status, error) {
-            console.log(xhr);
-        })
-        */
-        // ok serioulsy just for now, need
-        // to figure out how to present this
-        // view asynchronously - either
-        // backbone, vue, or soemthing... 
-        //document.location.reload(true);
-    })
-})
-</script>
-
 {% endblock %}
