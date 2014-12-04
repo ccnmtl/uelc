@@ -2,7 +2,7 @@ from django.views.generic.base import TemplateView
 from pagetree.generic.views import PageView, EditView
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
-from pagetree.models import UserPageVisit, Hierarchy
+from pagetree.models import UserPageVisit, Hierarchy, Section
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
 from django.contrib.auth.models import User
@@ -49,6 +49,14 @@ def get_cases(request):
         return cases
     except ObjectDoesNotExist:
         return
+
+
+def admin_ajax_page_submit(section, user, post):
+    section.submit(post, user)
+
+
+def admin_ajax_reset_page(section, user):
+    section.reset(user)
 
 
 def page_submit(section, request):
@@ -126,15 +134,6 @@ class UELCPageView(LoggedInMixin,
     template_name = "pagetree/page.html"
     gated = True
 
-    def post(self, request, path):
-        # need to override the user if submitted by facilitator
-        # user or facilitator has submitted a form. deal with it
-        if request.POST.get('action', '') == 'reset':
-            self.upv.visit(status="incomplete")
-            return reset_page(self.section, request)
-        self.upv.visit(status="complete")
-        return page_submit(self.section, request)
-
     def get(self, request, path):
         allow_redo = False
         needs_submit = self.section.needs_submit()
@@ -202,11 +201,31 @@ class FacilitatorView(LoggedInMixinSuperuser,
                       SectionMixin):
     template_name = "pagetree/facilitator.html"
     extra_context = dict()
-    '''
-    * get the section of each gateblock
-    * determine number of levels in tree
-    * determine the level and place of the section in the tree
-    '''
+
+    def set_upv(self, user, section, status):
+        try:
+            upv = UserPageVisit.objects.filter(section=section, user=user)[0]
+            upv.status = status
+            upv.save()
+        except IndexError:
+            pass
+        return
+
+    def post(self, request, path):
+        # need to override the user if submitted by facilitator
+        # user or facilitator has submitted a form. deal with it
+        user = User.objects.get(id=request.POST.get('user_id'))
+        action = request.POST.get('action')
+        section = Section.objects.get(id=request.POST.get('section'))
+        post = request.POST
+        if action == 'submit':
+            self.set_upv(user, section, "complete")
+            admin_ajax_page_submit(section, user, post)
+        if action == 'reset':
+            self.set_upv(user, section, "incomplete")
+            admin_ajax_reset_page(section, user)
+        return HttpResponseRedirect(request.path)
+
     def dispatch(self, request, *args, **kwargs):
         path = kwargs['path']
         rv = self.perform_checks(request, path)
@@ -215,6 +234,11 @@ class FacilitatorView(LoggedInMixinSuperuser,
         return super(FacilitatorView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
+        '''
+        * get the section of each gateblock
+        * determine number of levels in tree
+        * determine the level and place of the section in the tree
+        '''
         path = kwargs['path']
         user = self.request.user
         section = self.get_section(path)
@@ -225,7 +249,6 @@ class FacilitatorView(LoggedInMixinSuperuser,
         cohorts = case.cohort.all()
         cohort = cohorts[0]
         cohort_users = cohort.user.all()
-
         gateblocks = GateBlock.objects.all()
         user_sections = []
         for user in cohort_users:

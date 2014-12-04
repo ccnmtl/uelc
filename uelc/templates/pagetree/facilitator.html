@@ -11,18 +11,24 @@
             <!-- section (sec.0), gateblock (sec.1), unlocked (sec.2), user (sec.3)-->
             {% if sec.2 %}
                 <li class="gate-button unlocked">
-                    <form>
-                      <input value="Lock - {{ sec.1.pageblock.label }}" class="btn btn-primary">
-                      <input type="hidden" name="action" value="reset" />
-                      <input class="post" type="hidden" value="{{sec.0.get_absolute_url}}"> 
+                    <form action ="." method="post">
+                        <input type ="submit" value="Lock - {{ sec.1.pageblock.label }}" class="btn btn-primary">
+                        <input type="hidden" name="action" value="reset" />
+                        <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
+                        <input type="hidden" name="user_id" value="{{u.0.id}}" />
+                        <input type="hidden" name="section" value="{{sec.0.id}}" />
+                        <input class="post" type="hidden" value="{{sec.0.get_absolute_url}}"> 
                     </form>
                 </li>
             {% else %}
                 <li class="gate-button locked">
-                    <form>
-                     <input value="Unlock - {{ sec.1.pageblock.label }}" class="btn btn-primary">
-                     <input type="hidden" name="action" value="submit" />
-                     <input class="post" type="hidden" value="{{sec.0.get_absolute_url}}"> 
+                    <form action ="." method="post">
+                        <input type ="submit" value="Unlock - {{ sec.1.pageblock.label }}" class="btn btn-primary">
+                        <input type="hidden" name="action" value="submit" />
+                        <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
+                        <input type="hidden" name="user_id" value="{{u.0.id}}" />
+                        <input type="hidden" name="section" value="{{sec.0.id}}" />
+                        <input class="post" type="hidden" value="{{sec.0.get_absolute_url}}"> 
                     </form>
                 </li>
             {% endif %}
@@ -33,12 +39,24 @@
 
 <script>
 jQuery(document).ready(function(){
+    /*
     jQuery('.gate-button').click(function(){
         var form = jQuery(this).children('form');
         var post_elm = form.children('input.post');
         var post_url = post_elm.attr('value');
-        
-        $.post(post_url, form.serialize());
+        $.post(post_url, form.serialize())
+        .fail(function(xhr, status, error){
+            console.log(error);
+            alert('error');
+        }).always(function(xhr, status, error) {
+            console.log(xhr);
+        })
+        */
+        // ok serioulsy just for now, need
+        // to figure out how to present this
+        // view asynchronously - either
+        // backbone, vue, or soemthing... 
+        //document.location.reload(true);
     })
 })
 </script>
