@@ -6,7 +6,7 @@ from pagetree.models import UserPageVisit, Hierarchy, Section
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from uelc.main.models import Case
+from uelc.main.models import Case, CaseMap
 from gate_block.models import GateBlock
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
@@ -127,6 +127,19 @@ class RestrictedModuleMixin(object):
         return HttpResponse("you don't have permission")
 
 
+def get_user_map(pageview, request, path):
+    hierarchy = pageview.module.hierarchy
+    case = Case.objects.get(hierarchy=hierarchy)
+    user = request.user
+    # first check and see if a case map exists for the user,
+    # if not create it.
+    try:
+        casemap = CaseMap.objects.get(user=user, case=case)
+    except ObjectDoesNotExist:
+        casemap = CaseMap.objects.create(user=user, case=case, value=0.00)
+    return casemap
+
+
 class UELCPageView(LoggedInMixin,
                    DynamicHierarchyMixin,
                    RestrictedModuleMixin,
@@ -135,6 +148,8 @@ class UELCPageView(LoggedInMixin,
     gated = True
 
     def get(self, request, path):
+        casemap = get_user_map(self, request, path)
+        casemap.save()
         allow_redo = False
         needs_submit = self.section.needs_submit()
         if needs_submit:
@@ -246,8 +261,7 @@ class FacilitatorView(LoggedInMixinSuperuser,
         hierarchy = section.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
         # is there really only going to be one cohort per case?
-        cohorts = case.cohort.all()
-        cohort = cohorts[0]
+        cohort = case.cohort
         cohort_users = cohort.user.all()
         gateblocks = GateBlock.objects.all()
         user_sections = []

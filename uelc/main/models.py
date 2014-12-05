@@ -54,7 +54,10 @@ class UserProfile(models.Model):
 class Case(models.Model):
     name = models.CharField(max_length=255, blank=False)
     hierarchy = models.ForeignKey(Hierarchy)
-    cohort = models.ManyToManyField(Cohort, related_name="cohort", blank=True)
+    cohort = models.ForeignKey(Cohort,
+                               related_name="cohort",
+                               default=1,
+                               blank=True)
 
     def __unicode__(self):
         return self.name
@@ -68,3 +71,11 @@ class Case(models.Model):
                     hierarchy=self.hierarchy,
                     cohort=self.cohort)
         return case
+
+
+class CaseMap(models.Model):
+    case = models.ForeignKey(Case)
+    user = models.ForeignKey(User)
+    # each tens place represents a decision, where the decimal
+    # place represents temporary decisons
+    value = models.DecimalField(max_digits=6, decimal_places=2)
