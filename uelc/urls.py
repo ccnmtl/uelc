@@ -75,7 +75,7 @@ urlpatterns = patterns(
      'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     (r'^pagetree/', include('pagetree.urls')),
     (r'^quizblock/', include('quizblock.urls')),
-
+    (r'^case_quizblock/', include('case_quizblock.urls')),
     (r'^pages_save_edit/(?P<hierarchy_name>[-\w]+)/(?P<path>.*)$',
         'uelc.main.views.pages_save_edit'),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/edit/(?P<path>.*)$',
