@@ -2,10 +2,8 @@ from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
 from pagetree.models import PageBlock
-from django.conf import settings
 from django.contrib.contenttypes import generic
 from django import forms
-import os
 
 
 class GateBlock(models.Model):
@@ -21,7 +19,8 @@ class GateBlock(models.Model):
         return True
 
     def clear_user_submissions(self, user):
-        Submission.objects.filter(gateblock_id=self.id, gate_user_id=user.id).delete()
+        Submission.objects.filter(gateblock_id=self.id,
+                                  gate_user_id=user.id).delete()
 
     def pageblock(self):
         return self.pageblocks.all()[0]
@@ -33,7 +32,8 @@ class GateBlock(models.Model):
         return False
 
     def unlocked(self, user):
-        return Submission.objects.filter(gateblock_id=self.id, gate_user_id=user.id).count() > 0
+        return Submission.objects.filter(gateblock_id=self.id,
+                                         gate_user_id=user.id).count() > 0
 
     @classmethod
     def add_form(self):
@@ -70,7 +70,9 @@ class GateBlock(models.Model):
             return self.body[:61] + "..."
 
     def submit(self, user, data):
-        s = Submission.objects.create(gateblock_id=self.id, gate_user_id=user.id)
+        s = Submission.objects.create(gateblock_id=self.id,
+                                      gate_user_id=user.id)
+        return s
 
 
 class Submission(models.Model):
