@@ -157,7 +157,12 @@ class UELCPageView(LoggedInMixin,
         self.upv.visit()
         instructor_link = has_responses(self.section)
         gateblock = False
+        case_quizblock = False
         for block in self.section.pageblock_set.all():
+            display_name = block.block().display_name
+            if (hasattr(block.block(), 'needs_submit') and
+                    block.block().display_name == 'Case Quiz'):
+                    case_quizblock = True
             if (hasattr(block.block(), 'needs_submit') and
                     block.block().display_name == 'Gate Block'):
                     gateblock = True
@@ -172,6 +177,7 @@ class UELCPageView(LoggedInMixin,
             instructor_link=instructor_link,
             is_view=True,
             gateblock=gateblock,
+            case_quizblock = case_quizblock,
         )
         context.update(self.get_extra_context())
         return render(request, self.template_name, context)
@@ -202,6 +208,19 @@ class UELCPageView(LoggedInMixin,
             except AttributeError:
                 status = 'incomplete'
         return {'menu': menu, 'page_status': status}
+
+    def post(self, request, path):
+        # user has submitted a form. deal with it
+        import pdb
+        pdb.set_trace()
+        if request.POST.keys() > 0:
+            if request.POST.get('action', '') == 'reset':
+                self.upv.visit(status="incomplete")
+                return reset_page(self.section, request)
+            self.upv.visit(status="complete")
+            return page_submit(self.section, request)
+        else:
+            return HttpResponseRedirect(path)
 
 
 class UELCEditView(LoggedInMixinSuperuser,
@@ -237,7 +256,7 @@ class FacilitatorView(LoggedInMixinSuperuser,
             self.set_upv(user, section, "complete")
             admin_ajax_page_submit(section, user, post)
         if action == 'reset':
-            self.set_upv(user, section, "incomplete")
+            #self.set_upv(user, section, "incomplete")
             admin_ajax_reset_page(section, user)
         return HttpResponseRedirect(request.path)
 

@@ -48,7 +48,9 @@ class CaseQuiz(Quiz):
     def unlocked(self, user):
         # meaning that the user can proceed *past* this one,
         # not that they can access this one. careful.
-        return Submission.objects.filter(quiz=self, user=user).count() > 0
+        sub = Submission.objects.filter(gateblock_id=self.id,
+                                        gate_user_id=user.id).count() > 0
+        #return Submission.objects.filter(quiz=self, user=user).count() > 0
 
     def edit_form(self):
         class EditForm(forms.Form):

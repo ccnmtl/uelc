@@ -70,9 +70,8 @@ class GateBlock(models.Model):
             return self.body[:61] + "..."
 
     def submit(self, user, data):
-        s = Submission.objects.create(gateblock_id=self.id,
-                                      gate_user_id=user.id)
-        return s
+        Submission.objects.create(gateblock_id=self.id,
+                                  gate_user_id=user.id)
 
 
 class Submission(models.Model):

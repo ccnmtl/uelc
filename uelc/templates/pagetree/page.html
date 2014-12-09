@@ -44,37 +44,37 @@
 {% if needs_submit %}
 {% if is_submitted %}
 {% else %}
-<form action="." method="post">
+<!--<form action="." method="post">-->
 {% endif %}
 {% endif %}
 
 
 {% for block in section.pageblock_set.all %}
+{% ifequal block.block.display_name "Case Quiz" %}
+<form action="." method="post">
 <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
 {% if block.label %}<h3>{{block.label}}</h3>{% endif %}
 {% render block %}
 </div>
+<input type="submit" value="Submit Case Quiz" class="btn btn-primary" />
+ </form>
+{% endifequal %}
 {% endfor %}
 
-{% if gateblock %}
-    {% if needs_submit %}
-    {% if request.user.is_anonymous %}
-    {% else %}
 
-        {% if is_submitted %}
-        <form action="." method="post">
-        <input type="hidden" name="action" value="reset" />
-        <input type="submit" value="Lock" class="btn" />
-        </form>
-        {% else %}
-        <input type="submit" value="Unlock" class="btn btn-primary" />
+{% for block in section.pageblock_set.all %}
+{% ifequal block.block.display_name "Gate Block" %}
+<form action="." method="post">
+<div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+{% if block.label %}<h3>{{block.label}}</h3>{% endif %}
+{% render block %}
+</div>
+<input type="submit" value="Submit Gate Block" class="btn btn-primary" />
+ </form>
+{% endifequal %}
+{% endfor %}
 
-        </form>
-        {% endif %}
 
-    {% endif %}
-    {% endif %}
-{% else %}
     {% if needs_submit %}
     {% if request.user.is_anonymous %}
     {% else %}
@@ -94,7 +94,7 @@
     
     {% endif %}
     {% endif %}
-{% endif %}
+
 
 {% include "pagetree/toc.html" %}
 
@@ -107,7 +107,7 @@
 <ul class="pager">
 {% if previous %}
   <li class="previous">
-		<a href="{{previous.get_absolute_url}}">&larr; {{previous.label}}</a>
+        <a href="{{previous.get_absolute_url}}">&larr; {{previous.label}}</a>
   </li>
 {% endif %}
 
@@ -118,3 +118,4 @@
 </ul>
 {% endwith %}
 {% endblock %}
+
