@@ -7,7 +7,7 @@ from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from uelc.main.models import Case, CaseMap
-from gate_block.models import GateBlock
+from gate_block.models import GateBlock, GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseNotFound
@@ -52,7 +52,10 @@ def get_cases(request):
 
 
 def admin_ajax_page_submit(section, user, post):
-    section.submit(post, user)
+    for block in section.pageblock_set.all():
+        if block.block().display_name == "Gate Block":
+           GateSubmission.objects.create(gateblock_id=block.block().id,
+                                         gate_user_id=user.id)
 
 
 def admin_ajax_reset_page(section, user):
@@ -211,16 +214,16 @@ class UELCPageView(LoggedInMixin,
 
     def post(self, request, path):
         # user has submitted a form. deal with it
-        import pdb
-        pdb.set_trace()
-        if request.POST.keys() > 0:
+        # make sure that they have not submitted
+        # a blank form
+        if len(request.POST.keys()) > 0:
             if request.POST.get('action', '') == 'reset':
                 self.upv.visit(status="incomplete")
                 return reset_page(self.section, request)
             self.upv.visit(status="complete")
             return page_submit(self.section, request)
         else:
-            return HttpResponseRedirect(path)
+            return HttpResponseRedirect(request.path)
 
 
 class UELCEditView(LoggedInMixinSuperuser,

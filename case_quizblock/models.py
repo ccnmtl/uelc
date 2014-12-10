@@ -2,6 +2,8 @@ from django import forms
 from django.core.urlresolvers import reverse
 from quizblock.models import Quiz, Question, Submission
 from quizblock.models import Answer, Response
+from gate_block.models import GateSubmission
+from pagetree.models import Section
 from pagetree.reports import ReportableInterface, ReportColumnInterface
 from django.utils.encoding import smart_str
 
@@ -48,8 +50,17 @@ class CaseQuiz(Quiz):
     def unlocked(self, user):
         # meaning that the user can proceed *past* this one,
         # not that they can access this one. careful.
-        sub = Submission.objects.filter(gateblock_id=self.id,
-                                        gate_user_id=user.id).count() > 0
+        unlocked = False
+        submissions = GateSubmission.objects.filter(gate_user_id=user.id)
+        for sub in submissions:
+            section_id = sub.gateblock.pageblock().section_id
+            section = Section.objects.get(id=section_id)
+            blocks = section.pageblock_set.all()
+            for block in blocks:
+                obj = block.content_object
+                if obj.display_name == "Gate Block":
+                    unlocked = obj.unlocked(user)
+        return unlocked
         #return Submission.objects.filter(quiz=self, user=user).count() > 0
 
     def edit_form(self):

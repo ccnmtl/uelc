@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from pagetree.models import Hierarchy
+from quizblock.models import Submission
+from pagetree.models import Hierarchy, Section
 
 
 class Cohort(models.Model):
@@ -79,3 +80,10 @@ class CaseMap(models.Model):
     # each tens place represents a decision, where the decimal
     # place represents temporary decisons
     value = models.DecimalField(max_digits=6, decimal_places=2)
+
+'''
+class GateSubmission(models.Model):
+    submission = models.ForeignKey(Submission)
+    user = models.ForeignKey(User)
+    section = models.ForeignKey(Section)
+'''

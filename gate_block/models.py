@@ -19,7 +19,7 @@ class GateBlock(models.Model):
         return True
 
     def clear_user_submissions(self, user):
-        Submission.objects.filter(gateblock_id=self.id,
+        GateSubmission.objects.filter(gateblock_id=self.id,
                                   gate_user_id=user.id).delete()
 
     def pageblock(self):
@@ -32,7 +32,7 @@ class GateBlock(models.Model):
         return False
 
     def unlocked(self, user):
-        return Submission.objects.filter(gateblock_id=self.id,
+        return GateSubmission.objects.filter(gateblock_id=self.id,
                                          gate_user_id=user.id).count() > 0
 
     @classmethod
@@ -70,16 +70,17 @@ class GateBlock(models.Model):
             return self.body[:61] + "..."
 
     def submit(self, user, data):
-        Submission.objects.create(gateblock_id=self.id,
-                                  gate_user_id=user.id)
+        if len(data.keys()) > 0: 
+            GateSubmission.objects.create(gateblock_id=self.id,
+                                      gate_user_id=user.id)
 
 
-class Submission(models.Model):
+class GateSubmission(models.Model):
     gateblock = models.ForeignKey(GateBlock)
     gate_user = models.ForeignKey(User, related_name='gate_user')
     submitted = models.DateTimeField(default=datetime.now)
 
     def __unicode__(self):
-        return "gate %d submission by %s at %s" % (self.quiz.id,
-                                                   unicode(self.user),
+        return "gate %d submission by %s at %s" % (self.gateblock.id,
+                                                   unicode(self.gate_user),
                                                    self.submitted)
