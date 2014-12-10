@@ -52,14 +52,28 @@ class CaseQuiz(Quiz):
         # not that they can access this one. careful.
         unlocked = False
         submissions = GateSubmission.objects.filter(gate_user_id=user.id)
-        for sub in submissions:
-            section_id = sub.gateblock.pageblock().section_id
+        if len(submissions) > 0:
+            section_id = submissions[0].gateblock.pageblock().section_id
             section = Section.objects.get(id=section_id)
-            blocks = section.pageblock_set.all()
-            for block in blocks:
-                obj = block.content_object
-                if obj.display_name == "Gate Block":
-                    unlocked = obj.unlocked(user)
+            upv = section.get_uservisit(user)
+            for sub in submissions:
+                blocks = section.pageblock_set.all()
+                for block in blocks:
+                    obj = block.content_object
+                    if obj.display_name == "Gate Block":
+                        unlocked = obj.unlocked(user)
+            is_quiz_submitted = Submission.objects.filter(
+                quiz=self,
+                user=user).count() > 0
+            if not (unlocked and is_quiz_submitted):
+                unlocked = False
+                upv.status = 'incomplete'
+                upv.save()
+            else:
+                obj.unlocked(user)
+                upv.status = 'complete'
+                upv.save()
+                unlocked = True
         return unlocked
 
     def edit_form(self):

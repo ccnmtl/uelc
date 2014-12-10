@@ -164,6 +164,10 @@ class UELCPageView(LoggedInMixin,
         gateblock = False
         case_quizblock = False
         for block in self.section.pageblock_set.all():
+            # make sure that all pageblocks on page
+            # have been submitted. Re: potential bug in
+            # Section.submit() in Pageblock library
+            block.block().unlocked(request.user)
             display_name = block.block().display_name
             if (hasattr(block.block(), 'needs_submit') and
                     display_name == 'Case Quiz'):
