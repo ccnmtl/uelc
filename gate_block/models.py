@@ -20,7 +20,7 @@ class GateBlock(models.Model):
 
     def clear_user_submissions(self, user):
         GateSubmission.objects.filter(gateblock_id=self.id,
-                                  gate_user_id=user.id).delete()
+                                      gate_user_id=user.id).delete()
 
     def pageblock(self):
         return self.pageblocks.all()[0]
@@ -32,8 +32,9 @@ class GateBlock(models.Model):
         return False
 
     def unlocked(self, user):
-        return GateSubmission.objects.filter(gateblock_id=self.id,
-                                         gate_user_id=user.id).count() > 0
+        return GateSubmission.objects.filter(
+            gateblock_id=self.id,
+            gate_user_id=user.id).count() > 0
 
     @classmethod
     def add_form(self):
@@ -70,9 +71,9 @@ class GateBlock(models.Model):
             return self.body[:61] + "..."
 
     def submit(self, user, data):
-        if len(data.keys()) > 0: 
+        if len(data.keys()) > 0:
             GateSubmission.objects.create(gateblock_id=self.id,
-                                      gate_user_id=user.id)
+                                          gate_user_id=user.id)
 
 
 class GateSubmission(models.Model):

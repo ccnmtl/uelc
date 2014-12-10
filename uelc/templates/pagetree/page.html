@@ -48,9 +48,16 @@
 {% endif %}
 {% endif %}
 
-
 {% for block in section.pageblock_set.all %}
-{% ifequal block.block.display_name "Case Quiz" %}
+{% if block.block.display_name == "Gate Block" %}
+
+<div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+
+{% if block.label %}<h3>{{block.label}}</h3>{% endif %}
+{% render block %}
+</div>
+
+{% elif block.block.display_name == "Case Quiz" %}
 <form action="." method="post">
 <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
 {% if block.label %}<h3>{{block.label}}</h3>{% endif %}
@@ -58,42 +65,20 @@
 </div>
 <input type="submit" value="Submit Case Quiz" class="btn btn-primary" />
  </form>
-{% endifequal %}
+
+
+{% else %}
+    <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+
+    {% if block.label %}<h3>{{block.label}}</h3>{% endif %}
+    {% render block %}
+    </div>
+
+{% endif %}
 {% endfor %}
 
 
-{% for block in section.pageblock_set.all %}
-{% ifequal block.block.display_name "Gate Block" %}
-<form action="." method="post">
-<div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-{% if block.label %}<h3>{{block.label}}</h3>{% endif %}
-{% render block %}
-</div>
-<input type="submit" value="Submit Gate Block" class="btn btn-primary" />
- </form>
-{% endifequal %}
-{% endfor %}
-
-
-    {% if needs_submit %}
-    {% if request.user.is_anonymous %}
-    {% else %}
-    
-        {% if is_submitted %}
-        {% if allow_redo %}
-        <form action="." method="post">
-        <input type="hidden" name="action" value="reset" />
-        <input type="submit" value="clear your answers and try again" class="btn" />
-        </form>
-        {% endif %}
-        {% else %}
-        <input type="submit" value="Submit" class="btn btn-primary" />
-
-        </form>
-        {% endif %}
-    
-    {% endif %}
-    {% endif %}
+   
 
 
 {% include "pagetree/toc.html" %}

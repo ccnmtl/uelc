@@ -54,8 +54,10 @@ def get_cases(request):
 def admin_ajax_page_submit(section, user, post):
     for block in section.pageblock_set.all():
         if block.block().display_name == "Gate Block":
-           GateSubmission.objects.create(gateblock_id=block.block().id,
-                                         gate_user_id=user.id)
+            block_obj = block.block()
+            GateSubmission.objects.create(
+                gateblock_id=block_obj.id,
+                gate_user_id=user.id)
 
 
 def admin_ajax_reset_page(section, user):
@@ -164,10 +166,10 @@ class UELCPageView(LoggedInMixin,
         for block in self.section.pageblock_set.all():
             display_name = block.block().display_name
             if (hasattr(block.block(), 'needs_submit') and
-                    block.block().display_name == 'Case Quiz'):
+                    display_name == 'Case Quiz'):
                     case_quizblock = True
             if (hasattr(block.block(), 'needs_submit') and
-                    block.block().display_name == 'Gate Block'):
+                    display_name == 'Gate Block'):
                     gateblock = True
         context = dict(
             section=self.section,
@@ -180,7 +182,7 @@ class UELCPageView(LoggedInMixin,
             instructor_link=instructor_link,
             is_view=True,
             gateblock=gateblock,
-            case_quizblock = case_quizblock,
+            case_quizblock=case_quizblock,
         )
         context.update(self.get_extra_context())
         return render(request, self.template_name, context)
@@ -220,7 +222,7 @@ class UELCPageView(LoggedInMixin,
             if request.POST.get('action', '') == 'reset':
                 self.upv.visit(status="incomplete")
                 return reset_page(self.section, request)
-            self.upv.visit(status="complete")
+           #self.upv.visit(status="complete")
             return page_submit(self.section, request)
         else:
             return HttpResponseRedirect(request.path)
@@ -259,7 +261,7 @@ class FacilitatorView(LoggedInMixinSuperuser,
             self.set_upv(user, section, "complete")
             admin_ajax_page_submit(section, user, post)
         if action == 'reset':
-            #self.set_upv(user, section, "incomplete")
+            self.set_upv(user, section, "incomplete")
             admin_ajax_reset_page(section, user)
         return HttpResponseRedirect(request.path)
 

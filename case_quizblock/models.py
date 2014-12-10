@@ -61,7 +61,6 @@ class CaseQuiz(Quiz):
                 if obj.display_name == "Gate Block":
                     unlocked = obj.unlocked(user)
         return unlocked
-        #return Submission.objects.filter(quiz=self, user=user).count() > 0
 
     def edit_form(self):
         class EditForm(forms.Form):
