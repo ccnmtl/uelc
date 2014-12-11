@@ -161,8 +161,7 @@ class UELCPageView(LoggedInMixin,
             allow_redo = self.section.allow_redo()
         self.upv.visit()
         instructor_link = has_responses(self.section)
-        gateblock = False
-        case_quizblock = False
+        case_quizblocks = []
         for block in self.section.pageblock_set.all():
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
@@ -171,10 +170,12 @@ class UELCPageView(LoggedInMixin,
             display_name = block.block().display_name
             if (hasattr(block.block(), 'needs_submit') and
                     display_name == 'Case Quiz'):
-                    case_quizblock = True
-            if (hasattr(block.block(), 'needs_submit') and
-                    display_name == 'Gate Block'):
-                    gateblock = True
+                    # is the quiz really submitted?
+                    # if so add yes/no to dict
+                    quiz = block.block()
+                    completed = quiz.is_submitted(quiz, request.user)
+                    case_quizblocks.append(dict(id=block.id,
+                                                completed=completed))
         context = dict(
             section=self.section,
             module=self.module,
@@ -185,8 +186,7 @@ class UELCPageView(LoggedInMixin,
             root=self.section.hierarchy.get_root(),
             instructor_link=instructor_link,
             is_view=True,
-            gateblock=gateblock,
-            case_quizblock=case_quizblock,
+            case_quizblocks=case_quizblocks,
         )
         context.update(self.get_extra_context())
         return render(request, self.template_name, context)

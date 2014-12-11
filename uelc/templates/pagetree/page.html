@@ -58,15 +58,28 @@
 </div>
 
 {% elif block.block.display_name == "Case Quiz" %}
-<form action="." method="post">
+{% for quiz in case_quizblocks %}
+            {% if quiz.id == block.id %}
+                {% if quiz.completed != True%}
+                <form action="." method="post">
+        {% endif %}
+    {% endif %}
+{% endfor %}
 <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-{% if block.label %}<h3>{{block.label}}</h3>{% endif %}
+    {% if block.label %}
+        
+        <h3>{{block.label}}</h3>
+    {% endif %}
 {% render block %}
 </div>
-<input type="submit" value="Submit Case Quiz" class="btn btn-primary" />
- </form>
-
-
+{% for quiz in case_quizblocks %}
+            {% if quiz.id == block.id %}
+                {% if quiz.completed != True%}
+                <input type="submit" value="Submit Case Quiz" class="btn btn-primary" />
+                 </form>
+        {% endif %}
+    {% endif %}
+{% endfor %}
 {% else %}
     <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
 

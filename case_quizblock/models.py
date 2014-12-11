@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from quizblock.models import Quiz, Question, Submission
 from quizblock.models import Answer, Response
 from gate_block.models import GateSubmission
+#from uelc.main.models import CaseMap
 from pagetree.models import Section
 from pagetree.reports import ReportableInterface, ReportColumnInterface
 from django.utils.encoding import smart_str
@@ -26,6 +27,9 @@ class CaseQuiz(Quiz):
         or let them submit whatever garbage they want and only
         worry about it when we show the admins the results """
         s = Submission.objects.create(quiz=self, user=user)
+        # create a CaseMap for the user
+        # get Case the user is currently on
+
         for k in data.keys():
             if k.startswith('question'):
                 qid = int(k[len('question'):])
@@ -47,6 +51,11 @@ class CaseQuiz(Quiz):
     def redirect_to_self_on_submit(self):
         return self.show_submit_state
 
+    def is_submitted(self, quiz, user):
+        return Submission.objects.filter(
+            quiz=self,
+            user=user).count() > 0
+
     def unlocked(self, user):
         # meaning that the user can proceed *past* this one,
         # not that they can access this one. careful.
@@ -62,9 +71,7 @@ class CaseQuiz(Quiz):
                     obj = block.content_object
                     if obj.display_name == "Gate Block":
                         unlocked = obj.unlocked(user)
-            is_quiz_submitted = Submission.objects.filter(
-                quiz=self,
-                user=user).count() > 0
+            is_quiz_submitted = self.is_submitted(self, user)
             if not (unlocked and is_quiz_submitted):
                 unlocked = False
                 upv.status = 'incomplete'
