@@ -132,16 +132,16 @@ class RestrictedModuleMixin(object):
         return HttpResponse("you don't have permission")
 
 
-def get_user_map(pageview, request, path):
+def get_user_map(pageview, request):
     hierarchy = pageview.module.hierarchy
     case = Case.objects.get(hierarchy=hierarchy)
     user = request.user
-    # first check and see if a case map exists for the user,
-    # if not create it.
+    # first check and see if a case map exists for the user
+    # if not, they have not submitted an answer to a question
     try:
         casemap = CaseMap.objects.get(user=user, case=case)
     except ObjectDoesNotExist:
-        casemap = CaseMap.objects.create(user=user, case=case, value=0.00)
+        casemap = None
     return casemap
 
 
@@ -153,8 +153,10 @@ class UELCPageView(LoggedInMixin,
     gated = True
 
     def get(self, request, path):
-        casemap = get_user_map(self, request, path)
-        casemap.save()
+        hierarchy = self.module.hierarchy
+        case = Case.objects.get(hierarchy=hierarchy)
+        casemap = get_user_map(self, request)
+
         allow_redo = False
         needs_submit = self.section.needs_submit()
         if needs_submit:
@@ -186,6 +188,7 @@ class UELCPageView(LoggedInMixin,
             root=self.section.hierarchy.get_root(),
             instructor_link=instructor_link,
             is_view=True,
+            case=case,
             case_quizblocks=case_quizblocks,
         )
         context.update(self.get_extra_context())
@@ -221,8 +224,10 @@ class UELCPageView(LoggedInMixin,
     def post(self, request, path):
         # user has submitted a form. deal with it
         # make sure that they have not submitted
-        # a blank form
-        if len(request.POST.keys()) > 0:
+        # a blank form, key "case" is included on 
+        # all case_quiz submissions thus, must 
+        # have more than one key
+        if len(request.POST.keys()) > 1:
             if request.POST.get('action', '') == 'reset':
                 self.upv.visit(status="incomplete")
                 return reset_page(self.section, request)

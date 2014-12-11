@@ -76,4 +76,24 @@ class CaseMap(models.Model):
     user = models.ForeignKey(User)
     # each tens place represents a decision, where the decimal
     # place represents temporary decisons
-    value = models.DecimalField(max_digits=6, decimal_places=2)
+    value = models.DecimalField(max_digits=6, decimal_places=2, blank=True)
+
+    def get_value(self):
+        return self.value
+
+    def set_value(self, quiz, data):
+        val = self.decode_value(quiz, data)
+        self.value = val
+        self.save()
+
+    def decode_value(self, quiz, data):
+        # get_depth()
+        # root level is 1
+        # part level is 2
+        # 1st child level is 3
+        #case = Case.objects.get(id = data['case'])
+        #section = quiz.pageblock().section
+        #root = section.get_root()
+        #import pdb
+        #pdb.set_trace()
+        return self.value

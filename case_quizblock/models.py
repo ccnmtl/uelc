@@ -3,14 +3,16 @@ from django.core.urlresolvers import reverse
 from quizblock.models import Quiz, Question, Submission
 from quizblock.models import Answer, Response
 from gate_block.models import GateSubmission
-#from uelc.main.models import CaseMap
+from uelc.main.models import CaseMap
 from pagetree.models import Section
 from pagetree.reports import ReportableInterface, ReportColumnInterface
 from django.utils.encoding import smart_str
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class CaseQuiz(Quiz):
     display_name = "Case Quiz"
+    template_file = "case_quizblock/quizblock.html"
 
     def pageblock(self):
         return self.pageblocks.all()[0]
@@ -29,8 +31,24 @@ class CaseQuiz(Quiz):
         s = Submission.objects.create(quiz=self, user=user)
         # create a CaseMap for the user
         # get Case the user is currently on
-
+        quiz = self
         for k in data.keys():
+            if k.startswith('case'):
+                case_id = data[k]
+                try:
+                    casemap = CaseMap.objects.get(
+                    user=user,
+                    case_id=case_id)
+
+                except ObjectDoesNotExist:
+                    casemap = CaseMap.objects.create(
+                        user=user,
+                        case_id=case_id,
+                        value = 0.00)
+
+                casemap.set_value(quiz, data)
+                value = casemap.get_value()
+
             if k.startswith('question'):
                 qid = int(k[len('question'):])
                 question = CaseQuestion.objects.get(id=qid)

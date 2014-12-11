@@ -75,6 +75,7 @@
 {% for quiz in case_quizblocks %}
             {% if quiz.id == block.id %}
                 {% if quiz.completed != True%}
+                <input type="hidden" name="pageblock-{{block.id}}-case" value="{{case.id}}" />
                 <input type="submit" value="Submit Case Quiz" class="btn btn-primary" />
                  </form>
         {% endif %}

@@ -7,7 +7,7 @@
 {% else %}
 
 {% for question in block.question_set.all %}
-  {% include 'quizblock/question.html' %}
+  {% include 'case_quizblock/question.html' %}
 {% endfor %}
 
 {% if block.rhetorical %}
