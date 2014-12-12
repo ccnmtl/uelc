@@ -59,6 +59,8 @@ class ReorderCaseQuestionsView(ReorderItemsView):
 
 class AddQuestionToCaseQuizView(View):
     def post(self, request, pk):
+        import pdb
+        pdb.set_trace()
         quiz = get_object_or_404(CaseQuiz, pk=pk)
         form = quiz.add_question_form(request.POST)
         if form.is_valid():

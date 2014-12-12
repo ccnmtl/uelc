@@ -82,6 +82,8 @@ class CaseMap(models.Model):
         return self.value
 
     def set_value(self, quiz, data):
+        import pdb
+        pdb.set_trace()
         val = self.save_value(quiz, data)
         self.value = val
         self.save()
@@ -108,20 +110,29 @@ class CaseMap(models.Model):
         # value field. Might need to require that on the answer
         # field form
         val = float(val[0]) * 1.00
-        import pdb
-        pdb.set_trace()
-        if old_val > 0 and val/(float(old_val)) >= 1:
-            self.resave_choice(val)
-        else: 
+        reanswer =self.is_reanswer(case_depth, val)
+        if not reanswer:
+            print 'setting new val'
             val = val * place_value
             self.value += Decimal(val)
+        else: 
+            self.resave_choice(case_depth, val)
         self.save()
         return self.value
 
-    def resave_choice(self, val):
-        import pdb
-        pdb.set_trace()
+    def is_reanswer(self, case_depth, val):
+        split_val = list(str(int(self.value)))
+        if split_val[case_depth] > 0 :
+            return True
+        return False
 
+
+    def resave_choice(self, case_depth, val):
+        reval_place = int(self.get_next_place_value(val)) / 10
+        string = list(str(int(self.value)))
+        old_val_in_place = int(string[case_depth])
+        self.value -= old_val_in_place
+        self.value += int(val)
 
     def get_next_place_value(self, val):
         # return the place value to save the submitted 

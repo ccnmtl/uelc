@@ -168,16 +168,17 @@ class UELCPageView(LoggedInMixin,
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
             # Section.submit() in Pageblock library
-            block.block().unlocked(request.user)
-            display_name = block.block().display_name
-            if (hasattr(block.block(), 'needs_submit') and
-                    display_name == 'Case Quiz'):
-                    # is the quiz really submitted?
-                    # if so add yes/no to dict
-                    quiz = block.block()
-                    completed = quiz.is_submitted(quiz, request.user)
-                    case_quizblocks.append(dict(id=block.id,
-                                                completed=completed))
+            if hasattr(block.block(), "unlocked"):
+                block.block().unlocked(request.user)
+                display_name = block.block().display_name
+                if (hasattr(block.block(), 'needs_submit') and
+                        display_name == 'Case Quiz'):
+                        # is the quiz really submitted?
+                        # if so add yes/no to dict
+                        quiz = block.block()
+                        completed = quiz.is_submitted(quiz, request.user)
+                        case_quizblocks.append(dict(id=block.id,
+                                                    completed=completed))
         context = dict(
             section=self.section,
             module=self.module,
