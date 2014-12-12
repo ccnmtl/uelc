@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from pagetree.models import Hierarchy
-
+from decimal import *
 
 class Cohort(models.Model):
     name = models.CharField(max_length=255, blank=False)
@@ -82,18 +82,51 @@ class CaseMap(models.Model):
         return self.value
 
     def set_value(self, quiz, data):
-        val = self.decode_value(quiz, data)
+        val = self.save_value(quiz, data)
         self.value = val
         self.save()
 
-    def decode_value(self, quiz, data):
+    def save_value(self, quiz, data):
         # get_depth()
         # root level is 1
         # part level is 2
-        # 1st child level is 3
-        #case = Case.objects.get(id = data['case'])
-        #section = quiz.pageblock().section
-        #root = section.get_root()
-        #import pdb
-        #pdb.set_trace()
+        # 1st child level is 3 - so this is 
+        # really the root or the first level.
+        # if value is 0, then this is the first 
+        # reveal question of part 1
+        # 
+        case = Case.objects.get(id = data['case'])
+        section = quiz.pageblock().section
+        root = section.get_root()
+        case_depth = section.get_depth() - 3
+        old_val = self.value
+        # place is the place value to save
+        place_value = self.get_next_place_value(case_depth) 
+        val = [v for k,v in data.items() if 'question' in k]
+        # important to note that val must be a number (not string)
+        # this means admins must place a numerical value in the
+        # value field. Might need to require that on the answer
+        # field form
+        val = float(val[0]) * 1.00
+        import pdb
+        pdb.set_trace()
+        if old_val > 0 and val/(float(old_val)) >= 1:
+            self.resave_choice(val)
+        else: 
+            val = val * place_value
+            self.value += Decimal(val)
+        self.save()
         return self.value
+
+    def resave_choice(self, val):
+        import pdb
+        pdb.set_trace()
+
+
+    def get_next_place_value(self, val):
+        # return the place value to save the submitted 
+        # answer value into. 1,10,100,1000,1000, etc. 
+        if val > 0:
+            string = list(str(val))
+            return int(pow(10, (string.index('.')-1)) * 10)
+        return 1
