@@ -57,10 +57,18 @@ def admin_ajax_page_submit(section, user, post):
             block_obj = block.block()
             GateSubmission.objects.create(
                 gateblock_id=block_obj.id,
+                section = section,
                 gate_user_id=user.id)
 
 
 def admin_ajax_reset_page(section, user):
+    for block in section.pageblock_set.all():
+        if block.block().display_name == "Gate Block":
+            block_obj = block.block()
+            gso = GateSubmission.objects.filter(
+                section = section,
+                gate_user_id=user.id)
+            gso.delete()
     section.reset(user)
 
 
@@ -156,7 +164,6 @@ class UELCPageView(LoggedInMixin,
         hierarchy = self.module.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
         casemap = get_user_map(self, request)
-
         allow_redo = False
         needs_submit = self.section.needs_submit()
         if needs_submit:
@@ -169,7 +176,7 @@ class UELCPageView(LoggedInMixin,
             # have been submitted. Re: potential bug in
             # Section.submit() in Pageblock library
             if hasattr(block.block(), "unlocked"):
-                block.block().unlocked(request.user)
+                block.block().unlocked(request.user, self.section)
                 display_name = block.block().display_name
                 if (hasattr(block.block(), 'needs_submit') and
                         display_name == 'Case Quiz'):
@@ -179,6 +186,7 @@ class UELCPageView(LoggedInMixin,
                         completed = quiz.is_submitted(quiz, request.user)
                         case_quizblocks.append(dict(id=block.id,
                                                     completed=completed))
+
         context = dict(
             section=self.section,
             module=self.module,
@@ -193,6 +201,9 @@ class UELCPageView(LoggedInMixin,
             case_quizblocks=case_quizblocks,
         )
         context.update(self.get_extra_context())
+        upv = self.section.get_uservisit(request.user)
+        import pdb
+        pdb.set_trace()
         return render(request, self.template_name, context)
 
     def get_extra_context(self, **kwargs):
@@ -228,11 +239,14 @@ class UELCPageView(LoggedInMixin,
         # a blank form, key "case" is included on 
         # all case_quiz submissions thus, must 
         # have more than one key
+        
         if len(request.POST.keys()) > 1:
             if request.POST.get('action', '') == 'reset':
+                import pdb
+                pdb.set_trace()
                 self.upv.visit(status="incomplete")
                 return reset_page(self.section, request)
-           #self.upv.visit(status="complete")
+            #self.upv.visit(status="complete")
             return page_submit(self.section, request)
         else:
             return HttpResponseRedirect(request.path)
@@ -271,6 +285,8 @@ class FacilitatorView(LoggedInMixinSuperuser,
             self.set_upv(user, section, "complete")
             admin_ajax_page_submit(section, user, post)
         if action == 'reset':
+            import pdb
+            pdb.set_trace()
             self.set_upv(user, section, "incomplete")
             admin_ajax_reset_page(section, user)
         return HttpResponseRedirect(request.path)
@@ -300,7 +316,7 @@ class FacilitatorView(LoggedInMixinSuperuser,
         gateblocks = GateBlock.objects.all()
         user_sections = []
         for user in cohort_users:
-            gate_sections = [(g.pageblock().section, g, g.unlocked(user))
+            gate_sections = [(g.pageblock().section, g, g.unlocked(user, section))
                              for g in gateblocks]
             user_sections.append([user, gate_sections])
         quizzes = [p.block() for p in section.pageblock_set.all()

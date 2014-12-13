@@ -65,7 +65,7 @@
 
 <h2>{{casequiz.pageblock.label}}</h2>
 
-<ul id="questions" class="dragparent">asdasd
+<ul id="questions" class="dragparent">
 {% for question in casequiz.question_set.all %}
     <li class="draggable" id="question-{{casequestion.id}}">
     <span title="drag to reorder pageblocks" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>[<a href="{% url 'delete-casequestion' question.id %}">delete</a>] 

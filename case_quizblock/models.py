@@ -24,6 +24,8 @@ class CaseQuiz(Quiz):
         return not self.rhetorical
 
     def submit(self, user, data):
+        import pdb
+        pdb.set_trace()
         """ a big open question here is whether we should
         be validating submitted answers here, on submission,
         or let them submit whatever garbage they want and only
@@ -74,28 +76,30 @@ class CaseQuiz(Quiz):
             quiz=self,
             user=user).count() > 0
 
-    def unlocked(self, user):
+    def unlocked(self, user, section):
         # meaning that the user can proceed *past* this one,
         # not that they can access this one. careful.
         unlocked = False
         submissions = GateSubmission.objects.filter(gate_user_id=user.id)
         if len(submissions) > 0:
-            section_id = submissions[0].gateblock.pageblock().section_id
-            section = Section.objects.get(id=section_id)
-            upv = section.get_uservisit(user)
             for sub in submissions:
+                section_id = sub.gateblock.pageblock().section_id
+                section = Section.objects.get(id=section_id)
+                upv = section.get_uservisit(user)
                 blocks = section.pageblock_set.all()
                 for block in blocks:
                     obj = block.content_object
                     if obj.display_name == "Gate Block":
-                        unlocked = obj.unlocked(user)
+                        unlocked = obj.unlocked(user, section)
             is_quiz_submitted = self.is_submitted(self, user)
             if not (unlocked and is_quiz_submitted):
                 unlocked = False
+                import pdb
+                pdb.set_trace()
                 upv.status = 'incomplete'
                 upv.save()
             else:
-                obj.unlocked(user)
+                obj.unlocked(user, section)
                 upv.status = 'complete'
                 upv.save()
                 unlocked = True

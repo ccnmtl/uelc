@@ -1,7 +1,7 @@
 from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
-from pagetree.models import PageBlock
+from pagetree.models import PageBlock, Section
 from django.contrib.contenttypes import generic
 from django import forms
 
@@ -31,7 +31,7 @@ class GateBlock(models.Model):
     def allow_redo(self):
         return False
 
-    def unlocked(self, user):
+    def unlocked(self, user, section):
         return GateSubmission.objects.filter(
             gateblock_id=self.id,
             gate_user_id=user.id).count() > 0
@@ -79,6 +79,7 @@ class GateBlock(models.Model):
 class GateSubmission(models.Model):
     gateblock = models.ForeignKey(GateBlock)
     gate_user = models.ForeignKey(User, related_name='gate_user')
+    section = models.ForeignKey(Section)
     submitted = models.DateTimeField(default=datetime.now)
 
     def __unicode__(self):
