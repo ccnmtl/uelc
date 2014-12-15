@@ -46,7 +46,7 @@ class CaseQuiz(Quiz):
                     casemap = CaseMap.objects.create(
                         user=user,
                         case_id=case_id,
-                        value = 0.00)
+                        value = str(0))
 
                 casemap.set_value(quiz, data)
                 value = casemap.get_value()

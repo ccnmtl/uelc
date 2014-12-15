@@ -2,7 +2,7 @@ from django.views.generic.base import TemplateView
 from pagetree.generic.views import PageView, EditView
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
-from pagetree.models import UserPageVisit, Hierarchy, Section
+from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
 from django.contrib.auth.models import User
@@ -162,6 +162,12 @@ class UELCPageView(LoggedInMixin,
 
     def get(self, request, path):
         hierarchy = self.module.hierarchy
+        uloc = UserLocation.objects.get_or_create(
+            user=request.user,
+            hierarchy=hierarchy)
+
+        uloc[0].path = path
+        uloc[0].save()
         case = Case.objects.get(hierarchy=hierarchy)
         casemap = get_user_map(self, request)
         allow_redo = False

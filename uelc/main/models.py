@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from pagetree.models import Hierarchy
-from decimal import *
 
 class Cohort(models.Model):
     name = models.CharField(max_length=255, blank=False)
@@ -76,7 +75,7 @@ class CaseMap(models.Model):
     user = models.ForeignKey(User)
     # each tens place represents a decision, where the decimal
     # place represents temporary decisons
-    value = models.DecimalField(max_digits=6, decimal_places=2, blank=True)
+    value = models.TextField(blank=True)
 
     def get_value(self):
         return self.value
@@ -89,64 +88,36 @@ class CaseMap(models.Model):
         self.save()
 
     def save_value(self, quiz, data):
-        # get_depth()
-        # root level is 1
-        # part level is 2
-        # 1st child level is 3 - so this is 
-        # really the root or the first level.
-        # if value is 0, then this is the first 
-        # reveal question of part 1
-        # 
         case = Case.objects.get(id = data['case'])
         section = quiz.pageblock().section
         root = section.get_root()
-        case_depth = section.get_depth() - 3
+        case_depth = section.get_depth()
         old_val = self.value
-        # place is the place value to save
-        place_value = self.get_next_place_value(case_depth) 
+        # place is the place value to save 
         val = [v for k,v in data.items() if 'question' in k]
-        # important to note that val must be a number (not string)
-        # this means admins must place a numerical value in the
-        # value field. Might need to require that on the answer
-        # field form
-        val = float(val[0]) * 1.00
-        import pdb
-        pdb.set_trace()
-        reanswer = self.is_reanswer(case_depth, val)
-        if not reanswer:
-            print 'setting new val'
-            val = val * place_value
-            self.value += Decimal(val)
-        else: 
-            self.resave_choice(case_depth, val)
+        val = val[0]
+        self.add_value_places(case_depth)
+        answerlist = list(self.value)
+        answerlist[case_depth] = str(val)
+        answers = ''.join(n for n in answerlist)
+        self.value = answers
+
         self.save()
         return self.value
 
-    def is_reanswer(self, case_depth, val):
-        if self.value > 0:
-            import pdb
-            pdb.set_trace()
-            split_val = list(str(int(self.value)))
-            if len(split_val) >= case_depth:
-                if split_val[case_depth] > 0:
-                    return True
-        return False
+    def add_value_places(self, case_depth):
+        self.clean_value()
+        init_places = len(self.value) - 1
+        import pdb
+        pdb.set_trace()
+        if case_depth > init_places:
+            x_places = case_depth - init_places
+            for place in range(x_places):
+                self.value += '0'
+            self.save()
 
-
-    def resave_choice(self, case_depth, val):
-        reval_place = int(self.get_next_place_value(val)) / 10
-        string = list(str(int(self.value)))
-        old_val_in_place = int(string[case_depth])
-        self.value -= old_val_in_place
-        self.value += int(val)
-
-    def get_next_place_value(self, val):
-        # return the place value to save the submitted 
-        # answer value into. 1,10,100,1000,1000, etc. 
-        if val > 0:
-            val = val * 1.00
-            import pdb
-            pdb.set_trace()
-            string = list(str(val))
-            return int(pow(10, (string.index('.')-1)) * 10)
-        return 1
+    def clean_value(self):
+        if self.value.split('.') > 1:
+            value = self.value.split('.')[0]
+            self.value = value
+            self.save()
