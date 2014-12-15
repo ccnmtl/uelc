@@ -110,7 +110,9 @@ class CaseMap(models.Model):
         # value field. Might need to require that on the answer
         # field form
         val = float(val[0]) * 1.00
-        reanswer =self.is_reanswer(case_depth, val)
+        import pdb
+        pdb.set_trace()
+        reanswer = self.is_reanswer(case_depth, val)
         if not reanswer:
             print 'setting new val'
             val = val * place_value
@@ -121,9 +123,13 @@ class CaseMap(models.Model):
         return self.value
 
     def is_reanswer(self, case_depth, val):
-        split_val = list(str(int(self.value)))
-        if split_val[case_depth] > 0 :
-            return True
+        if self.value > 0:
+            import pdb
+            pdb.set_trace()
+            split_val = list(str(int(self.value)))
+            if len(split_val) >= case_depth:
+                if split_val[case_depth] > 0:
+                    return True
         return False
 
 
@@ -138,6 +144,9 @@ class CaseMap(models.Model):
         # return the place value to save the submitted 
         # answer value into. 1,10,100,1000,1000, etc. 
         if val > 0:
+            val = val * 1.00
+            import pdb
+            pdb.set_trace()
             string = list(str(val))
             return int(pow(10, (string.index('.')-1)) * 10)
         return 1
