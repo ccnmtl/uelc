@@ -106,12 +106,12 @@
 <ul class="pager">
 {% if previous %}
   <li class="previous">
-        <a href="{{previous.get_absolute_url}}">&larr; {{previous.label}}</a>
+        <a href="{{previous.get_absolute_url}}">&larr; Previous</a>
   </li>
 {% endif %}
 
 {% if next_section %}
-<li class="next"><a class="{% ifsubmitted section %}{% else %}disabled{%endifsubmitted%}" href="{{next_section.get_absolute_url}}">{{next_section.label}} &rarr;</a></li>
+<li class="next"><a class="{% ifsubmitted section %}{% else %}disabled{%endifsubmitted%}" href="{{next_section.get_absolute_url}}">Next &rarr;</a></li>
 
 {% endif %}
 </ul>

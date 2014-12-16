@@ -6,7 +6,7 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from uelc.main.models import Case, CaseMap
+from uelc.main.models import Case, CaseMap, UELCHandler
 from gate_block.models import GateBlock, GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
@@ -169,6 +169,7 @@ class UELCPageView(LoggedInMixin,
         uloc[0].path = path
         uloc[0].save()
         case = Case.objects.get(hierarchy=hierarchy)
+        last_section_in_part = self.section.get_module().get_descendants().last()
         casemap = get_user_map(self, request)
         allow_redo = False
         needs_submit = self.section.needs_submit()

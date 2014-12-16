@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from pagetree.models import Hierarchy
+from pagetree.models import Hierarchy, Section
 
 class Cohort(models.Model):
     name = models.CharField(max_length=255, blank=False)
@@ -90,15 +90,22 @@ class CaseMap(models.Model):
     def save_value(self, quiz, data):
         case = Case.objects.get(id = data['case'])
         section = quiz.pageblock().section
-        root = section.get_root()
-        case_depth = section.get_depth()
+        case_depth = len(section.get_tree())
+        count = 0
+        section_depth = 0
+        for sec in section.get_tree():
+            if sec.id == section.id:
+                section_depth = count
+            count += 1
+        import pdb
+        pdb.set_trace()
         old_val = self.value
         # place is the place value to save 
         val = [v for k,v in data.items() if 'question' in k]
         val = val[0]
         self.add_value_places(case_depth)
         answerlist = list(self.value)
-        answerlist[case_depth] = str(val)
+        answerlist[section_depth] = str(val)
         answers = ''.join(n for n in answerlist)
         self.value = answers
 
@@ -121,3 +128,9 @@ class CaseMap(models.Model):
             value = self.value.split('.')[0]
             self.value = value
             self.save()
+
+
+class UELCHandler(Section):
+    def part_one_decision(self):
+        return True
+
