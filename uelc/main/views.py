@@ -158,17 +158,32 @@ class UELCPageView(LoggedInMixin,
                    RestrictedModuleMixin,
                    PageView):
     template_name = "pagetree/page.html"
-    gated = True
+    gated = False
+
+    def itterate_blocks(self, section):
+        for block in section.pageblock_set.all():
+            display_name = block.block().display_name
+            if (hasattr(block.block(), 'needs_submit') and
+                display_name == 'Gate Block'):
+                    return block.block()
+            return False
+
+    def get_next_gate(self, section):
+        block = self.itterate_blocks(section)
+        last_sibling = self.section.get_last_sibling()
+        if block:
+            return (block, section)
+        block = self.itterate_blocks(last_sibling)
+        if block:
+            return (block, last_sibling)
+        return False
 
     def get(self, request, path):
         hierarchy = self.module.hierarchy
+        case = Case.objects.get(hierarchy=hierarchy)
         uloc = UserLocation.objects.get_or_create(
             user=request.user,
             hierarchy=hierarchy)
-
-        uloc[0].path = path
-        uloc[0].save()
-        case = Case.objects.get(hierarchy=hierarchy)
         casemap = get_user_map(self, request)
         allow_redo = False
         needs_submit = self.section.needs_submit()
@@ -192,6 +207,32 @@ class UELCPageView(LoggedInMixin,
                         completed = quiz.is_submitted(quiz, request.user)
                         case_quizblocks.append(dict(id=block.id,
                                                     completed=completed))
+
+        # if gateblock is not unlocked then return to last known page
+        # section.gate_check(user), doing this because hierarchy cannot 
+        # be "gated" because we will be skipping around depending on 
+        # user decisions.
+
+        section_gatecheck = self.section.gate_check(request.user)
+        if not section_gatecheck[0]:
+            gate_section = section_gatecheck[1]
+            gate_section_gateblock = self.get_next_gate(self.section)
+            import pdb
+            pdb.set_trace()
+            if not gate_section_gateblock:
+                block_unlocked = True
+            else:
+                block_unlocked = gate_section_gateblock[0].unlocked(self.request.user, gate_section_gateblock[1])
+                if not block_unlocked:
+                    back_url = uloc[0].hierarchy.find_section_from_path(uloc[0].path)
+                    import pdb
+                    pdb.set_trace()
+                    return HttpResponseRedirect(back_url.get_absolute_url())
+                
+            uloc[0].path = path
+            uloc[0].save()
+
+
 
         context = dict(
             section=self.section,
