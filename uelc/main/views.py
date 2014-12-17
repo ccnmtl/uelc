@@ -210,13 +210,21 @@ class UELCPageView(LoggedInMixin,
         context.update(self.get_extra_context())
 
         # handler stuff
-        upv = self.section.get_uservisit(request.user)
-        hand = UELCHandler.objects.get_or_create(hierarchy=hierarchy, depth=0)[0]
+        if not casemap == None:
+            upv = self.section.get_uservisit(request.user)
+            hand = UELCHandler.objects.get_or_create(hierarchy=hierarchy, depth=0)[0]
+            cml = hand.create_case_map_list(casemap)
+            hand.populate_map_obj(cml)
+            case_parts = self.section.get_root().get_children()
+            # 3 things prevent users from proceeding when gated = True
+            # 1) a pageblock that is locked
+            # 2) a section that is not_submitted if need_submit
+            # 3) a upv that is "incomplete" --> section.get_uservisit(request.user)
+            #   also can be--> section.gate_check(user)
+            
 
-        cml = hand.create_case_map_list(casemap)
-        hand.populate_map_obj(cml)
-        import pdb
-        pdb.set_trace()
+            import pdb
+            pdb.set_trace()
 
         return render(request, self.template_name, context)
 
