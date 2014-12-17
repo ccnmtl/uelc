@@ -208,9 +208,16 @@ class UELCPageView(LoggedInMixin,
             case_quizblocks=case_quizblocks,
         )
         context.update(self.get_extra_context())
+
+        # handler stuff
         upv = self.section.get_uservisit(request.user)
+        hand = UELCHandler.objects.get_or_create(hierarchy=hierarchy, depth=0)[0]
+
+        cml = hand.create_case_map_list(casemap)
+        hand.populate_map_obj(cml)
         import pdb
         pdb.set_trace()
+
         return render(request, self.template_name, context)
 
     def get_extra_context(self, **kwargs):

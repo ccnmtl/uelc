@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from pagetree.models import Hierarchy, Section
+import bisect
 
 class Cohort(models.Model):
     name = models.CharField(max_length=255, blank=False)
@@ -129,8 +130,69 @@ class CaseMap(models.Model):
             self.value = value
             self.save()
 
+''' this class is used to handle the logic for 
+    the decision tree. It translates the add_values 
+    in the case map into the path for the user along
+    the pagetree
+'''
 
 class UELCHandler(Section):
-    def part_one_decision(self):
-        return True
+    #map_obj = {'p1pre1': 'tree_index', 'p1c1': '', 'p2pre':'', 'p2c2':''}
+    map_obj = dict()
 
+    def create_case_map_list(self, casemap):
+        pvl = list(casemap.value)
+        pvi = [int(x) for x in pvl]
+        return pvi
+
+    def populate_map_obj(self, casemap_list):
+        decision_key_list = ['p1pre', 'p1c1', 'p2pre', 'p2c2']
+        decision_val_list = []
+        for i, v in enumerate(casemap_list):
+            if v > 0:
+                decision_val_list.append({'tree_index':i, 'value': v})
+        for i, v in enumerate(decision_val_list):
+            self.map_obj[decision_key_list[i]] = decision_val_list[i]
+
+    def p1pre(self):
+        p1pre = False
+        try:
+            self.map_obj['p1pre']
+            p1pre = True
+        except:
+            pass
+        return p1pre
+
+    def p1c1(self):
+        p1c1 = False
+        try:
+            self.map_obj['p1c1']
+            p1c1 = True
+        except:
+            pass
+        return p1c1
+
+    def p2pre(self):
+        p2pre = False
+        try:
+            self.map_obj['p2pre']
+            p2pre = True
+        except:
+            pass
+        return p2pre
+
+    def p2c2(self):
+        p2c2 = False
+        try:
+            self.map_obj['p2c2']
+            p2c2 = True
+        except:
+            pass
+        return p2c2
+
+    def is_p1_zap(self, section):
+        if self.p1pre():
+            sec_index = self.map_obj['p1pre']['tree_index'] + 1
+            if section == section.get_tree()[sec_index]:
+                return True
+        return False
