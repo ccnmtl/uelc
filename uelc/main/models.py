@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from pagetree.models import Hierarchy, Section
-import bisect
+
 
 class Cohort(models.Model):
     name = models.CharField(max_length=255, blank=False)
@@ -89,7 +89,7 @@ class CaseMap(models.Model):
         self.save()
 
     def save_value(self, quiz, data):
-        case = Case.objects.get(id = data['case'])
+        #case = Case.objects.get(id = data['case'])
         section = quiz.pageblock().section
         case_depth = len(section.get_tree())
         count = 0
