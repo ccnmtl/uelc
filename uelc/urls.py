@@ -6,6 +6,7 @@ from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import routers, serializers, viewsets
 #from pagetree.generic.views import EditView, InstructorView
+from uelc.main import pageblock_override_views
 from uelc.main import views
 from uelc.main.models import UserProfile
 from uelc.main.views import UELCPageView, UELCEditView, FacilitatorView
@@ -73,6 +74,12 @@ urlpatterns = patterns(
     (r'infranil/', include('infranil.urls')),
     (r'^uploads/(?P<path>.*)$',
      'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+
+    (r'^pagetree/pageblock/add/(?P<section_id>\d+)/$', pageblock_override_views.add_pageblock, {},
+     "add-pageblock"),
+    (r'^pageblock/edit/(?P<pageblock_id>\d+)/$', 'edit_pageblock', {},
+     "edit-pageblock"),
+
     (r'^pagetree/', include('pagetree.urls')),
     (r'^quizblock/', include('quizblock.urls')),
     (r'^case_quizblock/', include('case_quizblock.urls')),
