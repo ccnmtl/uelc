@@ -82,14 +82,12 @@ class CaseMap(models.Model):
         return self.value
 
     def set_value(self, quiz, data):
-        import pdb
-        pdb.set_trace()
         val = self.save_value(quiz, data)
         self.value = val
         self.save()
 
     def save_value(self, quiz, data):
-        #case = Case.objects.get(id = data['case'])
+        #case = Case.objects.get(id=data['case'])
         section = quiz.pageblock().section
         case_depth = len(section.get_tree())
         count = 0
@@ -98,11 +96,8 @@ class CaseMap(models.Model):
             if sec.id == section.id:
                 section_depth = count
             count += 1
-        import pdb
-        pdb.set_trace()
-        old_val = self.value
-        # place is the place value to save 
-        val = [v for k,v in data.items() if 'question' in k]
+        # place is the place value to save
+        val = [v for k, v in data.items() if 'question' in k]
         val = val[0]
         self.add_value_places(case_depth)
         answerlist = list(self.value)
@@ -116,8 +111,6 @@ class CaseMap(models.Model):
     def add_value_places(self, case_depth):
         self.clean_value()
         init_places = len(self.value) - 1
-        import pdb
-        pdb.set_trace()
         if case_depth > init_places:
             x_places = case_depth - init_places
             for place in range(x_places):
@@ -130,11 +123,12 @@ class CaseMap(models.Model):
             self.value = value
             self.save()
 
-''' this class is used to handle the logic for 
-    the decision tree. It translates the add_values 
+''' this class is used to handle the logic for
+    the decision tree. It translates the add_values
     in the case map into the path for the user along
     the pagetree
 '''
+
 
 class UELCHandler(Section):
     #map_obj = {'p1pre1': 'tree_index', 'p1c1': '', 'p2pre':'', 'p2c2':''}
@@ -150,7 +144,7 @@ class UELCHandler(Section):
         decision_val_list = []
         for i, v in enumerate(casemap_list):
             if v > 0:
-                decision_val_list.append({'tree_index':i, 'value': v})
+                decision_val_list.append({'tree_index': i, 'value': v})
         for i, v in enumerate(decision_val_list):
             self.map_obj[decision_key_list[i]] = decision_val_list[i]
 
