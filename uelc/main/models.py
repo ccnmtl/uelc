@@ -126,66 +126,11 @@ class CaseMap(models.Model):
             self.value = value
             self.save()
 
-''' this class is used to handle the logic for
-    the decision tree. It translates the add_values
-    in the case map into the path for the user along
-    the pagetree
-'''
-
-
-class Decision(models.Model):
-    CHOICES = ((0,'0'),(1,'1'), (2,'2'), (3,'3'), (4,'4'), (5,'5'))
-    decisions = models.IntegerField(
-        max_length=2,
-        choices=CHOICES,
-        default=0)
-
-
-class Choice(models.Model):
-    CHOICES = ((0,'0'),(1,'1'), (2,'2'), (3,'3'), (4,'4'), (5,'5'))
-    choices = models.IntegerField(
-        max_length=2,
-        choices=CHOICES,
-        default=0)
-
-
-# a PageBlock subclass for decision trees
-class PageBlockDT(PageBlock):
-    after_decision = models.ForeignKey(Decision)
-    choice = models.ForeignKey(Choice)
-
-    def default_edit_form(self):
-        class EditForm(forms.Form):
-            label = forms.CharField(initial=self.label)
-            css_extra = forms.CharField(initial=self.css_extra,
-                                        label="extra CSS classesDT")
-            after_decision = forms.IntegerField(initial=self.after_decision)
-            choice = forms.IntegerField(initial=self.choice)
-        return EditForm()
-
-    def edit_form(self):
-        return self.content_object.edit_form()
-
-    def edit(self, vals, files):
-        self.label = vals.get('label', '')
-        self.css_extra = vals.get('css_extra', '')
-        self.after_decision = vals.get(after_decision, '')
-        self.choice = vals.get(choice, '')
-        self.save()
-        self.content_object.edit(vals, files)
-
-    def delete(self):
-        section = self.section
-        super(PageBlockDT, self).delete()  # Call the "real" delete() method
-        section.renumber_pageblocks()
-
 class TextBlockDT(TextBlock):
-    pageblocks = generic.GenericRelation(PageBlockDT)
     template_file = "uelc/textblock.html"
     display_name = "Text BlockDT"
-
-    def pageblock(self):
-        return self.pageblocksdt.all()[0]
+    after_decision = models.CharField(max_length=2, blank=True, default=0)
+    choice = models.CharField(max_length=2, blank=True, default=0)
 
     @classmethod
     def add_form(self):
@@ -203,8 +148,33 @@ class TextBlockDT(TextBlock):
 
     @classmethod
     def create(self, request):
-        return TextBlockDT.objects.create(body=request.POST.get('body', ''))
+        return TextBlockDT.objects.create(
+            body=request.POST.get('body', ''),
+            after_decision=request.POST.get('after_decision', ''),
+            choice=request.POST.get('choice', ''),
+            )
 
+    def edit_form(self):
+        class EditForm(forms.Form):
+            CHOICES = ((0,'0'),(1,'1'), (2,'2'), (3,'3'), (4,'4'), (5,'5'))
+            body = forms.CharField(widget=forms.widgets.Textarea(),
+                                   initial=self.body)
+            after_decision = forms.ChoiceField(choices=CHOICES, initial=self.after_decision)
+            choice = forms.ChoiceField(choices=CHOICES, initial=self.choice)
+        return EditForm()
+
+    def edit(self, vals, files):
+        self.body = vals.get('body', '')
+        self.after_decision = vals.get('after_decision', '')
+        self.choice = vals.get('choice', '')
+        self.save()
+
+
+''' this class is used to handle the logic for
+    the decision tree. It translates the add_values
+    in the case map into the path for the user along
+    the pagetree
+'''
 
 class UELCHandler(Section):
     #map_obj = {'p1pre1': 'tree_index', 'p1c1': '', 'p2pre':'', 'p2c2':''}

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from uelc.main.models import UserProfile,\
-    Case, Cohort, CaseMap, Decision, Choice
+    Case, Cohort, CaseMap
 from pagetree.models import Hierarchy
 
 
@@ -31,5 +31,3 @@ admin.site.register(Hierarchy)
 admin.site.register(Case)
 admin.site.register(CaseMap)
 admin.site.register(Cohort)
-admin.site.register(Decision)
-admin.site.register(Choice)

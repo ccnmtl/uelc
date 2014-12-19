@@ -74,12 +74,6 @@ urlpatterns = patterns(
     (r'infranil/', include('infranil.urls')),
     (r'^uploads/(?P<path>.*)$',
      'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
-
-    (r'^pagetree/pageblock/add/(?P<section_id>\d+)/$', pageblock_override_views.add_pageblock, {},
-     "add-pageblock"),
-    (r'^pagetree/pageblock/edit/(?P<pageblock_id>\d+)/$', pageblock_override_views.edit_pageblock, {},
-     "edit-pageblock"),
-
     (r'^pagetree/', include('pagetree.urls')),
     (r'^quizblock/', include('quizblock.urls')),
     (r'^case_quizblock/', include('case_quizblock.urls')),
