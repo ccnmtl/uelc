@@ -1,8 +1,7 @@
 from django.db import models
 from django import forms
-from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
-from pagetree.models import PageBlock, Hierarchy, Section
+from pagetree.models import Hierarchy, Section
 from pageblocks.models import TextBlock
 
 
@@ -126,6 +125,7 @@ class CaseMap(models.Model):
             self.value = value
             self.save()
 
+
 class TextBlockDT(TextBlock):
     template_file = "uelc/textblock.html"
     display_name = "Text BlockDT"
@@ -135,7 +135,8 @@ class TextBlockDT(TextBlock):
     @classmethod
     def add_form(self):
         class AddForm(forms.Form):
-            CHOICES = ((0,'0'),(1,'1'), (2,'2'), (3,'3'), (4,'4'), (5,'5'))
+            CHOICES = ((0, '0'), (1, '1'), (2, '2'),
+                       (3, '3'), (4, '4'), (5, '5'))
             choices = models.IntegerField(
                 max_length=2,
                 choices=CHOICES,
@@ -156,10 +157,12 @@ class TextBlockDT(TextBlock):
 
     def edit_form(self):
         class EditForm(forms.Form):
-            CHOICES = ((0,'0'),(1,'1'), (2,'2'), (3,'3'), (4,'4'), (5,'5'))
+            CHOICES = ((0, '0'), (1, '1'), (2, '2'),
+                       (3, '3'), (4, '4'), (5, '5'))
             body = forms.CharField(widget=forms.widgets.Textarea(),
                                    initial=self.body)
-            after_decision = forms.ChoiceField(choices=CHOICES, initial=self.after_decision)
+            after_decision = forms.ChoiceField(choices=CHOICES,
+                                               initial=self.after_decision)
             choice = forms.ChoiceField(choices=CHOICES, initial=self.choice)
         return EditForm()
 
@@ -170,14 +173,12 @@ class TextBlockDT(TextBlock):
         self.save()
 
 
-''' this class is used to handle the logic for
-    the decision tree. It translates the add_values
-    in the case map into the path for the user along
-    the pagetree
-'''
-
 class UELCHandler(Section):
-    #map_obj = {'p1pre1': 'tree_index', 'p1c1': '', 'p2pre':'', 'p2c2':''}
+    ''' this class is used to handle the logic for
+        the decision tree. It translates the add_values
+        in the case map into the path for the user along
+        the pagetree
+    '''
     map_obj = dict()
 
     def create_case_map_list(self, casemap):

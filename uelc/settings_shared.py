@@ -135,8 +135,7 @@ INSTALLED_APPS = [
     'case_quizblock',
 ]
 
-PAGEBLOCKS = [
-              'pageblocks.HTMLBlock',
+PAGEBLOCKS = ['pageblocks.HTMLBlock',
               'pageblocks.PullQuoteBlock',
               'pageblocks.ImageBlock',
               'pageblocks.ImagePullQuoteBlock',
