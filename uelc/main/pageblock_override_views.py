@@ -27,10 +27,12 @@ def add_pageblock(request, section_id, success_url=None):
         if pb_class.display_name == blocktype:
             # a match
             block = pb_class.create(request)
-            section.append_pageblock(
-                label=request.POST.get('label', ''),
-                css_extra=request.POST.get('css_extra', ''),
-                content_object=block)
+            neword = section.pageblock_set.count() + 1
+            PageBlockDT.objects.create(section=section, 
+                                       label=request.POST.get('label', ''),
+                                       ordinality=neword,
+                                       css_extra=request.POST.get('css_extra', ''),
+                                       content_object=block)
     if success_url is None:
         success_url = section.get_edit_url()
     import pdb

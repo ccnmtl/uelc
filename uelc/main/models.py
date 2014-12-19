@@ -184,12 +184,26 @@ class TextBlockDT(TextBlock):
     template_file = "uelc/textblock.html"
     display_name = "Text BlockDT"
 
+    def pageblock(self):
+        return self.pageblocksdt.all()[0]
+
     @classmethod
     def add_form(self):
         class AddForm(forms.Form):
+            CHOICES = ((0,'0'),(1,'1'), (2,'2'), (3,'3'), (4,'4'), (5,'5'))
+            choices = models.IntegerField(
+                max_length=2,
+                choices=CHOICES,
+                default=0)
             body = forms.CharField(
                 widget=forms.widgets.Textarea(attrs={'cols': 80}))
+            after_decision = forms.ChoiceField(choices=CHOICES)
+            choice = forms.ChoiceField(choices=CHOICES)
         return AddForm()
+
+    @classmethod
+    def create(self, request):
+        return TextBlockDT.objects.create(body=request.POST.get('body', ''))
 
 
 class UELCHandler(Section):

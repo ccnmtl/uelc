@@ -77,7 +77,7 @@ urlpatterns = patterns(
 
     (r'^pagetree/pageblock/add/(?P<section_id>\d+)/$', pageblock_override_views.add_pageblock, {},
      "add-pageblock"),
-    (r'^pageblock/edit/(?P<pageblock_id>\d+)/$', 'edit_pageblock', {},
+    (r'^pagetree/pageblock/edit/(?P<pageblock_id>\d+)/$', pageblock_override_views.edit_pageblock, {},
      "edit-pageblock"),
 
     (r'^pagetree/', include('pagetree.urls')),
