@@ -127,7 +127,7 @@ class CaseMap(models.Model):
 
 
 class TextBlockDT(TextBlock):
-    template_file = "uelc/textblock.html"
+    template_file = "pageblocks/textblock.html"
     display_name = "Text BlockDT"
     after_decision = models.CharField(max_length=2, blank=True, default=0)
     choice = models.CharField(max_length=2, blank=True, default=0)

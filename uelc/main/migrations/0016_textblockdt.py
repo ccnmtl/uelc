@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('pageblocks', '0001_initial'),
-        ('main', '0016_choice_decision_pageblockdt'),
+        ('main', '0015_uelchandler'),
     ]
 
     operations = [
@@ -16,6 +16,8 @@ class Migration(migrations.Migration):
             name='TextBlockDT',
             fields=[
                 ('textblock_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='pageblocks.TextBlock')),
+                ('after_decision', models.CharField(default=0, max_length=2, blank=True)),
+                ('choice', models.CharField(default=0, max_length=2, blank=True)),
             ],
             options={
             },
