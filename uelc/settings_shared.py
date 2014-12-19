@@ -133,9 +133,10 @@ INSTALLED_APPS = [
     'uelc.main',
     'gate_block',
     'case_quizblock',
+    'tinymce',
 ]
 
-PAGEBLOCKS = ['pageblocks.HTMLBlock',
+PAGEBLOCKS = ['pageblocks.HTMLBlockWYSIWYG',
               'pageblocks.PullQuoteBlock',
               'pageblocks.ImageBlock',
               'pageblocks.ImagePullQuoteBlock',
