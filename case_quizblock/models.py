@@ -24,8 +24,6 @@ class CaseQuiz(Quiz):
         return not self.rhetorical
 
     def submit(self, user, data):
-        import pdb
-        pdb.set_trace()
         """ a big open question here is whether we should
         be validating submitted answers here, on submission,
         or let them submit whatever garbage they want and only
@@ -39,17 +37,17 @@ class CaseQuiz(Quiz):
                 case_id = data[k]
                 try:
                     casemap = CaseMap.objects.get(
-                    user=user,
-                    case_id=case_id)
+                        user=user,
+                        case_id=case_id)
 
                 except ObjectDoesNotExist:
                     casemap = CaseMap.objects.create(
                         user=user,
                         case_id=case_id,
-                        value = str(0))
+                        value=str(0))
 
                 casemap.set_value(quiz, data)
-                value = casemap.get_value()
+                #value = casemap.get_value()
 
             if k.startswith('question'):
                 qid = int(k[len('question'):])
@@ -94,8 +92,6 @@ class CaseQuiz(Quiz):
             is_quiz_submitted = self.is_submitted(self, user)
             if not (unlocked and is_quiz_submitted):
                 unlocked = False
-                import pdb
-                pdb.set_trace()
                 upv.status = 'complete'
                 upv.save()
             else:

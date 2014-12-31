@@ -6,7 +6,7 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from uelc.main.models import Case, CaseMap
+from uelc.main.models import Case, CaseMap, UELCHandler
 from gate_block.models import GateBlock, GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
@@ -57,16 +57,15 @@ def admin_ajax_page_submit(section, user, post):
             block_obj = block.block()
             GateSubmission.objects.create(
                 gateblock_id=block_obj.id,
-                section = section,
+                section=section,
                 gate_user_id=user.id)
 
 
 def admin_ajax_reset_page(section, user):
     for block in section.pageblock_set.all():
         if block.block().display_name == "Gate Block":
-            block_obj = block.block()
             gso = GateSubmission.objects.filter(
-                section = section,
+                section=section,
                 gate_user_id=user.id)
             gso.delete()
     section.reset(user)
@@ -248,9 +247,22 @@ class UELCPageView(LoggedInMixin,
             case_quizblocks=case_quizblocks,
         )
         context.update(self.get_extra_context())
-        upv = self.section.get_uservisit(request.user)
-        import pdb
-        pdb.set_trace()
+
+        # handler stuff
+        if casemap is None:
+            #upv = self.section.get_uservisit(request.user)
+            hand = UELCHandler.objects.get_or_create(
+                hierarchy=hierarchy,
+                depth=0)[0]
+            cml = hand.create_case_map_list(casemap)
+            hand.populate_map_obj(cml)
+            # case_parts = self.section.get_root().get_children()
+            # 3 things prevent users from proceeding when gated = True
+            # 1) a pageblock that is locked
+            # 2) a section that is not_submitted if need_submit
+            # 3) a upv that is "incomplete" -->
+            #    section.get_uservisit(request.user)
+            #    also can be--> section.gate_check(user)
         return render(request, self.template_name, context)
 
     def get_extra_context(self, **kwargs):
@@ -283,14 +295,12 @@ class UELCPageView(LoggedInMixin,
     def post(self, request, path):
         # user has submitted a form. deal with it
         # make sure that they have not submitted
-        # a blank form, key "case" is included on 
-        # all case_quiz submissions thus, must 
+        # a blank form, key "case" is included on
+        # all case_quiz submissions thus, must
         # have more than one key
-        
+
         if len(request.POST.keys()) > 1:
             if request.POST.get('action', '') == 'reset':
-                import pdb
-                pdb.set_trace()
                 self.upv.visit(status="incomplete")
                 return reset_page(self.section, request)
             #self.upv.visit(status="complete")
@@ -332,8 +342,6 @@ class FacilitatorView(LoggedInMixinSuperuser,
             self.set_upv(user, section, "complete")
             admin_ajax_page_submit(section, user, post)
         if action == 'reset':
-            import pdb
-            pdb.set_trace()
             self.set_upv(user, section, "incomplete")
             admin_ajax_reset_page(section, user)
         return HttpResponseRedirect(request.path)
@@ -363,7 +371,8 @@ class FacilitatorView(LoggedInMixinSuperuser,
         gateblocks = GateBlock.objects.all()
         user_sections = []
         for user in cohort_users:
-            gate_sections = [(g.pageblock().section, g, g.unlocked(user, section))
+            gate_sections = [(g.pageblock().section,
+                              g, g.unlocked(user, section))
                              for g in gateblocks]
             user_sections.append([user, gate_sections])
         quizzes = [p.block() for p in section.pageblock_set.all()

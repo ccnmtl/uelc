@@ -22,7 +22,18 @@
 	<link rel="shortcut icon" href="{{STATIC_URL}}img/favicon.ico" type="image/x-icon" />
 	{% block css %}{% endblock %}
   <script src="{{STATIC_URL}}js/jquery-1.11.1.min.js"></script>
-
+  <script src="{{STATIC_URL}}tiny_mce/tiny_mce.js"></script>
+  <script>
+    tinyMCE.init({
+        mode: "textareas",
+        theme: "advanced",
+        plugins: "spellchecker,directionality,paste,searchreplace",
+        language: "{{ language }}",
+        directionality: "{{ directionality }}",
+        spellchecker_languages : "{{ spellchecker_languages }}",
+        spellchecker_rpc_url : "{{ spellchecker_rpc_url }}"
+    });
+  </script>
 	{% block feeds %}{% endblock %}
 </head>
 <body class="{% block bodyclass %}{% endblock %}" id="{% block bodyid %}{% endblock %}">
