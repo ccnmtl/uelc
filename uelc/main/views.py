@@ -162,10 +162,9 @@ class UELCPageView(LoggedInMixin,
     def itterate_blocks(self, section):
         for block in section.pageblock_set.all():
             display_name = block.block().display_name
-            if (hasattr(block.block(), 'needs_submit') and
-                display_name == 'Gate Block'):
-                    return block.block()
-            return False
+            if display_name == 'Gate Block':
+                return block.block()
+        return False
 
     def get_next_gate(self, section):
         block = self.itterate_blocks(section)
@@ -216,17 +215,15 @@ class UELCPageView(LoggedInMixin,
         if not section_gatecheck[0]:
             gate_section = section_gatecheck[1]
             gate_section_gateblock = self.get_next_gate(self.section)
-            import pdb
-            pdb.set_trace()
+            #import pdb
+            #pdb.set_trace()
             if not gate_section_gateblock:
                 block_unlocked = True
             else:
                 block_unlocked = gate_section_gateblock[0].unlocked(self.request.user, gate_section_gateblock[1])
                 if not block_unlocked:
-                    back_url = uloc[0].hierarchy.find_section_from_path(uloc[0].path)
-                    import pdb
-                    pdb.set_trace()
-                    return HttpResponseRedirect(back_url.get_absolute_url())
+                    back_url = self.section.get_previous().get_absolute_url()
+                    return HttpResponseRedirect(back_url)
                 
             uloc[0].path = path
             uloc[0].save()
