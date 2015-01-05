@@ -151,6 +151,13 @@ def get_user_map(pageview, request):
         casemap = None
     return casemap
 
+def all_case_quizzes_completed(request, section, case_quizblocks):
+    if len(case_quizblocks) > 0:
+        for quiz in case_quizblocks:
+            if quiz['completed'] == False:
+                return False
+    return True    
+
 
 class UELCPageView(LoggedInMixin,
                    DynamicHierarchyMixin,
@@ -162,8 +169,11 @@ class UELCPageView(LoggedInMixin,
     def itterate_blocks(self, section):
         for block in section.pageblock_set.all():
             display_name = block.block().display_name
-            if display_name == 'Gate Block':
-                return block.block()
+            import pdb
+            pdb.set_trace()
+            if (hasattr(block.block(), 'needs_submit') and
+                display_name == 'Gate Block'):
+                    return block.block()
         return False
 
     def get_next_gate(self, section):
@@ -190,6 +200,7 @@ class UELCPageView(LoggedInMixin,
         self.upv.visit()
         instructor_link = has_responses(self.section)
         case_quizblocks = []
+        prev_section = self.section.get_previous()
         for block in self.section.pageblock_set.all():
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
@@ -206,17 +217,21 @@ class UELCPageView(LoggedInMixin,
                         case_quizblocks.append(dict(id=block.id,
                                                     completed=completed))
 
+
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot 
         # be "gated" because we will be skipping around depending on 
         # user decisions.
 
         section_gatecheck = self.section.gate_check(request.user)
-        if not section_gatecheck[0]:
+        
+        import pdb
+        pdb.set_trace()
+        if not section_gatecheck[0] or not all_case_quizzes_completed(request, self.section, case_quizblocks):
             gate_section = section_gatecheck[1]
             gate_section_gateblock = self.get_next_gate(self.section)
-            #import pdb
-            #pdb.set_trace()
+            import pdb
+            pdb.set_trace()
             if not gate_section_gateblock:
                 block_unlocked = True
             else:
@@ -224,7 +239,8 @@ class UELCPageView(LoggedInMixin,
                 if not block_unlocked:
                     back_url = self.section.get_previous().get_absolute_url()
                     return HttpResponseRedirect(back_url)
-                
+        else:
+
             uloc[0].path = path
             uloc[0].save()
 
@@ -260,6 +276,8 @@ class UELCPageView(LoggedInMixin,
             # 3) a upv that is "incomplete" -->
             #    section.get_uservisit(request.user)
             #    also can be--> section.gate_check(user)
+        #import pdb
+        #pdb.set_trace()
         return render(request, self.template_name, context)
 
     def get_extra_context(self, **kwargs):

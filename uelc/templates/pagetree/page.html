@@ -111,7 +111,8 @@
 {% endif %}
 
 {% if next_section %}
-<li class="next"><a class="{% ifsubmitted section %}{% else %}disabled{%endifsubmitted%}" href="{{next_section.get_absolute_url}}">Next &rarr;</a></li>
+{% is_section_unlocked request section as unlocked %}
+<li class="next"><a class="{% if unlocked %}{% else %}disabled{%endif%}" href="{% if unlocked %}{{next_section.get_absolute_url}}{%endif%}">Next &rarr;</a></li>
 
 {% endif %}
 </ul>

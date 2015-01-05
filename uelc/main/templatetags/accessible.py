@@ -27,6 +27,8 @@ def submitted(parser, token):
     section = token.split_contents()[1:][0]
     nodelist_true = parser.parse(('else', 'endifsubmitted'))
     token = parser.next_token()
+    import pdb
+    pdb.set_trace()
     if token.contents == 'else':
         nodelist_false = parser.parse(('endifsubmitted',))
         parser.delete_first_token()
@@ -34,6 +36,15 @@ def submitted(parser, token):
         nodelist_false = None
     return SubmittedNode(section, nodelist_true, nodelist_false)
 
+
+@register.assignment_tag
+def is_section_unlocked(request, section):
+    unlocked = True
+    for block in section.pageblock_set.all():
+        b = block.block()
+        if hasattr(b, 'needs_submit') and b.display_name == 'Gate Block':
+            unlocked = block.block().unlocked(request.user, section)
+    return unlocked
 
 @register.assignment_tag
 def is_module(section):
