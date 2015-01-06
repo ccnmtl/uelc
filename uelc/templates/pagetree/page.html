@@ -90,7 +90,9 @@
 
 {% endif %}
 {% endfor %}
-
+{{casemap.value}}
+{% is_block_on_user_path request section casemap.value as user_path %}
+{{user_path}}
 
    
 

@@ -50,6 +50,21 @@ def is_section_unlocked(request, section):
             return False
     return unlocked
 
+
+# Need to make this its own tempalte tag as it requires pulling in 
+# UELC Handler
+@register.assignment_tag
+def is_block_on_user_path(request, section, casemap_value):
+
+    for block in section.pageblock_set.all():
+        bl = block.block()
+        if hasattr(bl, 'after_decision') and bl.display_name == 'Text BlockDT':
+            ad = bl.after_decision
+            choice = bl.choice
+            import pdb
+            pdb.set_trace()
+    return True
+
 @register.assignment_tag
 def is_module(section):
     is_mod = False

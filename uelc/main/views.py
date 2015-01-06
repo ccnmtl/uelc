@@ -245,6 +245,7 @@ class UELCPageView(LoggedInMixin,
             is_view=True,
             case=case,
             case_quizblocks=case_quizblocks,
+            casemap=casemap,
         )
         context.update(self.get_extra_context())
 
