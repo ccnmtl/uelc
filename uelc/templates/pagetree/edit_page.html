@@ -27,7 +27,18 @@
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-
+  <script src="{{STATIC_URL}}tiny_mce/tiny_mce.js"></script>
+  <script>
+    tinyMCE.init({
+        selector: ".mceEditor.form-control",
+        theme: "advanced",
+        plugins: "spellchecker,directionality,paste,searchreplace",
+        language: "{{ language }}",
+        directionality: "{{ directionality }}",
+        spellchecker_languages : "{{ spellchecker_languages }}",
+        spellchecker_rpc_url : "{{ spellchecker_rpc_url }}"
+    });
+  </script>
 {% compress js %}
 <script type="text/javascript">
 var saveOrderOfChildren = function() {

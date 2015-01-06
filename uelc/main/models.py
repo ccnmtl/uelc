@@ -141,11 +141,11 @@ class TextBlockDT(TextBlock):
                 max_length=2,
                 choices=CHOICES,
                 default=0)
-            body = forms.CharField(
-                widget=forms.widgets.Textarea(attrs={'cols': 80}))
-            after_decision = forms.ChoiceField(choices=CHOICES)
+            body = forms.CharField(label="poop",
+                widget=forms.widgets.Textarea(attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}))
+            after_decision = forms.ChoiceField(label="dasdasads", choices=CHOICES)
             choice = forms.ChoiceField(choices=CHOICES)
-        return AddForm()
+        return AddForm(auto_id=False)
 
     @classmethod
     def create(self, request):
@@ -159,12 +159,12 @@ class TextBlockDT(TextBlock):
         class EditForm(forms.Form):
             CHOICES = ((0, '0'), (1, '1'), (2, '2'),
                        (3, '3'), (4, '4'), (5, '5'))
-            body = forms.CharField(widget=forms.widgets.Textarea(),
+            body = forms.CharField(widget=forms.widgets.Textarea(attrs={'cols':180, 'rows': 40, 'class': 'mceEditor'}),
                                    initial=self.body)
             after_decision = forms.ChoiceField(choices=CHOICES,
                                                initial=self.after_decision)
             choice = forms.ChoiceField(choices=CHOICES, initial=self.choice)
-        return EditForm()
+        return EditForm(auto_id=False)
 
     def edit(self, vals, files):
         self.body = vals.get('body', '')
