@@ -41,9 +41,13 @@ def submitted(parser, token):
 def is_section_unlocked(request, section):
     unlocked = True
     for block in section.pageblock_set.all():
-        b = block.block()
-        if hasattr(b, 'needs_submit') and b.display_name == 'Gate Block':
-            unlocked = block.block().unlocked(request.user, section)
+        bl = block.block()
+        if hasattr(bl, 'needs_submit') and bl.display_name == 'Gate Block':
+            unlocked = bl.unlocked(request.user, section)
+        if hasattr(bl, 'needs_submit') and bl.display_name == 'Case Quiz':
+            unlocked = bl.unlocked(request.user, section)
+        if unlocked == False:
+            return False
     return unlocked
 
 @register.assignment_tag

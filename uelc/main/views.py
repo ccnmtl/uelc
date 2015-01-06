@@ -148,15 +148,9 @@ def get_user_map(pageview, request):
     try:
         casemap = CaseMap.objects.get(user=user, case=case)
     except ObjectDoesNotExist:
-        casemap = None
-    return casemap
-
-def all_case_quizzes_completed(request, section, case_quizblocks):
-    if len(case_quizblocks) > 0:
-        for quiz in case_quizblocks:
-            if quiz['completed'] == False:
-                return False
-    return True    
+        casemap = CaseMap.objects.create(user=user, case=case)
+        casemap.save()
+    return casemap  
 
 
 class UELCPageView(LoggedInMixin,
@@ -169,8 +163,6 @@ class UELCPageView(LoggedInMixin,
     def itterate_blocks(self, section):
         for block in section.pageblock_set.all():
             display_name = block.block().display_name
-            import pdb
-            pdb.set_trace()
             if (hasattr(block.block(), 'needs_submit') and
                 display_name == 'Gate Block'):
                     return block.block()
@@ -224,14 +216,9 @@ class UELCPageView(LoggedInMixin,
         # user decisions.
 
         section_gatecheck = self.section.gate_check(request.user)
-        
-        import pdb
-        pdb.set_trace()
-        if not section_gatecheck[0] or not all_case_quizzes_completed(request, self.section, case_quizblocks):
+        if not section_gatecheck[0]:
             gate_section = section_gatecheck[1]
             gate_section_gateblock = self.get_next_gate(self.section)
-            import pdb
-            pdb.set_trace()
             if not gate_section_gateblock:
                 block_unlocked = True
             else:
@@ -276,8 +263,8 @@ class UELCPageView(LoggedInMixin,
             # 3) a upv that is "incomplete" -->
             #    section.get_uservisit(request.user)
             #    also can be--> section.gate_check(user)
-        #import pdb
-        #pdb.set_trace()
+        import pdb
+        pdb.set_trace()
         return render(request, self.template_name, context)
 
     def get_extra_context(self, **kwargs):

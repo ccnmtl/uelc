@@ -95,9 +95,6 @@ class CaseQuiz(Quiz):
                 upv.status = 'complete'
                 upv.save()
             else:
-                import pdb
-                pdb.set_trace()
-                #obj.unlocked(user, section)
                 upv.status = 'complete'
                 upv.save()
                 unlocked = True
