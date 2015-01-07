@@ -150,7 +150,7 @@ def get_user_map(pageview, request):
     except ObjectDoesNotExist:
         casemap = CaseMap.objects.create(user=user, case=case)
         casemap.save()
-    return casemap  
+    return casemap
 
 
 class UELCPageView(LoggedInMixin,
@@ -164,8 +164,8 @@ class UELCPageView(LoggedInMixin,
         for block in section.pageblock_set.all():
             display_name = block.block().display_name
             if (hasattr(block.block(), 'needs_submit') and
-                display_name == 'Gate Block'):
-                    return block.block()
+                    display_name == 'Gate Block'):
+                return block.block()
         return False
 
     def get_next_gate(self, section):
@@ -177,6 +177,24 @@ class UELCPageView(LoggedInMixin,
         if block:
             return (block, last_sibling)
         return False
+
+    def run_section_gatecheck(self, user, path, uloc):
+        section_gatecheck = self.section.gate_check(self.request.user)
+        if not section_gatecheck[0]:
+            #gate_section = section_gatecheck[1]
+            gate_section_gateblock = self.get_next_gate(self.section)
+            if not gate_section_gateblock:
+                block_unlocked = True
+            else:
+                block_unlocked = gate_section_gateblock[0].unlocked(
+                    self.request.user, gate_section_gateblock[1])
+                if not block_unlocked:
+                    back_url = self.section.get_previous().get_absolute_url()
+                    return HttpResponseRedirect(back_url)
+        else:
+
+            uloc[0].path = path
+            uloc[0].save()
 
     def get(self, request, path):
         hierarchy = self.module.hierarchy
@@ -192,7 +210,7 @@ class UELCPageView(LoggedInMixin,
         self.upv.visit()
         instructor_link = has_responses(self.section)
         case_quizblocks = []
-        prev_section = self.section.get_previous()
+        #prev_section = self.section.get_previous()
         for block in self.section.pageblock_set.all():
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
@@ -209,29 +227,11 @@ class UELCPageView(LoggedInMixin,
                         case_quizblocks.append(dict(id=block.id,
                                                     completed=completed))
 
-
         # if gateblock is not unlocked then return to last known page
-        # section.gate_check(user), doing this because hierarchy cannot 
-        # be "gated" because we will be skipping around depending on 
+        # section.gate_check(user), doing this because hierarchy cannot
+        # be "gated" because we will be skipping around depending on
         # user decisions.
-
-        section_gatecheck = self.section.gate_check(request.user)
-        if not section_gatecheck[0]:
-            gate_section = section_gatecheck[1]
-            gate_section_gateblock = self.get_next_gate(self.section)
-            if not gate_section_gateblock:
-                block_unlocked = True
-            else:
-                block_unlocked = gate_section_gateblock[0].unlocked(self.request.user, gate_section_gateblock[1])
-                if not block_unlocked:
-                    back_url = self.section.get_previous().get_absolute_url()
-                    return HttpResponseRedirect(back_url)
-        else:
-
-            uloc[0].path = path
-            uloc[0].save()
-
-
+        self.run_section_gatecheck(request.user, path, uloc)
 
         context = dict(
             section=self.section,
