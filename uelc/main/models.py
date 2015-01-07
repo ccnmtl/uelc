@@ -195,45 +195,51 @@ class UELCHandler(Section):
         for i, v in enumerate(decision_val_list):
             self.map_obj[decision_key_list[i]] = decision_val_list[i]
 
-    def p1pre(self):
-        p1pre = False
-        try:
-            self.map_obj['p1pre']
-            p1pre = True
-        except:
-            pass
+    def get_vals_from_casemap(self, casemap_value):
+         vals = [int(i) for i in casemap_value if int(i) >0]
+         return vals
+    
+    def get_part(self, request, section):
+        modules = section.get_root().get_children()
+        part = 0
+        for mod in range(len(modules)):
+            if modules[mod] == section.get_module():
+                part = mod
+
+        if part == 0:
+            return 1
+        else:
+            return 2
+
+    def is_pre(self, request, section, casemap_value):
+        # this returns a list of whether it's a preliminary 
+        # question, and the instance # of the question 
+        # in the tree
+        # [true, 0]  => p1pre answered
+        # [false, 1] => p1c1 answered
+        # [true, 1]  => p2pre answered
+        # [false, 2] => p2c2 answered
+        is_pre = [True]
+        vals = self.get_vals_from_casemap(casemap_value)
+        if len(vals) % 2 == 0:
+            is_pre[0] = False
+        instance  = len(vals) / 2
+        is_pre.append(instance)
+        return is_pre
+
+    def can_show(self, request, section, casemap_value):
+        cmvl = list(casemap_value)
+        tree = section.get_tree()
+        section_index = [sec for sec in range(len(tree)) if tree[sec] == section][0] + 1
+        content_value = [int(i) for i in reversed(cmvl[0:section_index]) if int(i) > 0 ][0]
+        is_pre = self.is_pre(request, section, casemap_value)
+        #vals = self.get_vals_from_casemap(casemap_value)
+        part = self.get_part(request, section)
+        return content_value
+
+    def p1pre(self, casemap_value):
+        p1pre = 0
+        vals = self.get_vals_from_casemap(casemap_value)
+        if len(vals) > 1:
+            p1pre = vals[0]
         return p1pre
-
-    def p1c1(self):
-        p1c1 = False
-        try:
-            self.map_obj['p1c1']
-            p1c1 = True
-        except:
-            pass
-        return p1c1
-
-    def p2pre(self):
-        p2pre = False
-        try:
-            self.map_obj['p2pre']
-            p2pre = True
-        except:
-            pass
-        return p2pre
-
-    def p2c2(self):
-        p2c2 = False
-        try:
-            self.map_obj['p2c2']
-            p2c2 = True
-        except:
-            pass
-        return p2c2
-
-    def is_p1_zap(self, section):
-        if self.p1pre():
-            sec_index = self.map_obj['p1pre']['tree_index'] + 1
-            if section == section.get_tree()[sec_index]:
-                return True
-        return False

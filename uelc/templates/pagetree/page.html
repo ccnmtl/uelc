@@ -49,6 +49,7 @@
 {% endif %}
 
 {% for block in section.pageblock_set.all %}
+
 {% if block.block.display_name == "Gate Block" %}
 
 <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
@@ -81,7 +82,17 @@
         {% endif %}
     {% endif %}
 {% endfor %}
+{% elif block.block.display_name == "Text BlockDT" %}
+{% is_block_on_user_path request section block casemap.value as user_path %}
+  {% if user_path %}
+    <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+  
+    {% if block.label %}<h3>{{block.label}}</h3>{% endif %}
+    {% render block %}
+    </div>
+  {%endif%}
 {% else %}
+
     <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
 
     {% if block.label %}<h3>{{block.label}}</h3>{% endif %}
@@ -91,8 +102,8 @@
 {% endif %}
 {% endfor %}
 {{casemap.value}}
-{% is_block_on_user_path request section casemap.value as user_path %}
-{{user_path}}
+
+
 
    
 

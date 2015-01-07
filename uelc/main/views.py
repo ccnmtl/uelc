@@ -264,8 +264,6 @@ class UELCPageView(LoggedInMixin,
             # 3) a upv that is "incomplete" -->
             #    section.get_uservisit(request.user)
             #    also can be--> section.gate_check(user)
-        import pdb
-        pdb.set_trace()
         return render(request, self.template_name, context)
 
     def get_extra_context(self, **kwargs):

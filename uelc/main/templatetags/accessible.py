@@ -1,5 +1,5 @@
 from django import template
-
+from uelc.main.models import UELCHandler
 register = template.Library()
 
 
@@ -27,8 +27,6 @@ def submitted(parser, token):
     section = token.split_contents()[1:][0]
     nodelist_true = parser.parse(('else', 'endifsubmitted'))
     token = parser.next_token()
-    import pdb
-    pdb.set_trace()
     if token.contents == 'else':
         nodelist_false = parser.parse(('endifsubmitted',))
         parser.delete_first_token()
@@ -54,16 +52,20 @@ def is_section_unlocked(request, section):
 # Need to make this its own tempalte tag as it requires pulling in 
 # UELC Handler
 @register.assignment_tag
-def is_block_on_user_path(request, section, casemap_value):
+def is_block_on_user_path(request, section, block, casemap_value):
+    hand = UELCHandler.objects.get_or_create(
+                hierarchy=section.hierarchy,
+                depth=0)[0]
+    can_show = hand.can_show(request, section, casemap_value)
+    bl = block.block()
+    if hasattr(bl, 'choice') and bl.display_name == 'Text BlockDT':
+        ad = bl.after_decision
+        choice = bl.choice
+        if int(choice) == can_show:
+            return True    
+    return False
 
-    for block in section.pageblock_set.all():
-        bl = block.block()
-        if hasattr(bl, 'after_decision') and bl.display_name == 'Text BlockDT':
-            ad = bl.after_decision
-            choice = bl.choice
-            import pdb
-            pdb.set_trace()
-    return True
+
 
 @register.assignment_tag
 def is_module(section):
