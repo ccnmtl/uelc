@@ -239,9 +239,12 @@ class UELCHandler(Section):
         section_index = [sec for sec in
                          range(len(tree))
                          if tree[sec] == section][0] + 1
+        try:
         content_value = [int(i) for i in
                          reversed(cmvl[0:section_index])
                          if int(i) > 0][0]
+        except IndexError:
+            content_value = 0
         #is_pre = self.is_pre(request, section, casemap_value)
         #vals = self.get_vals_from_casemap(casemap_value)
         #part = self.get_part(request, section)
