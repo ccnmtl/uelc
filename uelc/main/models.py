@@ -131,7 +131,7 @@ class TextBlockDT(TextBlock):
     display_name = "Text BlockDT"
     after_decision = models.CharField(max_length=2, blank=True, default=0)
     choice = models.CharField(max_length=2, blank=True, default=0)
-
+    
     @classmethod
     def add_form(self):
         class AddForm(forms.Form):
@@ -177,6 +177,12 @@ class TextBlockDT(TextBlock):
         self.after_decision = vals.get('after_decision', '')
         self.choice = vals.get('choice', '')
         self.save()
+
+    def summary_render(self):
+        if len(self.body) < 61:
+            return self.body.replace("<", "&lt;")
+        else:
+            return self.body[:61].replace("<", "&lt;") + "..."
 
 
 class UELCHandler(Section):
