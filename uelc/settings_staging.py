@@ -8,7 +8,7 @@ TEMPLATE_DIRS = (
 MEDIA_ROOT = '/var/www/uelc/uploads/'
 # put any static media here to override app served static media
 STATICMEDIA_MOUNTS = (
-    ('/sitemedia', '/var/www/uelc/uelc/sitemedia'),
+    ('/media', '/var/www/uelc/uelc/media'),
 )
 
 DATABASES = {

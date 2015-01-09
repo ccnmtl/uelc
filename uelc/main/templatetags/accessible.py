@@ -61,7 +61,7 @@ def is_block_on_user_path(request, section, block, casemap_value):
     if hasattr(bl, 'choice') and bl.display_name == 'Text BlockDT':
         #ad = bl.after_decision
         choice = bl.choice
-        if int(choice) == can_show:
+        if int(choice) == can_show or int(choice) == 0:
             return True
     return False
 
