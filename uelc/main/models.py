@@ -131,7 +131,7 @@ class TextBlockDT(TextBlock):
     display_name = "Text BlockDT"
     after_decision = models.CharField(max_length=2, blank=True, default=0)
     choice = models.CharField(max_length=2, blank=True, default=0)
-    
+
     @classmethod
     def add_form(self):
         class AddForm(forms.Form):
