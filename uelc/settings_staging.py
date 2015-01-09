@@ -27,7 +27,7 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 STAGING_ENV = True
 
-STATSD_PREFIX = 'uelc-staging'
+STATSD_PREFIX = 'uelc'
 
 if 'migrate' not in sys.argv:
     INSTALLED_APPS.append('raven.contrib.django.raven_compat')
