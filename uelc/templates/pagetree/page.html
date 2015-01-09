@@ -32,11 +32,13 @@
 
 
 {% block sidenav %}
+    {% if request.user.is_superuser %}
         <!-- ###### Secondary Navigation ###### -->
         {% if module.get_children %}
         <h3>Sections</h3>
         {% include "pagetree/menu.html" %}
         {% endif %}
+    {% endif %}
 {% endblock %}
 
 {% block content %}

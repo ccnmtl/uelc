@@ -174,3 +174,14 @@ ul.pager li.next a.disabled {
 ul.pager li.next a.disabled:active {
     box-shadow: none;
 }
+.mceIframeContainer iframe{
+    width: 600px!important;
+    height: 600px!important;
+}
+
+.modal-dialog {
+    width: 676px!important;
+    margin: 30px auto;
+}
+
+
