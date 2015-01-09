@@ -14,7 +14,7 @@ STATICMEDIA_MOUNTS = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'uelc_staging',
+        'NAME': 'uelc',
         'HOST': '',
         'PORT': 6432,
         'USER': '',
@@ -27,7 +27,7 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 STAGING_ENV = True
 
-STATSD_PREFIX = 'uelc'
+STATSD_PREFIX = 'uelc-staging'
 
 if 'migrate' not in sys.argv:
     INSTALLED_APPS.append('raven.contrib.django.raven_compat')
