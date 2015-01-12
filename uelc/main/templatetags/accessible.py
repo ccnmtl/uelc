@@ -44,27 +44,26 @@ def is_section_unlocked(request, section):
             unlocked = bl.unlocked(request.user, section)
         if hasattr(bl, 'needs_submit') and bl.display_name == 'Case Quiz':
             unlocked = bl.unlocked(request.user, section)
-        if unlocked == False:
+        if not unlocked:
             return False
     return unlocked
 
 
-# Need to make this its own tempalte tag as it requires pulling in 
+# Need to make this its own tempalte tag as it requires pulling in
 # UELC Handler
 @register.assignment_tag
 def is_block_on_user_path(request, section, block, casemap_value):
     hand = UELCHandler.objects.get_or_create(
-                hierarchy=section.hierarchy,
-                depth=0)[0]
+        hierarchy=section.hierarchy,
+        depth=0)[0]
     can_show = hand.can_show(request, section, casemap_value)
     bl = block.block()
     if hasattr(bl, 'choice') and bl.display_name == 'Text BlockDT':
-        ad = bl.after_decision
+        #ad = bl.after_decision
         choice = bl.choice
         if int(choice) == can_show or int(choice) == 0:
-            return True    
+            return True
     return False
-
 
 
 @register.assignment_tag

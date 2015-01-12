@@ -202,11 +202,11 @@ class UELCPageView(LoggedInMixin,
         uloc = UserLocation.objects.get_or_create(
             user=request.user,
             hierarchy=hierarchy)
-        
+
         # handler stuff
         hand = UELCHandler.objects.get_or_create(
-                hierarchy=hierarchy,
-                depth=0)[0]
+            hierarchy=hierarchy,
+            depth=0)[0]
         casemap = get_user_map(self, request)
         if casemap is None:
             #upv = self.section.get_uservisit(request.user)
@@ -220,6 +220,7 @@ class UELCPageView(LoggedInMixin,
             #    section.get_uservisit(request.user)
             #    also can be--> section.gate_check(user)
         part = hand.get_part(request, self.section)
+
         if part > 1 and not request.user.is_superuser:
             # set user on right path
             # get user 1st par chice p1c1 and
@@ -229,7 +230,6 @@ class UELCPageView(LoggedInMixin,
             if not self.module == p2_section:
                 p2_url = p2_section.get_next().get_absolute_url()
                 return HttpResponseRedirect(p2_url)
-
         allow_redo = False
         needs_submit = self.section.needs_submit()
         if needs_submit:
