@@ -202,7 +202,34 @@ class UELCPageView(LoggedInMixin,
         uloc = UserLocation.objects.get_or_create(
             user=request.user,
             hierarchy=hierarchy)
+        
+        # handler stuff
+        hand = UELCHandler.objects.get_or_create(
+                hierarchy=hierarchy,
+                depth=0)[0]
         casemap = get_user_map(self, request)
+        if casemap is None:
+            #upv = self.section.get_uservisit(request.user)
+            cml = hand.create_case_map_list(casemap)
+            hand.populate_map_obj(cml)
+            # case_parts = self.section.get_root().get_children()
+            # 3 things prevent users from proceeding when gated = True
+            # 1) a pageblock that is locked
+            # 2) a section that is not_submitted if need_submit
+            # 3) a upv that is "incomplete" -->
+            #    section.get_uservisit(request.user)
+            #    also can be--> section.gate_check(user)
+        part = hand.get_part(request, self.section)
+        if part > 1:
+            # set user on right path
+            # get user 1st par chice p1c1 and
+            # forward to that part
+            p1c1 = hand.get_p1c1(casemap.value)
+            p2_section = self.root.get_children()[p1c1]
+            if not self.module == p2_section:
+                p2_url = p2_section.get_next().get_absolute_url()
+                return HttpResponseRedirect(p2_url)
+
         allow_redo = False
         needs_submit = self.section.needs_submit()
         if needs_submit:
@@ -248,22 +275,6 @@ class UELCPageView(LoggedInMixin,
             casemap=casemap,
         )
         context.update(self.get_extra_context())
-
-        # handler stuff
-        if casemap is None:
-            #upv = self.section.get_uservisit(request.user)
-            hand = UELCHandler.objects.get_or_create(
-                hierarchy=hierarchy,
-                depth=0)[0]
-            cml = hand.create_case_map_list(casemap)
-            hand.populate_map_obj(cml)
-            # case_parts = self.section.get_root().get_children()
-            # 3 things prevent users from proceeding when gated = True
-            # 1) a pageblock that is locked
-            # 2) a section that is not_submitted if need_submit
-            # 3) a upv that is "incomplete" -->
-            #    section.get_uservisit(request.user)
-            #    also can be--> section.gate_check(user)
         return render(request, self.template_name, context)
 
     def get_extra_context(self, **kwargs):

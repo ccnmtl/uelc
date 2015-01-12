@@ -216,7 +216,9 @@ class UELCHandler(Section):
             return 1
         else:
             return 2
-
+    def get_p1c1(self, casemap_value):
+        return self.get_vals_from_casemap(casemap_value)[1]
+        
     def is_pre(self, request, section, casemap_value):
         # this returns a list of whether it's a preliminary
         # question, and the instance # of the question
