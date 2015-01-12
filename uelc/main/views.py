@@ -237,8 +237,6 @@ class UELCPageView(LoggedInMixin,
             #    also can be--> section.gate_check(user)
         part = hand.get_part(request, self.section)
         tree_path = self.check_part_path(casemap, hand, part)
-        import pdb
-        pdb.set_trace()
         if tree_path[0]:
             return HttpResponseRedirect(path[1])
 
