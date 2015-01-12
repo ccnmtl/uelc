@@ -197,6 +197,10 @@ class UELCPageView(LoggedInMixin,
             uloc[0].save()
 
     def get(self, request, path):
+        # skip the first child of part if not admin
+        if not request.user.is_superuser and self.section.get_depth() == 2:
+            skip_url = self.section.get_next().get_absolute_url()
+            return HttpResponseRedirect(skip_url)
         hierarchy = self.module.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
         uloc = UserLocation.objects.get_or_create(

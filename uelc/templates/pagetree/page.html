@@ -32,13 +32,10 @@
 
 
 {% block sidenav %}
-    {% if request.user.is_superuser %}
         <!-- ###### Secondary Navigation ###### -->
         {% if module.get_children %}
-        <h3>Sections</h3>
         {% include "pagetree/menu.html" %}
         {% endif %}
-    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -117,9 +114,11 @@
 
 {% block content-nav %}
 
+{% if request.user.is_superuser %}
+admin
+
+{% else %}
 {% with previous=section.get_previous next_section=section.get_next %}
-{% if request.user.is_superadmin %}
-{% else }
     <ul class="pager">
     {% if previous %}
       <li class="previous">
@@ -133,7 +132,8 @@
 
     {% endif %}
     </ul>
-{% endif %}
+
 {% endwith %}
+{% endif %}
 {% endblock %}
 
