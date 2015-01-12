@@ -178,6 +178,12 @@ class TextBlockDT(TextBlock):
         self.choice = vals.get('choice', '')
         self.save()
 
+    def summary_render(self):
+        if len(self.body) < 61:
+            return self.body.replace("<", "&lt;")
+        else:
+            return self.body[:61].replace("<", "&lt;") + "..."
+
 
 class UELCHandler(Section):
     ''' this class is used to handle the logic for

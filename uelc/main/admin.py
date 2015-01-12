@@ -2,8 +2,9 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from uelc.main.models import UserProfile,\
-    Case, Cohort, CaseMap
+    Case, Cohort, CaseMap, TextBlockDT
 from pagetree.models import Hierarchy
+from pageblocks.models import TextBlock
 
 
 # Define an inline admin descriptor for UserProfile model
@@ -28,6 +29,8 @@ section_hierarchy.short_description = 'Hierarchy'
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Hierarchy)
+admin.site.register(TextBlock)
+admin.site.register(TextBlockDT)
 admin.site.register(Case)
 admin.site.register(CaseMap)
 admin.site.register(Cohort)

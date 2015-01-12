@@ -8,13 +8,13 @@ TEMPLATE_DIRS = (
 MEDIA_ROOT = '/var/www/uelc/uploads/'
 # put any static media here to override app served static media
 STATICMEDIA_MOUNTS = (
-    ('/sitemedia', '/var/www/uelc/uelc/sitemedia'),
+    ('/media', '/var/www/uelc/uelc/media'),
 )
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'uelc_staging',
+        'NAME': 'uelc',
         'HOST': '',
         'PORT': 6432,
         'USER': '',
