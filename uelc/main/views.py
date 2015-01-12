@@ -192,9 +192,21 @@ class UELCPageView(LoggedInMixin,
                     back_url = self.section.get_previous().get_absolute_url()
                     return HttpResponseRedirect(back_url)
         else:
-
             uloc[0].path = path
             uloc[0].save()
+
+    def check_part_path(self, casemap, hand, part):
+        if part > 1 and not self.request.user.is_superuser:
+            # set user on right path
+            # get user 1st par chice p1c1 and
+            # forward to that part
+            p1c1 = hand.get_p1c1(casemap.value)
+            p2_section = self.root.get_children()[p1c1]
+            p2_url = p2_section.get_next().get_absolute_url()
+            if not self.module == p2_section:
+                return (True, p2_url)
+            return [False, p2_url]
+        return (False, False)
 
     def get(self, request, path):
         # skip the first child of part if not admin
@@ -224,16 +236,12 @@ class UELCPageView(LoggedInMixin,
             #    section.get_uservisit(request.user)
             #    also can be--> section.gate_check(user)
         part = hand.get_part(request, self.section)
+        tree_path = self.check_part_path(casemap, hand, part)
+        import pdb
+        pdb.set_trace()
+        if tree_path[0]:
+            return HttpResponseRedirect(path[1])
 
-        if part > 1 and not request.user.is_superuser:
-            # set user on right path
-            # get user 1st par chice p1c1 and
-            # forward to that part
-            p1c1 = hand.get_p1c1(casemap.value)
-            p2_section = self.root.get_children()[p1c1]
-            if not self.module == p2_section:
-                p2_url = p2_section.get_next().get_absolute_url()
-                return HttpResponseRedirect(p2_url)
         allow_redo = False
         needs_submit = self.section.needs_submit()
         if needs_submit:
