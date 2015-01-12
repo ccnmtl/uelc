@@ -100,12 +100,6 @@
 
 {% endif %}
 {% endfor %}
-{{casemap.value}}
-
-
-
-   
-
 
 {% include "pagetree/toc.html" %}
 
@@ -115,7 +109,6 @@
 {% block content-nav %}
 
 {% if request.user.is_superuser %}
-admin
 
 {% else %}
 {% with previous=section.get_previous next_section=section.get_next %}
