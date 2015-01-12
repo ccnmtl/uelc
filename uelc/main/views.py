@@ -150,7 +150,7 @@ def get_user_map(pageview, request):
     except ObjectDoesNotExist:
         casemap = CaseMap.objects.create(user=user, case=case)
         casemap.save()
-    return casemap  
+    return casemap
 
 
 class UELCPageView(LoggedInMixin,
@@ -164,8 +164,8 @@ class UELCPageView(LoggedInMixin,
         for block in section.pageblock_set.all():
             display_name = block.block().display_name
             if (hasattr(block.block(), 'needs_submit') and
-                display_name == 'Gate Block'):
-                    return block.block()
+                    display_name == 'Gate Block'):
+                return block.block()
         return False
 
     def get_next_gate(self, section):
@@ -178,13 +178,58 @@ class UELCPageView(LoggedInMixin,
             return (block, last_sibling)
         return False
 
+    def run_section_gatecheck(self, user, path, uloc):
+        section_gatecheck = self.section.gate_check(self.request.user)
+        if not section_gatecheck[0]:
+            #gate_section = section_gatecheck[1]
+            gate_section_gateblock = self.get_next_gate(self.section)
+            if not gate_section_gateblock:
+                block_unlocked = True
+            else:
+                block_unlocked = gate_section_gateblock[0].unlocked(
+                    self.request.user, gate_section_gateblock[1])
+                if not block_unlocked:
+                    back_url = self.section.get_previous().get_absolute_url()
+                    return HttpResponseRedirect(back_url)
+        else:
+
+            uloc[0].path = path
+            uloc[0].save()
+
     def get(self, request, path):
         hierarchy = self.module.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
         uloc = UserLocation.objects.get_or_create(
             user=request.user,
             hierarchy=hierarchy)
+        
+        # handler stuff
+        hand = UELCHandler.objects.get_or_create(
+                hierarchy=hierarchy,
+                depth=0)[0]
         casemap = get_user_map(self, request)
+        if casemap is None:
+            #upv = self.section.get_uservisit(request.user)
+            cml = hand.create_case_map_list(casemap)
+            hand.populate_map_obj(cml)
+            # case_parts = self.section.get_root().get_children()
+            # 3 things prevent users from proceeding when gated = True
+            # 1) a pageblock that is locked
+            # 2) a section that is not_submitted if need_submit
+            # 3) a upv that is "incomplete" -->
+            #    section.get_uservisit(request.user)
+            #    also can be--> section.gate_check(user)
+        part = hand.get_part(request, self.section)
+        if part > 1 and not request.user.is_superuser:
+            # set user on right path
+            # get user 1st par chice p1c1 and
+            # forward to that part
+            p1c1 = hand.get_p1c1(casemap.value)
+            p2_section = self.root.get_children()[p1c1]
+            if not self.module == p2_section:
+                p2_url = p2_section.get_next().get_absolute_url()
+                return HttpResponseRedirect(p2_url)
+
         allow_redo = False
         needs_submit = self.section.needs_submit()
         if needs_submit:
@@ -192,7 +237,7 @@ class UELCPageView(LoggedInMixin,
         self.upv.visit()
         instructor_link = has_responses(self.section)
         case_quizblocks = []
-        prev_section = self.section.get_previous()
+        #prev_section = self.section.get_previous()
         for block in self.section.pageblock_set.all():
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
@@ -209,29 +254,11 @@ class UELCPageView(LoggedInMixin,
                         case_quizblocks.append(dict(id=block.id,
                                                     completed=completed))
 
-
         # if gateblock is not unlocked then return to last known page
-        # section.gate_check(user), doing this because hierarchy cannot 
-        # be "gated" because we will be skipping around depending on 
+        # section.gate_check(user), doing this because hierarchy cannot
+        # be "gated" because we will be skipping around depending on
         # user decisions.
-
-        section_gatecheck = self.section.gate_check(request.user)
-        if not section_gatecheck[0]:
-            gate_section = section_gatecheck[1]
-            gate_section_gateblock = self.get_next_gate(self.section)
-            if not gate_section_gateblock:
-                block_unlocked = True
-            else:
-                block_unlocked = gate_section_gateblock[0].unlocked(self.request.user, gate_section_gateblock[1])
-                if not block_unlocked:
-                    back_url = self.section.get_previous().get_absolute_url()
-                    return HttpResponseRedirect(back_url)
-        else:
-
-            uloc[0].path = path
-            uloc[0].save()
-
-
+        self.run_section_gatecheck(request.user, path, uloc)
 
         context = dict(
             section=self.section,
@@ -248,22 +275,6 @@ class UELCPageView(LoggedInMixin,
             casemap=casemap,
         )
         context.update(self.get_extra_context())
-
-        # handler stuff
-        if casemap is None:
-            #upv = self.section.get_uservisit(request.user)
-            hand = UELCHandler.objects.get_or_create(
-                hierarchy=hierarchy,
-                depth=0)[0]
-            cml = hand.create_case_map_list(casemap)
-            hand.populate_map_obj(cml)
-            # case_parts = self.section.get_root().get_children()
-            # 3 things prevent users from proceeding when gated = True
-            # 1) a pageblock that is locked
-            # 2) a section that is not_submitted if need_submit
-            # 3) a upv that is "incomplete" -->
-            #    section.get_uservisit(request.user)
-            #    also can be--> section.gate_check(user)
         return render(request, self.template_name, context)
 
     def get_extra_context(self, **kwargs):

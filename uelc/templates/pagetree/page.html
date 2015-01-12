@@ -116,19 +116,22 @@
 {% block content-nav %}
 
 {% with previous=section.get_previous next_section=section.get_next %}
-<ul class="pager">
-{% if previous %}
-  <li class="previous">
-        <a href="{{previous.get_absolute_url}}">&larr; Previous</a>
-  </li>
-{% endif %}
+{% if request.user.is_superadmin %}
+{% else }
+    <ul class="pager">
+    {% if previous %}
+      <li class="previous">
+            <a href="{{previous.get_absolute_url}}">&larr; Previous</a>
+      </li>
+    {% endif %}
 
-{% if next_section %}
-{% is_section_unlocked request section as unlocked %}
-<li class="next"><a class="{% if unlocked %}{% else %}disabled{%endif%}" href="{% if unlocked %}{{next_section.get_absolute_url}}{%endif%}">Next &rarr;</a></li>
+    {% if next_section %}
+    {% is_section_unlocked request section as unlocked %}
+    <li class="next"><a class="{% if unlocked %}{% else %}disabled{%endif%}" href="{% if unlocked %}{{next_section.get_absolute_url}}{%endif%}">Next &rarr;</a></li>
 
+    {% endif %}
+    </ul>
 {% endif %}
-</ul>
 {% endwith %}
 {% endblock %}
 

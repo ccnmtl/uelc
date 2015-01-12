@@ -141,9 +141,13 @@ class TextBlockDT(TextBlock):
                 max_length=2,
                 choices=CHOICES,
                 default=0)
-            body = forms.CharField(label="poop",
-                widget=forms.widgets.Textarea(attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}))
-            after_decision = forms.ChoiceField(label="dasdasads", choices=CHOICES)
+            body = forms.CharField(
+                label="poop",
+                widget=forms.widgets.Textarea(
+                    attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}))
+            after_decision = forms.ChoiceField(
+                label="dasdasads",
+                choices=CHOICES)
             choice = forms.ChoiceField(choices=CHOICES)
         return AddForm(auto_id=False)
 
@@ -159,8 +163,10 @@ class TextBlockDT(TextBlock):
         class EditForm(forms.Form):
             CHOICES = ((0, '0'), (1, '1'), (2, '2'),
                        (3, '3'), (4, '4'), (5, '5'))
-            body = forms.CharField(widget=forms.widgets.Textarea(attrs={'cols':180, 'rows': 40, 'class': 'mceEditor'}),
-                                   initial=self.body)
+            body = forms.CharField(
+                widget=forms.widgets.Textarea(
+                    attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}),
+                initial=self.body)
             after_decision = forms.ChoiceField(choices=CHOICES,
                                                initial=self.after_decision)
             choice = forms.ChoiceField(choices=CHOICES, initial=self.choice)
@@ -196,9 +202,9 @@ class UELCHandler(Section):
             self.map_obj[decision_key_list[i]] = decision_val_list[i]
 
     def get_vals_from_casemap(self, casemap_value):
-         vals = [int(i) for i in casemap_value if int(i) >0]
-         return vals
-    
+        vals = [int(i) for i in casemap_value if int(i) > 0]
+        return vals
+
     def get_part(self, request, section):
         modules = section.get_root().get_children()
         part = 0
@@ -210,10 +216,12 @@ class UELCHandler(Section):
             return 1
         else:
             return 2
-
+    def get_p1c1(self, casemap_value):
+        return self.get_vals_from_casemap(casemap_value)[1]
+        
     def is_pre(self, request, section, casemap_value):
-        # this returns a list of whether it's a preliminary 
-        # question, and the instance # of the question 
+        # this returns a list of whether it's a preliminary
+        # question, and the instance # of the question
         # in the tree
         # [true, 0]  => p1pre answered
         # [false, 1] => p1c1 answered
@@ -223,21 +231,25 @@ class UELCHandler(Section):
         vals = self.get_vals_from_casemap(casemap_value)
         if len(vals) % 2 == 0:
             is_pre[0] = False
-        instance  = len(vals) / 2
+        instance = len(vals) / 2
         is_pre.append(instance)
         return is_pre
 
     def can_show(self, request, section, casemap_value):
         cmvl = list(casemap_value)
         tree = section.get_tree()
-        section_index = [sec for sec in range(len(tree)) if tree[sec] == section][0] + 1
+        section_index = [sec for sec in
+                         range(len(tree))
+                         if tree[sec] == section][0] + 1
         try:
-            content_value = [int(i) for i in reversed(cmvl[0:section_index]) if int(i) > 0 ][0]
+            content_value = [int(i) for i in
+                             reversed(cmvl[0:section_index])
+                             if int(i) > 0][0]
         except IndexError:
             content_value = 0
-        is_pre = self.is_pre(request, section, casemap_value)
+        #is_pre = self.is_pre(request, section, casemap_value)
         #vals = self.get_vals_from_casemap(casemap_value)
-        part = self.get_part(request, section)
+        #part = self.get_part(request, section)
         return content_value
 
     def p1pre(self, casemap_value):
