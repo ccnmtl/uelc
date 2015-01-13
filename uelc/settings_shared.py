@@ -136,15 +136,12 @@ INSTALLED_APPS = [
     'tinymce',
 ]
 
-PAGEBLOCKS = ['pageblocks.HTMLBlockWYSIWYG',
-              'pageblocks.PullQuoteBlock',
-              'pageblocks.ImageBlock',
-              'pageblocks.ImagePullQuoteBlock',
-              'quizblock.Quiz',
-              'gate_block.GateBlock',
-              'case_quizblock.CaseQuiz',
-              'main.TextBlockDT'
-              ]
+PAGEBLOCKS = [
+    'pageblocks.ImageBlock',
+    'gate_block.GateBlock',
+    'case_quizblock.CaseQuiz',
+    'main.TextBlockDT'
+]
 
 
 INTERNAL_IPS = ('127.0.0.1', )
