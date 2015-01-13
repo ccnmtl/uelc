@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-
 <div id="content">
     {% for u in user_sections %}
+    {% if u.0.profile.profile_type == "group_user" %}
     <!-- user (u.0), gateblocks (u.1) -->
     <h3>Username - {{u.0}} ; type - {{u.0.profile.profile_type}}</h3>
     <ul class="gate_section">
@@ -36,6 +36,7 @@
             {% endif %}
         {% endfor %}
     </ul>
+    {% endif %}
     {% endfor %}
 </div>
 
