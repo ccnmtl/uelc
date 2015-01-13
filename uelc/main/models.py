@@ -106,7 +106,6 @@ class CaseMap(models.Model):
         answerlist[section_depth] = str(val)
         answers = ''.join(n for n in answerlist)
         self.value = answers
-
         self.save()
         return self.value
 
@@ -192,11 +191,6 @@ class UELCHandler(Section):
         the pagetree
     '''
     map_obj = dict()
-
-    def create_case_map_list(self, casemap):
-        pvl = list(casemap.value)
-        pvi = [int(x) for x in pvl]
-        return pvi
 
     def populate_map_obj(self, casemap_list):
         decision_key_list = ['p1pre', 'p1c1', 'p2pre', 'p2c2']
