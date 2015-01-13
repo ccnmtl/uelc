@@ -224,17 +224,6 @@ class UELCPageView(LoggedInMixin,
             hierarchy=hierarchy,
             depth=0)[0]
         casemap = get_user_map(self, request)
-        if casemap is None:
-            #upv = self.section.get_uservisit(request.user)
-            cml = hand.create_case_map_list(casemap)
-            hand.populate_map_obj(cml)
-            # case_parts = self.section.get_root().get_children()
-            # 3 things prevent users from proceeding when gated = True
-            # 1) a pageblock that is locked
-            # 2) a section that is not_submitted if need_submit
-            # 3) a upv that is "incomplete" -->
-            #    section.get_uservisit(request.user)
-            #    also can be--> section.gate_check(user)
         part = hand.get_part(request, self.section)
         tree_path = self.check_part_path(casemap, hand, part)
         if tree_path[0]:
@@ -249,20 +238,17 @@ class UELCPageView(LoggedInMixin,
         case_quizblocks = []
         #prev_section = self.section.get_previous()
         for block in self.section.pageblock_set.all():
+            display_name = block.block().display_name
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
             # Section.submit() in Pageblock library
-            if hasattr(block.block(), "unlocked"):
-                block.block().unlocked(request.user, self.section)
-                display_name = block.block().display_name
-                if (hasattr(block.block(), 'needs_submit') and
-                        display_name == 'Case Quiz'):
-                        # is the quiz really submitted?
-                        # if so add yes/no to dict
-                        quiz = block.block()
-                        completed = quiz.is_submitted(quiz, request.user)
-                        case_quizblocks.append(dict(id=block.id,
-                                                    completed=completed))
+            if display_name == 'Case Quiz':
+                # is the quiz really submitted?
+                # if so add yes/no to dict
+                quiz = block.block()
+                completed = quiz.is_submitted(quiz, request.user)
+                case_quizblocks.append(dict(id=block.id,
+                                            completed=completed))
 
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
