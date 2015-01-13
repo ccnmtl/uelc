@@ -12,7 +12,7 @@
             {% if sec.2 %}
                 <li class="gate-button unlocked">
                     <form action ="." method="post">
-                        <input type ="submit" value="Lock - {{ sec.1.pageblock.label }}" class="btn btn-primary">
+                        <input type ="submit" value="Unlocked - {{ sec.1.pageblock.label }}" class="btn btn-primary">
                         <input type="hidden" name="action" value="reset" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />
@@ -24,7 +24,7 @@
             {% else %}
                 <li class="gate-button locked">
                     <form action ="." method="post">
-                        <input type ="submit" value="Unlock - {{ sec.1.pageblock.label }}" class="btn btn-primary">
+                        <input type ="submit" value="Locked - {{ sec.1.pageblock.label }}" class="btn btn-primary">
                         <input type="hidden" name="action" value="submit" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />

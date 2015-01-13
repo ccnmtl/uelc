@@ -238,7 +238,7 @@ class UELCPageView(LoggedInMixin,
         part = hand.get_part(request, self.section)
         tree_path = self.check_part_path(casemap, hand, part)
         if tree_path[0]:
-            return HttpResponseRedirect(path[1])
+            return HttpResponseRedirect(tree_path[1])
 
         allow_redo = False
         needs_submit = self.section.needs_submit()
