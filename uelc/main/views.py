@@ -330,6 +330,13 @@ class FacilitatorView(LoggedInMixinSuperuser,
     template_name = "pagetree/facilitator.html"
     extra_context = dict()
 
+    def get_tree_depth(self, section):
+        tree_depth = 0
+        for sec in section.get_tree():
+            tree_depth += 1
+            if sec == section:
+                return tree_depth
+
     def set_upv(self, user, section, status):
         try:
             upv = UserPageVisit.objects.filter(section=section, user=user)[0]
@@ -379,10 +386,16 @@ class FacilitatorView(LoggedInMixinSuperuser,
         gateblocks = GateBlock.objects.all()
         user_sections = []
         for user in cohort_users:
-            gate_sections = [(g.pageblock().section,
-                              g, g.unlocked(user, section))
+            gate_section = [[g.pageblock().section,
+                              g, g.unlocked(user, section),
+                              self.get_tree_depth(g.pageblock().section)]
                              for g in gateblocks]
-            user_sections.append([user, gate_sections])
+            user_sections.append([user, gate_section])
+
+        for us in user_sections:
+            gate_sections = us[1]
+            gate_sections.sort(cmp=lambda x,y: cmp(x[3], y[3]))
+
         quizzes = [p.block() for p in section.pageblock_set.all()
                    if hasattr(p.block(), 'needs_submit')
                    and p.block().needs_submit()]
