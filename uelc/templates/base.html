@@ -82,7 +82,7 @@
             {% endif %}
             {% if request.user.is_superuser %}
           {% if instructor_link %}
-               <a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>
+               <!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
            {% endif %}
           {% block edit-or-view-page %}
           {% if is_view %}
