@@ -262,6 +262,7 @@ class UELCHandler(Section):
 
 
 class LibraryItem(models.Model):
+    name = models.TextField(blank=False)
     doc = models.FileField(upload_to='documents/%Y/%m/%d')
     user = models.ManyToManyField(User, blank=True)
     case = models.ForeignKey(Case)
