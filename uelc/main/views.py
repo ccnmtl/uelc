@@ -347,18 +347,29 @@ class FacilitatorView(LoggedInMixinSuperuser,
         return
 
     def post(self, request, path):
-        # need to override the user if submitted by facilitator
-        # user or facilitator has submitted a form. deal with it
-        user = User.objects.get(id=request.POST.get('user_id'))
-        action = request.POST.get('action')
-        section = Section.objects.get(id=request.POST.get('section'))
-        post = request.POST
-        if action == 'submit':
-            self.set_upv(user, section, "complete")
-            admin_ajax_page_submit(section, user, post)
-        if action == 'reset':
-            self.set_upv(user, section, "incomplete")
-            admin_ajax_reset_page(section, user)
+        # currently only 2 mehtods on the facilitator page
+
+        # posted library items
+        if request.POST.get('library-item'):
+            doc = request.FILES.get('doc')
+            name = request.POST.get('name')
+            user = request.POST.get('user')
+            case_id = request.POST.get('case')
+            case = Case.objects.get(id=case_id)
+            li = LibraryItem.objects.create(doc=doc, name=name, case=case)
+            li.save()
+        else:
+        # posted gate lock/unlock
+            user = User.objects.get(id=request.POST.get('user_id'))
+            action = request.POST.get('action')
+            section = Section.objects.get(id=request.POST.get('section'))
+            post = request.POST
+            if action == 'submit':
+                self.set_upv(user, section, "complete")
+                admin_ajax_page_submit(section, user, post)
+            if action == 'reset':
+                self.set_upv(user, section, "incomplete")
+                admin_ajax_reset_page(section, user)
         return HttpResponseRedirect(request.path)
 
     def dispatch(self, request, *args, **kwargs):
@@ -380,6 +391,7 @@ class FacilitatorView(LoggedInMixinSuperuser,
         root = section.hierarchy.get_root()
         hierarchy = section.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
+        library_item = LibraryItem
         # is there really only going to be one cohort per case?
         cohort = case.cohort
         cohort_users = cohort.user.all()
@@ -405,12 +417,10 @@ class FacilitatorView(LoggedInMixinSuperuser,
                        module=section.get_module(),
                        modules=root.get_children(),
                        root=section.hierarchy.get_root(),
-                       library_item = LibraryItem
+                       library_item=library_item,
+                       case=case,
                        )
         context.update(self.get_extra_context())
-
-        import pdb
-        pdb.set_trace()
         return context
 
 

@@ -282,6 +282,6 @@ class LibraryItem(models.Model):
     def add_form(self):
         class AddForm(forms.Form):
             doc = forms.FileField(label="select doc")
-            name = forms.CharField(widget=forms.widgets.Textarea())
-            user = forms.MultipleChoiceField(choices=self.get_users())
+            name = forms.CharField(widget=forms.widgets.Textarea(
+                attrs={'cols': 30, 'rows': 1}))
         return AddForm()

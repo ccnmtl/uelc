@@ -1,6 +1,24 @@
 {% extends 'base.html' %}
+{% load bootstrap %}
 {% block content %}
 <div id="content">
+
+    <div id="library-add-form">
+        <form action="." method="post" enctype="multipart/form-data">
+            {{library_item.add_form|bootstrap}}
+            <select multiple>
+                {% for u in user_sections %}
+                {% if u.0.profile.profile_type == "group_user" %}
+                  <option value="u" name="user">{{u.0}}</option>
+                {% endif %}
+                {% endfor %}   
+            </select>
+            <input type="hidden" name="case" value="{{case.id}}" />
+            <input type="hidden" name="library-item" value="true" />
+            <input type ="submit" value="submit" class="btn btn-primary">
+        </form>
+    </div>
+
     {% for u in user_sections %}
     {% if u.0.profile.profile_type == "group_user" %}
     <!-- user (u.0), gateblocks (u.1) -->
@@ -11,8 +29,8 @@
             <!-- section (sec.0), gateblock (sec.1), unlocked (sec.2), user (sec.3)-->
             {% if sec.2 %}
                 <li class="gate-button unlocked">
-                    <form action ="." method="post">
-                        <input type ="submit" value="Unlocked - {{ sec.1.pageblock.label }}" class="btn btn-primary">
+                    <form action="." method="post">
+                        <input type="submit" value="Unlocked - {{ sec.1.pageblock.label }}" class="btn btn-primary">
                         <input type="hidden" name="action" value="reset" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />
