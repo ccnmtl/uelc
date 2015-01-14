@@ -274,3 +274,14 @@ class LibraryItem(models.Model):
 
     def display_name(self):
         return '%s - %s' % (self.name)
+
+    def get_users(self):
+        return self.case.cohort.user.all()
+
+    @classmethod
+    def add_form(self):
+        class AddForm(forms.Form):
+            doc = forms.FileField(label="select doc")
+            name = forms.CharField(widget=forms.widgets.Textarea())
+            user = forms.MultipleChoiceField(choices=self.get_users())
+        return AddForm()

@@ -6,7 +6,7 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from uelc.main.models import Case, CaseMap, UELCHandler
+from uelc.main.models import Case, CaseMap, UELCHandler, LibraryItem
 from gate_block.models import GateBlock, GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
@@ -404,8 +404,13 @@ class FacilitatorView(LoggedInMixinSuperuser,
                        user_sections=user_sections,
                        module=section.get_module(),
                        modules=root.get_children(),
-                       root=section.hierarchy.get_root())
+                       root=section.hierarchy.get_root(),
+                       library_item = LibraryItem
+                       )
         context.update(self.get_extra_context())
+
+        import pdb
+        pdb.set_trace()
         return context
 
 
