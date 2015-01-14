@@ -259,3 +259,17 @@ class UELCHandler(Section):
         if len(vals) > 1:
             p1pre = vals[0]
         return p1pre
+
+
+class LibraryItem(models.Model):
+    doc = models.FileField(upload_to='documents/%Y/%m/%d')
+    user = models.ManyToManyField(User, blank=True)
+    case = models.ForeignKey(Case)
+
+    template_file = 'main/doc.html'
+
+    def __unicode__(self):
+        return self.name
+
+    def display_name(self):
+        return '%s - %s' % (self.name)

@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from uelc.main.models import UserProfile,\
-    Case, Cohort, CaseMap, TextBlockDT
+from uelc.main.models import UserProfile, Case,\
+	Cohort, CaseMap, TextBlockDT, LibraryItem
 from pagetree.models import Hierarchy
 from pageblocks.models import TextBlock
 
@@ -34,3 +34,4 @@ admin.site.register(TextBlockDT)
 admin.site.register(Case)
 admin.site.register(CaseMap)
 admin.site.register(Cohort)
+admin.site.register(LibraryItem)
