@@ -392,6 +392,7 @@ class FacilitatorView(LoggedInMixinSuperuser,
         hierarchy = section.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
         library_item = LibraryItem
+        library_items = LibraryItem.objects.all()
         # is there really only going to be one cohort per case?
         cohort = case.cohort
         cohort_users = cohort.user.all()
@@ -418,6 +419,7 @@ class FacilitatorView(LoggedInMixinSuperuser,
                        modules=root.get_children(),
                        root=section.hierarchy.get_root(),
                        library_item=library_item,
+                       library_items=library_items,
                        case=case,
                        )
         context.update(self.get_extra_context())

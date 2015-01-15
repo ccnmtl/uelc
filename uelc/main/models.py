@@ -145,7 +145,6 @@ class TextBlockDT(TextBlock):
                 widget=forms.widgets.Textarea(
                     attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}))
             after_decision = forms.ChoiceField(
-                label="dasdasads",
                 choices=CHOICES)
             choice = forms.ChoiceField(choices=CHOICES)
         return AddForm(auto_id=False)
@@ -283,5 +282,9 @@ class LibraryItem(models.Model):
         class AddForm(forms.Form):
             doc = forms.FileField(label="select doc")
             name = forms.CharField(widget=forms.widgets.Textarea(
-                attrs={'cols': 30, 'rows': 1}))
+                attrs={
+                       'class':'library-item-name',
+                       'cols': 10,
+                       'rows': 2
+                       }))
         return AddForm()
