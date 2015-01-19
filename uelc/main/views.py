@@ -208,6 +208,11 @@ class UELCPageView(LoggedInMixin,
             return [False, p2_url]
         return (False, False)
 
+    def get_library_items(self, case):
+        user = self.request.user
+        library_items = LibraryItem.objects.filter(case=case, user=user)
+        return library_items
+
     def get(self, request, path):
         # skip the first child of part if not admin
         if not request.user.is_superuser and self.section.get_depth() == 2:
@@ -269,6 +274,7 @@ class UELCPageView(LoggedInMixin,
             case=case,
             case_quizblocks=case_quizblocks,
             casemap=casemap,
+            library_items=self.get_library_items(case),
         )
         context.update(self.get_extra_context())
         return render(request, self.template_name, context)
@@ -380,7 +386,7 @@ class FacilitatorView(LoggedInMixinSuperuser,
             li[0].user.clear()
             for index in range(len(users)):
                 user = User.objects.get(id=users[index])
-                li.user.add(user)
+                li[0].user.add(user)
 
         else:
         # posted gate lock/unlock

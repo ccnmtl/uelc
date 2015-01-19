@@ -210,3 +210,6 @@ ul.gate-section-list{
 .glyphicon-trash, .glyphicon-edit{
     cursor: pointer;
 }
+#library-item-view{
+    margin: 30px 0 0 0;
+}
