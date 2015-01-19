@@ -429,11 +429,13 @@ class FacilitatorView(LoggedInMixinSuperuser,
         gateblocks = GateBlock.objects.all()
         user_sections = []
         for user in cohort_users:
-            gate_section = [[g.pageblock().section,
-                             g, g.unlocked(user, section),
-                             self.get_tree_depth(g.pageblock().section)]
-                            for g in gateblocks]
-            user_sections.append([user, gate_section])
+            if user.profile.profile_type == "group_user":
+                gate_section = [[g.pageblock().section,
+                                 g, g.unlocked(user, section),
+                                 self.get_tree_depth(g.pageblock().section),
+                                 g.status(user, hierarchy)]
+                                for g in gateblocks]
+                user_sections.append([user, gate_section])
 
         for us in user_sections:
             gate_sections = us[1]

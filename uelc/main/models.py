@@ -210,11 +210,10 @@ class UELCHandler(Section):
         for mod in range(len(modules)):
             if modules[mod] == section.get_module():
                 part = mod
-
         if part == 0:
             return 1
         else:
-            return 2
+            return float(2) + (mod *.1)
 
     def get_p1c1(self, casemap_value):
         return self.get_vals_from_casemap(casemap_value)[1]

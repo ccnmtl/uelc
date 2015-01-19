@@ -11,7 +11,7 @@
     <ul class="gate-section-list">
         
         {% for sec in u.1 %}
-            <!-- section (sec.0), gateblock (sec.1), unlocked (sec.2), user (sec.3)-->
+            <!-- section (sec.0), gateblock (sec.1), unlocked (sec.2), user (sec.3), status (sec.4)-->
             {% if sec.2 %}
                 <li class="gate-button unlocked">
                     <form action="." method="post">
@@ -23,6 +23,7 @@
                         <input type="hidden" name="block" value="{{sec.1.id}}" />
                         <input class="post" type="hidden" value="{{sec.0.get_absolute_url}}"> 
                     </form>
+                    {{sec.4}}
                 </li>
             {% else %}
                 <li class="gate-button locked">
@@ -35,6 +36,7 @@
                         <input type="hidden" name="block" value="{{sec.1.id}}" />
                         <input class="post" type="hidden" value="{{sec.0.get_absolute_url}}"> 
                     </form>
+                    {{sec.4}}
                 </li>
             {% endif %}
         {% endfor %}
