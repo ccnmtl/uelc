@@ -288,3 +288,17 @@ class LibraryItem(models.Model):
                        'rows': 2
                        }))
         return AddForm()
+
+    def edit_form(self):
+        class EditLibraryForm(forms.Form):
+            doc = forms.FileField(initial=self.doc, 
+                                  label="Replace image")
+            name = forms.CharField(initial=self.name,
+                widget=forms.widgets.Textarea(
+                attrs={
+                       'class':'library-item-name',
+                       'cols': 10,
+                       'rows': 2
+                       }))
+
+        return EditLibraryForm()

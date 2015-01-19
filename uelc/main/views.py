@@ -353,11 +353,35 @@ class FacilitatorView(LoggedInMixinSuperuser,
         if request.POST.get('library-item'):
             doc = request.FILES.get('doc')
             name = request.POST.get('name')
-            user = request.POST.get('user')
+            users = request.POST.getlist('user')
             case_id = request.POST.get('case')
             case = Case.objects.get(id=case_id)
             li = LibraryItem.objects.create(doc=doc, name=name, case=case)
             li.save()
+            for index in range(len(users)):
+                user = User.objects.get(id=users[index])
+                li.user.add(user)
+        elif request.POST.get('library-item-delete'):
+            item_id = request.POST.get('library_item_id')
+            li = LibraryItem.objects.get(id=item_id)
+            li.delete()
+        elif request.POST.get('library-item-edit'):
+            doc = request.FILES.get('doc')
+            name = request.POST.get('name')
+            users = request.POST.getlist('user')
+            li_id = request.POST.get('library-item-id')
+            li = LibraryItem.objects.filter(id=li_id)
+            if doc:
+                li.update(doc=doc)
+            if name:
+                li.update(name=name)
+
+            
+            li[0].user.clear()
+            for index in range(len(users)):
+                user = User.objects.get(id=users[index])
+                li.user.add(user)
+
         else:
         # posted gate lock/unlock
             user = User.objects.get(id=request.POST.get('user_id'))

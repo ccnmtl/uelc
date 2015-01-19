@@ -207,3 +207,6 @@ ul.gate-section-list{
 .gate-button{
     margin: 6px;
 }
+.glyphicon-trash, .glyphicon-edit{
+    cursor: pointer;
+}
