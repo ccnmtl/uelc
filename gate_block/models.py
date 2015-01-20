@@ -51,12 +51,12 @@ class GateBlock(models.Model):
             hierarchy=hierarchy)
             uloc_path = h_url + uloc[0].path
             page_status = self.pageblock().section.get_uservisit(user).status
-            if user.username == 'test2':
-                import pdb
-                pdb.set_trace()
             if uloc_path == gs_url:
                 status = "waiting"
                 return status
+            # if for some reason the user is re-doing their entry.
+            # if so, the admin would have reset the gates so they
+            # can redo their decision
             if not unlocked and page_status == "incomplete":
                 status = "in progress"
                 return status

@@ -139,8 +139,7 @@ class RestrictedModuleMixin(object):
         return HttpResponse("you don't have permission")
 
 
-def get_user_map(pageview, request):
-    hierarchy = pageview.module.hierarchy
+def get_user_map(hierarchy, request):
     case = Case.objects.get(hierarchy=hierarchy)
     user = request.user
     # first check and see if a case map exists for the user
@@ -178,7 +177,7 @@ class UELCPageView(LoggedInMixin,
             return (block, last_sibling)
         return False
 
-    def run_section_gatecheck(self, user, path, uloc):
+    def run_section_gatecheck(self, user, path):
         section_gatecheck = self.section.gate_check(self.request.user)
         if not section_gatecheck[0]:
             #gate_section = section_gatecheck[1]
@@ -191,9 +190,8 @@ class UELCPageView(LoggedInMixin,
                 if not block_unlocked:
                     back_url = self.section.get_previous().get_absolute_url()
                     return HttpResponseRedirect(back_url)
-        else:
-            uloc[0].path = path
-            uloc[0].save()
+        
+            
 
     def check_part_path(self, casemap, hand, part):
         if part > 1 and not self.request.user.is_superuser:
@@ -228,7 +226,7 @@ class UELCPageView(LoggedInMixin,
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
             depth=0)[0]
-        casemap = get_user_map(self, request)
+        casemap = get_user_map(hierarchy, request)
         part = hand.get_part(request, self.section)
         tree_path = self.check_part_path(casemap, hand, part)
         if tree_path[0]:
@@ -259,7 +257,9 @@ class UELCPageView(LoggedInMixin,
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
         # user decisions.
-        self.run_section_gatecheck(request.user, path, uloc)
+        self.run_section_gatecheck(request.user, path)
+        uloc[0].path = path
+        uloc[0].save()
 
         context = dict(
             section=self.section,
@@ -427,8 +427,15 @@ class FacilitatorView(LoggedInMixinSuperuser,
         cohort = case.cohort
         cohort_users = cohort.user.all()
         gateblocks = GateBlock.objects.all()
+        hand = UELCHandler.objects.get_or_create(
+            hierarchy=hierarchy,
+            depth=0)[0]
         user_sections = []
         for user in cohort_users:
+            #um = get_user_map(hierarchy, self.request)
+            #part = hand.get_part(self.request, section)
+            #import pdb
+            #pdb.set_trace()
             if user.profile.profile_type == "group_user":
                 gate_section = [[g.pageblock().section,
                                  g, g.unlocked(user, section),
