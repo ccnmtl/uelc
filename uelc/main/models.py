@@ -204,16 +204,24 @@ class UELCHandler(Section):
         vals = [int(i) for i in casemap_value if int(i) > 0]
         return vals
 
-    def get_part(self, request, section):
+    def get_part_by_section(self, section):
         modules = section.get_root().get_children()
+        sec_module = section.get_module()
         part = 0
-        for mod in range(len(modules)):
-            if modules[mod] == section.get_module():
-                part = mod
+        for index in range(len(modules)):
+            if modules[index] == sec_module:
+                part = index
         if part == 0:
             return 1
         else:
-            return float(2) + (mod *.1)
+            return float(2) + (part *.1)
+
+    def get_partchoice_by_usermap(self, usermap):
+        vals = self.get_vals_from_casemap(usermap.value)
+        part = 1
+        if len(vals) >= 2:
+            part = float(2) + (vals[1] *.1)
+        return part
 
     def get_p1c1(self, casemap_value):
         return self.get_vals_from_casemap(casemap_value)[1]
@@ -246,10 +254,15 @@ class UELCHandler(Section):
                              if int(i) > 0][0]
         except IndexError:
             content_value = 0
-        #is_pre = self.is_pre(request, section, casemap_value)
-        #vals = self.get_vals_from_casemap(casemap_value)
-        #part = self.get_part(request, section)
+
         return content_value
+
+    def can_show_gateblock(self, gate_section, part_usermap):
+        can_show = False
+        part_section = self.get_part_by_section(gate_section)
+        if part_section == 1 or part_section == part_usermap:
+            can_show = True        
+        return can_show
 
     def p1pre(self, casemap_value):
         p1pre = 0

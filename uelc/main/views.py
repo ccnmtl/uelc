@@ -139,9 +139,8 @@ class RestrictedModuleMixin(object):
         return HttpResponse("you don't have permission")
 
 
-def get_user_map(hierarchy, request):
+def get_user_map(hierarchy, user):
     case = Case.objects.get(hierarchy=hierarchy)
-    user = request.user
     # first check and see if a case map exists for the user
     # if not, they have not submitted an answer to a question
     try:
@@ -226,8 +225,8 @@ class UELCPageView(LoggedInMixin,
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
             depth=0)[0]
-        casemap = get_user_map(hierarchy, request)
-        part = hand.get_part(request, self.section)
+        casemap = get_user_map(hierarchy, request.user)
+        part = hand.get_part_by_section(self.section)
         tree_path = self.check_part_path(casemap, hand, part)
         if tree_path[0]:
             return HttpResponseRedirect(tree_path[1])
@@ -432,15 +431,17 @@ class FacilitatorView(LoggedInMixinSuperuser,
             depth=0)[0]
         user_sections = []
         for user in cohort_users:
-            #um = get_user_map(hierarchy, self.request)
-            #part = hand.get_part(self.request, section)
-            #import pdb
-            #pdb.set_trace()
             if user.profile.profile_type == "group_user":
+                um = get_user_map(hierarchy, user)
+                part_usermap = hand.get_partchoice_by_usermap(um)
+                #choice = 0
+                #if part > 1:
+                #    choice = int(str(part).split('.').pop())    
                 gate_section = [[g.pageblock().section,
                                  g, g.unlocked(user, section),
                                  self.get_tree_depth(g.pageblock().section),
-                                 g.status(user, hierarchy)]
+                                 g.status(user, hierarchy), 
+                                 hand.can_show_gateblock(g.pageblock().section, part_usermap)]
                                 for g in gateblocks]
                 user_sections.append([user, gate_section])
 
