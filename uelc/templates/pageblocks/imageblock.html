@@ -39,8 +39,8 @@
 </ul>
 
 {% else %}
-{{img_src}}s;LSKLS;LKSK;LSA;LK
-<img alt="{{block.alt}}" src="{% if img_src %}{{img_src}}{% else %}{% thumbnail block.image 600x600 %}{% endif %}" />
+
+<img class="img-responsive" alt="{{block.alt}}" src="/uploads/{{ block.image}}" />
 <div class="caption">
 {{block.caption|markdown}}
 </div>
