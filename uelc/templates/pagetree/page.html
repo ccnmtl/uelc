@@ -104,12 +104,13 @@
 {% include "pagetree/toc.html" %}
 
 </div>
+
+
 {% endblock %}
 
 {% block content-nav %}
 
 {% if request.user.is_superuser %}
-
 {% else %}
 {% with previous=section.get_previous next_section=section.get_next %}
     <ul class="pager">
@@ -127,6 +128,35 @@
     </ul>
 
 {% endwith %}
+{% endif %}
+{% endblock %}
+
+{% block library %}
+{% if library_items|length > 0 %}
+    <div class="col-md-4" id="library-item-view">
+        <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading header">Library</div>
+        <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Document</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in library_items %}
+            <tr>
+                <td> {{item.name}} </td>
+                <td class="library-item-document"> 
+                    <span class="hidden">{{item.id}}</span>
+                    <a target="_blank" href="/uploads/{{item.doc}}">Document link</a> 
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    </div><!--end #library-item-view-->
 {% endif %}
 {% endblock %}
 

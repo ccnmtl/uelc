@@ -1,31 +1,42 @@
-{% extends 'base.html' %}
+{% extends 'pagetree/facilitator_base.html' %}
+{% load bootstrap %}
 {% block content %}
+<script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
 <div id="content">
     {% for u in user_sections %}
     {% if u.0.profile.profile_type == "group_user" %}
     <!-- user (u.0), gateblocks (u.1) -->
-    <h3>Username - {{u.0}} ; type - {{u.0.profile.profile_type}}</h3>
-    <ul class="gate_section">
-        
+    <div class="gate-section">Username - <span class="facilitator-usrnm">{{u.0}}</span>
+    <ul class="gate-section-list">
         {% for sec in u.1 %}
-            <!-- section (sec.0), gateblock (sec.1), unlocked (sec.2), user (sec.3)-->
+            {{comment}}
+            <!-- 
+                section (sec.0), gateblock (sec.1), unlocked (sec.2), 
+                user (sec.3), status (sec.4), can_show_gateblock (sec.5)
+            -->
+            {{endcomment}}
             {% if sec.2 %}
+              {% if sec.5 %}
                 <li class="gate-button unlocked">
-                    <form action ="." method="post">
-                        <input type ="submit" value="Unlocked - {{ sec.1.pageblock.label }}" class="btn btn-primary">
-                        <input type="hidden" name="action" value="reset" />
+                    <form action="." method="post">
+                        <button type="submit" class="btn btn-sm btn-success">Unlocked - {{ sec.1.pageblock.label }} <span class="badge">{{sec.4}}</span></button>
+                        <input type="hidden" name="gate-action" value="reset" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />
                         <input type="hidden" name="section" value="{{sec.0.id}}" />
                         <input type="hidden" name="block" value="{{sec.1.id}}" />
                         <input class="post" type="hidden" value="{{sec.0.get_absolute_url}}"> 
                     </form>
+                    
                 </li>
+                {% endif %}
             {% else %}
+              {% if sec.5 %}
                 <li class="gate-button locked">
                     <form action ="." method="post">
-                        <input type ="submit" value="Locked - {{ sec.1.pageblock.label }}" class="btn btn-primary">
-                        <input type="hidden" name="action" value="submit" />
+                        <button type ="submit" class="btn btn-sm btn-danger">Locked - {{ sec.1.pageblock.label }} <span class="badge">{{sec.4}}</span></button>
+                        <input type="hidden" name="gate-action" value="submit" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />
                         <input type="hidden" name="section" value="{{sec.0.id}}" />
@@ -33,11 +44,118 @@
                         <input class="post" type="hidden" value="{{sec.0.get_absolute_url}}"> 
                     </form>
                 </li>
+                {% endif %}
             {% endif %}
         {% endfor %}
     </ul>
+    </div><!--end gate-section-->
     {% endif %}
     {% endfor %}
-</div>
+<br style="clear:both"/>
+<div id="library-content">
+    <div id="library-add-form" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-header panel-heading">Add Library Item</div>
+                <div class="modal-body">
+                    <form action="." method="post" enctype="multipart/form-data">
+                        {{library_item.add_form|bootstrap}}
+                        <div id="user-tooltip"><span data-toggle="tooltip" title="Select Users that will have access to the library item" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>Select user/s</div>
+                        <select class="library-item-user-select" multiple="multiple" name="user">
+                            {% for u in user_sections %}
+                            {% if u.0.profile.profile_type == "group_user" %}
+                              <option value="{{u.0.id}}" name="user">{{u.0}}</option>
+                            {% endif %}
+                            {% endfor %}   
+                        </select>
+                        <input type="hidden" name="case" value="{{case.id}}" />
+                        <input type="hidden" name="library-item" value="true" />
+                        <input type ="submit" value="submit" class="btn btn-primary library-item-submit">
+                    </form>
+                </div> <!--end modal-dialog-->
+            </div><!-- end modal-content-->
+        </div><!--end .model-body-->
+    </div><!--end #library-add-form .modal-->
+    {% for library_doc in library_items %}
+    <div id="library-edit-form-{{library_doc.id}}" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-header panel-heading">Edit Library Item</div>
+                <div class="modal-body">
+                    <form action="." method="post" enctype="multipart/form-data">
+                        {{library_doc.edit_form|bootstrap}}
+                        <div id="user-tooltip"><span data-toggle="tooltip" title="Select Users that will have access to the library item" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>Select user/s</div>
+                        <select class="library-item-user-select" multiple="multiple" name="user">
+                            {% for u in user_sections %}
+                            {% if u.0.profile.profile_type == "group_user"%}
+                                
+                                <option value="{{u.0.id}}"
+                                    {%for lib_user in library_doc.user.all %} 
+                                        {% if u.0.id == lib_user.id  %} 
+                                            selected="selected"
+                                        {% endif %}
+                                    {% endfor %}name="user">{{u.0}}
+                                </option>
+                            {% endif %}
+                            {% endfor %}   
+                        </select>
+                        <input type="hidden" name="case" value="{{case.id}}" />
+                        <input type="hidden" name="library-item-id" value="{{library_doc.id}}" />
+                        <input type="hidden" name="library-item-edit" value="true" />
+                        <input type ="submit" value="submit" class="btn btn-primary library-item">
+                    </form>
+                </div> <!--end modal-dialog-->
+            </div><!-- end modal-content-->
+        </div><!--end .model-body-->
+    </div><!--end #library-add-form .modal-->
+    {%endfor%}
+</div><!--end #library-content-->
 
+<div id="case-lirary-items" class="col-md-5">
+    <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Case Library</div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Document</th>
+                <th>Users</th>
+                <th>
+                    <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#library-add-form" href="#library-add-form">Add Library Item</button>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in library_items %}
+            <tr>
+                <td> {{item.name}} </td>
+                <td class="library-item-document"> 
+                    <span class="hidden">{{item.id}}</span>
+                    <a target="_blank" href="/uploads/{{item.doc}}">Document link</a> 
+                </td>
+                <td class="library-item-users">
+                    {% if item.user.all.count == 0 %}
+                        <span>None</span>
+                    {% endif %}
+
+                    {% for user in item.user.all %}
+                        <span class="hidden">{{user.id}}</span>
+                        {{ user }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td class="library-item-admin">
+                    <button class="glyphicon glyphicon-edit" data-toggle="modal"  data-target="#library-edit-form-{{item.id}}" href="#library-edit-form-{{library_doc.id}}"></button>
+                    <button class="glyphicon glyphicon-trash"></button></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div><!--end #case-lirary-items-->
+
+</div><!--end .content -->
+<script src="{{STATIC_URL}}js/uelc_admin/uelc_admin.js"></script>
 {% endblock %}
+

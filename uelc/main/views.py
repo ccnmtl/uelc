@@ -6,7 +6,7 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from uelc.main.models import Case, CaseMap, UELCHandler
+from uelc.main.models import Case, CaseMap, UELCHandler, LibraryItem
 from gate_block.models import GateBlock, GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
@@ -139,10 +139,8 @@ class RestrictedModuleMixin(object):
         return HttpResponse("you don't have permission")
 
 
-def get_user_map(pageview, request):
-    hierarchy = pageview.module.hierarchy
+def get_user_map(hierarchy, user):
     case = Case.objects.get(hierarchy=hierarchy)
-    user = request.user
     # first check and see if a case map exists for the user
     # if not, they have not submitted an answer to a question
     try:
@@ -178,7 +176,7 @@ class UELCPageView(LoggedInMixin,
             return (block, last_sibling)
         return False
 
-    def run_section_gatecheck(self, user, path, uloc):
+    def run_section_gatecheck(self, user, path):
         section_gatecheck = self.section.gate_check(self.request.user)
         if not section_gatecheck[0]:
             #gate_section = section_gatecheck[1]
@@ -191,9 +189,6 @@ class UELCPageView(LoggedInMixin,
                 if not block_unlocked:
                     back_url = self.section.get_previous().get_absolute_url()
                     return HttpResponseRedirect(back_url)
-        else:
-            uloc[0].path = path
-            uloc[0].save()
 
     def check_part_path(self, casemap, hand, part):
         if part > 1 and not self.request.user.is_superuser:
@@ -207,6 +202,11 @@ class UELCPageView(LoggedInMixin,
                 return (True, p2_url)
             return [False, p2_url]
         return (False, False)
+
+    def get_library_items(self, case):
+        user = self.request.user
+        library_items = LibraryItem.objects.filter(case=case, user=user)
+        return library_items
 
     def get(self, request, path):
         # skip the first child of part if not admin
@@ -223,8 +223,8 @@ class UELCPageView(LoggedInMixin,
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
             depth=0)[0]
-        casemap = get_user_map(self, request)
-        part = hand.get_part(request, self.section)
+        casemap = get_user_map(hierarchy, request.user)
+        part = hand.get_part_by_section(self.section)
         tree_path = self.check_part_path(casemap, hand, part)
         if tree_path[0]:
             return HttpResponseRedirect(tree_path[1])
@@ -254,7 +254,9 @@ class UELCPageView(LoggedInMixin,
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
         # user decisions.
-        self.run_section_gatecheck(request.user, path, uloc)
+        self.run_section_gatecheck(request.user, path)
+        uloc[0].path = path
+        uloc[0].save()
 
         context = dict(
             section=self.section,
@@ -269,6 +271,7 @@ class UELCPageView(LoggedInMixin,
             case=case,
             case_quizblocks=case_quizblocks,
             casemap=casemap,
+            library_items=self.get_library_items(case),
         )
         context.update(self.get_extra_context())
         return render(request, self.template_name, context)
@@ -346,9 +349,41 @@ class FacilitatorView(LoggedInMixinSuperuser,
             pass
         return
 
-    def post(self, request, path):
-        # need to override the user if submitted by facilitator
-        # user or facilitator has submitted a form. deal with it
+    def post_library_item(self, request):
+        doc = request.FILES.get('doc')
+        name = request.POST.get('name')
+        users = request.POST.getlist('user')
+        case_id = request.POST.get('case')
+        case = Case.objects.get(id=case_id)
+        li = LibraryItem.objects.create(doc=doc, name=name, case=case)
+        li.save()
+        for index in range(len(users)):
+            user = User.objects.get(id=users[index])
+            li.user.add(user)
+
+    def post_library_item_delete(self, request):
+        item_id = request.POST.get('library_item_id')
+        li = LibraryItem.objects.get(id=item_id)
+        li.delete()
+
+    def post_library_item_edit(self, request):
+        doc = request.FILES.get('doc')
+        name = request.POST.get('name')
+        users = request.POST.getlist('user')
+        li_id = request.POST.get('library-item-id')
+        li = LibraryItem.objects.filter(id=li_id)
+        if doc:
+            li.update(doc=doc)
+        if name:
+            li.update(name=name)
+
+        li[0].user.clear()
+        for index in range(len(users)):
+            user = User.objects.get(id=users[index])
+            li[0].user.add(user)
+
+    def post_gate_action(self, request):
+        # posted gate lock/unlock
         user = User.objects.get(id=request.POST.get('user_id'))
         action = request.POST.get('action')
         section = Section.objects.get(id=request.POST.get('section'))
@@ -359,6 +394,18 @@ class FacilitatorView(LoggedInMixinSuperuser,
         if action == 'reset':
             self.set_upv(user, section, "incomplete")
             admin_ajax_reset_page(section, user)
+
+    def post(self, request, path):
+        # posted library items
+        if request.POST.get('library-item'):
+            self.post_library_item(self, request)
+        if request.POST.get('library-item-delete'):
+            self.post_library_item_delete(self, request)
+        if request.POST.get('library-item-edit'):
+            self.post_library_item_edit(self, request)
+
+        if request.POST.get('gate-action'):
+            self.post_gate_action(self, request)
         return HttpResponseRedirect(request.path)
 
     def dispatch(self, request, *args, **kwargs):
@@ -380,21 +427,30 @@ class FacilitatorView(LoggedInMixinSuperuser,
         root = section.hierarchy.get_root()
         hierarchy = section.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
+        library_item = LibraryItem
+        library_items = LibraryItem.objects.all()
         # is there really only going to be one cohort per case?
         cohort = case.cohort
-        cohort_users = cohort.user.all()
+        cohort_users = cohort.user.filter(
+            profile__profile_type="group_user").order_by('username')
         gateblocks = GateBlock.objects.all()
+        hand = UELCHandler.objects.get_or_create(
+            hierarchy=hierarchy,
+            depth=0)[0]
         user_sections = []
         for user in cohort_users:
+            um = get_user_map(hierarchy, user)
+            part_usermap = hand.get_partchoice_by_usermap(um)
             gate_section = [[g.pageblock().section,
-                             g, g.unlocked(user, section),
-                             self.get_tree_depth(g.pageblock().section)]
+                             g,
+                             g.unlocked(user, section),
+                             self.get_tree_depth(g.pageblock().section),
+                             g.status(user, hierarchy),
+                             hand.can_show_gateblock(g.pageblock().section,
+                                                     part_usermap)]
                             for g in gateblocks]
+            gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section])
-
-        for us in user_sections:
-            gate_sections = us[1]
-            gate_sections.sort(cmp=lambda x, y: cmp(x[3], y[3]))
 
         quizzes = [p.block() for p in section.pageblock_set.all()
                    if hasattr(p.block(), 'needs_submit')
@@ -404,7 +460,11 @@ class FacilitatorView(LoggedInMixinSuperuser,
                        user_sections=user_sections,
                        module=section.get_module(),
                        modules=root.get_children(),
-                       root=section.hierarchy.get_root())
+                       root=section.hierarchy.get_root(),
+                       library_item=library_item,
+                       library_items=library_items,
+                       case=case,
+                       )
         context.update(self.get_extra_context())
         return context
 

@@ -413,4 +413,26 @@ method="post">
             {% endif %}
         {% endwith %}
     </ul>
+
+<script>
+jQuery(document).ready(function(){
+  jQuery('.form-control').click(function(){
+    elem = jQuery(this)
+    if(elem.createTextRange) {
+            var range = elem.createTextRange();
+            range.move('character', caretPos);
+            range.select();
+        }
+        else {
+            if(elem.selectionStart) {
+                elem.focus();
+                elem.setSelectionRange(caretPos, caretPos);
+            }
+            else
+                elem.focus();
+        }
+  })
+})
+</script>
+
 {% endblock %}

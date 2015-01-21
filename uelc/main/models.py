@@ -145,7 +145,6 @@ class TextBlockDT(TextBlock):
                 widget=forms.widgets.Textarea(
                     attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}))
             after_decision = forms.ChoiceField(
-                label="dasdasads",
                 choices=CHOICES)
             choice = forms.ChoiceField(choices=CHOICES)
         return AddForm(auto_id=False)
@@ -205,17 +204,24 @@ class UELCHandler(Section):
         vals = [int(i) for i in casemap_value if int(i) > 0]
         return vals
 
-    def get_part(self, request, section):
+    def get_part_by_section(self, section):
         modules = section.get_root().get_children()
+        sec_module = section.get_module()
         part = 0
-        for mod in range(len(modules)):
-            if modules[mod] == section.get_module():
-                part = mod
-
+        for index in range(len(modules)):
+            if modules[index] == sec_module:
+                part = index
         if part == 0:
             return 1
         else:
-            return 2
+            return float(2) + (part * .1)
+
+    def get_partchoice_by_usermap(self, usermap):
+        vals = self.get_vals_from_casemap(usermap.value)
+        part = 1
+        if len(vals) >= 2:
+            part = float(2) + (vals[1] * .1)
+        return part
 
     def get_p1c1(self, casemap_value):
         return self.get_vals_from_casemap(casemap_value)[1]
@@ -248,10 +254,15 @@ class UELCHandler(Section):
                              if int(i) > 0][0]
         except IndexError:
             content_value = 0
-        #is_pre = self.is_pre(request, section, casemap_value)
-        #vals = self.get_vals_from_casemap(casemap_value)
-        #part = self.get_part(request, section)
+
         return content_value
+
+    def can_show_gateblock(self, gate_section, part_usermap):
+        can_show = False
+        part_section = self.get_part_by_section(gate_section)
+        if part_section == 1 or part_section == part_usermap:
+            can_show = True
+        return can_show
 
     def p1pre(self, casemap_value):
         p1pre = 0
@@ -259,3 +270,46 @@ class UELCHandler(Section):
         if len(vals) > 1:
             p1pre = vals[0]
         return p1pre
+
+
+class LibraryItem(models.Model):
+    name = models.TextField(blank=False)
+    doc = models.FileField(upload_to='documents/%Y/%m/%d')
+    user = models.ManyToManyField(User, blank=True)
+    case = models.ForeignKey(Case)
+
+    template_file = 'main/doc.html'
+
+    def __unicode__(self):
+        return self.name
+
+    def display_name(self):
+        return '%s - %s' % (self.name)
+
+    def get_users(self):
+        return self.case.cohort.user.all()
+
+    @classmethod
+    def add_form(self):
+        class AddForm(forms.Form):
+            doc = forms.FileField(label="select doc")
+            name = forms.CharField(widget=forms.widgets.Textarea(
+                attrs={'class': 'library-item-name',
+                       'cols': 10,
+                       'rows': 2
+                       }))
+        return AddForm()
+
+    def edit_form(self):
+        class EditLibraryForm(forms.Form):
+            doc = forms.FileField(initial=self.doc,
+                                  label="Replace image")
+            name = forms.CharField(
+                initial=self.name,
+                widget=forms.widgets.Textarea(
+                    attrs={'class': 'library-item-name',
+                           'cols': 10,
+                           'rows': 2
+                           }))
+
+        return EditLibraryForm()

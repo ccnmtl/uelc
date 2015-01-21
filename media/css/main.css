@@ -184,4 +184,32 @@ ul.pager li.next a.disabled:active {
     margin: 30px auto;
 }
 
-
+/* Facilitator page */
+.library-item-name{
+    width: 250px;
+    height: 75px;   
+}
+input.library-item-submit{
+    display: block;
+}
+#library-add-form .modal-content{
+    padding: 15px;
+}
+.facilitator-usrnm{
+    font-weight: bold;
+}
+ul.gate-section-list{
+    list-style: none;
+}
+.gate-section{
+    float: left
+}
+.gate-button{
+    margin: 6px;
+}
+.glyphicon-trash, .glyphicon-edit{
+    cursor: pointer;
+}
+#library-item-view{
+    margin: 30px 0 0 0;
+}

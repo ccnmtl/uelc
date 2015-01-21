@@ -1,7 +1,7 @@
 from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
-from pagetree.models import PageBlock, Section
+from pagetree.models import PageBlock, Section, UserLocation
 from django.contrib.contenttypes import generic
 from django import forms
 
@@ -35,6 +35,34 @@ class GateBlock(models.Model):
         return GateSubmission.objects.filter(
             gateblock_id=self.id,
             gate_user_id=user.id).count() > 0
+
+    def status(self, user, hierarchy):
+
+        gate_section = self.pageblock().section
+        h_url = hierarchy.get_absolute_url()
+        gs_url = gate_section.get_absolute_url()
+        status = 'None'
+        unlocked = self.unlocked(user, gate_section)
+        if unlocked:
+            status = 'completed'
+        try:
+            uloc = UserLocation.objects.get_or_create(
+                user=user,
+                hierarchy=hierarchy)
+            uloc_path = h_url + uloc[0].path
+            page_status = self.pageblock().section.get_uservisit(user).status
+            if uloc_path == gs_url:
+                status = "waiting"
+                return status
+            # if for some reason the user is re-doing their entry.
+            # if so, the admin would have reset the gates so they
+            # can redo their decision
+            if not unlocked and page_status == "incomplete":
+                status = "in progress"
+                return status
+        except:
+            status = "incomplete"
+        return status
 
     @classmethod
     def add_form(self):
