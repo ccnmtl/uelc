@@ -398,14 +398,14 @@ class FacilitatorView(LoggedInMixinSuperuser,
     def post(self, request, path):
         # posted library items
         if request.POST.get('library-item'):
-            self.post_library_item(self, request)
+            self.post_library_item(request)
         if request.POST.get('library-item-delete'):
-            self.post_library_item_delete(self, request)
+            self.post_library_item_delete(request)
         if request.POST.get('library-item-edit'):
-            self.post_library_item_edit(self, request)
+            self.post_library_item_edit(request)
 
         if request.POST.get('gate-action'):
-            self.post_gate_action(self, request)
+            self.post_gate_action(request)
         return HttpResponseRedirect(request.path)
 
     def dispatch(self, request, *args, **kwargs):
