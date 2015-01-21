@@ -189,8 +189,6 @@ class UELCPageView(LoggedInMixin,
                 if not block_unlocked:
                     back_url = self.section.get_previous().get_absolute_url()
                     return HttpResponseRedirect(back_url)
-        
-            
 
     def check_part_path(self, casemap, hand, part):
         if part > 1 and not self.request.user.is_superuser:
@@ -351,51 +349,63 @@ class FacilitatorView(LoggedInMixinSuperuser,
             pass
         return
 
+    def post_library_item(self, request):
+        doc = request.FILES.get('doc')
+        name = request.POST.get('name')
+        users = request.POST.getlist('user')
+        case_id = request.POST.get('case')
+        case = Case.objects.get(id=case_id)
+        li = LibraryItem.objects.create(doc=doc, name=name, case=case)
+        li.save()
+        for index in range(len(users)):
+            user = User.objects.get(id=users[index])
+            li.user.add(user)
+
+    def post_library_item_delete(self, request):
+        item_id = request.POST.get('library_item_id')
+        li = LibraryItem.objects.get(id=item_id)
+        li.delete()
+
+    def post_library_item_edit(self, request):
+        doc = request.FILES.get('doc')
+        name = request.POST.get('name')
+        users = request.POST.getlist('user')
+        li_id = request.POST.get('library-item-id')
+        li = LibraryItem.objects.filter(id=li_id)
+        if doc:
+            li.update(doc=doc)
+        if name:
+            li.update(name=name)
+
+        li[0].user.clear()
+        for index in range(len(users)):
+            user = User.objects.get(id=users[index])
+            li[0].user.add(user)
+
+    def post_gate_action(self, request):
+        # posted gate lock/unlock
+        user = User.objects.get(id=request.POST.get('user_id'))
+        action = request.POST.get('action')
+        section = Section.objects.get(id=request.POST.get('section'))
+        post = request.POST
+        if action == 'submit':
+            self.set_upv(user, section, "complete")
+            admin_ajax_page_submit(section, user, post)
+        if action == 'reset':
+            self.set_upv(user, section, "incomplete")
+            admin_ajax_reset_page(section, user)
+
     def post(self, request, path):
         # posted library items
         if request.POST.get('library-item'):
-            doc = request.FILES.get('doc')
-            name = request.POST.get('name')
-            users = request.POST.getlist('user')
-            case_id = request.POST.get('case')
-            case = Case.objects.get(id=case_id)
-            li = LibraryItem.objects.create(doc=doc, name=name, case=case)
-            li.save()
-            for index in range(len(users)):
-                user = User.objects.get(id=users[index])
-                li.user.add(user)
-        elif request.POST.get('library-item-delete'):
-            item_id = request.POST.get('library_item_id')
-            li = LibraryItem.objects.get(id=item_id)
-            li.delete()
-        elif request.POST.get('library-item-edit'):
-            doc = request.FILES.get('doc')
-            name = request.POST.get('name')
-            users = request.POST.getlist('user')
-            li_id = request.POST.get('library-item-id')
-            li = LibraryItem.objects.filter(id=li_id)
-            if doc:
-                li.update(doc=doc)
-            if name:
-                li.update(name=name)
-            
-            li[0].user.clear()
-            for index in range(len(users)):
-                user = User.objects.get(id=users[index])
-                li[0].user.add(user)
+            self.post_library_item(self, request)
+        if request.POST.get('library-item-delete'):
+            self.post_library_item_delete(self, request)
+        if request.POST.get('library-item-edit'):
+            self.post_library_item_edit(self, request)
 
-        else:
-        # posted gate lock/unlock
-            user = User.objects.get(id=request.POST.get('user_id'))
-            action = request.POST.get('action')
-            section = Section.objects.get(id=request.POST.get('section'))
-            post = request.POST
-            if action == 'submit':
-                self.set_upv(user, section, "complete")
-                admin_ajax_page_submit(section, user, post)
-            if action == 'reset':
-                self.set_upv(user, section, "incomplete")
-                admin_ajax_reset_page(section, user)
+        if request.POST.get('gate-action'):
+            self.post_gate_action(self, request)
         return HttpResponseRedirect(request.path)
 
     def dispatch(self, request, *args, **kwargs):
@@ -430,13 +440,14 @@ class FacilitatorView(LoggedInMixinSuperuser,
         user_sections = []
         for user in cohort_users:
             um = get_user_map(hierarchy, user)
-            part_usermap = hand.get_partchoice_by_usermap(um)   
+            part_usermap = hand.get_partchoice_by_usermap(um)
             gate_section = [[g.pageblock().section,
                              g,
                              g.unlocked(user, section),
                              self.get_tree_depth(g.pageblock().section),
                              g.status(user, hierarchy),
-                             hand.can_show_gateblock(g.pageblock().section, part_usermap)]
+                             hand.can_show_gateblock(g.pageblock().section,
+                                                     part_usermap)]
                             for g in gateblocks]
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section])

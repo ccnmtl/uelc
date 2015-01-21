@@ -47,8 +47,8 @@ class GateBlock(models.Model):
             status = 'completed'
         try:
             uloc = UserLocation.objects.get_or_create(
-            user=user,
-            hierarchy=hierarchy)
+                user=user,
+                hierarchy=hierarchy)
             uloc_path = h_url + uloc[0].path
             page_status = self.pageblock().section.get_uservisit(user).status
             if uloc_path == gs_url:
@@ -63,7 +63,6 @@ class GateBlock(models.Model):
         except:
             status = "incomplete"
         return status
-
 
     @classmethod
     def add_form(self):

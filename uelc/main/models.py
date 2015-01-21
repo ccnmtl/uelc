@@ -214,13 +214,13 @@ class UELCHandler(Section):
         if part == 0:
             return 1
         else:
-            return float(2) + (part *.1)
+            return float(2) + (part * .1)
 
     def get_partchoice_by_usermap(self, usermap):
         vals = self.get_vals_from_casemap(usermap.value)
         part = 1
         if len(vals) >= 2:
-            part = float(2) + (vals[1] *.1)
+            part = float(2) + (vals[1] * .1)
         return part
 
     def get_p1c1(self, casemap_value):
@@ -261,7 +261,7 @@ class UELCHandler(Section):
         can_show = False
         part_section = self.get_part_by_section(gate_section)
         if part_section == 1 or part_section == part_usermap:
-            can_show = True        
+            can_show = True
         return can_show
 
     def p1pre(self, casemap_value):
@@ -294,8 +294,7 @@ class LibraryItem(models.Model):
         class AddForm(forms.Form):
             doc = forms.FileField(label="select doc")
             name = forms.CharField(widget=forms.widgets.Textarea(
-                attrs={
-                       'class':'library-item-name',
+                attrs={'class': 'library-item-name',
                        'cols': 10,
                        'rows': 2
                        }))
@@ -303,14 +302,14 @@ class LibraryItem(models.Model):
 
     def edit_form(self):
         class EditLibraryForm(forms.Form):
-            doc = forms.FileField(initial=self.doc, 
+            doc = forms.FileField(initial=self.doc,
                                   label="Replace image")
-            name = forms.CharField(initial=self.name,
+            name = forms.CharField(
+                initial=self.name,
                 widget=forms.widgets.Textarea(
-                attrs={
-                       'class':'library-item-name',
-                       'cols': 10,
-                       'rows': 2
-                       }))
+                    attrs={'class': 'library-item-name',
+                           'cols': 10,
+                           'rows': 2
+                           }))
 
         return EditLibraryForm()
