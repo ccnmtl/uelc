@@ -41,7 +41,7 @@ class GateBlock(models.Model):
         gate_section = self.pageblock().section
         h_url = hierarchy.get_absolute_url()
         gs_url = gate_section.get_absolute_url()
-        status = ''
+        status = 'None'
         unlocked = self.unlocked(user, gate_section)
         if unlocked:
             status = 'completed'

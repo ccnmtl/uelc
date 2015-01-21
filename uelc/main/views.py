@@ -352,8 +352,6 @@ class FacilitatorView(LoggedInMixinSuperuser,
         return
 
     def post(self, request, path):
-        # currently only 2 mehtods on the facilitator page
-
         # posted library items
         if request.POST.get('library-item'):
             doc = request.FILES.get('doc')
@@ -380,7 +378,6 @@ class FacilitatorView(LoggedInMixinSuperuser,
                 li.update(doc=doc)
             if name:
                 li.update(name=name)
-
             
             li[0].user.clear()
             for index in range(len(users)):
@@ -424,30 +421,25 @@ class FacilitatorView(LoggedInMixinSuperuser,
         library_items = LibraryItem.objects.all()
         # is there really only going to be one cohort per case?
         cohort = case.cohort
-        cohort_users = cohort.user.all()
+        cohort_users = cohort.user.filter(
+            profile__profile_type="group_user").order_by('username')
         gateblocks = GateBlock.objects.all()
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
             depth=0)[0]
         user_sections = []
         for user in cohort_users:
-            if user.profile.profile_type == "group_user":
-                um = get_user_map(hierarchy, user)
-                part_usermap = hand.get_partchoice_by_usermap(um)
-                #choice = 0
-                #if part > 1:
-                #    choice = int(str(part).split('.').pop())    
-                gate_section = [[g.pageblock().section,
-                                 g, g.unlocked(user, section),
-                                 self.get_tree_depth(g.pageblock().section),
-                                 g.status(user, hierarchy), 
-                                 hand.can_show_gateblock(g.pageblock().section, part_usermap)]
-                                for g in gateblocks]
-                user_sections.append([user, gate_section])
-
-        for us in user_sections:
-            gate_sections = us[1]
-            gate_sections.sort(cmp=lambda x, y: cmp(x[3], y[3]))
+            um = get_user_map(hierarchy, user)
+            part_usermap = hand.get_partchoice_by_usermap(um)   
+            gate_section = [[g.pageblock().section,
+                             g,
+                             g.unlocked(user, section),
+                             self.get_tree_depth(g.pageblock().section),
+                             g.status(user, hierarchy),
+                             hand.can_show_gateblock(g.pageblock().section, part_usermap)]
+                            for g in gateblocks]
+            gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
+            user_sections.append([user, gate_section])
 
         quizzes = [p.block() for p in section.pageblock_set.all()
                    if hasattr(p.block(), 'needs_submit')

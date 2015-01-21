@@ -8,7 +8,7 @@ UELCAdmin = {
             });
 
             this.delete_library_item();
-        },
+        }
 
         this.delete_library_item = function(){
             jQuery('.library-item-admin .glyphicon-trash').click(function(){
@@ -24,10 +24,11 @@ UELCAdmin = {
                     jQuery.post(url,data).done(function() {
                         alert( "Item deleted" );
                         window.location = window.url;
-                    })
-               }
-            })
+                    });
+               };
+            });
         }
+
         this.init();
     }
 };
