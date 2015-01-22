@@ -3,12 +3,14 @@
 {% block content %}
 <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
 <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
-<div id="content">
+<div id="content" class="container">
+<hr class="seperator" />
     {% for u in user_sections %}
     {% if u.0.profile.profile_type == "group_user" %}
+    <div class="col-md-4">
     <!-- user (u.0), gateblocks (u.1) -->
-    <div class="gate-section">Username - <span class="facilitator-usrnm">{{u.0}}</span>
-    <ul class="gate-section-list">
+    <div class="gate-section text-center">Username - <span class="facilitator-usrnm">{{u.0}}</span>
+    <div class="gate-section-list">
         {% for sec in u.1 %}
             {{comment}}
             <!-- 
@@ -18,9 +20,9 @@
             {{endcomment}}
             {% if sec.2 %}
               {% if sec.5 %}
-                <li class="gate-button unlocked">
+                <div class="gate-button unlocked">
                     <form action="." method="post">
-                        <button type="submit" class="btn btn-sm btn-success">Unlocked - {{ sec.1.pageblock.label }} <span class="badge">{{sec.4}}</span></button>
+                        <button type="submit" class="btn btn-sm btn-success btn-block"><span class="pull-left">Unlocked - {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize" style="font-size: 8px;">{{sec.4}}</span></button>
                         <input type="hidden" name="gate-action" value="reset" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />
@@ -29,13 +31,13 @@
                         <input class="post" type="hidden" value="{{sec.0.get_absolute_url}}"> 
                     </form>
                     
-                </li>
+                </div>
                 {% endif %}
             {% else %}
               {% if sec.5 %}
-                <li class="gate-button locked">
+                <div class="gate-button locked">
                     <form action ="." method="post">
-                        <button type ="submit" class="btn btn-sm btn-danger">Locked - {{ sec.1.pageblock.label }} <span class="badge">{{sec.4}}</span></button>
+                        <button type ="submit" class="btn btn-sm btn-danger btn-block"><span class="pull-left">Locked - {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize" style="font-size: 8px;">{{sec.4}}</span></button>
                         <input type="hidden" name="gate-action" value="submit" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />
@@ -43,13 +45,14 @@
                         <input type="hidden" name="block" value="{{sec.1.id}}" />
                         <input class="post" type="hidden" value="{{sec.0.get_absolute_url}}"> 
                     </form>
-                </li>
+                </div>
                 {% endif %}
             {% endif %}
         {% endfor %}
-    </ul>
+    </div>
     </div><!--end gate-section-->
-    {% endif %}
+   </div>
+   {% endif %}
     {% endfor %}
 <br style="clear:both"/>
 <div id="library-content">
@@ -112,8 +115,8 @@
     </div><!--end #library-add-form .modal-->
     {%endfor%}
 </div><!--end #library-content-->
-
-<div id="case-lirary-items" class="col-md-5">
+<hr class="seperator" />
+<div id="case-lirary-items" class="col-md-12">
     <div class="panel panel-default">
   <!-- Default panel contents -->
   <div class="panel-heading">Case Library</div>
