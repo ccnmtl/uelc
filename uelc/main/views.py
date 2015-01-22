@@ -385,7 +385,7 @@ class FacilitatorView(LoggedInMixinSuperuser,
     def post_gate_action(self, request):
         # posted gate lock/unlock
         user = User.objects.get(id=request.POST.get('user_id'))
-        action = request.POST.get('action')
+        action = request.POST.get('gate-action')
         section = Section.objects.get(id=request.POST.get('section'))
         post = request.POST
         if action == 'submit':
