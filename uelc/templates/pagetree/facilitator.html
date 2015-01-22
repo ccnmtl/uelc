@@ -20,7 +20,7 @@
               {% if sec.5 %}
                 <li class="gate-button unlocked">
                     <form action="." method="post">
-                        <button type="submit" class="btn btn-sm btn-success">Unlocked - {{ sec.1.pageblock.label }} <span class="badge">{{sec.4}}</span></button>
+                        <button type="submit" class="btn btn-sm btn-success btn-block"><span class="pull-left">Unlocked - {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize">{{sec.4}}</span></button>
                         <input type="hidden" name="gate-action" value="reset" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />
@@ -35,7 +35,7 @@
               {% if sec.5 %}
                 <li class="gate-button locked">
                     <form action ="." method="post">
-                        <button type ="submit" class="btn btn-sm btn-danger">Locked - {{ sec.1.pageblock.label }} <span class="badge">{{sec.4}}</span></button>
+                        <button type ="submit" class="btn btn-sm btn-danger btn-block"><span class="pull-left">Locked - {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize">{{sec.4}}</span></button>
                         <input type="hidden" name="gate-action" value="submit" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />
