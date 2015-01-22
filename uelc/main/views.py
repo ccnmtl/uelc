@@ -469,6 +469,34 @@ class FacilitatorView(LoggedInMixinSuperuser,
         return context
 
 
+class UELCAdminView(LoggedInMixinSuperuser,
+                    SectionMixin,
+                    TemplateView):
+    template_name = "pagetree/uelc_admin.html"
+    extra_context = dict()
+
+    def dispatch(self, request, *args, **kwargs):
+        #path = kwargs['path']
+        #rv = self.perform_checks(request, path)
+        #if rv is not None:
+        #    return rv
+        return super(UELCAdminView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        '''
+        * get the section of each gateblock
+        * determine number of levels in tree
+        * determine the level and place of the section in the tree
+        '''
+        #path = kwargs['path']
+        path=''
+        user = self.request.user
+        context = dict(user=user,
+                       path=path,
+                       )
+        context.update(self.get_extra_context())
+        return context
+
 @login_required
 def pages_save_edit(request, hierarchy_name, path):
     # do auth on the request if you need the user to be logged in
