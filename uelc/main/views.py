@@ -6,7 +6,7 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from uelc.main.models import Case, CaseMap, UELCHandler, LibraryItem
+from uelc.main.models import Case, CaseMap, UELCHandler, LibraryItem, Cohort
 from gate_block.models import GateBlock, GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
@@ -476,23 +476,39 @@ class UELCAdminView(LoggedInMixinSuperuser,
     extra_context = dict()
 
     def dispatch(self, request, *args, **kwargs):
-        #path = kwargs['path']
+        #path = request.path
         #rv = self.perform_checks(request, path)
         #if rv is not None:
         #    return rv
         return super(UELCAdminView, self).dispatch(request, *args, **kwargs)
 
+    def post_add_case(self, request):
+        casename = request.POST.get('case-name')
+        case = Case.objects.create(name=casename)
+
+    def post(self, request):
+        if request.POST.get('add-case'):
+            self.post_add_case(request)
+        
+        return HttpResponseRedirect(request.path)
+
     def get_context_data(self, *args, **kwargs):
-        '''
-        * get the section of each gateblock
-        * determine number of levels in tree
-        * determine the level and place of the section in the tree
-        '''
-        #path = kwargs['path']
-        path=''
-        user = self.request.user
-        context = dict(user=user,
+        path = self.request.path
+
+        casemodel = Case
+        cohortmodel = Cohort
+        users = User.objects.all()
+        hierarchies = Hierarchy.objects.all()
+        cases = Case.objects.all()
+        cohorts = Cohort.objects.all()
+        #import pdb
+        #pdb.set_trace()
+        context = dict(users=users,
                        path=path,
+                       cases=cases,
+                       casemodel=casemodel,
+                       cohortmodel=cohortmodel,
+                       hierarchies=hierarchies,
                        )
         context.update(self.get_extra_context())
         return context

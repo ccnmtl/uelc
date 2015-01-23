@@ -15,6 +15,16 @@ class Cohort(models.Model):
     def display_name(self):
         return '%s - %s' % (self.name)
 
+    @classmethod
+    def add_form(self):
+        class AddForm(forms.Form):
+            name = forms.CharField(widget=forms.widgets.Input(
+                attrs={'class': 'add-cohort-name'}))
+            user = forms.ModelChoiceField(widget=forms.SelectMultiple(attrs={'class': 'user-select'}),
+                                          queryset=User.objects.all().order_by('username'),
+                                          empty_label=None)
+        return AddForm()
+
 
 class UserProfile(models.Model):
     PROFILE_CHOICES = (
@@ -64,6 +74,17 @@ class Case(models.Model):
 
     def display_name(self):
         return '%s - %s' % (self.name)
+
+    @classmethod
+    def add_form(self):
+        class AddForm(forms.Form):
+            name = forms.CharField(widget=forms.widgets.Input(
+                attrs={'class': 'add-case-name'}))
+            hier = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'hierarchy-select'}),
+                                          queryset=Hierarchy.objects.all().order_by('name'),)
+            cohort = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'cohort-select'}),
+                                          queryset=Cohort.objects.all().order_by('name'),)
+        return AddForm()
 
     @classmethod
     def create(self, cohort, hierarchy):
