@@ -1,14 +1,13 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.models import User
 from django.contrib import admin
-#from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework import routers, serializers, viewsets
-#from pagetree.generic.views import EditView, InstructorView
 from uelc.main import views
 from uelc.main.models import UserProfile
-from uelc.main.views import UELCPageView, UELCEditView, FacilitatorView, UELCAdminView
+from uelc.main.views import (
+    UELCPageView, UELCEditView, FacilitatorView, UELCAdminView)
 import os.path
 admin.autodiscover()
 
