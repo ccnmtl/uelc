@@ -488,14 +488,14 @@ class UELCAdminView(LoggedInMixinSuperuser,
         * determine number of levels in tree
         * determine the level and place of the section in the tree
         '''
-        #path = kwargs['path']
-        path=''
+        path = ''
         user = self.request.user
         context = dict(user=user,
                        path=path,
                        )
         context.update(self.get_extra_context())
         return context
+
 
 @login_required
 def pages_save_edit(request, hierarchy_name, path):
