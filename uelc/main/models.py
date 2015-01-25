@@ -1,8 +1,12 @@
 from django.db import models
 from django import forms
+from django.forms import widgets
+from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 from pagetree.models import Hierarchy, Section
 from pageblocks.models import TextBlock
+
 
 
 class Cohort(models.Model):
@@ -62,6 +66,27 @@ class UserProfile(models.Model):
     def is_group_user(self):
         return self.profile_type == 'GU'
 
+
+class CreateUserForm(UserCreationForm):
+    user_profile = forms.ChoiceField(
+        required=True,
+        widget=forms.Select(attrs={'class': 'create-user-pofile'}),
+                            choices=UserProfile.PROFILE_CHOICES)
+    class Meta:
+        model = User
+        fields = ('username', 'password1', 'password2')
+
+class CreateHierarchyForm(forms.Form):
+    name = forms.CharField(
+        required=True, 
+        widget=forms.widgets.Input(
+        attrs={'class': 'add-hierarchy-name', 'required' : True}))
+
+    url = forms.CharField(
+        required=True,
+        widget=forms.widgets.Input(
+            attrs={'class': 'add-hierarchy-url', 'required' : True}),
+            label = mark_safe('<strong>Url - the base url for your case.</strong>'))
 
 class Case(models.Model):
     name = models.CharField(max_length=255, blank=False)
@@ -146,6 +171,18 @@ class CaseMap(models.Model):
             self.save()
 
 
+class CustomSelectWidgetAD(widgets.Select):
+    def render(self, name, value, attrs=None):
+        return mark_safe(u'''<span>After Decision</span>%s''' %\
+            (super(CustomSelectWidgetAD, self).render(name, value, attrs)))
+
+
+class CustomSelectWidgetAC(widgets.Select):
+    def render(self, name, value, attrs=None):
+        return mark_safe(u'''<span>After Choice</span>%s''' %\
+            (super(CustomSelectWidgetAC, self).render(name, value, attrs)))
+
+
 class TextBlockDT(TextBlock):
     template_file = "pageblocks/textblock.html"
     display_name = "Text BlockDT"
@@ -166,8 +203,11 @@ class TextBlockDT(TextBlock):
                 widget=forms.widgets.Textarea(
                     attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}))
             after_decision = forms.ChoiceField(
-                choices=CHOICES)
-            choice = forms.ChoiceField(choices=CHOICES)
+                choices=CHOICES,
+                widget= CustomSelectWidgetAD)
+            choice = forms.ChoiceField(
+                choices=CHOICES,
+                widget= CustomSelectWidgetAC)
         return AddForm(auto_id=False)
 
     @classmethod
@@ -187,8 +227,11 @@ class TextBlockDT(TextBlock):
                     attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}),
                 initial=self.body)
             after_decision = forms.ChoiceField(choices=CHOICES,
-                                               initial=self.after_decision)
-            choice = forms.ChoiceField(choices=CHOICES, initial=self.choice)
+                                             widget= CustomSelectWidgetAD,
+                                             initial=self.after_decision)
+            choice = forms.ChoiceField(choices=CHOICES,
+                                       initial=self.choice,
+                                       widget= CustomSelectWidgetAC,)
         return EditForm(auto_id=False)
 
     def edit(self, vals, files):

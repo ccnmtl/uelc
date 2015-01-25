@@ -9,27 +9,24 @@
 <div id="hierarchies" class="panel panel-default">
   <div class="panel-heading">Hierarchies</div>
   <div class="panel-body">
-    {% for hier in hierarchies %}
-    {{ hier }}<br/>
-  {% endfor %}
+    <form data-toggle="validator" id="add-hierarchy-form" action="." method="post">
+      {{create_hierarchy_form|bootstrap}}
+      <input type="hidden" name="action" value="hierarchy_callback">
+      <input class="btn btn-primary form-submit" value="Submit">
+    </form>
   </div>
 </div><!--end #hierarchiess-->
 
 <div id="users" class="panel panel-default">
   <div class="panel-heading">Users</div>
   <div class="panel-body">
-    {% for user in users %}
-    {{ user }}<br/>
-  {% endfor %}
+    {{ create_user_form|bootstrap }}
   </div>
 </div><!--end #users-->
 
 <div id="cohorts" class="panel panel-default">
   <div class="panel-heading">Cohorts</div>
   <div class="panel-body">
-    {% for cohort in cohorts %}
-    {{ cohort }}<br/>
-  {% endfor %}
   <form action="." method="post" >
     {{cohortmodel.add_form|bootstrap}}
   </form>
@@ -39,19 +36,61 @@
 <div id="cases" class="panel panel-default">
   <div class="panel-heading">Cases</div>
   <div class="panel-body">
-    {% for case in cases %}
-    {{ case }}<br/>
-  {% endfor %}
   <form action="." method="post" >
     {{casemodel.add_form|bootstrap}}
   </form>
   </div>
 </div><!--end #cases-->
 
-
 <script>
-jQuery('.hierarchy-select').multiselect();
-jQuery('.cohort-select').multiselect();
-jQuery('.user-select').multiselect();
+jQuery(document).ready(function(){
+  // create Admin class
+  var UELCAdmin = function(){
+    this.set_multiselects = function(){
+      jQuery('.hierarchy-select').multiselect();
+      jQuery('.cohort-select').multiselect();
+      jQuery('.user-select').multiselect();
+    },
+    
+    this.form_update = function(form){
+      console.log(form);
+    }
+
+    this.submit = function(form){
+      jQuery.post( "/uelcadmin/", form.serialize(), function(data){
+        console.log(data);
+        window.admin[data.action](data.action_args);
+      });
+    },
+
+    this.add_listeners = function(){
+      jQuery('.form-submit').click(function(){
+        var form = jQuery(this).parent()
+        window.admin.submit(form);
+      })
+    },
+    this.hierarchy_callback = function(data){
+        elem = jQuery('.hierarchy-select');
+        html = '<option value='+data.value+'>'+data.name+'</option>';
+        elem.append(html)
+        jQuery('.hierarchy-select').multiselect('destroy').multiselect('refresh');
+        jQuery('#add-hierarchy-form').trigger("reset");
+
+        alert('Your Hierarchy has been created! It is only available for editing,\
+          so go and add some content! You can access it here,'+data.url+'edit/')
+
+    },
+
+    this.init = function(){
+      this.set_multiselects();
+      this.add_listeners();
+    }
+  }
+
+  //Instatntiate the class
+  window.admin = new UELCAdmin();
+  admin.init();
+
+})
 </script>
 {% endblock %}

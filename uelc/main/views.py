@@ -6,12 +6,14 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from uelc.main.models import Case, CaseMap, UELCHandler, LibraryItem, Cohort
+from uelc.main.models import *
 from gate_block.models import GateBlock, GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseNotFound
 from pagetree.helpers import get_section_from_path
+from django.core import serializers
+import json
 
 
 class LoggedInMixinSuperuser(object):
@@ -434,6 +436,8 @@ class FacilitatorView(LoggedInMixinSuperuser,
         cohort_users = cohort.user.filter(
             profile__profile_type="group_user").order_by('username')
         gateblocks = GateBlock.objects.all()
+        import pdb
+        pdb.set_trace()
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
             depth=0)[0]
@@ -487,9 +491,30 @@ class UELCAdminView(LoggedInMixinSuperuser,
         case = Case.objects.create(name=casename)
 
     def post(self, request):
+        action = ''
+        action_args = ''
+
         if request.POST.get('add-case'):
             self.post_add_case(request)
-        
+        action = request.POST.get('action')
+        if action == "hierarchy_callback":
+            name = request.POST.get('name')
+            url = '/pages/'+request.POST.get('url')+'/'
+            hier = Hierarchy.objects.create(
+                base_url=url,
+                name=name)
+            import pdb
+            pdb.set_trace()
+            hier.save()
+            hier_data = serializers.serialize(
+                'json',
+                [hier, ],
+                fields=('name', 'id', 'base_url'))
+            action_args = dict(
+                name=hier.name, value=hier.pk, url=hier.base_url)
+
+        data = dict(action=action, action_args=action_args)
+        return HttpResponse(json.dumps(data), content_type="application/json")
         return HttpResponseRedirect(request.path)
 
     def get_context_data(self, *args, **kwargs):
@@ -497,17 +522,19 @@ class UELCAdminView(LoggedInMixinSuperuser,
 
         casemodel = Case
         cohortmodel = Cohort
+        create_user_form = CreateUserForm
+        create_hierarchy_form = CreateHierarchyForm
         users = User.objects.all()
         hierarchies = Hierarchy.objects.all()
         cases = Case.objects.all()
         cohorts = Cohort.objects.all()
-        #import pdb
-        #pdb.set_trace()
         context = dict(users=users,
                        path=path,
                        cases=cases,
                        casemodel=casemodel,
                        cohortmodel=cohortmodel,
+                       create_user_form=create_user_form,
+                       create_hierarchy_form=create_hierarchy_form,
                        hierarchies=hierarchies,
                        )
         context.update(self.get_extra_context())
