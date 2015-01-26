@@ -119,7 +119,7 @@ class CaseMap(models.Model):
             self.save()
 
     def clean_value(self):
-        if self.value.split('.') > 1:
+        if len(self.value.split('.')) > 1:
             value = self.value.split('.')[0]
             self.value = value
             self.save()
