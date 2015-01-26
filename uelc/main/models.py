@@ -41,16 +41,16 @@ class UserProfile(models.Model):
         ordering = ["user"]
 
     def display_name(self):
-        return '%s - %s' % (self.user.first_name)
+        return '%s' % (self.user.first_name)
 
     def is_admin(self):
-        return self.profile_type == 'AD'
+        return self.profile_type == 'Administrator'
 
     def is_assistant(self):
-        return self.profile_type == 'AS'
+        return self.profile_type == 'Assistant'
 
     def is_group_user(self):
-        return self.profile_type == 'GU'
+        return self.profile_type == 'Group User'
 
 
 class Case(models.Model):
