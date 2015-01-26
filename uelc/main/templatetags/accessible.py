@@ -55,7 +55,8 @@ def is_section_unlocked(request, section):
 def is_block_on_user_path(request, section, block, casemap_value):
     hand = UELCHandler.objects.get_or_create(
         hierarchy=section.hierarchy,
-        depth=0)[0]
+        depth=0,
+        path=section.hierarchy.base_url)[0]
     can_show = hand.can_show(request, section, casemap_value)
     bl = block.block()
     if hasattr(bl, 'choice') and bl.display_name == 'Text BlockDT':

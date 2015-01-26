@@ -218,11 +218,11 @@ class UELCPageView(LoggedInMixin,
         uloc = UserLocation.objects.get_or_create(
             user=request.user,
             hierarchy=hierarchy)
-
         # handler stuff
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
-            depth=0)[0]
+            depth=0,
+            path=hierarchy.base_url)[0]
         casemap = get_user_map(hierarchy, request.user)
         part = hand.get_part_by_section(self.section)
         tree_path = self.check_part_path(casemap, hand, part)
@@ -436,7 +436,8 @@ class FacilitatorView(LoggedInMixinSuperuser,
         gateblocks = GateBlock.objects.all()
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
-            depth=0)[0]
+            depth=0,
+            path=hierarchy.base_url)[0]
         user_sections = []
         for user in cohort_users:
             um = get_user_map(hierarchy, user)
