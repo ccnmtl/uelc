@@ -9,7 +9,7 @@ jenkins: ./ve/bin/python flake8 jshint jscs validate test
 	./bootstrap.py
 
 test: ./ve/bin/python
-	$(MANAGE) jenkins
+	$(MANAGE) jenkins --pep8-exclude=migrations --enable-coverage --coverage-rcfile=.coveragerc
 
 flake8: ./ve/bin/python
 	$(FLAKE8) $(APP) case_quizblock gate_block --max-complexity=10 --exclude=migrations
