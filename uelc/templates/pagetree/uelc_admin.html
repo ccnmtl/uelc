@@ -2,6 +2,7 @@
 {% load bootstrap %}
 {% block content %}
 <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/jquery.validate.min.js"></script>
 <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
 <p>Welcome,</p>
 <p>This page is for creating Users, Cases, and Cohorts</p>
@@ -12,7 +13,7 @@
     <form data-toggle="validator" id="add-hierarchy-form" action="." method="post">
       {{create_hierarchy_form|bootstrap}}
       <input type="hidden" name="action" value="hierarchy_callback">
-      <input class="btn btn-primary form-submit" value="Submit">
+      <input type="submit" class="btn btn-primary form-submit" value="Submit">
     </form>
   </div>
 </div><!--end #hierarchiess-->
@@ -57,10 +58,47 @@ jQuery(document).ready(function(){
     }
 
     this.submit = function(form){
-      jQuery.post( "/uelcadmin/", form.serialize(), function(data){
-        console.log(data);
-        window.admin[data.action](data.action_args);
-      });
+      jQuery('#add-hierarchy-form').validate({
+        debug: true, 
+          rules: {
+              name: {
+                  minlength: 2,
+                  required: true
+              },
+              url: {
+                  required: true,
+              }
+          },
+          highlight: function (element) {
+              jQuery(element).closest('.form-control').parent().removeClass('success').addClass('has-error');
+          },
+          success: function (element) {
+              jQuery(element).text('OK!').addClass('valid')
+                  .closest('.form-control').parent().removeClass('has-error').addClass('success');
+          },
+          error: function(){
+            alert('problem!')
+          },
+          submitHandler: function(form){
+            jQuery.post( "/uelcadmin/", jQuery(form).serialize(), function(data){
+              console.log(data);
+              window.admin[data.action](data.action_args);
+            });
+          },
+          invalidHandler: function(event, validator) {
+            // 'this' refers to the form
+            var errors = validator.numberOfInvalids();
+            if (errors) {
+              var message = errors == 1
+                ? 'You missed 1 field. It has been highlighted'
+                : 'You missed ' + errors + ' fields. They have been highlighted';
+              $("div.error span").html(message);
+              $("div.error").show();
+            } else {
+              $("div.error").hide();
+            }
+          }
+        });//end validate
     },
 
     this.add_listeners = function(){

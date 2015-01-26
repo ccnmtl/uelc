@@ -490,6 +490,23 @@ class UELCAdminView(LoggedInMixinSuperuser,
         casename = request.POST.get('case-name')
         case = Case.objects.create(name=casename)
 
+    def hierarchy_callback(self, request):
+        name = request.POST.get('name')
+        url = '/pages/'+request.POST.get('url')+'/'
+        hier = Hierarchy.objects.create(
+            base_url=url,
+            name=name)
+        import pdb
+        pdb.set_trace()
+        hier.save()
+        hier_data = serializers.serialize(
+            'json',
+            [hier, ],
+            fields=('name', 'id', 'base_url'))
+        action_args = dict(
+            name=hier.name, value=hier.pk, url=hier.base_url)
+        return action_args
+
     def post(self, request):
         action = ''
         action_args = ''
@@ -497,21 +514,9 @@ class UELCAdminView(LoggedInMixinSuperuser,
         if request.POST.get('add-case'):
             self.post_add_case(request)
         action = request.POST.get('action')
+        method = getattr(self, action)
         if action == "hierarchy_callback":
-            name = request.POST.get('name')
-            url = '/pages/'+request.POST.get('url')+'/'
-            hier = Hierarchy.objects.create(
-                base_url=url,
-                name=name)
-            import pdb
-            pdb.set_trace()
-            hier.save()
-            hier_data = serializers.serialize(
-                'json',
-                [hier, ],
-                fields=('name', 'id', 'base_url'))
-            action_args = dict(
-                name=hier.name, value=hier.pk, url=hier.base_url)
+            action_args = method(request)
 
         data = dict(action=action, action_args=action_args)
         return HttpResponse(json.dumps(data), content_type="application/json")
