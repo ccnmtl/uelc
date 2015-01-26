@@ -66,11 +66,11 @@ class Case(models.Model):
         return '%s - %s' % (self.name)
 
     @classmethod
-    def create(self, cohort, hierarchy):
-        case = self(name=self.name,
-                    hierarchy=self.hierarchy,
-                    cohort=self.cohort)
-        return case
+    def create(self, request):
+        return Case.objects.create(
+            name=request.POST.get('name', ''),
+            hierarchy=request.POST.get('hierarchy', ''),
+            cohort=request.POST.get('cohort', ''))
 
 
 class CaseMap(models.Model):
