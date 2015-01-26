@@ -13,7 +13,7 @@ class Cohort(models.Model):
         return self.name
 
     def display_name(self):
-        return '%s - %s' % (self.name)
+        return '%s' % (self.name)
 
 
 class UserProfile(models.Model):
@@ -63,7 +63,7 @@ class Case(models.Model):
         return self.name
 
     def display_name(self):
-        return '%s - %s' % (self.name)
+        return '%s' % (self.name)
 
     @classmethod
     def create(self, cohort, hierarchy):
@@ -284,7 +284,7 @@ class LibraryItem(models.Model):
         return self.name
 
     def display_name(self):
-        return '%s - %s' % (self.name)
+        return '%s' % (self.name)
 
     def get_users(self):
         return self.case.cohort.user.all()
