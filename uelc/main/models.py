@@ -189,16 +189,6 @@ class UELCHandler(Section):
         in the case map into the path for the user along
         the pagetree
     '''
-    map_obj = dict()
-
-    def populate_map_obj(self, casemap_list):
-        decision_key_list = ['p1pre', 'p1c1', 'p2pre', 'p2c2']
-        decision_val_list = []
-        for i, v in enumerate(casemap_list):
-            if v > 0:
-                decision_val_list.append({'tree_index': i, 'value': v})
-        for i, v in enumerate(decision_val_list):
-            self.map_obj[decision_key_list[i]] = decision_val_list[i]
 
     def get_vals_from_casemap(self, casemap_value):
         vals = [int(i) for i in casemap_value if int(i) > 0]
@@ -225,22 +215,6 @@ class UELCHandler(Section):
 
     def get_p1c1(self, casemap_value):
         return self.get_vals_from_casemap(casemap_value)[1]
-
-    def is_pre(self, request, section, casemap_value):
-        # this returns a list of whether it's a preliminary
-        # question, and the instance # of the question
-        # in the tree
-        # [true, 0]  => p1pre answered
-        # [false, 1] => p1c1 answered
-        # [true, 1]  => p2pre answered
-        # [false, 2] => p2c2 answered
-        is_pre = [True]
-        vals = self.get_vals_from_casemap(casemap_value)
-        if len(vals) % 2 == 0:
-            is_pre[0] = False
-        instance = len(vals) / 2
-        is_pre.append(instance)
-        return is_pre
 
     def can_show(self, request, section, casemap_value):
         cmvl = list(casemap_value)

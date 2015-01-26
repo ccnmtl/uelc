@@ -236,7 +236,7 @@ class UELCPageView(LoggedInMixin,
         self.upv.visit()
         instructor_link = has_responses(self.section)
         case_quizblocks = []
-        #prev_section = self.section.get_previous()
+        
         for block in self.section.pageblock_set.all():
             display_name = block.block().display_name
             # make sure that all pageblocks on page
