@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from pagetree.models import Hierarchy
 from uelc.main.models import (
-    Cohort, UserProfile, Case, CaseMap, TextBlockDT, UELCHandler)
+    Cohort, UserProfile, Case, CaseMap, TextBlockDT, UELCHandler,
+    LibraryItem)
 import factory
 
 
@@ -49,3 +50,9 @@ class UELCHandlerFactory(factory.DjangoModelFactory):
     FACTORY_FOR = UELCHandler
     depth = 1
     hierarchy = factory.SubFactory(HierarchyFactory)
+
+
+class LibraryItemFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = LibraryItem
+    name = factory.Sequence(lambda n: "item %03d" % n)
+    case = factory.SubFactory(CaseFactory)

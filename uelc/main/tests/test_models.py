@@ -1,8 +1,8 @@
 from django.test import TestCase
 from .factories import (
     CohortFactory, UserProfileFactory, CaseFactory, CaseMapFactory,
-    TextBlockDTFactory, UELCHandlerFactory)
-from uelc.main.models import TextBlockDT
+    TextBlockDTFactory, UELCHandlerFactory, LibraryItemFactory)
+from uelc.main.models import TextBlockDT, LibraryItem
 
 
 class CohortTest(TestCase):
@@ -85,3 +85,21 @@ class UELCHandlerTest(TestCase):
             {'p1c1': {'tree_index': 1, 'value': 2},
              'p1pre': {'tree_index': 0, 'value': 1},
              'p2pre': {'tree_index': 2, 'value': 3}})
+
+
+class LibraryItemTest(TestCase):
+    def test_unicode(self):
+        i = LibraryItemFactory()
+        self.assertEqual(str(i), i.name)
+
+    def test_get_users(self):
+        i = LibraryItemFactory()
+        self.assertEqual(i.get_users().count(), 0)
+
+    def test_add_form(self):
+        f = LibraryItem.add_form()
+        self.assertTrue('name' in f.fields)
+
+    def test_edit_form(self):
+        i = LibraryItemFactory()
+        self.assertTrue('name' in i.edit_form().fields)
