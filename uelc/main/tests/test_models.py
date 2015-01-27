@@ -65,6 +65,11 @@ class TextBlockDTTest(TestCase):
         self.assertTrue(t.summary_render().endswith("..."))
 
 
+class DummySection(object):
+    def get_tree(self):
+        return [self]
+
+
 class UELCHandlerTest(TestCase):
     def test_populate_map_obj_empty(self):
         u = UELCHandlerFactory()
@@ -85,6 +90,43 @@ class UELCHandlerTest(TestCase):
             {'p1c1': {'tree_index': 1, 'value': 2},
              'p1pre': {'tree_index': 0, 'value': 1},
              'p2pre': {'tree_index': 2, 'value': 3}})
+
+    def test_get_vals_from_casemap(self):
+        u = UELCHandlerFactory()
+        self.assertEqual(u.get_vals_from_casemap([1]), [1])
+        self.assertEqual(u.get_vals_from_casemap([0, 2, 3]), [2, 3])
+
+    def test_get_partchoice_by_username(self):
+        class DummyUserMap(object):
+            value = [1]
+
+        u = UELCHandlerFactory()
+        self.assertEqual(u.get_partchoice_by_usermap(DummyUserMap()), 1)
+
+        d = DummyUserMap()
+        d.value = [9, 3]
+        r = u.get_partchoice_by_usermap(d)
+        self.assertTrue(2.29 < r < 2.31)
+
+    def test_get_p1c1(self):
+        u = UELCHandlerFactory()
+        self.assertEqual(u.get_p1c1([1, 2]), 2)
+
+    def test_can_show_empty(self):
+        u = UELCHandlerFactory()
+        r = u.can_show(None, DummySection(), [])
+        self.assertEqual(r, 0)
+
+    def test_can_show(self):
+        u = UELCHandlerFactory()
+        r = u.can_show(None, DummySection(), [7])
+        self.assertEqual(r, 7)
+
+    def test_p1pre(self):
+        u = UELCHandlerFactory()
+        self.assertEqual(u.p1pre([]), 0)
+        self.assertEqual(u.p1pre([1]), 0)
+        self.assertEqual(u.p1pre([1, 2]), 1)
 
 
 class LibraryItemTest(TestCase):
