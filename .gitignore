@@ -12,3 +12,4 @@ local_settings.py
 .pydevproject
 .settings
 .idea
+node_modules
