@@ -44,13 +44,13 @@ class UserProfile(models.Model):
         return '%s' % (self.user.first_name)
 
     def is_admin(self):
-        return self.profile_type == 'Administrator'
+        return self.profile_type == 'admin'
 
     def is_assistant(self):
-        return self.profile_type == 'Assistant'
+        return self.profile_type == 'assistant'
 
     def is_group_user(self):
-        return self.profile_type == 'Group User'
+        return self.profile_type == 'group_user'
 
 
 class Case(models.Model):
