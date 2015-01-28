@@ -274,8 +274,6 @@ class UELCPageView(LoggedInMixin,
             library_items=self.get_library_items(case),
         )
         context.update(self.get_extra_context())
-        import pdb
-        pdb.set_trace()
         return render(request, self.template_name, context)
 
     def get_extra_context(self, **kwargs):

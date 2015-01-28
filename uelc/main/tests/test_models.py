@@ -1,10 +1,8 @@
 from django.test import TestCase
-#from django.core.exceptions import ValidationError
 from uelc.main.tests.factories import (
     AdminUserFactory, AdminUpFactory, FacilitatorUpFactory,
     GroupUserFactory, GroupUpFactory, CaseFactory,
     CohortFactory, LibraryItemFactory)
-#from nose.tools import set_trace
 
 
 class BasicModelTest(TestCase):
