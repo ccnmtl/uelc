@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from pagetree.models import Hierarchy
-from uelc.main.models import UserProfile, Case, Cohort, LibraryItem
+from uelc.main.models import (
+    Cohort, UserProfile, Case, CaseMap, TextBlockDT, UELCHandler,
+    LibraryItem)
 import factory
 #from nose.tools import set_trace
 
@@ -44,24 +46,41 @@ class GroupUpFactory(factory.DjangoModelFactory):
     profile_type = 'group_user'
 
 
-class CohortFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = Cohort
-    name = 'main cohort'
-
-
 class HierarchyFactory(factory.DjangoModelFactory):
     FACTORY_FOR = Hierarchy
     base_url = "/"
     name = "main"
 
 
+class CohortFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = Cohort
+    name = factory.Sequence(lambda n: "cohort %03d" % n)
+
+
 class CaseFactory(factory.DjangoModelFactory):
     FACTORY_FOR = Case
+    name = factory.Sequence(lambda n: "case %03d" % n)
     hierarchy = factory.SubFactory(HierarchyFactory)
     cohort = factory.SubFactory(CohortFactory)
-    name = "main case"
+
+
+class CaseMapFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = CaseMap
+    case = factory.SubFactory(CaseFactory)
+    user = factory.SubFactory(GroupUserFactory)
+
+
+class TextBlockDTFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = TextBlockDT
+
+
+class UELCHandlerFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = UELCHandler
+    depth = 1
+    hierarchy = factory.SubFactory(HierarchyFactory)
 
 
 class LibraryItemFactory(factory.DjangoModelFactory):
     FACTORY_FOR = LibraryItem
-    name = 'file1'
+    name = factory.Sequence(lambda n: "item %03d" % n)
+    case = factory.SubFactory(CaseFactory)
