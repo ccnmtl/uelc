@@ -2,20 +2,30 @@ MANAGE=./manage.py
 APP=uelc
 FLAKE8=./ve/bin/flake8
 
-jenkins: ./ve/bin/python validate test flake8
+jenkins: ./ve/bin/python flake8 jshint jscs validate test
 
 ./ve/bin/python: requirements.txt bootstrap.py virtualenv.py
 	chmod +x manage.py bootstrap.py
 	./bootstrap.py
 
 test: ./ve/bin/python
-	$(MANAGE) jenkins
+	$(MANAGE) jenkins --pep8-exclude=migrations --enable-coverage --coverage-rcfile=.coveragerc
 
 flake8: ./ve/bin/python
 	$(FLAKE8) $(APP) case_quizblock gate_block --max-complexity=10 --exclude=migrations
 
 jshint: node_modules/jshint/bin/jshint
-	#./node_modules/jshint/bin/jshint media/js/uelc_admin media/quizblock_random/
+	./node_modules/jshint/bin/jshint media/js/uelc_admin
+
+jscs: node_modules/jscs/bin/jscs
+	./node_modules/jscs/bin/jscs media/js/uelc_admin
+
+node_modules/jshint/bin/jshint:
+	npm install jshint --prefix .
+
+node_modules/jscs/bin/jscs:
+	npm install jscs@1.8.1 --prefix .
+
 
 runserver: ./ve/bin/python validate
 	$(MANAGE) runserver

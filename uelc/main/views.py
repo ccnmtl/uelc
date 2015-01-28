@@ -220,11 +220,11 @@ class UELCPageView(LoggedInMixin,
         uloc = UserLocation.objects.get_or_create(
             user=request.user,
             hierarchy=hierarchy)
-
         # handler stuff
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
-            depth=0)[0]
+            depth=0,
+            path=hierarchy.base_url)[0]
         casemap = get_user_map(hierarchy, request.user)
         part = hand.get_part_by_section(self.section)
         tree_path = self.check_part_path(casemap, hand, part)
@@ -238,7 +238,7 @@ class UELCPageView(LoggedInMixin,
         self.upv.visit()
         instructor_link = has_responses(self.section)
         case_quizblocks = []
-        #prev_section = self.section.get_previous()
+
         for block in self.section.pageblock_set.all():
             display_name = block.block().display_name
             # make sure that all pageblocks on page
@@ -440,7 +440,8 @@ class FacilitatorView(LoggedInMixinSuperuser,
         pdb.set_trace()
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
-            depth=0)[0]
+            depth=0,
+            path=hierarchy.base_url)[0]
         user_sections = []
         for user in cohort_users:
             um = get_user_map(hierarchy, user)
@@ -524,7 +525,6 @@ class UELCAdminView(LoggedInMixinSuperuser,
 
     def get_context_data(self, *args, **kwargs):
         path = self.request.path
-
         casemodel = Case
         cohortmodel = Cohort
         create_user_form = CreateUserForm
@@ -544,6 +544,7 @@ class UELCAdminView(LoggedInMixinSuperuser,
                        )
         context.update(self.get_extra_context())
         return context
+
 
 @login_required
 def pages_save_edit(request, hierarchy_name, path):

@@ -17,7 +17,7 @@ class Cohort(models.Model):
         return self.name
 
     def display_name(self):
-        return '%s - %s' % (self.name)
+        return '%s' % (self.name)
 
     @classmethod
     def add_form(self):
@@ -55,16 +55,16 @@ class UserProfile(models.Model):
         ordering = ["user"]
 
     def display_name(self):
-        return '%s - %s' % (self.user.first_name)
+        return '%s' % (self.user.first_name)
 
     def is_admin(self):
-        return self.profile_type == 'AD'
+        return self.profile_type == 'admin'
 
     def is_assistant(self):
-        return self.profile_type == 'AS'
+        return self.profile_type == 'assistant'
 
     def is_group_user(self):
-        return self.profile_type == 'GU'
+        return self.profile_type == 'group_user'
 
 
 class CreateUserForm(UserCreationForm):
@@ -98,7 +98,7 @@ class Case(models.Model):
         return self.name
 
     def display_name(self):
-        return '%s - %s' % (self.name)
+        return '%s' % (self.name)
 
     @classmethod
     def add_form(self):
@@ -110,13 +110,6 @@ class Case(models.Model):
             cohort = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'cohort-select'}),
                                           queryset=Cohort.objects.all().order_by('name'),)
         return AddForm()
-
-    @classmethod
-    def create(self, cohort, hierarchy):
-        case = self(name=self.name,
-                    hierarchy=self.hierarchy,
-                    cohort=self.cohort)
-        return case
 
 
 class CaseMap(models.Model):
@@ -165,7 +158,7 @@ class CaseMap(models.Model):
             self.save()
 
     def clean_value(self):
-        if self.value.split('.') > 1:
+        if len(self.value.split('.')) > 1:
             value = self.value.split('.')[0]
             self.value = value
             self.save()
@@ -253,16 +246,6 @@ class UELCHandler(Section):
         in the case map into the path for the user along
         the pagetree
     '''
-    map_obj = dict()
-
-    def populate_map_obj(self, casemap_list):
-        decision_key_list = ['p1pre', 'p1c1', 'p2pre', 'p2c2']
-        decision_val_list = []
-        for i, v in enumerate(casemap_list):
-            if v > 0:
-                decision_val_list.append({'tree_index': i, 'value': v})
-        for i, v in enumerate(decision_val_list):
-            self.map_obj[decision_key_list[i]] = decision_val_list[i]
 
     def get_vals_from_casemap(self, casemap_value):
         vals = [int(i) for i in casemap_value if int(i) > 0]
@@ -289,22 +272,6 @@ class UELCHandler(Section):
 
     def get_p1c1(self, casemap_value):
         return self.get_vals_from_casemap(casemap_value)[1]
-
-    def is_pre(self, request, section, casemap_value):
-        # this returns a list of whether it's a preliminary
-        # question, and the instance # of the question
-        # in the tree
-        # [true, 0]  => p1pre answered
-        # [false, 1] => p1c1 answered
-        # [true, 1]  => p2pre answered
-        # [false, 2] => p2c2 answered
-        is_pre = [True]
-        vals = self.get_vals_from_casemap(casemap_value)
-        if len(vals) % 2 == 0:
-            is_pre[0] = False
-        instance = len(vals) / 2
-        is_pre.append(instance)
-        return is_pre
 
     def can_show(self, request, section, casemap_value):
         cmvl = list(casemap_value)
@@ -348,7 +315,7 @@ class LibraryItem(models.Model):
         return self.name
 
     def display_name(self):
-        return '%s - %s' % (self.name)
+        return '%s' % (self.name)
 
     def get_users(self):
         return self.case.cohort.user.all()
