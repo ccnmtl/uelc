@@ -13,7 +13,7 @@ class Cohort(models.Model):
         return self.name
 
     def display_name(self):
-        return '%s - %s' % (self.name)
+        return '%s' % (self.name)
 
 
 class UserProfile(models.Model):
@@ -41,16 +41,16 @@ class UserProfile(models.Model):
         ordering = ["user"]
 
     def display_name(self):
-        return '%s - %s' % (self.user.first_name)
+        return '%s' % (self.user.first_name)
 
     def is_admin(self):
-        return self.profile_type == 'AD'
+        return self.profile_type == 'admin'
 
     def is_assistant(self):
-        return self.profile_type == 'AS'
+        return self.profile_type == 'assistant'
 
     def is_group_user(self):
-        return self.profile_type == 'GU'
+        return self.profile_type == 'group_user'
 
 
 class Case(models.Model):
@@ -251,7 +251,7 @@ class LibraryItem(models.Model):
         return self.name
 
     def display_name(self):
-        return '%s - %s' % (self.name)
+        return '%s' % (self.name)
 
     def get_users(self):
         return self.case.cohort.user.all()

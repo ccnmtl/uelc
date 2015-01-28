@@ -1,6 +1,6 @@
 from django.test import TestCase
 from gate_block.models import GateBlock
-from uelc.main.tests.factories import UserFactory
+from uelc.main.tests.factories import GroupUserFactory
 
 
 class GateBlockTest(TestCase):
@@ -50,5 +50,5 @@ class GateBlockTest(TestCase):
 
     def test_unlocked(self):
         tb = GateBlock.objects.create(body='foo')
-        u = UserFactory()
+        u = GroupUserFactory()
         self.assertFalse(tb.unlocked(u, None))
