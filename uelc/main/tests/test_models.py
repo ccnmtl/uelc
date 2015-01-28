@@ -1,29 +1,63 @@
 from django.test import TestCase
-from .factories import (
-    CohortFactory, UserProfileFactory, CaseFactory, CaseMapFactory,
-    TextBlockDTFactory, UELCHandlerFactory, LibraryItemFactory)
+from uelc.main.tests.factories import (
+    AdminUserFactory, AdminUpFactory, FacilitatorUpFactory,
+    GroupUserFactory, GroupUpFactory, CaseFactory,
+    CohortFactory, LibraryItemFactory, CaseMapFactory,
+    TextBlockDTFactory, UELCHandlerFactory)
 from uelc.main.models import TextBlockDT, LibraryItem
+
+
+class BasicModelTest(TestCase):
+
+    def setup(self):
+        self.user = AdminUserFactory()
+
+
+class TestAdminUp(TestCase):
+
+    def test_unicode(self):
+        upro = AdminUpFactory()
+        self.assertEqual(upro.display_name(),
+                         upro.user.first_name)
+        self.assertTrue(upro.is_admin())
+
+
+class TestFacilitatorUp(TestCase):
+
+    def test_unicode(self):
+        upro = FacilitatorUpFactory()
+        self.assertEqual(upro.display_name(),
+                         upro.user.first_name)
+        self.assertTrue(upro.is_assistant())
+
+
+class TestGroupUp(TestCase):
+
+    def test_unicode(self):
+        upro = GroupUpFactory()
+        self.assertEqual(upro.display_name(),
+                         upro.user.first_name)
+        self.assertTrue(upro.is_group_user())
+        self.assertTrue(str(upro).startswith("user"))
+
+    def test_cohorts(self):
+        upro = GroupUpFactory()
+        self.assertEqual(upro.cohorts, "")
 
 
 class CohortTest(TestCase):
     def test_unicode(self):
-        c = CohortFactory()
-        self.assertTrue(str(c).startswith("cohort "))
-
-
-class UserProfileTest(TestCase):
-    def test_cohorts(self):
-        up = UserProfileFactory()
-        self.assertEqual(up.cohorts, "")
-
-    def test_unicode(self):
-        up = UserProfileFactory()
-        self.assertTrue(str(up).startswith("user"))
+        user = GroupUserFactory()
+        cohort = CohortFactory()
+        cohort.user.add(user)
+        self.assertEqual(cohort.display_name(), cohort.name)
+        self.assertTrue(str(cohort).startswith("cohort "))
 
 
 class CaseTest(TestCase):
     def test_unicode(self):
         c = CaseFactory()
+        self.assertEqual(c.display_name(), c.name)
         self.assertTrue(str(c).startswith("case "))
 
 
@@ -71,25 +105,6 @@ class DummySection(object):
 
 
 class UELCHandlerTest(TestCase):
-    def test_populate_map_obj_empty(self):
-        u = UELCHandlerFactory()
-        # have to be careful to explicitly reset map_obj
-        # see PMT #99062
-        u.map_obj = {}
-        u.populate_map_obj([])
-        self.assertEqual(u.map_obj, {})
-
-    def test_populate_map_obj(self):
-        u = UELCHandlerFactory()
-        # have to be careful to explicitly reset map_obj
-        # see PMT #99062
-        u.map_obj = {}
-        u.populate_map_obj([1, 2, 3])
-        self.assertEqual(
-            u.map_obj,
-            {'p1c1': {'tree_index': 1, 'value': 2},
-             'p1pre': {'tree_index': 0, 'value': 1},
-             'p2pre': {'tree_index': 2, 'value': 3}})
 
     def test_get_vals_from_casemap(self):
         u = UELCHandlerFactory()
@@ -131,8 +146,9 @@ class UELCHandlerTest(TestCase):
 
 class LibraryItemTest(TestCase):
     def test_unicode(self):
-        i = LibraryItemFactory()
-        self.assertEqual(str(i), i.name)
+        li = LibraryItemFactory(case=CaseFactory())
+        self.assertEqual(li.display_name(), li.name)
+        self.assertEqual(str(li), li.name)
 
     def test_get_users(self):
         i = LibraryItemFactory()

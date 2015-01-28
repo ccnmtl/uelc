@@ -4,12 +4,46 @@ from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap, TextBlockDT, UELCHandler,
     LibraryItem)
 import factory
+#from nose.tools import set_trace
 
 
-class UserFactory(factory.DjangoModelFactory):
+class AdminUserFactory(factory.DjangoModelFactory):
     FACTORY_FOR = User
     username = factory.Sequence(lambda n: "user%03d" % n)
     is_staff = True
+    first_name = 'admin user'
+
+
+class FacilitatorUserFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = User
+    username = factory.Sequence(lambda n: "user%03d" % n)
+    is_staff = False
+    first_name = 'facilitator user'
+
+
+class GroupUserFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = User
+    username = factory.Sequence(lambda n: "user%03d" % n)
+    is_staff = False
+    first_name = 'group user'
+
+
+class AdminUpFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = UserProfile
+    user = factory.SubFactory(AdminUserFactory)
+    profile_type = 'admin'
+
+
+class FacilitatorUpFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = UserProfile
+    user = factory.SubFactory(FacilitatorUserFactory)
+    profile_type = 'assistant'
+
+
+class GroupUpFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = UserProfile
+    user = factory.SubFactory(GroupUserFactory)
+    profile_type = 'group_user'
 
 
 class HierarchyFactory(factory.DjangoModelFactory):
@@ -23,12 +57,6 @@ class CohortFactory(factory.DjangoModelFactory):
     name = factory.Sequence(lambda n: "cohort %03d" % n)
 
 
-class UserProfileFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = UserProfile
-    user = factory.SubFactory(UserFactory)
-    profile_type = "admin"
-
-
 class CaseFactory(factory.DjangoModelFactory):
     FACTORY_FOR = Case
     name = factory.Sequence(lambda n: "case %03d" % n)
@@ -39,7 +67,7 @@ class CaseFactory(factory.DjangoModelFactory):
 class CaseMapFactory(factory.DjangoModelFactory):
     FACTORY_FOR = CaseMap
     case = factory.SubFactory(CaseFactory)
-    user = factory.SubFactory(UserFactory)
+    user = factory.SubFactory(GroupUserFactory)
 
 
 class TextBlockDTFactory(factory.DjangoModelFactory):
