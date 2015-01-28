@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from pagetree.models import Hierarchy
 from uelc.main.models import UserProfile, Case, Cohort, LibraryItem
 import factory
-from nose.tools import set_trace
+#from nose.tools import set_trace
 
 
 class UserFactory(factory.DjangoModelFactory):
