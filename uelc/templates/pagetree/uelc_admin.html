@@ -60,7 +60,7 @@ jQuery(document).ready(function(){
       jQuery('.cohort-select').multiselect();
       jQuery('.user-select').multiselect();
       jQuery('.create-user-profile').multiselect();
-      
+
     },
     
     this.formUpdate = function(form){
@@ -81,14 +81,14 @@ jQuery(document).ready(function(){
 
           rules: {
               name: {
-                  minlength: 2,
+                  minlength: 3,
                   required: true
               },
               url: {
                   required: true,
               },
               username:{
-                minlength: 2,
+                minlength: 3,
                 required: true,
               },
               password1:{
@@ -100,11 +100,15 @@ jQuery(document).ready(function(){
                 required: true,
                 equalTo : "#id_password1",
               },
-              cohort: "required",
+              user: "required",
               hierarchy: "required",
+              cohort: {
+                minslength: 3,
+                required:true,
+              }
           },          
-          ignore: ':hidden:not("#id_cohort")', //Tells it to check the hidden select
-          ignore: ':hidden:not("#id_cohort")', //Tells it to check the hidden select
+          //ignore: '.ignore',
+          
           errorClass: 'has-error',
 
           highlight: function (element) {
@@ -121,19 +125,6 @@ jQuery(document).ready(function(){
               window.admin[data.action](data.action_args);
             });
           },
-          invalidHandler: function(event, validator) {
-            // 'this' refers to the form
-            var errors = validator.numberOfInvalids();
-            if (errors) {
-              var message = errors == 1
-                ? 'You missed 1 field. It has been highlighted'
-                : 'You missed ' + errors + ' fields. They have been highlighted';
-              $("div.error span").html(message);
-              $("div.error").show();
-            } else {
-              $("div.error").hide();
-            }
-          }
         });//end validate
     },
 

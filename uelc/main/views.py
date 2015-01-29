@@ -533,9 +533,10 @@ class UELCAdminView(LoggedInMixinSuperuser,
         name = request.POST.get('name', '') 
         users = request.POST.getlist('user', '')
         cohort_exists = Cohort.objects.filter(Q(name=name))
-        if len(cohort_exists) > 0:
-            action_args = dict(error="A cohort with that name already exists! Please change the name,\
-                                      or use the existing cohort.")
+        if len(cohort_exists) > 0 or len(users) == 0:
+            cohort_message = "A cohort with that name already exists! Please change the name,\
+                              or use the existing cohort."
+            action_args = dict(error="")
         else:
             cohort = Cohort.objects.create(name=name)
             for user in users:
