@@ -533,17 +533,37 @@ class UELCAdminView(LoggedInMixinSuperuser,
         name = request.POST.get('name', '') 
         users = request.POST.getlist('user', '')
         cohort_exists = Cohort.objects.filter(Q(name=name))
-        if len(cohort_exists) > 0 or len(users) == 0:
-            cohort_message = "A cohort with that name already exists! Please change the name,\
-                              or use the existing cohort."
-            action_args = dict(error="")
-        else:
-            cohort = Cohort.objects.create(name=name)
-            for user in users:
-                usr = User.objects.get(id=user)
-                cohort.user.add(usr)
-            cohort.save()
-            action_args=dict(cohort=cohort.id, name=cohort.name, error=None)
+        if len(cohort_exists) > 0:
+            action_args = dict(error="A cohort with that name already exists! Please change the name,\
+                              or use the existing cohort.")
+            return action_args
+        if len(users) == 0:
+            action_args = dict(error="Please add at least one user to the cohort.")
+            return action_args
+
+        cohort = Cohort.objects.create(name=name)
+        for user in users:
+            usr = User.objects.get(id=user)
+            cohort.user.add(usr)
+        cohort.save()
+        action_args=dict(cohort=cohort.id, name=cohort.name, error=None)
+        return action_args
+
+    def createCaseCallback(self, request):
+        name = request.POST.get('name', '')
+        hierarchy = request.POST.get('hierarchy', '')
+        cohort = request.POST.get('cohort', '')
+        case_exists = Case.objects.filter(Q(name=name))
+        if len(case_exists):
+            action_args = dict(error="Case already exists! Please use existing case or rename.")
+            return action_args
+        if hierarchy =="" or cohort=="":
+            action_args = dict(error="Please make sure a hierarchy and cohort is selected")
+            return action_args
+        hier_obj = Hierarchy.objects.get(id=hierarchy)
+        coh_obj = Cohort.objects.get(id=cohort)    
+        Case.objects.create(name=name, hierarchy=hier_obj, cohort=coh_obj)
+        action_args=dict(error=None)
         return action_args
 
     def post(self, request):

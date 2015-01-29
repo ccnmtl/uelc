@@ -107,7 +107,8 @@ jQuery(document).ready(function(){
                 required:true,
               }
           },          
-          //ignore: '.ignore',
+          
+          ignore: '.ignore',
           
           errorClass: 'has-error',
 
@@ -183,6 +184,7 @@ jQuery(document).ready(function(){
           window.admin.highlight(this);  
         })
         alert(data.error);
+
       }else{
         // success
         elem = jQuery('.cohort-select');
@@ -195,6 +197,25 @@ jQuery(document).ready(function(){
         })
         alert('Cohort has been created!');
         jQuery('.user-select').multiselect('destroy').multiselect('refresh');
+      }
+    },
+
+    this.createCaseCallback = function(data){
+      if(data.error){
+        jQuery('#add-case-form').find('input.form-control').each(function(){
+          window.admin.highlight(this);  
+        })
+        alert(data.error);
+        
+      }else{
+        // success
+        jQuery('#add-case-form').trigger("reset");
+        jQuery('#add-case-form').find('input.form-control').each(function(){
+          window.admin.removeHighlight(this);  
+        })
+        jQuery('.cohort-select').multiselect('destroy').multiselect('refresh');
+        jQuery('.hierarchy-select').multiselect('destroy').multiselect('refresh');
+        alert('Case has been created!');
       }
     },
 
