@@ -55,7 +55,7 @@ jQuery(document).ready(function(){
       jQuery('.hierarchy-select').multiselect();
       jQuery('.cohort-select').multiselect();
       jQuery('.user-select').multiselect();
-      jQuery('.create-user-pofile').multiselect();
+      jQuery('.create-user-profile').multiselect();
       
     },
     
@@ -68,12 +68,11 @@ jQuery(document).ready(function(){
     },
 
     this.removeHighlight = function(element){
-      jQuery(element).addClass('valid')
-                  .closest('.form-control').parent().removeClass('has-error').addClass('success');
+      console.log(element);
+      jQuery(element).addClass('valid').parent().removeClass('has-error').addClass('success');
     }
 
     this.submit = function(form){
-      console.log(form);
       jQuery(form).validate({
         debug: true, 
           rules: {
@@ -94,6 +93,7 @@ jQuery(document).ready(function(){
               },
               password2:{
                 minlength: 3,
+                required: true,
                 equalTo : "#id_password1"
               }
           },
@@ -133,6 +133,7 @@ jQuery(document).ready(function(){
         window.admin.submit(form);
       })
     },
+
     this.hierarchyCallback = function(data){
       if(data.error){
         jQuery('#add-hierarchy-form').find('input.form-control').each(function(){
@@ -155,19 +156,31 @@ jQuery(document).ready(function(){
     },
 
     this.createUserCallback = function(data){
-      elem = jQuery('.user-select');
-      html = '<option value='+data.value+'>'+data.name+'</option>';
-      elem.append(html)
-      jQuery('.user-select').multiselect('destroy').multiselect('refresh');
-      jQuery('#add-hierarchy-form').trigger("reset");
-      alert('created user');
-    }
+      if(data.error){
+
+        jQuery('.create-user-profile').parent().parent().addClass('has-error')
+        alert(data.error);
+      }else{
+        elem = jQuery('.user-select');
+        html = '<option value='+data.user+'>'+data.username+'</option>';
+        elem.append(html)
+        jQuery('.user-select').multiselect('destroy').multiselect('refresh');
+        jQuery('#add-user-form').trigger("reset");
+        jQuery('.create-user-profile').multiselect('destroy').multiselect('refresh');
+        jQuery('.create-user-profile').parent().parent().removeClass('has-error')
+        jQuery('#add-user-form').find('input.form-control').each(function(){
+          window.admin.removeHighlight(this);  
+        })
+        alert('created user');
+        
+      }
+    },
 
     this.init = function(){
       this.setMultiselects();
       this.addListeners();
     }
-  }
+  };
 
   //Instatntiate the class
   window.admin = new UELCAdmin();

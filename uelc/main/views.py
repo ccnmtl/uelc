@@ -14,6 +14,7 @@ from django.http.response import HttpResponseNotFound
 from pagetree.helpers import get_section_from_path
 from django.core import serializers
 from django.db.models import Q
+from django.contrib.auth.hashers import make_password
 import json
 
 
@@ -491,8 +492,8 @@ class UELCAdminView(LoggedInMixinSuperuser,
         case = Case.objects.create(name=casename)
 
     def hierarchyCallback(self, request):
-        name = request.POST.get('name')
-        url = '/pages/'+request.POST.get('url')+'/'
+        name = request.POST.get('name', '')
+        url = '/pages/'+request.POST.get('url', '')+'/'
         hier = Hierarchy.objects.filter(Q(base_url=url) | Q(name=name))
 
         if len(hier) > 0:
@@ -512,19 +513,28 @@ class UELCAdminView(LoggedInMixinSuperuser,
             name=hier.name, value=hier.pk, url=hier.base_url, error=None)
         return action_args
 
-    def create_user_callback(self, request):
-        a =1
+    def createUserCallback(self, request):
+        username = request.POST.get('username', '')
+        password = make_password(request.POST.get('password1', ''))
+        profile_type = request.POST.get('user_profile', '')
+        user_exists = User.objects.filter(Q(username=username))
+        if len(user_exists) == 0 and not profile_type == "":
+            user = User.objects.create(username=username, password=password)
+            usrpro = UserProfile.objects.create(user=user, profile_type = profile_type)
+            action_args = dict(
+                user=user.pk, username=username, error=None)
+        if  profile_type == "":
+            action_args = dict(error="Please choose a user profile!")
+        if len(user_exists) > 0:
+            action_args = dict(error="That username already exists! Please enter a new one.")
+        return action_args
 
     def post(self, request):
         action = ''
         action_args = ''
-
-        if request.POST.get('add-case'):
-            self.post_add_case(request)
-        action = request.POST.get('action')
+        action = request.POST.get('action', '')
         method = getattr(self, action)
-        if action == "hierarchyCallback":
-            action_args = method(request)
+        action_args = method(request)
 
         data = dict(action=action, action_args=action_args)
         return HttpResponse(json.dumps(data), content_type="application/json")
