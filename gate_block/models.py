@@ -102,6 +102,11 @@ class GateBlock(models.Model):
             GateSubmission.objects.create(gateblock_id=self.id,
                                           gate_user_id=user.id)
 
+    def submit(self, user, data):
+        if len(data.keys()) > 0:
+            GateSubmission.objects.create(gateblock_id=self.id,
+                                          gate_user_id=user.id)
+
 
 class GateSubmission(models.Model):
     gateblock = models.ForeignKey(GateBlock)
