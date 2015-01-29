@@ -75,8 +75,8 @@ class CreateUserForm(UserCreationForm):
             attrs={'class': 'create-user-profile', 'required': True}),
         choices=UserProfile.PROFILE_CHOICES)
     username = forms.CharField(widget=forms.widgets.Input(attrs={'class': 'add-user-username'}))
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'add-user-password1', 'type':'password'}))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'add-user-password2', 'type':'password', 'data-match':"#id_password1"}))
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'class': 'add-user-password1', 'type':'password',}))
+    password2 = forms.CharField(label="Password confirm",widget=forms.PasswordInput(attrs={'class': 'add-user-password2', 'type':'password', 'data-match':"#id_password1"}))
     
     class Meta:
         model = User

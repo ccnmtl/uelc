@@ -32,8 +32,10 @@
 <div id="cohorts" class="panel panel-default">
   <div class="panel-heading">Cohorts</div>
   <div class="panel-body">
-  <form action="." method="post" >
+  <form role="form" data-toggle="validator" id="add-cohort-form" action="." method="post">
     {{cohortmodel.add_form|bootstrap}}
+      <input type="hidden" name="action" value="createCohortCallback">
+      <input type="submit" class="btn btn-primary form-submit" value="Submit">
   </form>
   </div>
 </div><!--end #cohorts-->
@@ -173,6 +175,27 @@ jQuery(document).ready(function(){
         })
         alert('created user');
         
+      }
+    },
+
+    this.createCohortCallback = function(data){
+      if(data.error){
+        jQuery('#add-cohort-form').find('input.form-control').each(function(){
+          window.admin.highlight(this);  
+        })
+        alert(data.error);
+      }else{
+        // success
+        elem = jQuery('.cohort-select');
+        html = '<option value='+data.cohort+'>'+data.name+'</option>';
+        elem.append(html)
+        jQuery('.cohort-select').multiselect('destroy').multiselect('refresh');
+        jQuery('#add-cohort-form').trigger("reset");
+        jQuery('#add-cohort-form').find('input.form-control').each(function(){
+          window.admin.removeHighlight(this);  
+        })
+        alert('Cohort has been created!');
+        jQuery('.user-select').multiselect('destroy').multiselect('refresh');
       }
     },
 

@@ -497,8 +497,8 @@ class UELCAdminView(LoggedInMixinSuperuser,
         hier = Hierarchy.objects.filter(Q(base_url=url) | Q(name=name))
 
         if len(hier) > 0:
-            action_args = dict(error="Hierarchy exists! Please use the exisiting one,\
-                                      or create one with a different name and url.")
+            action_args = dict(
+                error="Hierarchy exists! Please use the exisiting one, or create one with a different name and url.")
             return action_args
 
         hier = Hierarchy.objects.create(
@@ -527,6 +527,22 @@ class UELCAdminView(LoggedInMixinSuperuser,
             action_args = dict(error="Please choose a user profile!")
         if len(user_exists) > 0:
             action_args = dict(error="That username already exists! Please enter a new one.")
+        return action_args
+
+    def createCohortCallback(self, request):
+        name = request.POST.get('name', '') 
+        users = request.POST.getlist('user', '')
+        cohort_exists = Cohort.objects.filter(Q(name=name))
+        if len(cohort_exists) > 0:
+            action_args = dict(error="A cohort with that name already exists! Please change the name,\
+                                      or use the existing cohort.")
+        else:
+            cohort = Cohort.objects.create(name=name)
+            for user in users:
+                usr = User.objects.get(id=user)
+                cohort.user.add(usr)
+            cohort.save()
+            action_args=dict(cohort=cohort.id, name=cohort.name, error=None)
         return action_args
 
     def post(self, request):
