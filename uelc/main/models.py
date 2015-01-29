@@ -113,7 +113,7 @@ class Case(models.Model):
         class AddForm(forms.Form):
             name = forms.CharField(widget=forms.widgets.Input(
                 attrs={'class': 'add-case-name'}))
-            hier = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'hierarchy-select'}),
+            hierarchy = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'hierarchy-select'}),
                                           queryset=Hierarchy.objects.all().order_by('name'),)
             cohort = forms.ModelChoiceField(widget=forms.Select(attrs={'class': 'cohort-select'}),
                                           queryset=Cohort.objects.all().order_by('name'),)

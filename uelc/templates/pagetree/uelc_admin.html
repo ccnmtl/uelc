@@ -22,7 +22,7 @@
   <div class="panel-heading">Users</div>
   <div class="panel-body">
     <form role="form" data-toggle="validator" id="add-user-form" action="." method="post">
-      {{ create_user_form|bootstrap }}
+      {{create_user_form|bootstrap}}
       <input type="hidden" name="action" value="createUserCallback">
       <input type="submit" class="btn btn-primary form-submit" value="Submit">
     </form>
@@ -43,8 +43,10 @@
 <div id="cases" class="panel panel-default">
   <div class="panel-heading">Cases</div>
   <div class="panel-body">
-  <form action="." method="post" >
+  <form role="form" data-toggle="validator" id="add-case-form" action="." method="post">
     {{casemodel.add_form|bootstrap}}
+    <input type="hidden" name="action" value="createCaseCallback">
+    <input type="submit" class="btn btn-primary form-submit" value="Submit">
   </form>
   </div>
 </div><!--end #cases-->
@@ -76,7 +78,7 @@ jQuery(document).ready(function(){
 
     this.submit = function(form){
       jQuery(form).validate({
-        debug: true, 
+
           rules: {
               name: {
                   minlength: 2,
@@ -96,9 +98,15 @@ jQuery(document).ready(function(){
               password2:{
                 minlength: 3,
                 required: true,
-                equalTo : "#id_password1"
-              }
-          },
+                equalTo : "#id_password1",
+              },
+              cohort: "required",
+              hierarchy: "required",
+          },          
+          ignore: ':hidden:not("#id_cohort")', //Tells it to check the hidden select
+          ignore: ':hidden:not("#id_cohort")', //Tells it to check the hidden select
+          errorClass: 'has-error',
+
           highlight: function (element) {
               window.admin.highlight(element);
           },

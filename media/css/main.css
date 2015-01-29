@@ -215,3 +215,6 @@ ul.gate-section-list{
 #library-item-view{
     margin: 30px 0 0 0;
 }
+.has-error{
+    color:#a94442;
+}
