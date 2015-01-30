@@ -136,7 +136,6 @@ INSTALLED_APPS = [
 
 PAGEBLOCKS = [
     'pageblocks.ImageBlock',
-    'quizblock.Quiz',
     'gate_block.GateBlock',
     'main.TextBlockDT',
     'main.CaseQuiz',
