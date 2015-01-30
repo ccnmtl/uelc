@@ -131,6 +131,7 @@ INSTALLED_APPS = [
     'uelc.main',
     'gate_block',
     'tinymce',
+    'case_quizblock',
 
 ]
 
