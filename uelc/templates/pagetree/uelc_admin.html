@@ -6,51 +6,51 @@
 <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
 <p>Welcome,</p>
 <p>This page is for creating Users, Cases, and Cohorts</p>
+<div id="hidden-forms" class="hidden">
+  <div id="hierarchies" class="panel panel-default">
+    <div class="panel-heading">Hierarchies</div>
+    <div class="panel-body">
+      <form data-toggle="validator" id="add-hierarchy-form" action="." method="post">
+        {{create_hierarchy_form|bootstrap}}
+        <input type="hidden" name="action" value="hierarchyCallback">
+        <input type="submit" class="btn btn-primary form-submit" value="Submit">
+      </form>
+    </div>
+  </div><!--end #hierarchiess-->
 
-<div id="hierarchies" class="panel panel-default">
-  <div class="panel-heading">Hierarchies</div>
-  <div class="panel-body">
-    <form data-toggle="validator" id="add-hierarchy-form" action="." method="post">
-      {{create_hierarchy_form|bootstrap}}
-      <input type="hidden" name="action" value="hierarchyCallback">
+  <div id="users" class="panel panel-default">
+    <div class="panel-heading">Users</div>
+    <div class="panel-body">
+      <form role="form" data-toggle="validator" id="add-user-form" action="." method="post">
+        {{create_user_form|bootstrap}}
+        <input type="hidden" name="action" value="createUserCallback">
+        <input type="submit" class="btn btn-primary form-submit" value="Submit">
+      </form>
+    </div>
+  </div><!--end #users-->
+
+  <div id="cohorts" class="panel panel-default">
+    <div class="panel-heading">Cohorts</div>
+    <div class="panel-body">
+    <form role="form" data-toggle="validator" id="add-cohort-form" action="." method="post">
+      {{cohortmodel.add_form|bootstrap}}
+        <input type="hidden" name="action" value="createCohortCallback">
+        <input type="submit" class="btn btn-primary form-submit" value="Submit">
+    </form>
+    </div>
+  </div><!--end #cohorts-->
+
+  <div id="cases" class="panel panel-default">
+    <div class="panel-heading">Cases</div>
+    <div class="panel-body">
+    <form role="form" data-toggle="validator" id="add-case-form" action="." method="post">
+      {{casemodel.add_form|bootstrap}}
+      <input type="hidden" name="action" value="createCaseCallback">
       <input type="submit" class="btn btn-primary form-submit" value="Submit">
     </form>
-  </div>
-</div><!--end #hierarchiess-->
-
-<div id="users" class="panel panel-default">
-  <div class="panel-heading">Users</div>
-  <div class="panel-body">
-    <form role="form" data-toggle="validator" id="add-user-form" action="." method="post">
-      {{create_user_form|bootstrap}}
-      <input type="hidden" name="action" value="createUserCallback">
-      <input type="submit" class="btn btn-primary form-submit" value="Submit">
-    </form>
-  </div>
-</div><!--end #users-->
-
-<div id="cohorts" class="panel panel-default">
-  <div class="panel-heading">Cohorts</div>
-  <div class="panel-body">
-  <form role="form" data-toggle="validator" id="add-cohort-form" action="." method="post">
-    {{cohortmodel.add_form|bootstrap}}
-      <input type="hidden" name="action" value="createCohortCallback">
-      <input type="submit" class="btn btn-primary form-submit" value="Submit">
-  </form>
-  </div>
-</div><!--end #cohorts-->
-
-<div id="cases" class="panel panel-default">
-  <div class="panel-heading">Cases</div>
-  <div class="panel-body">
-  <form role="form" data-toggle="validator" id="add-case-form" action="." method="post">
-    {{casemodel.add_form|bootstrap}}
-    <input type="hidden" name="action" value="createCaseCallback">
-    <input type="submit" class="btn btn-primary form-submit" value="Submit">
-  </form>
-  </div>
-</div><!--end #cases-->
-
+    </div>
+  </div><!--end #cases-->
+  </div><!--end #hidden-forms-->
 <script>
 jQuery(document).ready(function(){
   // create Admin class
@@ -62,7 +62,14 @@ jQuery(document).ready(function(){
       jQuery('.create-user-profile').multiselect();
 
     },
-    
+
+    this.addListeners = function(){
+      jQuery('.form-submit').click(function(){
+        var form = jQuery(this).parent()
+        window.admin.submit(form);
+      })
+    },
+
     this.formUpdate = function(form){
       console.log(form);
     },
@@ -127,13 +134,6 @@ jQuery(document).ready(function(){
             });
           },
         });//end validate
-    },
-
-    this.addListeners = function(){
-      jQuery('.form-submit').click(function(){
-        var form = jQuery(this).parent()
-        window.admin.submit(form);
-      })
     },
 
     this.hierarchyCallback = function(data){
@@ -232,3 +232,10 @@ jQuery(document).ready(function(){
 })
 </script>
 {% endblock %}
+
+{{comment}}
+1) create clone function for each form
+  a) this will have to end with a click listener/handler for the form sumission
+2) create modal/s for forms to show in
+3) create handler functions to call the forms in the order needed. 
+{{endcomment}}
