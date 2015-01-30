@@ -130,15 +130,16 @@ INSTALLED_APPS = [
     'gunicorn',
     'uelc.main',
     'gate_block',
-    'case_quizblock',
     'tinymce',
+
 ]
 
 PAGEBLOCKS = [
     'pageblocks.ImageBlock',
+    'quizblock.Quiz',
     'gate_block.GateBlock',
-    'case_quizblock.CaseQuiz',
-    'main.TextBlockDT'
+    'main.TextBlockDT',
+    'main.CaseQuiz',
 ]
 
 

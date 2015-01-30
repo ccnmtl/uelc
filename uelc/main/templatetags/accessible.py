@@ -1,5 +1,9 @@
 from django import template
 from uelc.main.models import UELCHandler
+from pagetree.models import PageBlock
+from pagetree.helpers import get_section_from_path
+from quizblock.models import Quiz
+
 register = template.Library()
 
 
@@ -86,3 +90,14 @@ def is_from_another_module(section_one, section_two):
         return False
     else:
         return True
+
+@register.assignment_tag
+def get_quizblock_attr(quiz_id):
+    pbs = PageBlock.objects.filter(object_id=quiz_id)
+    for pb in pbs:
+        block = pb.block()
+        if block.display_name == "Case Quiz":
+            edit_url  = block.pageblock().section.get_edit_url()
+            label = block.pageblock().section.label
+            return dict(edit_url=edit_url, label=label)
+

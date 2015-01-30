@@ -4,9 +4,9 @@
 
 <ul class="breadcrumb">
     <li><a href="{{answer.question.casequiz.pageblock.section.get_edit_url}}">{{answer.question.casequiz.pageblock.section.label}}</a></li>
-    <li><a href="{% url 'edit-casequiz' answer.question.quiz.id %}">Edit Quiz</a></li>
+    <li><a href="{% url 'edit-quiz' answer.question.quiz.id %}">Edit Quiz</a></li>
     <li>
-        <a href="{% url 'edit-casequestion' answer.question.id %}">Edit Question
+        <a href="{% url 'edit-question' answer.question.id %}">Edit Question
             {{answer.question.display_number}}: {{ answer.question.text }}
         </a>
     </li>
