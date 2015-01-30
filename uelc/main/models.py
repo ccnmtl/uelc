@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth.models import User
 from pagetree.models import Hierarchy, Section, ReportableInterface
 from pageblocks.models import TextBlock
-from quizblock.models import Quiz, Submission, Response
+from quizblock.models import Quiz, Question, Submission, Response
 from gate_block.models import GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -347,7 +347,7 @@ class CaseQuiz(Quiz):
 
             if k.startswith('question'):
                 qid = int(k[len('question'):])
-                question = CaseQuestion.objects.get(id=qid)
+                question = Question.objects.get(id=qid)
                 # it might make more sense to just accept a QueryDict
                 # instead of a dict so we can use getlist()
                 if isinstance(data[k], list):
