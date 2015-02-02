@@ -51,6 +51,17 @@
     </div>
   </div><!--end #cases-->
   </div><!--end #hidden-forms-->
+  <button class="demo btn btn-info btn-sm trigger-form" data-form-toggle="showCreateUserForm" href="#form-modal">Create User</button>
+  <div id="form-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <button type="button" class="close" data-form-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-header panel-heading">Add Library Item</div>
+                <div class="modal-body">
+                </div> <!--end modal-dialog-->
+            </div><!-- end modal-content-->
+        </div><!--end .model-body-->
+    </div><!--end #library-add-form .modal-->
 <script>
 jQuery(document).ready(function(){
   // create Admin class
@@ -64,7 +75,11 @@ jQuery(document).ready(function(){
     },
 
     this.addListeners = function(){
-      jQuery('.form-submit').click(function(){
+      jQuery('.trigger-form').click(function(){
+        var func = jQuery(this).attr('data-form-toggle');
+        window.admin[func]();
+      })
+      jQuery('#form-modal').on('click', '.form-submit', function(){
         var form = jQuery(this).parent()
         window.admin.submit(form);
       })
@@ -157,6 +172,17 @@ jQuery(document).ready(function(){
       }
     },
 
+    this.showCreateUserForm = function(){
+      var form = jQuery('#users').clone();
+      var formModal = jQuery('#form-modal');
+      formModal.find('.modal-body').append(form);
+      formModal.on('hidden.bs.modal', function () {
+        jQuery(this).find('#users').remove();
+      })
+      this.setMultiselects();
+      formModal.modal('show');
+    }
+
     this.createUserCallback = function(data){
       if(data.error){
 
@@ -220,7 +246,6 @@ jQuery(document).ready(function(){
     },
 
     this.init = function(){
-      this.setMultiselects();
       this.addListeners();
     }
   };
