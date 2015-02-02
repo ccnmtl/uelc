@@ -7,6 +7,7 @@ from quizblock.models import Quiz, Question, Submission, Response
 from gate_block.models import GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
 
+
 class Cohort(models.Model):
     name = models.CharField(max_length=255, blank=False)
     user = models.ManyToManyField(User, blank=True)
