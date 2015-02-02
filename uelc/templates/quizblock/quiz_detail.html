@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap %}
-
+{% load accessible %}
 {% block css %}
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/base/jquery-ui.css" type="text/css" media="all" />
 
@@ -23,7 +23,7 @@
 
     <script type="text/javascript">
         var saveOrder = function() {
-            var url = "{% url 'reorder-questions' casequiz.id %}?";
+            var url = "{% url 'reorder-questions' quiz.id %}?";
             var worktodo = 0;
             jQuery("#questions li").each(function(index,element) {
                worktodo = 1;
@@ -54,30 +54,30 @@
 {% endblock %}
 
 {% block content %}
-
+{% get_quizblock_attr quiz.id as quizblock %}
 <ul class="breadcrumb">
-	<li><a href="{{casequiz.pageblock.section.get_edit_url}}">{{casequiz.pageblock.section.label}}</a>
+	<li><a href="{{quizblock.edit_url}}">{{quizblock.label}}</a>
 		<span class="divider">/</span>
 	</li>
 	<li>Edit Quiz</li>
 </ul>
 
 
-<h2>{{casequiz.pageblock.label}}</h2>
+<h2>{{quizblock.label}}</h2>
 
 <ul id="questions" class="dragparent">
-{% for question in casequiz.question_set.all %}
+{% for question in quiz.question_set.all %}
     <li class="draggable" id="question-{{casequestion.id}}">
-    <span title="drag to reorder pageblocks" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>[<a href="{% url 'delete-casequestion' question.id %}">delete</a>] 
+    <span title="drag to reorder pageblocks" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>[<a href="{% url 'delete-question' question.id %}">delete</a>] 
     Question {{ question.display_number }}: 
-    <a href="{% url 'edit-casequestion' question.id %}">{{question.text|truncatewords:5}}</a></li>
+    <a href="{% url 'edit-question' question.id %}">{{question.text|truncatewords:5}}</a></li>
 {% endfor %}
 </ul>
 
 <form action="add_question/" method="post" class="well form-horizontal">
 <h2>Add Question</h2>
 <table width="100%">
-{{casequiz.add_question_form|bootstrap}}
+{{quiz.add_question_form|bootstrap}}
 </table>
 <input type="submit" value="add question" class="btn btn-primary" />
 </form>
