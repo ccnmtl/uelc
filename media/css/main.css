@@ -160,6 +160,8 @@ body > .container {
     line-height: 140%;
 }
 
+ul.side-nav li {margin-left: -25px;}
+
 /* Overrides  */
 .col-md-2{
     width: 36.666667%;
