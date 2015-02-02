@@ -12,7 +12,7 @@ test: ./ve/bin/python
 	$(MANAGE) jenkins --pep8-exclude=migrations --enable-coverage --coverage-rcfile=.coveragerc
 
 flake8: ./ve/bin/python
-	$(FLAKE8) $(APP) case_quizblock gate_block --max-complexity=10 --exclude=migrations
+	$(FLAKE8) $(APP) gate_block --max-complexity=10 --exclude=migrations
 
 jshint: node_modules/jshint/bin/jshint
 	./node_modules/jshint/bin/jshint media/js/uelc_admin
