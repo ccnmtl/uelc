@@ -56,7 +56,7 @@
 
 <ul class="breadcrumb">
 <li><a href="{{question.casequiz.pageblock.section.get_edit_url}}">{{question.casequiz.pageblock.section.label}}</a></li>
-<li><a href="{% url 'edit-casequiz' question.quiz.id %}">Edit Case Quiz</a></li>
+<li><a href="{% url 'edit-quiz' question.quiz.id %}">Edit Case Quiz</a></li>
 <li>Edit Question</li>
 </ul>
 
@@ -74,9 +74,9 @@
 <ul class="dragparent" id="answers">
 {% for answer in question.answer_set.all %}
 <li class="draggable" id="answer-{{answer.id}}">
-<span title="drag to reorder answers" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>[<a href="{% url 'delete-caseanswer' answer.id %}">delete</a>] 
+<span title="drag to reorder answers" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>[<a href="{% url 'delete-answer' answer.id %}">delete</a>] 
 Answer {{ answer.display_number }}: 
-<a href="{% url 'edit-caseanswer' answer.id %}">{{answer.label}}</a>
+<a href="{% url 'edit-answer' answer.id %}">{{answer.label}}</a>
 {% if answer.correct %}<i class="icon-ok"></i>{% endif %}
 </li>
 {% endfor %}
@@ -85,7 +85,7 @@ Answer {{ answer.display_number }}:
 
 {% if question.answerable %}
 <h3>Add Answer</h3>
-<form action="{% url 'add-answer-to-casequestion' question.id %}" method="post" class="well form-horizontal">
+<form action="{% url 'add-answer-to-question' question.id %}" method="post" class="well form-horizontal">
 <table width="100%">
 {{ answer_form|bootstrap}}
 </table>

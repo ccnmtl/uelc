@@ -15,15 +15,15 @@
         {% if block.rhetorical %}<form id="form-{{question.id}}" method="post">{% endif %}
 
 	{% if question.is_single_choice %}
-  	  {% include 'case_quizblock/single_choice.html' %}
+  	  {% include 'quizblock/single_choice.html' %}
 	{% endif %}
 
 	{% if question.is_single_choice_dropdown %}
-  	  {% include 'case_quizblock/single_choice_dropdown.html' %}
+  	  {% include 'quizblock/single_choice_dropdown.html' %}
 	{% endif %}
 
 	{% if question.is_multiple_choice %}
-	  {% include 'case_quizblock/multiple_choice.html' %}
+	  {% include 'quizblock/multiple_choice.html' %}
 	{% endif %}
 
         {% if block.rhetorical %}
@@ -31,20 +31,20 @@
         {% endif %}
       {% else %}
         {% if question.is_short_text %}
-          {% include 'case_quizblock/short_text.html' %}
+          {% include 'quizblock/short_text.html' %}
         {% endif %}
 
         {% if question.is_long_text %}
-          {% include 'case_quizblock/long_text.html' %}
+          {% include 'quizblock/long_text.html' %}
         {% endif %}
       {% endif %}
     </div>
 
     {% if block.rhetorical %}
-      {% include 'case_quizblock/show_answer.html' %}
+      {% include 'quizblock/show_answer.html' %}
     {% else %}
       {% if response %}
-        {% include 'case_quizblock/show_answer.html' %}
+        {% include 'quizblock/show_answer.html' %}
       {% endif %}
   {% endif %}
   </div>

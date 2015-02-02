@@ -1,5 +1,9 @@
 {% if request.user.is_superuser %}
-<h3>Pages</h3>
+
+<div class="well">
+
+<h3>Manage Pages</h3>
+
 <ul class="side-nav">
 {% for s in module.get_descendants %}
 {% ifequal s.id module.id %}
@@ -40,4 +44,6 @@
 {% endifequal %}
 {% endfor %}
 </ul>
+
+</div>
 {% endif %}

@@ -8,18 +8,10 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('quizblock', '__first__'),
+        ('main', '0026_remove_libraryitem_show'),
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='CaseQuestion',
-            fields=[
-                ('question_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='quizblock.Question')),
-            ],
-            options={
-            },
-            bases=('quizblock.question',),
-        ),
         migrations.CreateModel(
             name='CaseQuiz',
             fields=[
