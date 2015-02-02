@@ -1,5 +1,7 @@
 {% if request.user.is_superuser %}
 
+<div class="well">
+
 <h3>Manage Pages</h3>
 
 <ul class="side-nav">
@@ -42,4 +44,6 @@
 {% endifequal %}
 {% endfor %}
 </ul>
+
+</div>
 {% endif %}
