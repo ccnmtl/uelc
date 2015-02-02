@@ -189,22 +189,21 @@ onclick="jQuery('.login-local-form').show(); jQuery(this).hide(); return false;"
 
 <div class="row">
 	
-	{% if request.user.is_superuser %}
-	<div class="col-md-2">
-		{% block sidenav %}{% endblock %}
-	</div>
-	{% endif %}
-	
-	<div class="col-md-8">
+	<div class="col-sm-9">
 		{% block pagetitle %}{% endblock %}
 		{% block content %}{% endblock %}
 		{% block content-nav %}{% endblock %}
 	</div>
 	{% block library %}{% endblock %}
 	
+	{% if request.user.is_superuser %}
+	<div class="col-sm-3">
+		{% block sidenav %}{% endblock %}
+	</div>
+	{% endif %}
+	
 </div>
 <!--end .row-->
-
 
 {% block footer %}
 <footer class="footer navbar-fixed-bottom hidden-phone">
