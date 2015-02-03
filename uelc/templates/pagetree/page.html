@@ -61,7 +61,7 @@
 {% for quiz in case_quizblocks %}
             {% if quiz.id == block.id %}
                 {% if quiz.completed != True%}
-                <form action="." method="post">
+                <form action="." method="post">{% csrf_token %}
         {% endif %}
     {% endif %}
 {% endfor %}
