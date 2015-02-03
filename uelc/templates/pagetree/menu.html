@@ -1,49 +1,40 @@
 {% if request.user.is_superuser %}
-
-<div class="well">
-
-<h3>Manage Pages</h3>
-
-<ul class="side-nav">
-{% for s in module.get_descendants %}
-{% ifequal s.id module.id %}
-{% else %}
-<li class="menu-{{s.depth}}">
-  {% ifnotequal s.id section.id %}
-{% ifequal menu_base "/edit" %}
-  <a href="{{s.get_edit_url}}">
-{% else %}
-{% ifequal menu_base "/instructor" %}
-  <a href="{{s.get_instructor_url}}">
-{% else %}
-  <a href="{{menu_base}}{{s.get_absolute_url}}">
-{% endifequal %}
-{% endifequal %}
-  {% else %}
-     <b>
-  {% endifnotequal %}
-  {{s.label}}
-  {% ifnotequal s.id section.id %}
+<ul class="side-nav well well-lg">
+    {% for s in module.get_descendants %}
+    {% ifequal s.id module.id %}
+    {% else %}
+    <li class="menu-{{s.depth}}">
+    {% ifnotequal s.id section.id %}
+    {% ifequal menu_base "/edit" %}
+    <a href="{{s.get_edit_url}}">
+    {% else %}
+    {% ifequal menu_base "/instructor" %}
+    <a href="{{s.get_instructor_url}}">
+    {% else %}
+    <a href="{{menu_base}}{{s.get_absolute_url}}">
+    {% endifequal %}
+    {% endifequal %}
+    {% else %}
+    {% endifnotequal %}
+    {{s.label}}
+    {% ifnotequal s.id section.id %}
     </a>
-  {% else %}
-    </b>
-  {% endifnotequal %}
-  {% if s.get_children %}
-     <ul id="section-ul-{{s.id}}">
-     {% else %}
-     {% if s.is_last_child %}
-     {% for lc in s.closing_children %}
-          </ul>
-     {% endfor %}
-{% endif %}
-{% endif %}
-{% if s.get_children %}
-{% else %}
+    {% else %}
+    {% endifnotequal %}
+    {% if s.get_children %}
+    <ul id="section-ul-{{s.id}}">
+    {% else %}
+    {% if s.is_last_child %}
+    {% for lc in s.closing_children %}
+    </ul>
+    {% endfor %}
+    {% endif %}
+    {% endif %}
+    {% if s.get_children %}
+    {% else %}
     </li>
-{% endif%}
-{% endifequal %}
-{% endfor %}
+    {% endif%}
+    {% endifequal %}
+    {% endfor %}
 </ul>
-
-</div>
 {% endif %}
