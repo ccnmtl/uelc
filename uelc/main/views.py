@@ -553,9 +553,16 @@ class UELCAdminView(LoggedInMixinSuperuser,
         name = request.POST.get('name', '')
         hierarchy = request.POST.get('hierarchy', '')
         cohort = request.POST.get('cohort', '')
-        case_exists = Case.objects.filter(Q(name=name))
-        if len(case_exists):
+        case_exists_name = Case.objects.filter(Q(name=name))
+        case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
+        import pdb
+        pdb.set_trace()
+        if len(case_exists_name:
             action_args = dict(error="Case already exists! Please use existing case or rename.")
+            return action_args
+        if len(case_exists_hier):
+            action_args = dict(error="Case already exists! A case has already been created that is attached to the selected hierarchy.\
+                Do you need to create another hierarchy or should you use an existing case?")
             return action_args
         if hierarchy =="" or cohort=="":
             action_args = dict(error="Please make sure a hierarchy and cohort is selected")
