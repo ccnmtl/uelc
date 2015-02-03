@@ -21,7 +21,7 @@
             {% if sec.2 %}
               {% if sec.5 %}
                 <div class="gate-button unlocked">
-                    <form action="." method="post">
+                    <form action="." method="post">{% csrf_token %}
                         <button type="submit" class="btn btn-sm btn-success btn-block"><span class="pull-left">Unlocked - {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize" style="font-size: 8px;">{{sec.4}}</span></button>
                         <input type="hidden" name="gate-action" value="reset" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
@@ -36,7 +36,7 @@
             {% else %}
               {% if sec.5 %}
                 <div class="gate-button locked">
-                    <form action ="." method="post">
+                    <form action ="." method="post">{% csrf_token %}
                         <button type ="submit" class="btn btn-sm btn-danger btn-block"><span class="pull-left">Locked - {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize" style="font-size: 8px;">{{sec.4}}</span></button>
                         <input type="hidden" name="gate-action" value="submit" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
@@ -62,7 +62,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <div class="modal-header panel-heading">Add Library Item</div>
                 <div class="modal-body">
-                    <form action="." method="post" enctype="multipart/form-data">
+                    <form action="." method="post" enctype="multipart/form-data">{% csrf_token %}
                         {{library_item.add_form|bootstrap}}
                         <div id="user-tooltip"><span data-toggle="tooltip" title="Select Users that will have access to the library item" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>Select user/s</div>
                         <select class="library-item-user-select" multiple="multiple" name="user">
@@ -87,7 +87,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <div class="modal-header panel-heading">Edit Library Item</div>
                 <div class="modal-body">
-                    <form action="." method="post" enctype="multipart/form-data">
+                    <form action="." method="post" enctype="multipart/form-data">{% csrf_token %}
                         {{library_doc.edit_form|bootstrap}}
                         <div id="user-tooltip"><span data-toggle="tooltip" title="Select Users that will have access to the library item" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>Select user/s</div>
                         <select class="library-item-user-select" multiple="multiple" name="user">

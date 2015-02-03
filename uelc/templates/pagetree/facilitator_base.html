@@ -46,46 +46,34 @@
 
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse navbar-ex1-collapse">
-    
-<!-- 
-    <form class="navbar-form navbar-left" role="search">
-      <div class="form-group">
-        <input type="text" class="form-control" placeholder="Search">
-      </div>
-      <button type="submit" class="btn btn-default">Submit</button>
-    </form>
--->
-
-
-
-	<ul class="nav navbar-nav navbar-right">
-	{% block topnavbarrightitems %}{% endblock %}
-	{% block usernav %}
-	{% if request.user.is_anonymous %}
-	{% else %}
-	<li class="navbar-text">Logged in as 
-	{% if request.user.last_name %}
-	{{request.user.first_name}} {{request.user.last_name}}
-	{% else %}
-	<b>{{ request.user.username }}</b></li>
-	{% endif %}
-	{% if request.user.is_superuser %}
-	{% if instructor_link %}
-	<!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
-	{% endif %}
-	{% block edit-or-view-page %}
-	{% if is_view %}
-	<li><a href="{{section.get_edit_url}}">Edit Page</a></li>
-	{% else %}
-	<li><a href="{{section.get_absolute_url}}">View Page</a></li>
-	{% endif %} 
-	{% endblock %}
-	<li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
-	{% endif %}
-	<li><a href="/accounts/logout/">Log Out</a></li>
-	{% endif %}
-	{% endblock %}
-	</ul>
+  	<ul class="nav navbar-nav navbar-right">
+  	{% block topnavbarrightitems %}{% endblock %}
+  	{% block usernav %}
+  	{% if request.user.is_anonymous %}
+  	{% else %}
+  	<li class="navbar-text">Logged in as 
+  	{% if request.user.last_name %}
+  	{{request.user.first_name}} {{request.user.last_name}}
+  	{% else %}
+  	<b>{{ request.user.username }}</b></li>
+  	{% endif %}
+  	{% if request.user.is_superuser %}
+  	{% if instructor_link %}
+  	<!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
+  	{% endif %}
+  	{% block edit-or-view-page %}
+  	{% if is_view %}
+  	<li><a href="{{section.get_edit_url}}">Edit Page</a></li>
+  	{% else %}
+  	<li><a href="{{section.get_absolute_url}}">View Page</a></li>
+  	{% endif %} 
+  	{% endblock %}
+  	<li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
+  	{% endif %}
+  	<li><a href="/accounts/logout/">Log Out</a></li>
+  	{% endif %}
+  	{% endblock %}
+  	</ul>
     
   </div>
   </div>
