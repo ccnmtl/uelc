@@ -160,7 +160,13 @@ body > .container {
     line-height: 140%;
 }
 
-ul.side-nav li {margin-left: -30px;}
+ul.side-nav {
+    margin-top: 20px;
+}
+
+ul.side-nav li li {
+    margin-left: -25px;
+}
 
 /* Overrides  */
 .col-md-2{
