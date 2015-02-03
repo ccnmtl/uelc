@@ -475,17 +475,27 @@ class FacilitatorView(LoggedInMixinSuperuser,
 
 
 class UELCAdminView(LoggedInMixinSuperuser,
-                    SectionMixin,
                     TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
 
+    def get_extra_context(self, **kwargs):
+        return self.extra_context
+
     def dispatch(self, request, *args, **kwargs):
-        #path = request.path
-        #rv = self.perform_checks(request, path)
-        #if rv is not None:
-        #    return rv
+        try:
+            path = kwargs['path']
+        except KeyError:
+            path = None
+            pass
+
+        if path:
+            method = getattr(self, path)
+            action = method(request)
         return super(UELCAdminView, self).dispatch(request, *args, **kwargs)
+
+    def user(self, request):
+        self.extra_context.update(dict(user_view=True))
 
     def post_add_case(self, request):
         casename = request.POST.get('case-name')
@@ -555,8 +565,6 @@ class UELCAdminView(LoggedInMixinSuperuser,
         cohort = request.POST.get('cohort', '')
         case_exists_name = Case.objects.filter(Q(name=name))
         case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
-        import pdb
-        pdb.set_trace()
         if len(case_exists_name):
             action_args = dict(error="Case already exists! Please use existing case or rename.")
             return action_args
