@@ -557,7 +557,7 @@ class UELCAdminView(LoggedInMixinSuperuser,
         case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
         import pdb
         pdb.set_trace()
-        if len(case_exists_name:
+        if len(case_exists_name):
             action_args = dict(error="Case already exists! Please use existing case or rename.")
             return action_args
         if len(case_exists_hier):
