@@ -433,7 +433,8 @@ class FacilitatorView(LoggedInMixinSuperuser,
         cohort = case.cohort
         cohort_users = cohort.user.filter(
             profile__profile_type="group_user").order_by('username')
-        gateblocks = GateBlock.objects.all()
+        gateblocks = GateBlock.objects.filter(
+            pageblocks__section__hierarchy=hierarchy)
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
             depth=0,
