@@ -495,7 +495,8 @@ class UELCAdminView(LoggedInMixinSuperuser,
         return super(UELCAdminView, self).dispatch(request, *args, **kwargs)
 
     def user(self, request):
-        self.extra_context.update(dict(user_view=True))
+        users = User.objects.all().order_by('username')
+        self.extra_context.update(dict(user_view=True, users=users))
 
     def post_add_case(self, request):
         casename = request.POST.get('case-name')

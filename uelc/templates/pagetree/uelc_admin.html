@@ -3,16 +3,40 @@
 {% block content %}
 <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/uelc_admin.js"></script>
 <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
 <style type="text/css">
 button.close{
   padding: 10px;
 }
 </style>
-<p>Welcome, {{ user_view }}</p>
+<p>Welcome,</p>
 <p>This page is for creating Users, Cases, and Cohorts</p>
-<div id="hidden-forms" class="">
-
+{% if user_view%}
+  <div class="panel panel-default">
+      <div class="panel-heading">Users</div>
+      <div class="panel-body">
+        <table id="user-list" class="table">
+           <thead>
+              <tr>
+                <th>Username</th>
+                <th>Profile Type</th>
+                <th>Cohort/s</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in users %}
+              <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.profile.profile_type }}</td>
+                <td>{{ user.profile.cohorts}}</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      </div><!--end panel-body-->
+  </div><!--end panel-->
+{% endif %}
 <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-hierarchy-form-modal" href="#add-hierarchy-form-modal">Add Hierarchy Item</button>
 <div id="add-hierarchy-form-modal" class="modal fade">
     <div class="modal-dialog">
@@ -20,43 +44,43 @@ button.close{
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <div class="modal-header panel-heading">Add Hierarchy</div>
             <div class="modal-body">
-  <div id="hierarchies" class="panel panel-default">
-    <div class="panel-heading">Hierarchies</div>
-    <div class="panel-body">
-      <form data-toggle="validator" id="add-hierarchy-form" action="." method="post">
-        {{create_hierarchy_form|bootstrap}}
-        <input type="hidden" name="action" value="hierarchyCallback">
-        <input type="submit" class="btn btn-primary form-submit" value="Submit">
-        <input type="reset" class="reset-button hidden" value="Reset" />
-      </form>
-    </div>
-  </div><!--end #hierarchiess-->
+              <div id="hierarchies" class="panel panel-default">
+                <div class="panel-heading">Hierarchies</div>
+                <div class="panel-body">
+                  <form data-toggle="validator" id="add-hierarchy-form" action="." method="post">
+                    {{create_hierarchy_form|bootstrap}}
+                    <input type="hidden" name="action" value="hierarchyCallback">
+                    <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                    <input type="reset" class="reset-button hidden" value="Reset" />
+                  </form>
+                </div>
+              </div><!--end #hierarchiess-->
               </div> <!--end modal-dialog-->
         </div><!-- end modal-content-->
     </div><!--end .model-body-->
 </div><!--end #add-hierarchy-form-modal .modal-->
 
 <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-user-form-modal" href="#add-user-form-modal">Add User</button>
-<div id="add-user-form-modal" class="modal fade">
-  <div class="modal-dialog">
+  <div id="add-user-form-modal" class="modal fade">
+    <div class="modal-dialog">
       <div class="modal-content">
-  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-  <div class="modal-header panel-heading">Add User</div>
-  <div class="modal-body">
-  <div id="users" class="panel panel-default">
-    <div class="panel-heading">Users</div>
-    <div class="panel-body">
-      <form role="form" data-toggle="validator" id="add-user-form" action="." method="post">
-        {{create_user_form|bootstrap}}
-        <input type="hidden" name="action" value="createUserCallback">
-        <input type="submit" class="btn btn-primary form-submit" value="Submit">
-        <input type="reset" class="reset-button hidden" value="Reset" />
-      </form>
-    </div>
-  </div><!--end #users-->
-              </div> <!--end modal-dialog-->
-        </div><!-- end modal-content-->
-    </div><!--end .model-body-->
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div class="modal-header panel-heading">Add User</div>
+        <div class="modal-body">
+          <div id="users" class="panel panel-default">
+            <div class="panel-heading">Users</div>
+            <div class="panel-body">
+              <form role="form" data-toggle="validator" id="add-user-form" action="." method="post">
+                {{create_user_form|bootstrap}}
+                <input type="hidden" name="action" value="createUserCallback">
+                <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                <input type="reset" class="reset-button hidden" value="Reset" />
+              </form>
+            </div>
+          </div><!--end #users-->
+        </div> <!--end modal-dialog-->
+      </div><!-- end modal-content-->
+  </div><!--end .model-body-->
 </div><!--end #add-user-form-modal .modal-->
 
 <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-cohort-form-modal" href="#add-cohort-form-modal">Add Cohort</button>
@@ -66,17 +90,17 @@ button.close{
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <div class="modal-header panel-heading">Add Cohort</div>
             <div class="modal-body">
-  <div id="cohorts" class="panel panel-default">
-    <div class="panel-heading">Cohorts</div>
-    <div class="panel-body">
-    <form role="form" data-toggle="validator" id="add-cohort-form" action="." method="post">
-      {{cohortmodel.add_form|bootstrap}}
-        <input type="hidden" name="action" value="createCohortCallback">
-        <input type="submit" class="btn btn-primary form-submit" value="Submit">
-        <input type="reset" class="reset-button hidden" value="Reset" />
-    </form>
-    </div>
-  </div><!--end #cohorts-->
+              <div id="cohorts" class="panel panel-default">
+                <div class="panel-heading">Cohorts</div>
+                <div class="panel-body">
+                <form role="form" data-toggle="validator" id="add-cohort-form" action="." method="post">
+                  {{cohortmodel.add_form|bootstrap}}
+                    <input type="hidden" name="action" value="createCohortCallback">
+                    <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                    <input type="reset" class="reset-button hidden" value="Reset" />
+                </form>
+                </div>
+              </div><!--end #cohorts-->
               </div> <!--end modal-dialog-->
         </div><!-- end modal-content-->
     </div><!--end .model-body-->
@@ -89,231 +113,19 @@ button.close{
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <div class="modal-header panel-heading">Add Case</div>
             <div class="modal-body">
-  <div id="cases" class="panel panel-default">
-    <div class="panel-heading">Cases</div>
-    <div class="panel-body">
-    <form role="form" data-toggle="validator" id="add-case-form" action="." method="post">
-      {{casemodel.add_form|bootstrap}}
-      <input type="hidden" name="action" value="createCaseCallback">
-      <input type="submit" class="btn btn-primary form-submit" value="Submit">
-      <input type="reset" class="reset-button hidden" value="Reset" />
-    </form>
-    </div>
-  </div><!--end #cases-->
+              <div id="cases" class="panel panel-default">
+                <div class="panel-heading">Cases</div>
+                <div class="panel-body">
+                <form role="form" data-toggle="validator" id="add-case-form" action="." method="post">
+                  {{casemodel.add_form|bootstrap}}
+                  <input type="hidden" name="action" value="createCaseCallback">
+                  <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                  <input type="reset" class="reset-button hidden" value="Reset" />
+                </form>
+                </div>
+              </div><!--end #cases-->
             </div> <!--end modal-dialog-->
         </div><!-- end modal-content-->
     </div><!--end .model-body-->
 </div><!--end #add-case-form-modal .modal-->
-
-  </div><!--end #hidden-forms-->
-{{comment}}
-
-<div id="library-add-form" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <div class="modal-header panel-heading">Add Library Item</div>
-            <div class="modal-body">
-
-            </div> <!--end modal-dialog-->
-        </div><!-- end modal-content-->
-    </div><!--end .model-body-->
-</div><!--end #library-add-form .modal-->
-{{endcomment}}
-
-<script>
-jQuery(document).ready(function(){
-  // create Admin class
-  var UELCAdmin = function(){
-    this.setMultiselects = function(){
-      jQuery('.hierarchy-select').multiselect();
-      jQuery('.cohort-select').multiselect();
-      jQuery('.user-select').multiselect();
-      jQuery('.create-user-profile').multiselect();
-
-    },
-
-    this.addListeners = function(){
-      jQuery('.form-submit').click(function(){
-        var form = jQuery(this).parent()
-        window.admin.submit(form);
-      })
-      jQuery('form').on('reset', function(){
-        setTimeout(function(){
-          jQuery('.hierarchy-select').multiselect().multiselect('destroy').multiselect('refresh');;
-          jQuery('.cohort-select').multiselect().multiselect('destroy').multiselect('refresh');;
-          jQuery('.user-select').multiselect().multiselect('destroy').multiselect('refresh');;
-          jQuery('.create-user-profile').multiselect().multiselect('destroy').multiselect('refresh');;
-        })
-      })
-    },
-
-    this.formUpdate = function(form){
-      console.log(form);
-    },
-
-    this.highlight = function(element){
-      jQuery(element).closest('.form-control').parent().removeClass('success').addClass('has-error');
-    },
-
-    this.removeHighlight = function(element){
-      jQuery(element).addClass('valid').parent().removeClass('has-error').addClass('success');
-    }
-
-    this.submit = function(form){
-      jQuery(form).validate({
-
-          rules: {
-              name: {
-                  minlength: 3,
-                  required: true
-              },
-              url: {
-                  required: true,
-              },
-              username:{
-                minlength: 3,
-                required: true,
-              },
-              password1:{
-                minlength: 3,
-                required: true,
-              },
-              password2:{
-                minlength: 3,
-                required: true,
-                equalTo : "#id_password1",
-              },
-              user: "required",
-
-              hierarchy: "required",
-              
-              cohort:{
-                required:true,
-              }
-          },          
-          
-          ignore: '.ignore',
-          
-          errorClass: 'has-error',
-
-          submitHandler: function(form){
-            jQuery.post( "/uelcadmin/", jQuery(form).serialize(), function(data){
-              window.admin[data.action](data.action_args);
-            });
-          },
-
-          highlight: function (element) {
-              window.admin.highlight(element);
-          },
-          success: function (element) {
-              window.admin.removeHighlight(element);
-          },
-          error: function(){
-            alert('problem!');
-          },
-        });//end validate
-    },
-
-    this.resetForm = function(form){
-      jQuery(form).children('.reset-button').trigger('click');
-      jQuery(form).find('input.form-control').each(function(){
-          window.admin.removeHighlight(this);
-      });
-      jQuery(form).find('.control-label').each(function(){
-        window.admin.removeHighlight(this);
-      })
-    },
-
-    this.hierarchyCallback = function(data){
-      if(data.error){
-        jQuery('#add-hierarchy-form').find('input.form-control').each(function(){
-          window.admin.highlight(this);  
-        })
-        alert(data.error);
-      }else{
-        // success
-        elem = jQuery('.hierarchy-select');
-        html = '<option value='+data.value+'>'+data.name+'</option>';
-        form = jQuery('#add-hierarchy-form');
-        elem.append(html);
-        this.resetForm(form);
-        alert('Your Hierarchy has been created! It is available for editing,\
-          so go and add some content! You can access it here,'+data.url+'edit/');
-      }
-    },
-
-    this.createUserCallback = function(data){
-      if(data.error){
-        jQuery('.create-user-profile').parent().parent().addClass('has-error')
-        alert(data.error);
-      }else{
-        elem = jQuery('.user-select');
-        html = '<option value='+data.user+'>'+data.username+'</option>';
-        form = jQuery('#add-user-form').trigger("reset");
-        elem.append(html);
-        this.resetForm(form);
-        alert('created user');
-      }
-    },
-
-    this.createCohortCallback = function(data){
-      if(data.error){
-        jQuery('#add-cohort-form').find('input.form-control').each(function(){
-          window.admin.highlight(this);  
-        })
-        alert(data.error);
-
-      }else{
-        // success
-        elem = jQuery('.cohort-select');
-        html = '<option value='+data.cohort+'>'+data.name+'</option>';
-        elem.append(html)
-        jQuery('.cohort-select').multiselect('destroy').multiselect('refresh');
-        jQuery('#add-cohort-form').trigger("reset");
-        jQuery('#add-cohort-form').find('input.form-control').each(function(){
-          window.admin.removeHighlight(this);  
-        })
-        alert('Cohort has been created!');
-        jQuery('.user-select').multiselect('destroy').multiselect('refresh');
-      }
-    },
-
-    this.createCaseCallback = function(data){
-      if(data.error){
-        jQuery('#add-case-form').find('input.form-control').each(function(){
-          window.admin.highlight(this);  
-        })
-        alert(data.error);
-        
-      }else{
-        // success
-        form = jQuery('#add-case-form');
-        this.resetForm(form);
-        form.find('input.form-control').each(function(){
-          window.admin.removeHighlight(this);  
-        })
-        alert('Case has been created!');
-      }
-    },
-
-    this.init = function(){
-      this.setMultiselects();
-      this.addListeners();
-    }
-  };
-
-  //Instatntiate the class
-  window.admin = new UELCAdmin();
-  admin.init();
-
-})
-</script>
 {% endblock %}
-
-{{comment}}
-1) create clone function for each form
-  a) this will have to end with a click listener/handler for the form sumission
-2) create modal/s for forms to show in
-3) create handler functions to call the forms in the order needed. 
-{{endcomment}}

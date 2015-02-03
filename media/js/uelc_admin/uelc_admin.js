@@ -1,39 +1,186 @@
-var UELCAdmin;
-UELCAdmin = {
-    Admin: function() {
-        this.init = function() {
-            jQuery('.library-item-user-select').multiselect();
-            jQuery('[data-toggle="tooltip"]').tooltip({
-                'placement': 'top'
-            });
+jQuery(document).ready(function(){
+  // create Admin class
+  var UELCAdmin = function(){
+    this.setMultiselects = function(){
+      jQuery('.hierarchy-select').multiselect();
+      jQuery('.cohort-select').multiselect();
+      jQuery('.user-select').multiselect();
+      jQuery('.create-user-profile').multiselect();
 
-            this.deleteLibraryItem();
-        };
+    },
 
-        this.deleteLibraryItem = function() {
-            jQuery('.library-item-admin .glyphicon-trash').click(function() {
-                var retVal = confirm('Do you want to delete the item?');
-                if (retVal === true) {
-                    tr = jQuery(this).parent().parent();
-                    td = tr.children('.library-item-document')
-                           .children('span').text();
-                    data = {
-                            'library-item-delete':true,
-                            'library_item_id': td
-                            };
-                    window.url = window.location.href;
-                    jQuery.post(url, data).done(function() {
-                        alert('Item deleted');
-                        window.location = window.url;
-                    });
-                }
-            });
-        };
+    this.addListeners = function(){
+      jQuery('.form-submit').click(function(){
+        var form = jQuery(this).parent()
+        window.admin.submit(form);
+      })
+      jQuery('form').on('reset', function(){
+        setTimeout(function(){
+          jQuery('.hierarchy-select').multiselect().multiselect('destroy').multiselect('refresh');;
+          jQuery('.cohort-select').multiselect().multiselect('destroy').multiselect('refresh');;
+          jQuery('.user-select').multiselect().multiselect('destroy').multiselect('refresh');;
+          jQuery('.create-user-profile').multiselect().multiselect('destroy').multiselect('refresh');;
+        })
+      })
+    },
 
-        this.init();
+    this.formUpdate = function(form){
+      console.log(form);
+    },
+
+    this.highlight = function(element){
+      jQuery(element).closest('.form-control').parent().removeClass('success').addClass('has-error');
+    },
+
+    this.removeHighlight = function(element){
+      jQuery(element).addClass('valid').parent().removeClass('has-error').addClass('success');
     }
-};
 
-jQuery(document).ready(function() {
-    window.UA = new UELCAdmin.Admin();
-});
+    this.submit = function(form){
+      jQuery(form).validate({
+
+          rules: {
+              name: {
+                  minlength: 3,
+                  required: true
+              },
+              url: {
+                  required: true,
+              },
+              username:{
+                minlength: 3,
+                required: true,
+              },
+              password1:{
+                minlength: 3,
+                required: true,
+              },
+              password2:{
+                minlength: 3,
+                required: true,
+                equalTo : "#id_password1",
+              },
+              user: "required",
+
+              hierarchy: "required",
+              
+              cohort:{
+                required:true,
+              }
+          },          
+          
+          ignore: '.ignore',
+          
+          errorClass: 'has-error',
+
+          submitHandler: function(form){
+            jQuery.post( "/uelcadmin/", jQuery(form).serialize(), function(data){
+              window.admin[data.action](data.action_args);
+            });
+          },
+
+          highlight: function (element) {
+              window.admin.highlight(element);
+          },
+          success: function (element) {
+              window.admin.removeHighlight(element);
+          },
+          error: function(){
+            alert('problem!');
+          },
+        });//end validate
+    },
+
+    this.resetForm = function(form){
+      jQuery(form).children('.reset-button').trigger('click');
+      jQuery(form).find('input.form-control').each(function(){
+          window.admin.removeHighlight(this);
+      });
+      jQuery(form).find('.control-label').each(function(){
+        window.admin.removeHighlight(this);
+      })
+    },
+
+    this.hierarchyCallback = function(data){
+      if(data.error){
+        jQuery('#add-hierarchy-form').find('input.form-control').each(function(){
+          window.admin.highlight(this);  
+        })
+        alert(data.error);
+      }else{
+        // success
+        elem = jQuery('.hierarchy-select');
+        html = '<option value='+data.value+'>'+data.name+'</option>';
+        form = jQuery('#add-hierarchy-form');
+        elem.append(html);
+        this.resetForm(form);
+        alert('Your Hierarchy has been created! It is available for editing,\
+          so go and add some content! You can access it here,'+data.url+'edit/');
+      }
+    },
+
+    this.createUserCallback = function(data){
+      if(data.error){
+        jQuery('.create-user-profile').parent().parent().addClass('has-error')
+        alert(data.error);
+      }else{
+        elem = jQuery('.user-select');
+        html = '<option value='+data.user+'>'+data.username+'</option>';
+        form = jQuery('#add-user-form').trigger("reset");
+        elem.append(html);
+        this.resetForm(form);
+        alert('created user');
+      }
+    },
+
+    this.createCohortCallback = function(data){
+      if(data.error){
+        jQuery('#add-cohort-form').find('input.form-control').each(function(){
+          window.admin.highlight(this);  
+        })
+        alert(data.error);
+
+      }else{
+        // success
+        elem = jQuery('.cohort-select');
+        html = '<option value='+data.cohort+'>'+data.name+'</option>';
+        elem.append(html)
+        jQuery('.cohort-select').multiselect('destroy').multiselect('refresh');
+        jQuery('#add-cohort-form').trigger("reset");
+        jQuery('#add-cohort-form').find('input.form-control').each(function(){
+          window.admin.removeHighlight(this);  
+        })
+        alert('Cohort has been created!');
+        jQuery('.user-select').multiselect('destroy').multiselect('refresh');
+      }
+    },
+
+    this.createCaseCallback = function(data){
+      if(data.error){
+        jQuery('#add-case-form').find('input.form-control').each(function(){
+          window.admin.highlight(this);  
+        })
+        alert(data.error);
+        
+      }else{
+        // success
+        form = jQuery('#add-case-form');
+        this.resetForm(form);
+        form.find('input.form-control').each(function(){
+          window.admin.removeHighlight(this);  
+        })
+        alert('Case has been created!');
+      }
+    },
+
+    this.init = function(){
+      this.setMultiselects();
+      this.addListeners();
+    }
+  };
+
+  //Instatntiate the class
+  window.admin = new UELCAdmin();
+  admin.init();
+
+})
