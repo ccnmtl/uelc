@@ -7,7 +7,7 @@ from rest_framework import routers, serializers, viewsets
 from uelc.main import views
 from uelc.main.models import UserProfile
 from uelc.main.views import (
-    UELCPageView, UELCEditView, FacilitatorView, UELCAdminView)
+    UELCPageView, UELCEditView, FacilitatorView)
 import os.path
 admin.autodiscover()
 
@@ -66,7 +66,6 @@ urlpatterns = patterns(
     (r'^registration/', include('registration.backends.default.urls')),
     (r'^$', views.IndexView.as_view()),
     (r'^admin/', include(admin.site.urls)),
-    (r'^uelcadmin/', UELCAdminView.as_view()),
     url(r'^_impersonate/', include('impersonate.urls')),
     (r'^stats/$', TemplateView.as_view(template_name="stats.html")),
     (r'smoketest/', include('smoketest.urls')),
