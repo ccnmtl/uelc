@@ -487,7 +487,9 @@ class UELCAdminView(LoggedInMixinSuperuser,
             path = kwargs['path']
         except KeyError:
             path = None
-            self.extra_context.update(dict(user_view=None))
+            self.extra_context.update(dict(
+                user_view=None,
+                cohort_view=None,))
             pass
 
         if path:
@@ -502,7 +504,7 @@ class UELCAdminView(LoggedInMixinSuperuser,
 
     def cohort(self, request):
         cohorts = Cohort.objects.all().order_by('name')
-        self.extra_context.update(dict(cohort_view=True, cohorts=cohorts))    
+        self.extra_context.update(dict(cohort_view=True, cohorts=cohorts))
 
     def post_add_case(self, request):
         casename = request.POST.get('case-name')
@@ -546,7 +548,7 @@ class UELCAdminView(LoggedInMixinSuperuser,
             action_args = dict(error="That username already exists! Please enter a new one.")
         return action_args
 
-    def deleteCohortUserCallback(self, request):
+    def deleteUserCallback(self, request):
         user_id = request.POST.get('user_id')
         user = User.objects.get(pk=user_id)
         user.delete()
@@ -555,7 +557,7 @@ class UELCAdminView(LoggedInMixinSuperuser,
             error=None)
         return action_args
 
-    def editCohortUserCallback(self, request):
+    def editUserCallback(self, request):
         username = request.POST.get('username', '')
         user_id = request.POST.get('user_id', '')
         profile = request.POST.get('profile_type', '')
@@ -570,6 +572,7 @@ class UELCAdminView(LoggedInMixinSuperuser,
                 cob.user.remove(user)
         user.profile.profile_type = profile
         user.profile.save()
+        user.username = username
         user.save()
         action_args = dict(
             username=username,
@@ -597,6 +600,27 @@ class UELCAdminView(LoggedInMixinSuperuser,
             cohort.user.add(usr)
         cohort.save()
         action_args=dict(cohort=cohort.id, name=cohort.name, error=None)
+        return action_args
+
+    def editCohortCallback(self, request):
+        name = request.POST.get('name', '')
+        case = request.POST.get('case', '')
+        cohort_id = request.POST.get('cohort_id', '')
+        users = request.POST.getlist('users')
+        cohort_obj = Cohort.objects.get(pk=cohort_id)
+        case_obj = Case.objects.get(pk=case) 
+        cohort_users = User.objects.filter(id__in=users)
+        cohort_obj.name=name
+        cohort_obj.user.all().delete()
+        cohort_obj.user.add(*cohort_users)
+        case_obj.cohort = cohort_obj
+        case_obj.save()
+        action_args = dict(
+            error=None,
+            cohort_id=cohort_id)
+        import pdb
+        pdb.set_trace()
+
         return action_args
 
     def createCaseCallback(self, request):

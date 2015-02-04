@@ -26,7 +26,7 @@ class Cohort(models.Model):
         case = Case.objects.filter(cohort=self.id)
         if len(case) == 0:
             return None
-        return case[0]
+        return case
 
     def _get_usernames(self):
         users = self.user.all()
@@ -51,12 +51,16 @@ class Cohort(models.Model):
 
     def edit_form(self):
         class EditForm(forms.Form):
+            name = forms.CharField(
+                initial=self.name,
+                widget=forms.widgets.Input(
+                    attrs={'class': 'edit-cohort-name'}))
             users = forms.ModelChoiceField(
                 initial=self.user.all().values_list('id', flat=True),
                 widget=forms.SelectMultiple(
                     attrs={'class': 'user-select'}),
-                queryset=User.objects.all().order_by('name'),)
-
+                queryset=User.objects.all().order_by('username'),)
+        return EditForm()
 
 class UserProfile(models.Model):
     PROFILE_CHOICES = (

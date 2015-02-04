@@ -132,7 +132,7 @@ jQuery(document).ready(function(){
         alert('created user');
       }
     },
-    this.editCohortUserCallback = function(data){
+    this.editUserCallback = function(data){
       if(data.error){
         alert(data.error)
       }else{
@@ -142,18 +142,18 @@ jQuery(document).ready(function(){
         cohorts = data.cohorts;
         row = jQuery('#user-'+user_id);
         this.updateUserRow(row, username, profile, cohorts);
-        modal = jQuery('#edit-cohort-user-form-modal-'+user_id);
+        modal = jQuery('#edit-user-form-modal-'+user_id);
         modal.modal('hide');
         alert('user has been updated successfully!')
       }
     },
 
-    this.deleteCohortUserCallback = function(data){
+    this.deleteUserCallback = function(data){
       if(data.error){
         alert(data.error)
       }else{
         user_id = data.user_id
-        modal = jQuery('#delete-cohort-user-form-modal-'+user_id);
+        modal = jQuery('#delete-user-form-modal-'+user_id);
         row = jQuery('#user-'+user_id);
         modal.on('hidden.bs.modal', row, function() {
            row.remove();

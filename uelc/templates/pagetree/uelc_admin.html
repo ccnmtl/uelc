@@ -32,8 +32,8 @@ button.close{
                 <td class="td-profile">{{ user.profile.profile_type }}</td>
                 <td class="td-cohorts">{{ user.profile.cohorts}}</td>
                 <td>
-                  <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-cohort-user-form-modal-{{user.id}}" href="#edit-cohort-user-form-modal-{{user.id}}">Edit</button>
-                  <div id="edit-cohort-user-form-modal-{{user.id}}" class="modal fade">
+                  <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">Edit</button>
+                  <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -44,7 +44,7 @@ button.close{
                                 <div class="panel-body">
                                   <form data-toggle="validator" id="edit-user-form" action="." method="post">{% csrf_token %}
                                     {{user.profile.edit_form|bootstrap}}
-                                    <input type="hidden" name="action" value="editCohortUserCallback">
+                                    <input type="hidden" name="action" value="editUserCallback">
                                     <input type="hidden" name="user_id" value="{{user.id}}">
                                     <input type="submit" class="btn btn-primary form-submit" value="Submit">
                                     <input type="reset" class="reset-button hidden" value="Reset" />
@@ -56,8 +56,8 @@ button.close{
                     </div><!--end .model-body-->
                   </div><!--end #edit-user-form-modal .modal-->
 
-                  <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-cohort-user-form-modal-{{user.id}}" href="#delete-cohort-user-form-modal-{{user.id}}">Delete</button>
-                  <div id="delete-cohort-user-form-modal-{{user.id}}" class="modal fade">
+                  <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-user-form-modal-{{user.id}}" href="#delete-user-form-modal-{{user.id}}">Delete</button>
+                  <div id="delete-user-form-modal-{{user.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -67,7 +67,7 @@ button.close{
                                 <div class="panel-heading">ARE YOU SURE?</div>
                                 <div class="panel-body">
                                   <form data-toggle="validator" id="edit-user-form" action="." method="post">{% csrf_token %}
-                                    <input type="hidden" name="action" value="deleteCohortUserCallback">
+                                    <input type="hidden" name="action" value="deleteUserCallback">
                                     <input type="hidden" name="user_id" value="{{user.id}}">
                                     <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
                                   </form>
@@ -110,20 +110,20 @@ button.close{
                   </td>
                 <td class="td-cohort-edit">
                   
-                  <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">Edit</button>
-                  <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
+                  <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-cohort-form-modal-{{cohort.id}}" href="#edit-cohort-form-modal-{{cohort.id}}">Edit Cohort</button>
+                  <div id="edit-cohort-form-modal-{{cohort.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <div class="modal-header panel-heading">Edit User</div>
+                            <div class="modal-header panel-heading">Edit Cohort</div>
                             <div class="modal-body">
-                              <div id="edit-user" class="panel panel-default">
-                                <div class="panel-heading">Edit User</div>
+                              <div id="edit-cohort" class="panel panel-default">
+                                <div class="panel-heading">Edit Cohort</div>
                                 <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-user-form" action="." method="post">{% csrf_token %}
-                                    {{user.profile.edit_form|bootstrap}}
-                                    <input type="hidden" name="action" value="editUserCallback">
-                                    <input type="hidden" name="user_id" value="{{user.id}}">
+                                  <form data-toggle="validator" id="edit-cohort-form" action="." method="post">{% csrf_token %}
+                                    {{cohort.edit_form|bootstrap}}
+                                    <input type="hidden" name="action" value="editCohortCallback">
+                                    <input type="hidden" name="cohort_id" value="{{cohort.id}}">
                                     <input type="submit" class="btn btn-primary form-submit" value="Submit">
                                     <input type="reset" class="reset-button hidden" value="Reset" />
                                   </form>
