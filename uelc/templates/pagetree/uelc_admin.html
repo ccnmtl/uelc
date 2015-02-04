@@ -10,9 +10,9 @@ button.close{
   padding: 10px;
 }
 </style>
-<p>Welcome,</p>
+<p>Welcome, {{ user_view }}</p>
 <p>This page is for creating Users, Cases, and Cohorts</p>
-{% if user_view%}
+{% if user_view %}
   <div class="panel panel-default">
       <div class="panel-heading">Users</div>
       <div class="panel-body">
@@ -22,14 +22,40 @@ button.close{
                 <th>Username</th>
                 <th>Profile Type</th>
                 <th>Cohort/s</th>
+                <th>Edit User</th>
               </tr>
             </thead>
             <tbody>
               {% for user in users %}
-              <tr>
-                <td>{{ user.username }}</td>
+              <tr id="user-{{user.id}}">
+                <td class="td-username">{{ user.username }}</td>
                 <td>{{ user.profile.profile_type }}</td>
                 <td>{{ user.profile.cohorts}}</td>
+                <td>
+                  <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">Edit</button>
+                  <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="modal-header panel-heading">Edit User</div>
+                            <div class="modal-body">
+                              <div id="edit-user" class="panel panel-default">
+                                <div class="panel-heading">Edit User</div>
+                                <div class="panel-body">
+                                  <form data-toggle="validator" id="edit-user-form" action="." method="post">{% csrf_token %}
+                                    {{user.profile.edit_form|bootstrap}}
+                                    <input type="hidden" name="action" value="editUserCallback">
+                                    <input type="hidden" name="user_id" value="{{user.id}}">
+                                    <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                                    <input type="reset" class="reset-button hidden" value="Reset" />
+                                  </form>
+                                </div>
+                              </div><!--end #hierarchiess-->
+                              </div> <!--end modal-dialog-->
+                        </div><!-- end modal-content-->
+                    </div><!--end .model-body-->
+                  </div><!--end #add-hierarchy-form-modal .modal-->
+                </td>
               </tr>
               {% endfor %}
           </tbody>
@@ -47,7 +73,7 @@ button.close{
               <div id="hierarchies" class="panel panel-default">
                 <div class="panel-heading">Hierarchies</div>
                 <div class="panel-body">
-                  <form data-toggle="validator" id="add-hierarchy-form" action="." method="post">
+                  <form data-toggle="validator" id="add-hierarchy-form" action="." method="post">{% csrf_token %}
                     {{create_hierarchy_form|bootstrap}}
                     <input type="hidden" name="action" value="hierarchyCallback">
                     <input type="submit" class="btn btn-primary form-submit" value="Submit">
@@ -70,7 +96,7 @@ button.close{
           <div id="users" class="panel panel-default">
             <div class="panel-heading">Users</div>
             <div class="panel-body">
-              <form role="form" data-toggle="validator" id="add-user-form" action="." method="post">
+              <form role="form" data-toggle="validator" id="add-user-form" action="." method="post">{% csrf_token %}
                 {{create_user_form|bootstrap}}
                 <input type="hidden" name="action" value="createUserCallback">
                 <input type="submit" class="btn btn-primary form-submit" value="Submit">
@@ -93,7 +119,7 @@ button.close{
               <div id="cohorts" class="panel panel-default">
                 <div class="panel-heading">Cohorts</div>
                 <div class="panel-body">
-                <form role="form" data-toggle="validator" id="add-cohort-form" action="." method="post">
+                <form role="form" data-toggle="validator" id="add-cohort-form" action="." method="post">{% csrf_token %}
                   {{cohortmodel.add_form|bootstrap}}
                     <input type="hidden" name="action" value="createCohortCallback">
                     <input type="submit" class="btn btn-primary form-submit" value="Submit">
@@ -116,7 +142,7 @@ button.close{
               <div id="cases" class="panel panel-default">
                 <div class="panel-heading">Cases</div>
                 <div class="panel-body">
-                <form role="form" data-toggle="validator" id="add-case-form" action="." method="post">
+                <form role="form" data-toggle="validator" id="add-case-form" action="." method="post">{% csrf_token %}
                   {{casemodel.add_form|bootstrap}}
                   <input type="hidden" name="action" value="createCaseCallback">
                   <input type="submit" class="btn btn-primary form-submit" value="Submit">

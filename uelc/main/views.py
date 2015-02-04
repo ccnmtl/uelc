@@ -487,11 +487,13 @@ class UELCAdminView(LoggedInMixinSuperuser,
             path = kwargs['path']
         except KeyError:
             path = None
+            self.extra_context.update(dict(user_view=None))
             pass
 
         if path:
             method = getattr(self, path)
             action = method(request)
+            
         return super(UELCAdminView, self).dispatch(request, *args, **kwargs)
 
     def user(self, request):
@@ -538,6 +540,15 @@ class UELCAdminView(LoggedInMixinSuperuser,
             action_args = dict(error="Please choose a user profile!")
         if len(user_exists) > 0:
             action_args = dict(error="That username already exists! Please enter a new one.")
+        return action_args
+
+    def editUserCallback(self, request):
+        username = request.POST.get('username', '')
+        user_id = request.POST.get('user_id', '')
+        user = User.objects.get(pk=user_id)
+        user.username = username
+        user.save()
+        action_args = dict(username=username, user_id=user_id, error=None)
         return action_args
 
     def createCohortCallback(self, request):

@@ -126,11 +126,31 @@ jQuery(document).ready(function(){
       }else{
         elem = jQuery('.user-select');
         html = '<option value='+data.user+'>'+data.username+'</option>';
-        form = jQuery('#add-user-form').trigger("reset");
+        form = jQuery('#add-user-form');
         elem.append(html);
         this.resetForm(form);
         alert('created user');
       }
+    },
+    this.editUserCallback = function(data){
+      if(data.error){
+        alert(data.error)
+      }else{
+        user_id = data.user_id;
+        username = data.username;
+        row = jQuery('#user-'+user_id);
+        this.updateUserRow(row, username);
+        modal = jQuery('#edit-user-form-modal-'+user_id);
+        modal.modal('hide')
+        alert('user has been updated successfully!')
+      }
+    },
+
+    this.updateUserRow = function(row, username){
+      console.log(row);
+      console.log(username);
+      td_username = jQuery(row).children('.td-username');
+      td_username.text(username);
     },
 
     this.createCohortCallback = function(data){

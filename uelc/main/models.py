@@ -43,6 +43,11 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name="profile")
     profile_type = models.CharField(max_length=12, choices=PROFILE_CHOICES)
 
+    def edit_form(self):
+        class EditForm(forms.Form):
+            username = forms.CharField(widget=forms.widgets.Input(attrs={'class': 'edit-user-username'}), initial=self.user.username)
+        return EditForm()
+
     def _get_cohorts(self):
         cohorts = Cohort.objects.filter(user=self.user.id)
         cohort_names = [cohort.name.encode(encoding='UTF-8',
