@@ -433,7 +433,8 @@ class FacilitatorView(LoggedInMixinSuperuser,
         cohort = case.cohort
         cohort_users = cohort.user.filter(
             profile__profile_type="group_user").order_by('username')
-        gateblocks = GateBlock.objects.all()
+        gateblocks = GateBlock.objects.filter(
+            pageblocks__section__hierarchy=hierarchy)
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
             depth=0,
@@ -465,34 +466,6 @@ class FacilitatorView(LoggedInMixinSuperuser,
                        library_item=library_item,
                        library_items=library_items,
                        case=case,
-                       )
-        context.update(self.get_extra_context())
-        return context
-
-
-class UELCAdminView(LoggedInMixinSuperuser,
-                    SectionMixin,
-                    TemplateView):
-    template_name = "pagetree/uelc_admin.html"
-    extra_context = dict()
-
-    def dispatch(self, request, *args, **kwargs):
-        #path = kwargs['path']
-        #rv = self.perform_checks(request, path)
-        #if rv is not None:
-        #    return rv
-        return super(UELCAdminView, self).dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, *args, **kwargs):
-        '''
-        * get the section of each gateblock
-        * determine number of levels in tree
-        * determine the level and place of the section in the tree
-        '''
-        path = ''
-        user = self.request.user
-        context = dict(user=user,
-                       path=path,
                        )
         context.update(self.get_extra_context())
         return context
