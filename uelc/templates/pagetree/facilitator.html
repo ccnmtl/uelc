@@ -4,7 +4,7 @@
 <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
 <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
 <div id="content" class="container">
-<hr class="seperator" />
+    <h1>Case Control</h1>
     {% for u in user_sections %}
     {% if u.0.profile.profile_type == "group_user" %}
     <div class="col-md-4">
@@ -115,7 +115,7 @@
     </div><!--end #library-add-form .modal-->
     {%endfor%}
 </div><!--end #library-content-->
-<hr class="seperator" />
+
 <div id="case-lirary-items" class="col-md-12">
     <div class="panel panel-default">
   <!-- Default panel contents -->

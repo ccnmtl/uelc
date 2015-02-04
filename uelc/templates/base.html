@@ -51,7 +51,7 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="/"><img src="{{STATIC_URL}}img/logo.png" /> UELC Case Manager <span style="color: #ccc;">Beta</span></a>
+		<a class="navbar-brand" href="/"><img src="{{STATIC_URL}}img/logo.png" /> UELC ELDEx <span style="color: #ccc;"> Beta</span></a>
 		</div>
 		
 		
@@ -98,7 +98,7 @@
 		</div>
 	</div>
 </nav>
->>>>>>> ce7abec101cfeb4cb5ed00f0429907164e996c9b
+
 {% endblock %}
 
 <div class="container" id="outer-container">
@@ -121,60 +121,6 @@
 {% block primarynav %}{% endblock %}
 {% endblock %}
 
-{% block loginbox %}
-{% if request.user.is_anonymous %}
-<div class="loginbox-container columbia">
-<div class="loginbox">
-<h2>Choose a login option...</h2>
-<div class="content">
-{% if CAS_BASE %}
-<form method="get" action="{{ CAS_BASE }}cas/login">
-{% csrf_token %}
-<input type="hidden" name="destination" value="https://{{ request.get_host }}/accounts/caslogin/?next={{ request.get_full_path|urlencode }}" />
-<p>If you have a Columbia University Network ID (UNI)...</p>
-<input class="regbutton" type="submit" value="Columbia Log In" />
-</form>
-{% endif %}
-
-<p class="smalltxt"><a href="http://cuit.columbia.edu/cuit/manage-my-uni" title="Learn more about UNI" target="_blank">What is a UNI?</a></p>
-<!-- End UNI LOG IN -->
-
-<hr class="seperator" />
-
-{% if login_form.errors %}
-<p class="errornote">
-<span>
-<b>ERROR:</b> Invalid username or password.
-</span>
-Please try again. Note that both username and password are case-sensitive.
-</p>
-{% endif %}
-<p>If you have a guest account...</p>
-<form id="login-local" name="login_local" method="post" action="/accounts/login/">
-{% csrf_token %}
-<div class="login-local-form" {% if not login_form.errors %}style="display: none"{% endif %}>
-<div class="fieldwrapper">
-<label for="id_username">Username:</label>
-{{ login_form.username }}
-</div>
-<!-- fieldwrapper -->
-<div class="fieldwrapper">
-<label for="id_password">Password:</label>
-{{ login_form.password }}
-</div><!-- fieldwrapper -->
-</div>      
-<input class="regbutton" type="button" value="Guest Log In" {% if login_form.errors %}style="display: none"{% endif %}
-onclick="jQuery('.login-local-form').show(); jQuery(this).hide(); return false;"/>
-<input class="regbutton login-local-form" type="submit" value="Log In" {% if not login_form.errors %}style="display: none;"{% endif %} />                        
-<input type="hidden" name="next" value="{{ request.get_full_path }}" />
-</form>
-<p class="smalltxt"><a href="/registration/register/" title="Create your new project account">Need a new account?</a></p>
-</div>
-</div>
-</div>
-{% endif %}
-{% endblock %}
-
 
 <div class="row">
 	
@@ -185,14 +131,71 @@ onclick="jQuery('.login-local-form').show(); jQuery(this).hide(); return false;"
 	</div>
 	{% block library %}{% endblock %}
 	
-	{% if request.user.is_superuser %}
 	<div class="col-sm-3">
-		{% block sidenav %}{% endblock %}
+	
+        {% block loginbox %}
+        {% if request.user.is_anonymous %}
+        <div class="loginbox-container columbia">
+        <div class="loginbox">
+        <h2>Choose a login option...</h2>
+        <div class="content">
+        {% if CAS_BASE %}
+        <form method="get" action="{{ CAS_BASE }}cas/login">
+        {% csrf_token %}
+        <input type="hidden" name="destination" value="https://{{ request.get_host }}/accounts/caslogin/?next={{ request.get_full_path|urlencode }}" />
+        <p>If you have a Columbia University Network ID (UNI)...</p>
+        <input class="regbutton" type="submit" value="Columbia Log In" />
+        </form>
+        {% endif %}
+        <p class="smalltxt"><a href="http://cuit.columbia.edu/cuit/manage-my-uni" title="Learn more about UNI" target="_blank">What is a UNI?</a></p>
+        <!-- End UNI LOG IN -->
+        {% if login_form.errors %}
+        <p class="errornote">
+        <span>
+        <b>ERROR:</b> Invalid username or password.
+        </span>
+        Please try again. Note that both username and password are case-sensitive.
+        </p>
+        {% endif %}
+        <p>If you have a guest account...</p>
+        <form id="login-local" name="login_local" method="post" action="/accounts/login/">
+        {% csrf_token %}
+        <div class="login-local-form" {% if not login_form.errors %}style="display: none"{% endif %}>
+        <div class="fieldwrapper">
+        <label for="id_username">Username:</label>
+        {{ login_form.username }}
+        </div>
+        <!-- fieldwrapper -->
+        <div class="fieldwrapper">
+        <label for="id_password">Password:</label>
+        {{ login_form.password }}
+        </div><!-- fieldwrapper -->
+        </div>      
+        <input class="regbutton" type="button" value="Guest Log In" {% if login_form.errors %}style="display: none"{% endif %}
+        onclick="jQuery('.login-local-form').show(); jQuery(this).hide(); return false;"/>
+        <input class="regbutton login-local-form" type="submit" value="Log In" {% if not login_form.errors %}style="display: none;"{% endif %} />                        
+        <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+        </form>
+        <p class="smalltxt"><a href="/registration/register/" title="Create your new project account">Need a new account?</a></p>
+        </div>
+        </div>
+        </div>
+        {% endif %}
+        {% endblock %}
+        
+        
+        {% if request.user.is_superuser %}
+            {% block sidenav %}{% endblock %}
+        {% endif %}
+        
 	</div>
-	{% endif %}
 	
 </div>
 <!--end .row-->
+
+
+
+
 
 {% block footer %}
 <footer class="footer navbar-fixed-bottom hidden-phone">
