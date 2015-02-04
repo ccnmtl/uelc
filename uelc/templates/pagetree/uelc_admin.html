@@ -10,7 +10,7 @@ button.close{
   padding: 10px;
 }
 </style>
-<p>Welcome, {{ user_view }}</p>
+<p>Welcome,</p>
 <p>This page is for creating Users, Cases, and Cohorts</p>
 {% if user_view %}
   <div class="panel panel-default">
@@ -32,6 +32,84 @@ button.close{
                 <td class="td-profile">{{ user.profile.profile_type }}</td>
                 <td class="td-cohorts">{{ user.profile.cohorts}}</td>
                 <td>
+                  <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-cohort-user-form-modal-{{user.id}}" href="#edit-cohort-user-form-modal-{{user.id}}">Edit</button>
+                  <div id="edit-cohort-user-form-modal-{{user.id}}" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="modal-header panel-heading">Edit User</div>
+                            <div class="modal-body">
+                              <div id="edit-user" class="panel panel-default">
+                                <div class="panel-heading">Edit User</div>
+                                <div class="panel-body">
+                                  <form data-toggle="validator" id="edit-user-form" action="." method="post">{% csrf_token %}
+                                    {{user.profile.edit_form|bootstrap}}
+                                    <input type="hidden" name="action" value="editCohortUserCallback">
+                                    <input type="hidden" name="user_id" value="{{user.id}}">
+                                    <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                                    <input type="reset" class="reset-button hidden" value="Reset" />
+                                  </form>
+                                </div>
+                              </div><!--end #hierarchiess-->
+                              </div> <!--end modal-dialog-->
+                        </div><!-- end modal-content-->
+                    </div><!--end .model-body-->
+                  </div><!--end #edit-user-form-modal .modal-->
+
+                  <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-cohort-user-form-modal-{{user.id}}" href="#delete-cohort-user-form-modal-{{user.id}}">Delete</button>
+                  <div id="delete-cohort-user-form-modal-{{user.id}}" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="modal-header panel-heading">Delete User</div>
+                            <div class="modal-body">
+                              <div id="edit-user" class="panel panel-default">
+                                <div class="panel-heading">ARE YOU SURE?</div>
+                                <div class="panel-body">
+                                  <form data-toggle="validator" id="edit-user-form" action="." method="post">{% csrf_token %}
+                                    <input type="hidden" name="action" value="deleteCohortUserCallback">
+                                    <input type="hidden" name="user_id" value="{{user.id}}">
+                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
+                                  </form>
+                                </div>
+                              </div><!--end #hierarchiess-->
+                              </div> <!--end modal-dialog-->
+                        </div><!-- end modal-content-->
+                    </div><!--end .model-body-->
+                  </div><!--end #add-hierarchy-form-modal .modal-->
+                </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      </div><!--end panel-body-->
+  </div><!--end panel-->
+{% endif %}
+
+{% if cohort_view %}
+  
+    <div class="panel panel-default">
+      <div class="panel-heading">Cohorts</div>
+      <div class="panel-body">
+          <table id="user-list" class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Case</th>
+                <th>Users</th>
+                <th>Edit Cohort</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cohort in cohorts %}
+              <tr id="cohort-{{cohort.id}}">
+                <td class="td-cohort-name">{{ cohort.name }}</td>
+                <td class="td-cohort-case">{{cohort.case}}</td>
+                <td class="td-cohort-users">
+                  {{cohort.user_usernames}}
+                  </td>
+                <td class="td-cohort-edit">
+                  
                   <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">Edit</button>
                   <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
                     <div class="modal-dialog">
@@ -54,38 +132,15 @@ button.close{
                               </div> <!--end modal-dialog-->
                         </div><!-- end modal-content-->
                     </div><!--end .model-body-->
-                  </div><!--end #add-hierarchy-form-modal .modal-->
-
-                  <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-user-form-modal-{{user.id}}" href="#delete-user-form-modal-{{user.id}}">Delete</button>
-                  <div id="delete-user-form-modal-{{user.id}}" class="modal fade">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <div class="modal-header panel-heading">Delete User</div>
-                            <div class="modal-body">
-                              <div id="edit-user" class="panel panel-default">
-                                <div class="panel-heading">ARE YOU SURE?</div>
-                                <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-user-form" action="." method="post">{% csrf_token %}
-                                    <input type="hidden" name="action" value="deleteUserCallback">
-                                    <input type="hidden" name="user_id" value="{{user.id}}">
-                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
-                                  </form>
-                                </div>
-                              </div><!--end #hierarchiess-->
-                              </div> <!--end modal-dialog-->
-                        </div><!-- end modal-content-->
-                    </div><!--end .model-body-->
-                  </div><!--end #add-hierarchy-form-modal .modal-->
-
+                  </div><!--end #edit-user-form-modal .modal-->
 
                 </td>
               </tr>
               {% endfor %}
-          </tbody>
-        </table>
-      </div><!--end panel-body-->
-  </div><!--end panel-->
+            </tbody>
+          </table>
+        </div><!--end panel-body-->
+      </div><!-- end panel -->
 {% endif %}
 <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-hierarchy-form-modal" href="#add-hierarchy-form-modal">Add Hierarchy Item</button>
 <div id="add-hierarchy-form-modal" class="modal fade">

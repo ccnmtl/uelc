@@ -500,6 +500,10 @@ class UELCAdminView(LoggedInMixinSuperuser,
         users = User.objects.all().order_by('username')
         self.extra_context.update(dict(user_view=True, users=users))
 
+    def cohort(self, request):
+        cohorts = Cohort.objects.all().order_by('name')
+        self.extra_context.update(dict(cohort_view=True, cohorts=cohorts))    
+
     def post_add_case(self, request):
         casename = request.POST.get('case-name')
         case = Case.objects.create(name=casename)
@@ -542,7 +546,7 @@ class UELCAdminView(LoggedInMixinSuperuser,
             action_args = dict(error="That username already exists! Please enter a new one.")
         return action_args
 
-    def deleteUserCallback(self, request):
+    def deleteCohortUserCallback(self, request):
         user_id = request.POST.get('user_id')
         user = User.objects.get(pk=user_id)
         user.delete()
@@ -551,7 +555,7 @@ class UELCAdminView(LoggedInMixinSuperuser,
             error=None)
         return action_args
 
-    def editUserCallback(self, request):
+    def editCohortUserCallback(self, request):
         username = request.POST.get('username', '')
         user_id = request.POST.get('user_id', '')
         profile = request.POST.get('profile_type', '')

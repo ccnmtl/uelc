@@ -21,6 +21,23 @@ class Cohort(models.Model):
 
     def display_name(self):
         return '%s' % (self.name)
+    
+    def _get_case(self):
+        case = Case.objects.filter(cohort=self.id)
+        if len(case) == 0:
+            return None
+        return case[0]
+
+    def _get_usernames(self):
+        users = self.user.all()
+        usernames = [user.username.encode(encoding='UTF-8',
+                        errors='strict') for user in users]
+        nms_join = ', '.join(usernames)
+        return nms_join
+
+    user_usernames = property(_get_usernames)
+
+    case = property(_get_case)
 
     @classmethod
     def add_form(self):
@@ -31,6 +48,14 @@ class Cohort(models.Model):
                                           queryset=User.objects.all().order_by('username'),
                                           empty_label=None)
         return AddForm()
+
+    def edit_form(self):
+        class EditForm(forms.Form):
+            users = forms.ModelChoiceField(
+                initial=self.user.all().values_list('id', flat=True),
+                widget=forms.SelectMultiple(
+                    attrs={'class': 'user-select'}),
+                queryset=User.objects.all().order_by('name'),)
 
 
 class UserProfile(models.Model):
