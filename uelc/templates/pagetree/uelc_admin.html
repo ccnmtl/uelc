@@ -29,8 +29,8 @@ button.close{
               {% for user in users %}
               <tr id="user-{{user.id}}">
                 <td class="td-username">{{ user.username }}</td>
-                <td>{{ user.profile.profile_type }}</td>
-                <td>{{ user.profile.cohorts}}</td>
+                <td class="td-profile">{{ user.profile.profile_type }}</td>
+                <td class="td-cohorts">{{ user.profile.cohorts}}</td>
                 <td>
                   <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">Edit</button>
                   <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
@@ -55,6 +55,30 @@ button.close{
                         </div><!-- end modal-content-->
                     </div><!--end .model-body-->
                   </div><!--end #add-hierarchy-form-modal .modal-->
+
+                  <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-user-form-modal-{{user.id}}" href="#delete-user-form-modal-{{user.id}}">Delete</button>
+                  <div id="delete-user-form-modal-{{user.id}}" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="modal-header panel-heading">Delete User</div>
+                            <div class="modal-body">
+                              <div id="edit-user" class="panel panel-default">
+                                <div class="panel-heading">ARE YOU SURE?</div>
+                                <div class="panel-body">
+                                  <form data-toggle="validator" id="edit-user-form" action="." method="post">{% csrf_token %}
+                                    <input type="hidden" name="action" value="deleteUserCallback">
+                                    <input type="hidden" name="user_id" value="{{user.id}}">
+                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
+                                  </form>
+                                </div>
+                              </div><!--end #hierarchiess-->
+                              </div> <!--end modal-dialog-->
+                        </div><!-- end modal-content-->
+                    </div><!--end .model-body-->
+                  </div><!--end #add-hierarchy-form-modal .modal-->
+
+
                 </td>
               </tr>
               {% endfor %}

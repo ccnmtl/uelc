@@ -542,13 +542,37 @@ class UELCAdminView(LoggedInMixinSuperuser,
             action_args = dict(error="That username already exists! Please enter a new one.")
         return action_args
 
+    def deleteUserCallback(self, request):
+        user_id = request.POST.get('user_id')
+        user = User.objects.get(pk=user_id)
+        user.delete()
+        action_args=dict(
+            user_id=user_id,
+            error=None)
+        return action_args
+
     def editUserCallback(self, request):
         username = request.POST.get('username', '')
         user_id = request.POST.get('user_id', '')
+        profile = request.POST.get('profile_type', '')
+        cohorts = request.POST.getlist('cohort', '')
         user = User.objects.get(pk=user_id)
-        user.username = username
+        cobs_all = Cohort.objects.all()
+        cobs_related = Cohort.objects.filter(id__in=cohorts)
+        for cob in cobs_all:
+            if cob in cobs_related:
+                cob.user.add(user)
+            else:
+                cob.user.remove(user)
+        user.profile.profile_type = profile
+        user.profile.save()
         user.save()
-        action_args = dict(username=username, user_id=user_id, error=None)
+        action_args = dict(
+            username=username,
+            user_id=user_id,
+            profile=profile,
+            cohorts=[cohort.name for cohort in cobs_related],
+            error=None)
         return action_args
 
     def createCohortCallback(self, request):

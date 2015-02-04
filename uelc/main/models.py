@@ -45,11 +45,25 @@ class UserProfile(models.Model):
 
     def edit_form(self):
         class EditForm(forms.Form):
-            username = forms.CharField(widget=forms.widgets.Input(attrs={'class': 'edit-user-username'}), initial=self.user.username)
+            username = forms.CharField(
+                widget=forms.widgets.Input(
+                attrs={'class': 'edit-user-username'}),
+                initial=self.user.username)
+            profile_type = forms.ChoiceField(
+                initial=self.profile_type,
+                required=True,
+                widget=forms.Select(
+                    attrs={'class': 'create-user-profile', 'required': True}),
+                choices=UserProfile.PROFILE_CHOICES) 
+            cohort = forms.ModelChoiceField(
+                initial=Cohort.objects.filter(user=self.user).values_list('id', flat=True),
+                widget=forms.SelectMultiple(
+                    attrs={'class': 'cohort-select'}),
+                queryset=Cohort.objects.all().order_by('name'),)
         return EditForm()
 
     def _get_cohorts(self):
-        cohorts = Cohort.objects.filter(user=self.user.id)
+        cohorts = Cohort.objects.filter(user=self.user.id).order_by('name')
         cohort_names = [cohort.name.encode(encoding='UTF-8',
                         errors='strict') for cohort in cohorts]
         cts = ', '.join(cohort_names)

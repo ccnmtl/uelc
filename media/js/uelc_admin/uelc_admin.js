@@ -138,19 +138,39 @@ jQuery(document).ready(function(){
       }else{
         user_id = data.user_id;
         username = data.username;
+        profile = data.profile;
+        cohorts = data.cohorts;
         row = jQuery('#user-'+user_id);
-        this.updateUserRow(row, username);
+        this.updateUserRow(row, username, profile, cohorts);
         modal = jQuery('#edit-user-form-modal-'+user_id);
-        modal.modal('hide')
+        modal.modal('hide');
         alert('user has been updated successfully!')
       }
     },
 
-    this.updateUserRow = function(row, username){
-      console.log(row);
-      console.log(username);
+    this.deleteUserCallback = function(data){
+      if(data.error){
+        alert(data.error)
+      }else{
+        user_id = data.user_id
+        modal = jQuery('#delete-user-form-modal-'+user_id);
+        row = jQuery('#user-'+user_id);
+        modal.on('hidden.bs.modal', row, function() {
+           row.remove();
+        })
+        modal.modal('hide');
+        alert('user has been deleted!')
+      }
+    },
+
+    this.updateUserRow = function(row, username, profile, cohorts){
+
       td_username = jQuery(row).children('.td-username');
+      td_profile = jQuery(row).children('.td-profile');
+      td_cohorts = jQuery(row).children('.td-cohorts');
       td_username.text(username);
+      td_profile.text(profile)
+      td_cohorts.text(cohorts);
     },
 
     this.createCohortCallback = function(data){
