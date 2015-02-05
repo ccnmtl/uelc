@@ -12,7 +12,28 @@ button.close{
 </style>
 <p>Welcome,</p>
 <p>This page is for creating Users, Cases, and Cohorts</p>
-{% if user_view %}
+{% if messages %}
+  {% for message in messages %}
+  {% if message.level_tag == 'error' %}
+    <div id="message-modal" class="modal fade" data-callback="{{message.extra_tags}}">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <div class="modal-header panel-heading">Message</div>
+              <div class="modal-body">
+                <div id="edit-user" class="panel panel-default">
+                  <div class="panel-heading">{{ message.level_tag }}</div>
+                  <div class="panel-body">
+                        {{ message }}
+                  </div>
+                </div><!--end #hierarchiess-->
+                </div> <!--end modal-dialog-->
+          </div><!-- end modal-content-->
+      </div><!--end .model-body-->
+    </div><!--end #add-hierarchy-form-modal .modal-->
+  {% endif %}
+  {% endfor %}
+{% endif %}
   <div class="panel panel-default">
       <div class="panel-heading">Users</div>
       <div class="panel-body">
@@ -42,9 +63,8 @@ button.close{
                               <div id="edit-user" class="panel panel-default">
                                 <div class="panel-heading">Edit User</div>
                                 <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-user-form" action="." method="post">{% csrf_token %}
+                                  <form data-toggle="validator" id="edit-user-form" action="/uelcadmin/edituser/" method="post">{% csrf_token %}
                                     {{user.profile.edit_form|bootstrap}}
-                                    <input type="hidden" name="action" value="editUserCallback">
                                     <input type="hidden" name="user_id" value="{{user.id}}">
                                     <input type="submit" class="btn btn-primary form-submit" value="Submit">
                                     <input type="reset" class="reset-button hidden" value="Reset" />
@@ -66,8 +86,7 @@ button.close{
                               <div id="edit-user" class="panel panel-default">
                                 <div class="panel-heading">ARE YOU SURE?</div>
                                 <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-user-form" action="." method="post">{% csrf_token %}
-                                    <input type="hidden" name="action" value="deleteUserCallback">
+                                  <form data-toggle="validator" id="edit-user-form" action="/uelcadmin/deleteuser/" method="post">{% csrf_token %}
                                     <input type="hidden" name="user_id" value="{{user.id}}">
                                     <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
                                   </form>
@@ -84,10 +103,7 @@ button.close{
         </table>
       </div><!--end panel-body-->
   </div><!--end panel-->
-{% endif %}
 
-{% if cohort_view %}
-  
     <div class="panel panel-default">
       <div class="panel-heading">Cohorts</div>
       <div class="panel-body">
@@ -120,9 +136,8 @@ button.close{
                               <div id="edit-cohort" class="panel panel-default">
                                 <div class="panel-heading">Edit Cohort</div>
                                 <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-cohort-form" action="." method="post">{% csrf_token %}
+                                  <form data-toggle="validator" id="edit-cohort-form-{{cohort.id}}" action="/uelcadmin/editcohort/" method="post">{% csrf_token %}
                                     {{cohort.edit_form|bootstrap}}
-                                    <input type="hidden" name="action" value="editCohortCallback">
                                     <input type="hidden" name="cohort_id" value="{{cohort.id}}">
                                     <input type="submit" class="btn btn-primary form-submit" value="Submit">
                                     <input type="reset" class="reset-button hidden" value="Reset" />
@@ -141,7 +156,7 @@ button.close{
           </table>
         </div><!--end panel-body-->
       </div><!-- end panel -->
-{% endif %}
+
 <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-hierarchy-form-modal" href="#add-hierarchy-form-modal">Add Hierarchy Item</button>
 <div id="add-hierarchy-form-modal" class="modal fade">
     <div class="modal-dialog">
@@ -152,9 +167,8 @@ button.close{
               <div id="hierarchies" class="panel panel-default">
                 <div class="panel-heading">Hierarchies</div>
                 <div class="panel-body">
-                  <form data-toggle="validator" id="add-hierarchy-form" action="." method="post">{% csrf_token %}
+                  <form data-toggle="validator" id="add-hierarchy-form" action="/uelcadmin/hierarchy/" method="post">{% csrf_token %}
                     {{create_hierarchy_form|bootstrap}}
-                    <input type="hidden" name="action" value="hierarchyCallback">
                     <input type="submit" class="btn btn-primary form-submit" value="Submit">
                     <input type="reset" class="reset-button hidden" value="Reset" />
                   </form>
@@ -175,9 +189,8 @@ button.close{
           <div id="users" class="panel panel-default">
             <div class="panel-heading">Users</div>
             <div class="panel-body">
-              <form role="form" data-toggle="validator" id="add-user-form" action="." method="post">{% csrf_token %}
+              <form role="form" data-toggle="validator" id="add-user-form" action="/uelcadmin/createuser/" method="post">{% csrf_token %}
                 {{create_user_form|bootstrap}}
-                <input type="hidden" name="action" value="createUserCallback">
                 <input type="submit" class="btn btn-primary form-submit" value="Submit">
                 <input type="reset" class="reset-button hidden" value="Reset" />
               </form>
@@ -198,9 +211,8 @@ button.close{
               <div id="cohorts" class="panel panel-default">
                 <div class="panel-heading">Cohorts</div>
                 <div class="panel-body">
-                <form role="form" data-toggle="validator" id="add-cohort-form" action="." method="post">{% csrf_token %}
+                <form role="form" data-toggle="validator" id="add-cohort-form" action="/uelcadmin/createcohort/" method="post">{% csrf_token %}
                   {{cohortmodel.add_form|bootstrap}}
-                    <input type="hidden" name="action" value="createCohortCallback">
                     <input type="submit" class="btn btn-primary form-submit" value="Submit">
                     <input type="reset" class="reset-button hidden" value="Reset" />
                 </form>
@@ -221,9 +233,8 @@ button.close{
               <div id="cases" class="panel panel-default">
                 <div class="panel-heading">Cases</div>
                 <div class="panel-body">
-                <form role="form" data-toggle="validator" id="add-case-form" action="." method="post">{% csrf_token %}
+                <form role="form" data-toggle="validator" id="add-case-form" action="/uelcadmin/createcase/" method="post">{% csrf_token %}
                   {{casemodel.add_form|bootstrap}}
-                  <input type="hidden" name="action" value="createCaseCallback">
                   <input type="submit" class="btn btn-primary form-submit" value="Submit">
                   <input type="reset" class="reset-button hidden" value="Reset" />
                 </form>

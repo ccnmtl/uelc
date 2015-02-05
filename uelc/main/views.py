@@ -15,6 +15,8 @@ from pagetree.helpers import get_section_from_path
 from django.core import serializers
 from django.db.models import Q
 from django.contrib.auth.hashers import make_password
+from django.core.urlresolvers import reverse
+from django.contrib import messages
 import json
 
 
@@ -473,66 +475,12 @@ class FacilitatorView(LoggedInMixinSuperuser,
         context.update(self.get_extra_context())
         return context
 
-
-class UELCAdminView(LoggedInMixinSuperuser,
+class UELCAdminCreateUserView(LoggedInMixinSuperuser,
                     TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
 
-    def get_extra_context(self, **kwargs):
-        return self.extra_context
-
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            path = kwargs['path']
-        except KeyError:
-            path = None
-            self.extra_context.update(dict(
-                user_view=None,
-                cohort_view=None,))
-            pass
-
-        if path:
-            method = getattr(self, path)
-            action = method(request)
-            
-        return super(UELCAdminView, self).dispatch(request, *args, **kwargs)
-
-    def user(self, request):
-        users = User.objects.all().order_by('username')
-        self.extra_context.update(dict(user_view=True, users=users))
-
-    def cohort(self, request):
-        cohorts = Cohort.objects.all().order_by('name')
-        self.extra_context.update(dict(cohort_view=True, cohorts=cohorts))
-
-    def post_add_case(self, request):
-        casename = request.POST.get('case-name')
-        case = Case.objects.create(name=casename)
-
-    def hierarchyCallback(self, request):
-        name = request.POST.get('name', '')
-        url = '/pages/'+request.POST.get('url', '')+'/'
-        hier = Hierarchy.objects.filter(Q(base_url=url) | Q(name=name))
-
-        if len(hier) > 0:
-            action_args = dict(
-                error="Hierarchy exists! Please use the exisiting one, or create one with a different name and url.")
-            return action_args
-
-        hier = Hierarchy.objects.create(
-            base_url=url,
-            name=name)
-        hier.save()
-        hier_data = serializers.serialize(
-            'json',
-            [hier, ],
-            fields=('name', 'id', 'base_url'))
-        action_args = dict(
-            name=hier.name, value=hier.pk, url=hier.base_url, error=None)
-        return action_args
-
-    def createUserCallback(self, request):
+    def post(self, request):
         username = request.POST.get('username', '')
         password = make_password(request.POST.get('password1', ''))
         profile_type = request.POST.get('user_profile', '')
@@ -546,18 +494,29 @@ class UELCAdminView(LoggedInMixinSuperuser,
             action_args = dict(error="Please choose a user profile!")
         if len(user_exists) > 0:
             action_args = dict(error="That username already exists! Please enter a new one.")
-        return action_args
+        return HttpResponseRedirect('/uelcadmin/')
 
-    def deleteUserCallback(self, request):
+class UELCAdminDeleteUserView(LoggedInMixinSuperuser,
+                    TemplateView):
+    template_name = "pagetree/uelc_admin.html"
+    extra_context = dict()
+
+    def post(self, request):
         user_id = request.POST.get('user_id')
         user = User.objects.get(pk=user_id)
         user.delete()
         action_args=dict(
             user_id=user_id,
             error=None)
-        return action_args
+        return HttpResponseRedirect('/uelcadmin/')
 
-    def editUserCallback(self, request):
+
+class UELCAdminEditUserView(LoggedInMixinSuperuser,
+                    TemplateView):
+    template_name = "pagetree/uelc_admin.html"
+    extra_context = dict()
+
+    def post(self, request):
         username = request.POST.get('username', '')
         user_id = request.POST.get('user_id', '')
         profile = request.POST.get('profile_type', '')
@@ -580,9 +539,42 @@ class UELCAdminView(LoggedInMixinSuperuser,
             profile=profile,
             cohorts=[cohort.name for cohort in cobs_related],
             error=None)
-        return action_args
+        return HttpResponseRedirect('/uelcadmin/')
 
-    def createCohortCallback(self, request):
+class UELCAdminHierarchyView(LoggedInMixinSuperuser,
+                    TemplateView):
+    template_name = "pagetree/uelc_admin.html"
+    extra_context = dict()
+
+    def post(self, request):
+        name = request.POST.get('name', '')
+        url = '/pages/'+request.POST.get('url', '')+'/'
+        hier = Hierarchy.objects.filter(Q(base_url=url) | Q(name=name))
+
+        if len(hier) > 0:
+            action_args = dict(
+                error="Hierarchy exists! Please use the exisiting one, or create one with a different name and url.")
+            return action_args
+
+        hier = Hierarchy.objects.create(
+            base_url=url,
+            name=name)
+        hier.save()
+        hier_data = serializers.serialize(
+            'json',
+            [hier, ],
+            fields=('name', 'id', 'base_url'))
+        action_args = dict(
+            name=hier.name, value=hier.pk, url=hier.base_url, error=None)
+        return HttpResponseRedirect('/uelcadmin/')
+
+
+class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
+                    TemplateView):
+    template_name = "pagetree/uelc_admin.html"
+    extra_context = dict()
+
+    def post(self, request):
         name = request.POST.get('name', '') 
         users = request.POST.getlist('user', '')
         cohort_exists = Cohort.objects.filter(Q(name=name))
@@ -600,9 +592,15 @@ class UELCAdminView(LoggedInMixinSuperuser,
             cohort.user.add(usr)
         cohort.save()
         action_args=dict(cohort=cohort.id, name=cohort.name, error=None)
-        return action_args
+        return HttpResponseRedirect('/uelcadmin/')
 
-    def editCohortCallback(self, request):
+
+class UELCAdminEditCohortView(LoggedInMixinSuperuser,
+                    TemplateView):
+    template_name = "pagetree/uelc_admin.html"
+    extra_context = dict()
+
+    def post(self, request):
         name = request.POST.get('name', '')
         case = request.POST.get('case', '')
         cohort_id = request.POST.get('cohort_id', '')
@@ -618,12 +616,14 @@ class UELCAdminView(LoggedInMixinSuperuser,
         action_args = dict(
             error=None,
             cohort_id=cohort_id)
-        import pdb
-        pdb.set_trace()
+        return HttpResponseRedirect('/uelcadmin/')
 
-        return action_args
+class UELCAdminCreateCaseView(LoggedInMixinSuperuser,
+                    TemplateView):
+    template_name = "pagetree/uelc_admin.html"
+    extra_context = dict()
 
-    def createCaseCallback(self, request):
+    def post(self, request):
         name = request.POST.get('name', '')
         hierarchy = request.POST.get('hierarchy', '')
         cohort = request.POST.get('cohort', '')
@@ -631,29 +631,33 @@ class UELCAdminView(LoggedInMixinSuperuser,
         case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
         if len(case_exists_name):
             action_args = dict(error="Case already exists! Please use existing case or rename.")
-            return action_args
+            messages.error(request, action_args['error'],  extra_tags='createCaseViewError')
+            return HttpResponseRedirect('/uelcadmin/')
         if len(case_exists_hier):
             action_args = dict(error="Case already exists! A case has already been created that is attached to the selected hierarchy.\
                 Do you need to create another hierarchy or should you use an existing case?")
-            return action_args
+            messages.error(request, action_args['error'],  extra_tags='createCaseViewError')
+            return HttpResponseRedirect('/uelcadmin/')
         if hierarchy =="" or cohort=="":
             action_args = dict(error="Please make sure a hierarchy and cohort is selected")
-            return action_args
+            messages.error(request, action_args['error'],  extra_tags='createCaseViewError')
+            return HttpResponseRedirect('/uelcadmin/')
+
         hier_obj = Hierarchy.objects.get(id=hierarchy)
         coh_obj = Cohort.objects.get(id=cohort)    
         Case.objects.create(name=name, hierarchy=hier_obj, cohort=coh_obj)
         action_args=dict(error=None)
-        return action_args
 
-    def post(self, request):
-        action = ''
-        action_args = ''
-        action = request.POST.get('action', '')
-        method = getattr(self, action)
-        action_args = method(request)
+        return HttpResponseRedirect('/uelcadmin/')
 
-        data = dict(action=action, action_args=action_args)
-        return HttpResponse(json.dumps(data), content_type="application/json")
+
+class UELCAdminView(LoggedInMixinSuperuser,
+                    TemplateView):
+    template_name = "pagetree/uelc_admin.html"
+    extra_context = dict()
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(UELCAdminView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         path = self.request.path
@@ -668,13 +672,13 @@ class UELCAdminView(LoggedInMixinSuperuser,
         context = dict(users=users,
                        path=path,
                        cases=cases,
+                       cohorts=cohorts,
                        casemodel=casemodel,
                        cohortmodel=cohortmodel,
                        create_user_form=create_user_form,
                        create_hierarchy_form=create_hierarchy_form,
                        hierarchies=hierarchies,
                        )
-        context.update(self.get_extra_context())
         return context
 
 

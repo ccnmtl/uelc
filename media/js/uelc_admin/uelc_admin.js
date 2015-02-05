@@ -3,6 +3,7 @@ jQuery(document).ready(function(){
   var UELCAdmin = function(){
     this.setMultiselects = function(){
       jQuery('.hierarchy-select').multiselect();
+      jQuery('.case-select').multiselect();
       jQuery('.cohort-select').multiselect();
       jQuery('.user-select').multiselect();
       jQuery('.create-user-profile').multiselect();
@@ -73,11 +74,21 @@ jQuery(document).ready(function(){
           
           errorClass: 'has-error',
 
+           // this is not is use at the moment
+           /*
           submitHandler: function(form){
-            jQuery.post( "/uelcadmin/", jQuery(form).serialize(), function(data){
-              window.admin[data.action](data.action_args);
-            });
+
+           
+            
+              console.log(form);
+              action_url = jQuery(form).attr('action');
+            
+              jQuery.post(action_url, jQuery(form).serialize(), function(data){
+                console.log(data)
+              });
+            
           },
+          */
 
           highlight: function (element) {
               window.admin.highlight(element);
@@ -212,10 +223,23 @@ jQuery(document).ready(function(){
         alert('Case has been created!');
       }
     },
+    this.checkForMessages = function(){
+      if(jQuery('#message-modal').length > 0){
+        this.showMessageModal();
+      }
+    },
+
+    this.showMessageModal = function(){
+      modal = jQuery('#message-modal')
+      callback = modal.attr('data-callback');
+      modal.modal('show');
+
+    },
 
     this.init = function(){
       this.setMultiselects();
       this.addListeners();
+      this.checkForMessages();
     }
   };
 

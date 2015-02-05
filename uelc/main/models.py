@@ -26,7 +26,7 @@ class Cohort(models.Model):
         case = Case.objects.filter(cohort=self.id)
         if len(case) == 0:
             return None
-        return case
+        return case[0]
 
     def _get_usernames(self):
         users = self.user.all()
@@ -60,6 +60,11 @@ class Cohort(models.Model):
                 widget=forms.SelectMultiple(
                     attrs={'class': 'user-select'}),
                 queryset=User.objects.all().order_by('username'),)
+            case = forms.ModelChoiceField(
+                initial=[self.case.id if self.case else 0],
+                widget=forms.Select(
+                    attrs={'class': 'case-select'}),
+                queryset=Case.objects.all().order_by('name'),)
         return EditForm()
 
 class UserProfile(models.Model):
@@ -71,6 +76,7 @@ class UserProfile(models.Model):
     )
     user = models.OneToOneField(User, related_name="profile")
     profile_type = models.CharField(max_length=12, choices=PROFILE_CHOICES)
+    #cohort foreign key
 
     def edit_form(self):
         class EditForm(forms.Form):
@@ -150,6 +156,7 @@ class CreateHierarchyForm(forms.Form):
 class Case(models.Model):
     name = models.CharField(max_length=255, blank=False)
     hierarchy = models.ForeignKey(Hierarchy)
+
     cohort = models.ForeignKey(Cohort, related_name="cohort",
                                default=1, blank=True)
 
