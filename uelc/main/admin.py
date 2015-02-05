@@ -7,6 +7,7 @@ from pagetree.models import Hierarchy
 from pageblocks.models import TextBlock
 from gate_block.models import GateBlock
 
+
 # Define an inline admin descriptor for UserProfile model
 # which acts a bit like a singleton
 class UserProfileInline(admin.StackedInline):
