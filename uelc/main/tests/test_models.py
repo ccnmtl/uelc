@@ -3,8 +3,7 @@ from uelc.main.tests.factories import (
     AdminUserFactory, AdminUpFactory, FacilitatorUpFactory,
     GroupUserFactory, GroupUpFactory, CaseFactory,
     CohortFactory, LibraryItemFactory, CaseMapFactory,
-    TextBlockDTFactory, UELCHandlerFactory, HierarchyFactory,
-    CaseQuizFactory)
+    TextBlockDTFactory, UELCHandlerFactory, CaseQuizFactory)
 from uelc.main.models import TextBlockDT, LibraryItem, CaseQuiz
 from quizblock.tests.test_models import FakeReq
 from quizblock.models import Submission
@@ -174,7 +173,7 @@ class CaseQuizTest(TestCase):
     def test_create(self):
         r = FakeReq()
         r.POST = {'description': 'description', 'rhetorical': 'rhetorical',
-                  'allow_redo': True, 'show_submit_state': False }
+                  'allow_redo': True, 'show_submit_state': False}
         casequiz = CaseQuiz.create(r)
         self.assertEquals(casequiz.description, 'description')
         self.assertEquals(casequiz.display_name, 'Case Quiz')
@@ -191,12 +190,11 @@ class CaseQuizTest(TestCase):
         self.assertTrue('description' in frm.fields)
 
     def test_is_submitted_and_unlocked(self):
-        '''case factory for the casemap'''
-        cf = CaseFactory()
         user = GroupUserFactory()
         cq = CaseQuizFactory()
         self.assertFalse(cq.unlocked(user, cq))
         self.assertFalse(cq.is_submitted(cq, user))
         # cq.submit(user, dict(case=cf.pk))
-        sub = Submission.objects.create(quiz=cq,user=user)
+        sub = Submission.objects.create(quiz=cq, user=user)
         self.assertTrue(cq.is_submitted(cq, user))
+        self.assertTrue(sub in cq.submission_set.filter(user=user))
