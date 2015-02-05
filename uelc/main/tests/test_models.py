@@ -3,8 +3,10 @@ from uelc.main.tests.factories import (
     AdminUserFactory, AdminUpFactory, FacilitatorUpFactory,
     GroupUserFactory, GroupUpFactory, CaseFactory,
     CohortFactory, LibraryItemFactory, CaseMapFactory,
-    TextBlockDTFactory, UELCHandlerFactory)
-from uelc.main.models import TextBlockDT, LibraryItem
+    TextBlockDTFactory, UELCHandlerFactory, CaseQuizFactory)
+from uelc.main.models import TextBlockDT, LibraryItem, CaseQuiz
+from quizblock.tests.test_models import FakeReq
+from quizblock.models import Submission
 
 
 class BasicModelTest(TestCase):
@@ -161,3 +163,38 @@ class LibraryItemTest(TestCase):
     def test_edit_form(self):
         i = LibraryItemFactory()
         self.assertTrue('name' in i.edit_form().fields)
+
+
+class CaseQuizTest(TestCase):
+    def test_get_pageblock(self):
+        casequiz = CaseQuiz()
+        self.assertTrue(casequiz.get_pageblock())
+
+    def test_create(self):
+        r = FakeReq()
+        r.POST = {'description': 'description', 'rhetorical': 'rhetorical',
+                  'allow_redo': True, 'show_submit_state': False}
+        casequiz = CaseQuiz.create(r)
+        self.assertEquals(casequiz.description, 'description')
+        self.assertEquals(casequiz.display_name, 'Case Quiz')
+
+    def test_create_from_dict(self):
+        quizdictionary = CaseQuiz(description='description')
+        d = quizdictionary.as_dict()
+        casequiz = CaseQuiz.create_from_dict(d)
+        self.assertEquals(casequiz.description, 'description')
+        self.assertEquals(casequiz.allow_redo, quizdictionary.allow_redo)
+
+    def test_add_form(self):
+        frm = CaseQuiz.add_form()
+        self.assertTrue('description' in frm.fields)
+
+    def test_is_submitted_and_unlocked(self):
+        user = GroupUserFactory()
+        cq = CaseQuizFactory()
+        self.assertFalse(cq.unlocked(user, cq))
+        self.assertFalse(cq.is_submitted(cq, user))
+        # cq.submit(user, dict(case=cf.pk))
+        sub = Submission.objects.create(quiz=cq, user=user)
+        self.assertTrue(cq.is_submitted(cq, user))
+        self.assertTrue(sub in cq.submission_set.filter(user=user))
