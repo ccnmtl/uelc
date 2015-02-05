@@ -8,34 +8,35 @@ jQuery(document).ready(function(){
       jQuery('.user-select').multiselect();
       jQuery('.create-user-profile').multiselect();
 
-    },
+    };
 
     this.addListeners = function(){
       jQuery('.form-submit').click(function(){
-        var form = jQuery(this).parent()
+        var form = jQuery(this).parent();
         window.admin.submit(form);
-      })
+      });
+
       jQuery('form').on('reset', function(){
         setTimeout(function(){
-          jQuery('.hierarchy-select').multiselect().multiselect('destroy').multiselect('refresh');;
-          jQuery('.cohort-select').multiselect().multiselect('destroy').multiselect('refresh');;
-          jQuery('.user-select').multiselect().multiselect('destroy').multiselect('refresh');;
-          jQuery('.create-user-profile').multiselect().multiselect('destroy').multiselect('refresh');;
-        })
-      })
-    },
+          jQuery('.hierarchy-select').multiselect().multiselect('destroy').multiselect('refresh');
+          jQuery('.cohort-select').multiselect().multiselect('destroy').multiselect('refresh');
+          jQuery('.user-select').multiselect().multiselect('destroy').multiselect('refresh');
+          jQuery('.create-user-profile').multiselect().multiselect('destroy').multiselect('refresh');
+        });
+      });
+    };
 
     this.formUpdate = function(form){
       console.log(form);
-    },
+    };
 
     this.highlight = function(element){
       jQuery(element).closest('.form-control').parent().removeClass('success').addClass('has-error');
-    },
+    };
 
     this.removeHighlight = function(element){
       jQuery(element).addClass('valid').parent().removeClass('has-error').addClass('success');
-    }
+    };
 
     this.submit = function(form){
       jQuery(form).validate({
@@ -100,7 +101,7 @@ jQuery(document).ready(function(){
             alert('problem!');
           },
         });//end validate
-    },
+    };
 
     this.resetForm = function(form){
       jQuery(form).children('.reset-button').trigger('click');
@@ -109,14 +110,14 @@ jQuery(document).ready(function(){
       });
       jQuery(form).find('.control-label').each(function(){
         window.admin.removeHighlight(this);
-      })
-    },
+      });
+    };
 
     this.hierarchyCallback = function(data){
       if(data.error){
         jQuery('#add-hierarchy-form').find('input.form-control').each(function(){
           window.admin.highlight(this);  
-        })
+        });
         alert(data.error);
       }else{
         // success
@@ -125,14 +126,15 @@ jQuery(document).ready(function(){
         form = jQuery('#add-hierarchy-form');
         elem.append(html);
         this.resetForm(form);
-        alert('Your Hierarchy has been created! It is available for editing,\
-          so go and add some content! You can access it here,'+data.url+'edit/');
+        alertMsg = 'Your Hierarchy has been created! It is available for editing,';
+        alertMsg +='so go and add some content! You can access it here,'+data.url+'edit/';
+        alert(alertMsg);
       }
-    },
+    };
 
     this.createUserCallback = function(data){
       if(data.error){
-        jQuery('.create-user-profile').parent().parent().addClass('has-error')
+        jQuery('.create-user-profile').parent().parent().addClass('has-error');
         alert(data.error);
       }else{
         elem = jQuery('.user-select');
@@ -142,10 +144,10 @@ jQuery(document).ready(function(){
         this.resetForm(form);
         alert('created user');
       }
-    },
+    };
     this.editUserCallback = function(data){
       if(data.error){
-        alert(data.error)
+        alert(data.error);
       }else{
         user_id = data.user_id;
         username = data.username;
@@ -155,24 +157,24 @@ jQuery(document).ready(function(){
         this.updateUserRow(row, username, profile, cohorts);
         modal = jQuery('#edit-user-form-modal-'+user_id);
         modal.modal('hide');
-        alert('user has been updated successfully!')
+        alert('user has been updated successfully!');
       }
-    },
+    };
 
     this.deleteUserCallback = function(data){
       if(data.error){
-        alert(data.error)
+        alert(data.error);
       }else{
-        user_id = data.user_id
+        user_id = data.user_id;
         modal = jQuery('#delete-user-form-modal-'+user_id);
         row = jQuery('#user-'+user_id);
         modal.on('hidden.bs.modal', row, function() {
            row.remove();
-        })
+        });
         modal.modal('hide');
-        alert('user has been deleted!')
+        alert('user has been deleted!');
       }
-    },
+    };
 
     this.updateUserRow = function(row, username, profile, cohorts){
 
@@ -180,37 +182,37 @@ jQuery(document).ready(function(){
       td_profile = jQuery(row).children('.td-profile');
       td_cohorts = jQuery(row).children('.td-cohorts');
       td_username.text(username);
-      td_profile.text(profile)
+      td_profile.text(profile);
       td_cohorts.text(cohorts);
-    },
+    };
 
     this.createCohortCallback = function(data){
       if(data.error){
         jQuery('#add-cohort-form').find('input.form-control').each(function(){
           window.admin.highlight(this);  
-        })
+        });
         alert(data.error);
 
       }else{
         // success
         elem = jQuery('.cohort-select');
         html = '<option value='+data.cohort+'>'+data.name+'</option>';
-        elem.append(html)
+        elem.append(html);
         jQuery('.cohort-select').multiselect('destroy').multiselect('refresh');
         jQuery('#add-cohort-form').trigger("reset");
         jQuery('#add-cohort-form').find('input.form-control').each(function(){
           window.admin.removeHighlight(this);  
-        })
+        });
         alert('Cohort has been created!');
         jQuery('.user-select').multiselect('destroy').multiselect('refresh');
       }
-    },
+    };
 
     this.createCaseCallback = function(data){
       if(data.error){
         jQuery('#add-case-form').find('input.form-control').each(function(){
           window.admin.highlight(this);  
-        })
+        });
         alert(data.error);
         
       }else{
@@ -219,32 +221,32 @@ jQuery(document).ready(function(){
         this.resetForm(form);
         form.find('input.form-control').each(function(){
           window.admin.removeHighlight(this);  
-        })
+        });
         alert('Case has been created!');
       }
-    },
+    };
     this.checkForMessages = function(){
       if(jQuery('#message-modal').length > 0){
         this.showMessageModal();
       }
-    },
+    };
 
     this.showMessageModal = function(){
-      modal = jQuery('#message-modal')
+      modal = jQuery('#message-modal');
       callback = modal.attr('data-callback');
       modal.modal('show');
 
-    },
+    };
 
     this.init = function(){
       this.setMultiselects();
       this.addListeners();
       this.checkForMessages();
-    }
+    };
   };
 
   //Instatntiate the class
   window.admin = new UELCAdmin();
   admin.init();
 
-})
+});
