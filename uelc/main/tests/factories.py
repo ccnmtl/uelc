@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
-from pagetree.models import Hierarchy
+from pagetree.models import Hierarchy, Section
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap, TextBlockDT, UELCHandler,
-    LibraryItem)
+    LibraryItem, CaseQuiz)
 import factory
 #from nose.tools import set_trace
 
@@ -68,6 +68,10 @@ class CaseMapFactory(factory.DjangoModelFactory):
     FACTORY_FOR = CaseMap
     case = factory.SubFactory(CaseFactory)
     user = factory.SubFactory(GroupUserFactory)
+
+
+class CaseQuizFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = CaseQuiz
 
 
 class TextBlockDTFactory(factory.DjangoModelFactory):
