@@ -72,6 +72,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'gacontext.ga_processor',
     'djangowind.context.context_processor',
     'django.core.context_processors.static',
+    'django.contrib.messages.context_processors.messages'
 )
 
 MIDDLEWARE_CLASSES = (

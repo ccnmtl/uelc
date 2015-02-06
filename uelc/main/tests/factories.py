@@ -4,7 +4,11 @@ from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap, TextBlockDT, UELCHandler,
     LibraryItem, CaseQuiz)
 import factory
-#from nose.tools import set_trace
+
+
+class CohortFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = Cohort
+    name = factory.Sequence(lambda n: "cohort %03d" % n)
 
 
 class AdminUserFactory(factory.DjangoModelFactory):
@@ -43,6 +47,7 @@ class FacilitatorUpFactory(factory.DjangoModelFactory):
 class GroupUpFactory(factory.DjangoModelFactory):
     FACTORY_FOR = UserProfile
     user = factory.SubFactory(GroupUserFactory)
+    cohort = factory.SubFactory(CohortFactory)
     profile_type = 'group_user'
 
 
@@ -52,16 +57,10 @@ class HierarchyFactory(factory.DjangoModelFactory):
     name = "main"
 
 
-class CohortFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = Cohort
-    name = factory.Sequence(lambda n: "cohort %03d" % n)
-
-
 class CaseFactory(factory.DjangoModelFactory):
     FACTORY_FOR = Case
     name = factory.Sequence(lambda n: "case %03d" % n)
     hierarchy = factory.SubFactory(HierarchyFactory)
-    cohort = factory.SubFactory(CohortFactory)
 
 
 class CaseMapFactory(factory.DjangoModelFactory):

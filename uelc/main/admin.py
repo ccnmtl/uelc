@@ -5,13 +5,13 @@ from uelc.main.models import UserProfile, Case,\
     Cohort, CaseMap, TextBlockDT, LibraryItem
 from pagetree.models import Hierarchy
 from pageblocks.models import TextBlock
+from gate_block.models import GateBlock
 
 
 # Define an inline admin descriptor for UserProfile model
 # which acts a bit like a singleton
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
-    readonly_fields = ('cohorts',)
     can_delete = True
     verbose_name_plural = 'profile'
 
@@ -35,3 +35,4 @@ admin.site.register(Case)
 admin.site.register(CaseMap)
 admin.site.register(Cohort)
 admin.site.register(LibraryItem)
+admin.site.register(GateBlock)
