@@ -50,10 +50,9 @@ class SectionMixin(object):
 def get_cases(request):
     try:
         user = User.objects.get(id=request.user.id)
-        cohorts = user.profile.cohorts
-        cohort_names = cohorts.split(', ')
-        cases = Case.objects.filter(cohort__name__in=cohort_names)
-        return cases
+        cohort = user.profile.cohort
+        case = cohort.case
+        return [case]
     except ObjectDoesNotExist:
         return
 
@@ -150,11 +149,18 @@ def get_user_map(hierarchy, user):
     case = Case.objects.get(hierarchy=hierarchy)
     # first check and see if a case map exists for the user
     # if not, they have not submitted an answer to a question
+
+    if not isinstance(user, User):
+        user = user.user
+    
+    import pdb
+    pdb.set_trace()
     try:
         casemap = CaseMap.objects.get(user=user, case=case)
     except ObjectDoesNotExist:
         casemap = CaseMap.objects.create(user=user, case=case)
         casemap.save()
+    
     return casemap
 
 
@@ -437,9 +443,9 @@ class FacilitatorView(LoggedInMixinSuperuser,
         library_item = LibraryItem
         library_items = LibraryItem.objects.all()
         # is there really only going to be one cohort per case?
-        cohort = case.cohort
-        cohort_users = cohort.user.filter(
-            profile__profile_type="group_user").order_by('username')
+        cohort = case.cohort.filter(user_profile_cohort__user=user)
+        cohort_users = cohort[0].user_profile_cohort.filter(
+            profile_type="group_user").order_by('user__username')
         gateblocks = GateBlock.objects.all()
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,

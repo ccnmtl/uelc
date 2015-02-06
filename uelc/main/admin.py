@@ -12,7 +12,6 @@ from gate_block.models import GateBlock
 # which acts a bit like a singleton
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
-    readonly_fields = ('cohorts',)
     can_delete = True
     verbose_name_plural = 'profile'
 

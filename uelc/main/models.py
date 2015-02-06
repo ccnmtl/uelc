@@ -13,7 +13,6 @@ from django.core.exceptions import ObjectDoesNotExist
 
 class Cohort(models.Model):
     name = models.CharField(max_length=255, blank=False)
-    user = models.ManyToManyField(User, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -26,16 +25,6 @@ class Cohort(models.Model):
         if len(case) == 0:
             return None
         return case[0]
-
-    def _get_usernames(self):
-        users = self.user.all()
-        usernames = [user.username.encode(
-            encoding='UTF-8',
-            errors='strict') for user in users]
-        nms_join = ', '.join(usernames)
-        return nms_join
-
-    user_usernames = property(_get_usernames)
 
     case = property(_get_case)
 
@@ -79,7 +68,10 @@ class UserProfile(models.Model):
     )
     user = models.OneToOneField(User, related_name="profile")
     profile_type = models.CharField(max_length=12, choices=PROFILE_CHOICES)
-    #cohort foreign key
+    cohort = models.ForeignKey(
+        Cohort,
+        related_name="user_profile_cohort",
+        default=1)
 
     def edit_form(self):
         class EditForm(forms.Form):
@@ -100,15 +92,6 @@ class UserProfile(models.Model):
                     attrs={'class': 'cohort-select'}),
                 queryset=Cohort.objects.all().order_by('name'),)
         return EditForm()
-
-    def _get_cohorts(self):
-        cohorts = Cohort.objects.filter(user=self.user.id).order_by('name')
-        cohort_names = [cohort.name.encode(encoding='UTF-8',
-                        errors='strict') for cohort in cohorts]
-        cts = ', '.join(cohort_names)
-        return cts
-
-    cohorts = property(_get_cohorts)
 
     def __unicode__(self):
         return self.user.username
@@ -171,8 +154,7 @@ class CreateHierarchyForm(forms.Form):
 class Case(models.Model):
     name = models.CharField(max_length=255, blank=False)
     hierarchy = models.ForeignKey(Hierarchy)
-
-    cohort = models.ForeignKey(Cohort, related_name="cohort",
+    cohort = models.ManyToManyField(Cohort, related_name="case_cohort",
                                default=1, blank=True)
 
     def __unicode__(self):
