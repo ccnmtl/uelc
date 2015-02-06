@@ -1,6 +1,9 @@
 from django.db import models
 from django import forms
+from django.forms import widgets
+from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 from pagetree.models import Hierarchy, Section, ReportableInterface
 from pageblocks.models import TextBlock
 from quizblock.models import Quiz, Question, Submission, Response
@@ -10,7 +13,6 @@ from django.core.exceptions import ObjectDoesNotExist
 
 class Cohort(models.Model):
     name = models.CharField(max_length=255, blank=False)
-    user = models.ManyToManyField(User, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -18,24 +20,86 @@ class Cohort(models.Model):
     def display_name(self):
         return '%s' % (self.name)
 
+    def _get_case(self):
+        case = Case.objects.filter(cohort=self.id)
+        if len(case) == 0:
+            return None
+        return case[0]
+
+    def _get_users(self):
+        upros = UserProfile.objects.filter(
+            cohort=self.id).order_by('user__username')
+        users = [up.user for up in upros if up.cohort.id == self.id]
+        return users
+
+    def usernames(self):
+        unames = [user.username.encode(
+            encoding='UTF-8',
+            errors='strict') for user in self.users]
+        nms = ', '.join(unames)
+        return nms
+
+    case = property(_get_case)
+    users = property(_get_users)
+
+    @classmethod
+    def add_form(self):
+        class AddForm(forms.Form):
+            name = forms.CharField(widget=forms.widgets.Input(
+                attrs={'class': 'add-cohort-name'}))
+            user = forms.ModelChoiceField(
+                widget=forms.SelectMultiple(
+                    attrs={'class': 'user-select'}),
+                queryset=User.objects.all().order_by('username'),
+                empty_label=None)
+        return AddForm()
+
+    def edit_form(self):
+        class EditForm(forms.Form):
+            name = forms.CharField(
+                initial=self.name,
+                widget=forms.widgets.Input(
+                    attrs={'class': 'edit-cohort-name'}))
+            case = forms.ModelChoiceField(
+                initial=[self.case.id if self.case else 0],
+                widget=forms.Select(
+                    attrs={'class': 'case-select'}),
+                queryset=Case.objects.all().order_by('name'),)
+        return EditForm()
+
 
 class UserProfile(models.Model):
     PROFILE_CHOICES = (
+        (None, '--------'),
         ('admin', 'Administrator'),
         ('assistant', 'Assistant'),
         ('group_user', 'Group User'),
     )
     user = models.OneToOneField(User, related_name="profile")
     profile_type = models.CharField(max_length=12, choices=PROFILE_CHOICES)
+    cohort = models.ForeignKey(
+        Cohort,
+        related_name="user_profile_cohort",
+        default=1)
 
-    def _get_cohorts(self):
-        cohorts = Cohort.objects.filter(user=self.user.id)
-        cohort_names = [cohort.name.encode(encoding='UTF-8',
-                        errors='strict') for cohort in cohorts]
-        cts = ', '.join(cohort_names)
-        return cts
-
-    cohorts = property(_get_cohorts)
+    def edit_form(self):
+        class EditForm(forms.Form):
+            username = forms.CharField(
+                widget=forms.widgets.Input(
+                    attrs={'class': 'edit-user-username'}),
+                initial=self.user.username)
+            profile_type = forms.ChoiceField(
+                initial=self.profile_type,
+                required=True,
+                widget=forms.Select(
+                    attrs={'class': 'create-user-profile', 'required': True}),
+                choices=UserProfile.PROFILE_CHOICES)
+            cohort = forms.ModelChoiceField(
+                initial=self.cohort,
+                widget=forms.Select(
+                    attrs={'class': 'cohort-select'}),
+                queryset=Cohort.objects.all().order_by('name'),)
+        return EditForm()
 
     def __unicode__(self):
         return self.user.username
@@ -56,17 +120,77 @@ class UserProfile(models.Model):
         return self.profile_type == 'group_user'
 
 
+class CreateUserForm(UserCreationForm):
+    user_profile = forms.ChoiceField(
+        required=True,
+        widget=forms.Select(
+            attrs={'class': 'create-user-profile', 'required': True}),
+        choices=UserProfile.PROFILE_CHOICES)
+    cohort = forms.ModelChoiceField(
+        widget=forms.Select(
+            attrs={'class': 'cohort-select'}),
+        queryset=Cohort.objects.all().order_by('name'),)
+    username = forms.CharField(
+        widget=forms.widgets.Input(
+            attrs={'class': 'add-user-username'}))
+    password1 = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput(
+            attrs={'class': 'add-user-password1', 'type': 'password', }))
+    password2 = forms.CharField(
+        label="Password confirm",
+        widget=forms.PasswordInput(
+            attrs={'class': 'add-user-password2',
+                   'type': 'password',
+                   'data-match': "#id_password1"}))
+
+    class Meta:
+        model = User
+        fields = ('username', 'password1', 'password2')
+
+
+class CreateHierarchyForm(forms.Form):
+    name = forms.CharField(
+        required=True,
+        widget=forms.widgets.Input(
+            attrs={'class': 'add-hierarchy-name',
+                   'required': True}))
+
+    url = forms.CharField(
+        required=True,
+        widget=forms.widgets.Input(
+            attrs={'class': 'add-hierarchy-url', 'required': True}),
+        label=mark_safe('<strong>Url - the base url for your case.</strong>'))
+
+
 class Case(models.Model):
     name = models.CharField(max_length=255, blank=False)
     hierarchy = models.ForeignKey(Hierarchy)
-    cohort = models.ForeignKey(Cohort, related_name="cohort",
-                               default=1, blank=True)
+    cohort = models.ManyToManyField(
+        Cohort,
+        related_name="case_cohort",
+        default=1, blank=True)
 
     def __unicode__(self):
         return self.name
 
     def display_name(self):
         return '%s' % (self.name)
+
+    @classmethod
+    def add_form(self):
+        class AddForm(forms.Form):
+            name = forms.CharField(widget=forms.widgets.Input(
+                attrs={'class': 'add-case-name'}))
+            hierarchy = forms.ModelChoiceField(
+                widget=forms.Select(
+                    attrs={'class': 'hierarchy-select'}),
+                queryset=Hierarchy.objects.all().order_by('name'),)
+            cohort = forms.ModelChoiceField(
+                widget=forms.Select(
+                    attrs={'class': 'cohort-select'}),
+                queryset=Cohort.objects.all().order_by('name'),)
+        return AddForm()
 
 
 class CaseMap(models.Model):
@@ -121,6 +245,20 @@ class CaseMap(models.Model):
             self.save()
 
 
+class CustomSelectWidgetAD(widgets.Select):
+    def render(self, name, value, attrs=None):
+        return mark_safe(
+            u'''<span>After Decision</span>%s''' %
+            (super(CustomSelectWidgetAD, self).render(name, value, attrs)))
+
+
+class CustomSelectWidgetAC(widgets.Select):
+    def render(self, name, value, attrs=None):
+        return mark_safe(
+            u'''<span>After Choice</span>%s''' %
+            (super(CustomSelectWidgetAC, self).render(name, value, attrs)))
+
+
 class TextBlockDT(TextBlock):
     template_file = "pageblocks/textblock.html"
     display_name = "Text BlockDT"
@@ -141,8 +279,11 @@ class TextBlockDT(TextBlock):
                 widget=forms.widgets.Textarea(
                     attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}))
             after_decision = forms.ChoiceField(
-                choices=CHOICES)
-            choice = forms.ChoiceField(choices=CHOICES)
+                choices=CHOICES,
+                widget=CustomSelectWidgetAD)
+            choice = forms.ChoiceField(
+                choices=CHOICES,
+                widget=CustomSelectWidgetAC)
         return AddForm(auto_id=False)
 
     @classmethod
@@ -161,9 +302,14 @@ class TextBlockDT(TextBlock):
                 widget=forms.widgets.Textarea(
                     attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}),
                 initial=self.body)
-            after_decision = forms.ChoiceField(choices=CHOICES,
-                                               initial=self.after_decision)
-            choice = forms.ChoiceField(choices=CHOICES, initial=self.choice)
+            after_decision = forms.ChoiceField(
+                choices=CHOICES,
+                widget=CustomSelectWidgetAD,
+                initial=self.after_decision)
+            choice = forms.ChoiceField(
+                choices=CHOICES,
+                initial=self.choice,
+                widget=CustomSelectWidgetAC)
         return EditForm(auto_id=False)
 
     def edit(self, vals, files):
@@ -256,8 +402,10 @@ class LibraryItem(models.Model):
     def display_name(self):
         return '%s' % (self.name)
 
-    def get_users(self):
-        return self.case.cohort.user.all()
+    def get_users(self, cohort):
+        upros = UserProfile.objects.filter(cohort=cohort)
+        users = [profile.user for profile in upros]
+        return users
 
     @classmethod
     def add_form(self):
