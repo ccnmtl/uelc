@@ -1,7 +1,7 @@
 from django.test import TestCase
 from uelc.main.tests.factories import (
     AdminUserFactory, AdminUpFactory, FacilitatorUpFactory,
-    GroupUserFactory, GroupUpFactory, CaseFactory,
+    GroupUpFactory, CaseFactory,
     CohortFactory, LibraryItemFactory, CaseMapFactory,
     TextBlockDTFactory, UELCHandlerFactory)
 from uelc.main.models import TextBlockDT, LibraryItem
@@ -42,14 +42,14 @@ class TestGroupUp(TestCase):
 
     def test_cohorts(self):
         upro = GroupUpFactory()
-        self.assertEqual(upro.cohorts, "")
+        self.assertTrue(upro.cohort)
 
 
 class CohortTest(TestCase):
     def test_unicode(self):
-        user = GroupUserFactory()
+        case = CaseFactory()
         cohort = CohortFactory()
-        cohort.user.add(user)
+        case.cohort.add(cohort)
         self.assertEqual(cohort.display_name(), cohort.name)
         self.assertTrue(str(cohort).startswith("cohort "))
 
@@ -146,13 +146,14 @@ class UELCHandlerTest(TestCase):
 
 class LibraryItemTest(TestCase):
     def test_unicode(self):
-        li = LibraryItemFactory(case=CaseFactory())
+        li = LibraryItemFactory()
         self.assertEqual(li.display_name(), li.name)
         self.assertEqual(str(li), li.name)
 
     def test_get_users(self):
         i = LibraryItemFactory()
-        self.assertEqual(i.get_users().count(), 0)
+        cohort = CohortFactory()
+        self.assertEqual(len(i.get_users(cohort)), 0)
 
     def test_add_form(self):
         f = LibraryItem.add_form()

@@ -154,7 +154,6 @@ def get_user_map(hierarchy, user):
     except ObjectDoesNotExist:
         casemap = CaseMap.objects.create(user=user, case=case)
         casemap.save()
-    
     return casemap
 
 

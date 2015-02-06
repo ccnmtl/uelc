@@ -154,8 +154,10 @@ class CreateHierarchyForm(forms.Form):
 class Case(models.Model):
     name = models.CharField(max_length=255, blank=False)
     hierarchy = models.ForeignKey(Hierarchy)
-    cohort = models.ManyToManyField(Cohort, related_name="case_cohort",
-                               default=1, blank=True)
+    cohort = models.ManyToManyField(
+        Cohort,
+        related_name="case_cohort",
+        default=1, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -388,8 +390,10 @@ class LibraryItem(models.Model):
     def display_name(self):
         return '%s' % (self.name)
 
-    def get_users(self):
-        return self.case.cohort.user.all()
+    def get_users(self, cohort):
+        upros = UserProfile.objects.filter(cohort=cohort)
+        users = [profile.user for profile in upros]
+        return users
 
     @classmethod
     def add_form(self):
