@@ -26,7 +26,21 @@ class Cohort(models.Model):
             return None
         return case[0]
 
+    def _get_users(self):
+        upros = UserProfile.objects.filter(
+            cohort=self.id).order_by('user__username')
+        users = [up.user for up in upros if up.cohort.id == self.id]
+        return users
+
+    def usernames(self):
+        unames = [user.username.encode(
+            encoding='UTF-8',
+            errors='strict') for user in self.users]
+        nms = ', '.join(unames)
+        return nms
+
     case = property(_get_case)
+    users = property(_get_users)
 
     @classmethod
     def add_form(self):
@@ -46,11 +60,6 @@ class Cohort(models.Model):
                 initial=self.name,
                 widget=forms.widgets.Input(
                     attrs={'class': 'edit-cohort-name'}))
-            users = forms.ModelChoiceField(
-                initial=self.user.all().values_list('id', flat=True),
-                widget=forms.SelectMultiple(
-                    attrs={'class': 'user-select'}),
-                queryset=User.objects.all().order_by('username'),)
             case = forms.ModelChoiceField(
                 initial=[self.case.id if self.case else 0],
                 widget=forms.Select(
@@ -86,9 +95,8 @@ class UserProfile(models.Model):
                     attrs={'class': 'create-user-profile', 'required': True}),
                 choices=UserProfile.PROFILE_CHOICES)
             cohort = forms.ModelChoiceField(
-                initial=Cohort.objects.filter(
-                    user=self.user).values_list('id', flat=True),
-                widget=forms.SelectMultiple(
+                initial=self.cohort,
+                widget=forms.Select(
                     attrs={'class': 'cohort-select'}),
                 queryset=Cohort.objects.all().order_by('name'),)
         return EditForm()

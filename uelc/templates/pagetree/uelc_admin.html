@@ -51,7 +51,7 @@ button.close{
               <tr id="user-{{user.id}}">
                 <td class="td-username">{{ user.username }}</td>
                 <td class="td-profile">{{ user.profile.profile_type }}</td>
-                <td class="td-cohorts">{{ user.profile.cohorts}}</td>
+                <td class="td-cohorts">{{ user.profile.cohort}}</td>
                 <td>
                   <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">Edit</button>
                   <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
@@ -122,7 +122,7 @@ button.close{
                 <td class="td-cohort-name">{{ cohort.name }}</td>
                 <td class="td-cohort-case">{{cohort.case}}</td>
                 <td class="td-cohort-users">
-                  {{cohort.user_usernames}}
+                  {{cohort.usernames}}
                   </td>
                 <td class="td-cohort-edit">
                   

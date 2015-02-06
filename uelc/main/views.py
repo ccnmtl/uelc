@@ -530,15 +530,10 @@ class UELCAdminEditUserView(LoggedInMixinSuperuser,
         username = request.POST.get('username', '')
         user_id = request.POST.get('user_id', '')
         profile = request.POST.get('profile_type', '')
-        cohorts = request.POST.getlist('cohort', '')
+        cohort_id = request.POST.get('cohort', '')
         user = User.objects.get(pk=user_id)
-        cobs_all = Cohort.objects.all()
-        cobs_related = Cohort.objects.filter(id__in=cohorts)
-        for cob in cobs_all:
-            if cob in cobs_related:
-                cob.user.add(user)
-            else:
-                cob.user.remove(user)
+        cohort = Cohort.objects.get(id=cohort_id)
+        user.profile.cohort = cohort
         user.profile.profile_type = profile
         user.profile.save()
         user.username = username
@@ -547,7 +542,7 @@ class UELCAdminEditUserView(LoggedInMixinSuperuser,
             username=username,
             user_id=user_id,
             profile=profile,
-            cohorts=[cohort.name for cohort in cobs_related],
+            cohort=cohort.id,
             error=None)
         print action_args
         return HttpResponseRedirect('/uelcadmin/')
@@ -691,10 +686,10 @@ class UELCAdminView(LoggedInMixinSuperuser,
         cohortmodel = Cohort
         create_user_form = CreateUserForm
         create_hierarchy_form = CreateHierarchyForm
-        users = User.objects.all()
+        users = User.objects.all().order_by('username')
         hierarchies = Hierarchy.objects.all()
         cases = Case.objects.all()
-        cohorts = Cohort.objects.all()
+        cohorts = Cohort.objects.all().order_by('name')
         context = dict(users=users,
                        path=path,
                        cases=cases,
