@@ -488,12 +488,16 @@ class UELCAdminCreateUserView(
         username = request.POST.get('username', '')
         password = make_password(request.POST.get('password1', ''))
         profile_type = request.POST.get('user_profile', '')
+        cohort_id = request.POST.get('cohort', '')
+        cohort = Cohort.objects.get(id=cohort_id)
         user_exists = User.objects.filter(Q(username=username))
         if len(user_exists) == 0 and not profile_type == "":
             user = User.objects.create(username=username, password=password)
             UserProfile.objects.create(
                 user=user,
                 profile_type=profile_type)
+            user.profile.cohort = cohort
+            user.save()
             action_args = dict(
                 user=user.pk, username=username, error=None)
         if profile_type == "":

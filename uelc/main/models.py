@@ -126,6 +126,10 @@ class CreateUserForm(UserCreationForm):
         widget=forms.Select(
             attrs={'class': 'create-user-profile', 'required': True}),
         choices=UserProfile.PROFILE_CHOICES)
+    cohort = forms.ModelChoiceField(
+        widget=forms.Select(
+            attrs={'class': 'cohort-select'}),
+        queryset=Cohort.objects.all().order_by('name'),)
     username = forms.CharField(
         widget=forms.widgets.Input(
             attrs={'class': 'add-user-username'}))
