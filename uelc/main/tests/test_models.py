@@ -54,6 +54,25 @@ class CohortTest(TestCase):
         case.cohort.add(cohort)
         self.assertEqual(cohort.display_name(), cohort.name)
         self.assertTrue(str(cohort).startswith("cohort "))
+        
+    def test_get_users(self):
+        cohort = CohortFactory()
+        facil = FacilitatorUpFactory(cohort=cohort)
+        grp1 = GroupUpFactory(cohort=cohort)
+        grp2 = GroupUpFactory(cohort=cohort)
+        self.assertTrue(facil.user in cohort._get_users())
+        self.assertTrue(grp1.user in cohort._get_users())
+        self.assertTrue(grp2.user in cohort._get_users())
+
+#     def test_get_case(self):
+#         '''Not to be a pita but the model for this method
+#         is ManyToMany but the method returns case[0] is that
+#         intentional?'''
+#         cohort = CohortFactory()
+#         self.assertIsNone(cohort._get_case())
+#         case = CaseFactory(cohort=CohortFactory(), hierarchy=CaseFactory().hierarchy)
+#         self.assertIsNotNone(cohort._get_case())
+#         self.assertTrue(case in cohort._get_case())
 
 
 class CaseTest(TestCase):
