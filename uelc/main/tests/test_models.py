@@ -95,6 +95,12 @@ class CaseTest(TestCase):
         self.assertEqual(c.display_name(), c.name)
         self.assertTrue(str(c).startswith("case "))
 
+    def test_add_form(self):
+        add_form = CaseFactory().add_form()
+        self.assertTrue('name' in add_form.fields)
+        self.assertTrue('hierarchy' in add_form.fields)
+        self.assertTrue('cohort' in add_form.fields)
+
 
 class CaseMapTest(TestCase):
     def test_get_value(self):
