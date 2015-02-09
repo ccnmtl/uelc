@@ -136,12 +136,14 @@ button.close{
                               <div id="edit-cohort" class="panel panel-default">
                                 <div class="panel-heading">Edit Cohort</div>
                                 <div class="panel-body">
+                                {% if cohort.edit_form %}
                                   <form data-toggle="validator" id="edit-cohort-form-{{cohort.id}}" action="/uelcadmin/editcohort/" method="post">{% csrf_token %}
                                     {{cohort.edit_form|bootstrap}}
                                     <input type="hidden" name="cohort_id" value="{{cohort.id}}">
                                     <input type="submit" class="btn btn-primary form-submit" value="Submit">
                                     <input type="reset" class="reset-button hidden" value="Reset" />
                                   </form>
+                                {% endif %}
                                 </div>
                               </div><!--end #hierarchiess-->
                               </div> <!--end modal-dialog-->
