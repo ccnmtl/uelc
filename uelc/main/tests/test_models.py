@@ -32,6 +32,12 @@ class TestFacilitatorUp(TestCase):
                          upro.user.first_name)
         self.assertTrue(upro.is_assistant())
 
+    def test_edit_form(self):
+        edit_form = FacilitatorUpFactory(cohort=CohortFactory()).edit_form()
+        self.assertTrue('username' in edit_form.fields)
+        self.assertTrue('profile_type' in edit_form.fields)
+        self.assertTrue('cohort' in edit_form.fields)
+
 
 class TestGroupUp(TestCase):
 
@@ -55,12 +61,51 @@ class CohortTest(TestCase):
         self.assertEqual(cohort.display_name(), cohort.name)
         self.assertTrue(str(cohort).startswith("cohort "))
 
+    def test_get_users(self):
+        cohort = CohortFactory()
+        facil = FacilitatorUpFactory(cohort=cohort)
+        grp1 = GroupUpFactory(cohort=cohort)
+        grp2 = GroupUpFactory(cohort=cohort)
+        self.assertTrue(facil.user in cohort._get_users())
+        self.assertTrue(grp1.user in cohort._get_users())
+        self.assertTrue(grp2.user in cohort._get_users())
+
+    def test_get_case(self):
+        '''test incomplete'''
+        cohort = CohortFactory()
+        self.assertIsNone(cohort._get_case())
+
+    def test_usernames(self):
+        cohort = CohortFactory()
+        facil = FacilitatorUpFactory(cohort=cohort)
+        grp1 = GroupUpFactory(cohort=cohort)
+        grp2 = GroupUpFactory(cohort=cohort)
+        self.assertTrue(facil.user.username in cohort.usernames())
+        self.assertTrue(grp1.user.username in cohort.usernames())
+        self.assertTrue(grp2.user.username in cohort.usernames())
+
+    def test_add_form(self):
+        add_form = CohortFactory().add_form()
+        self.assertTrue('name' in add_form.fields)
+        self.assertTrue('user' in add_form.fields)
+
+    def test_edit_form(self):
+        edit_form = CohortFactory().edit_form()
+        self.assertTrue('name' in edit_form.fields)
+        self.assertTrue('case' in edit_form.fields)
+
 
 class CaseTest(TestCase):
     def test_unicode(self):
         c = CaseFactory()
         self.assertEqual(c.display_name(), c.name)
         self.assertTrue(str(c).startswith("case "))
+
+    def test_add_form(self):
+        add_form = CaseFactory().add_form()
+        self.assertTrue('name' in add_form.fields)
+        self.assertTrue('hierarchy' in add_form.fields)
+        self.assertTrue('cohort' in add_form.fields)
 
 
 class CaseMapTest(TestCase):
