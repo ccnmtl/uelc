@@ -21,10 +21,10 @@ class Cohort(models.Model):
         return '%s' % (self.name)
 
     def _get_case(self):
-        case = Case.objects.filter(cohort=self.id)
-        if len(case) == 0:
+        case = Case.objects.get(cohort=self.id)
+        if not case:
             return None
-        return case[0]
+        return case
 
     def _get_users(self):
         upros = UserProfile.objects.filter(
