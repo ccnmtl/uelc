@@ -32,6 +32,12 @@ class TestFacilitatorUp(TestCase):
                          upro.user.first_name)
         self.assertTrue(upro.is_assistant())
 
+    def test_edit_form(self):
+        edit_form = FacilitatorUpFactory(cohort=CohortFactory()).edit_form()
+        self.assertTrue('username' in edit_form.fields)
+        self.assertTrue('profile_type' in edit_form.fields)
+        self.assertTrue('cohort' in edit_form.fields)
+
 
 class TestGroupUp(TestCase):
 
@@ -54,7 +60,7 @@ class CohortTest(TestCase):
         case.cohort.add(cohort)
         self.assertEqual(cohort.display_name(), cohort.name)
         self.assertTrue(str(cohort).startswith("cohort "))
-        
+
     def test_get_users(self):
         cohort = CohortFactory()
         facil = FacilitatorUpFactory(cohort=cohort)
