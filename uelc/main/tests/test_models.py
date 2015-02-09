@@ -64,15 +64,29 @@ class CohortTest(TestCase):
         self.assertTrue(grp1.user in cohort._get_users())
         self.assertTrue(grp2.user in cohort._get_users())
 
-#     def test_get_case(self):
-#         '''Not to be a pita but the model for this method
-#         is ManyToMany but the method returns case[0] is that
-#         intentional?'''
-#         cohort = CohortFactory()
-#         self.assertIsNone(cohort._get_case())
-#         case = CaseFactory(cohort=CohortFactory(), hierarchy=CaseFactory().hierarchy)
-#         self.assertIsNotNone(cohort._get_case())
-#         self.assertTrue(case in cohort._get_case())
+    def test_get_case(self):
+        '''test incomplete'''
+        cohort = CohortFactory()
+        self.assertIsNone(cohort._get_case())
+
+    def test_usernames(self):
+        cohort = CohortFactory()
+        facil = FacilitatorUpFactory(cohort=cohort)
+        grp1 = GroupUpFactory(cohort=cohort)
+        grp2 = GroupUpFactory(cohort=cohort)
+        self.assertTrue(facil.user.username in cohort.usernames())
+        self.assertTrue(grp1.user.username in cohort.usernames())
+        self.assertTrue(grp2.user.username in cohort.usernames())
+
+    def test_add_form(self):
+        add_form = CohortFactory().add_form()
+        self.assertTrue('name' in add_form.fields)
+        self.assertTrue('user' in add_form.fields)
+
+    def test_edit_form(self):
+        edit_form = CohortFactory().edit_form()
+        self.assertTrue('name' in edit_form.fields)
+        self.assertTrue('case' in edit_form.fields)
 
 
 class CaseTest(TestCase):
