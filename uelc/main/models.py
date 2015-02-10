@@ -21,10 +21,10 @@ class Cohort(models.Model):
         return '%s' % (self.name)
 
     def _get_case(self):
-        case = Case.objects.filter(cohort=self.id)
-        if len(case) == 0:
+        case = Case.objects.get(cohort=self.id)
+        if not case:
             return None
-        return case[0]
+        return case
 
     def _get_users(self):
         upros = UserProfile.objects.filter(
@@ -60,6 +60,16 @@ class Cohort(models.Model):
                 initial=self.name,
                 widget=forms.widgets.Input(
                     attrs={'class': 'edit-cohort-name'}))
+            user = forms.ModelChoiceField(
+                initial=[user.id for user in self.users],
+                widget=forms.SelectMultiple(
+                    attrs={'class': 'user-select'}),
+                queryset=User.objects.all().order_by('username'),
+                empty_label=None)
+            if self.case:
+                initial = self.case.id
+            else:
+                initial = ''
             case = forms.ModelChoiceField(
                 initial=[self.case.id if self.case else 0],
                 widget=forms.Select(
