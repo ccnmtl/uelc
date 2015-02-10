@@ -20,7 +20,7 @@
 
 {% block title %}{{section.label}}{% endblock %}
 
-{% block pagetitle %}<h1>{{section.label}}</h1>{% endblock %}
+{% block pagetitle %}{% endblock %}
 
 
 
@@ -52,8 +52,6 @@
 {% if block.block.display_name == "Gate Block" %}
 
 <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-
-{% if block.label %}<h3>{{block.label}}</h3>{% endif %}
 {% render block %}
 </div>
 
