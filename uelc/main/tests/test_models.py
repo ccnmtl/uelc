@@ -73,7 +73,10 @@ class CohortTest(TestCase):
     def test_get_case(self):
         '''test incomplete'''
         cohort = CohortFactory()
-        self.assertIsNone(cohort._get_case())
+        case = CaseFactory()
+        case.cohort.add(cohort)
+        self.assertIsNotNone(cohort.case)
+        self.assertTrue(case, cohort.case)
 
     def test_usernames(self):
         cohort = CohortFactory()
@@ -90,7 +93,10 @@ class CohortTest(TestCase):
         self.assertTrue('user' in add_form.fields)
 
     def test_edit_form(self):
-        edit_form = CohortFactory().edit_form()
+        cohort = CohortFactory()
+        case = CaseFactory()
+        case.cohort.add(cohort)
+        edit_form = cohort.edit_form()
         self.assertTrue('name' in edit_form.fields)
         self.assertTrue('case' in edit_form.fields)
 
