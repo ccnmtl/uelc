@@ -448,7 +448,6 @@ class FacilitatorView(LoggedInMixinSuperuser,
             path=hierarchy.base_url)[0]
         user_sections = []
         for user in cohort_users:
-
             um = get_user_map(hierarchy, user)
             part_usermap = hand.get_partchoice_by_usermap(um)
             gate_section = [[g.pageblock().section,
