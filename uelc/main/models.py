@@ -61,7 +61,7 @@ class Cohort(models.Model):
                 widget=forms.widgets.Input(
                     attrs={'class': 'edit-cohort-name'}))
             user = forms.ModelChoiceField(
-                initial = [user.id for user in self.users],
+                initial=[user.id for user in self.users],
                 widget=forms.SelectMultiple(
                     attrs={'class': 'user-select'}),
                 queryset=User.objects.all().order_by('username'),
