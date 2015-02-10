@@ -25,7 +25,7 @@
 
 
 {% block navrightextra %}
-{% if not request.user.is_anonymous %}
+{% if not request.user.profile_type == "group_usr" %}
 <li><a href="{{section.get_edit_url}}" class="btn-success">edit page</a></li>
 {% endif %}
 {% endblock %}
