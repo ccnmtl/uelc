@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from uelc.main.models import UserProfile, Case,\
-    Cohort, CaseMap, TextBlockDT, LibraryItem
+from uelc.main.models import (
+    UserProfile, Case, Cohort, CaseMap,
+    TextBlockDT, LibraryItem, ImageUploadItem)
 from pagetree.models import Hierarchy
-from pageblocks.models import TextBlock
+from pageblocks.models import TextBlock, ImageBlock
 from gate_block.models import GateBlock
 
 
@@ -30,9 +31,11 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Hierarchy)
 admin.site.register(TextBlock)
+admin.site.register(ImageBlock)
 admin.site.register(TextBlockDT)
 admin.site.register(Case)
 admin.site.register(CaseMap)
 admin.site.register(Cohort)
 admin.site.register(LibraryItem)
+admin.site.register(ImageUploadItem)
 admin.site.register(GateBlock)

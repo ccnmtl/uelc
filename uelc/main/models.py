@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from pagetree.models import Hierarchy, Section, ReportableInterface
+from ckeditor.widgets import CKEditorWidget
 from pageblocks.models import TextBlock
 from quizblock.models import Quiz, Question, Submission, Response
 from gate_block.models import GateSubmission
@@ -285,9 +286,7 @@ class TextBlockDT(TextBlock):
                 choices=CHOICES,
                 default=0)
             body = forms.CharField(
-                label="poop",
-                widget=forms.widgets.Textarea(
-                    attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}))
+                widget=CKEditorWidget(attrs={"id": "editor"}))
             after_decision = forms.ChoiceField(
                 choices=CHOICES,
                 widget=CustomSelectWidgetAD)
@@ -306,11 +305,11 @@ class TextBlockDT(TextBlock):
 
     def edit_form(self):
         class EditForm(forms.Form):
+            EDITOR = "editor-" + str(self.id)
             CHOICES = ((0, '0'), (1, '1'), (2, '2'),
                        (3, '3'), (4, '4'), (5, '5'))
             body = forms.CharField(
-                widget=forms.widgets.Textarea(
-                    attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}),
+                widget=CKEditorWidget(attrs={"id": EDITOR}),
                 initial=self.body)
             after_decision = forms.ChoiceField(
                 choices=CHOICES,
@@ -441,6 +440,17 @@ class LibraryItem(models.Model):
                            }))
 
         return EditLibraryForm()
+
+
+class ImageUploadItem(models.Model):
+    name = models.TextField(blank=False)
+    doc = models.FileField(upload_to='documents/%Y/%m/%d')
+
+    def __unicode__(self):
+        return self.name
+
+    def display_name(self):
+        return '%s' % (self.name)
 
 
 class CaseQuiz(Quiz):

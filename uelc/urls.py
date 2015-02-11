@@ -61,6 +61,7 @@ router.register(r'user', UserViewSet)
 
 urlpatterns = patterns(
     '',
+
     logout_page,
     admin_logout_page,
     auth_urls,
@@ -69,6 +70,7 @@ urlpatterns = patterns(
                                namespace='rest_framework')),
     (r'^registration/', include('registration.backends.default.urls')),
     (r'^$', views.IndexView.as_view()),
+    (r'^ckeditor/', include('ckeditor.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^uelcadmin/hierarchy/', UELCAdminHierarchyView.as_view()),
     (r'^uelcadmin/createcohort/', UELCAdminCreateCohortView.as_view()),
