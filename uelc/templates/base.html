@@ -185,11 +185,10 @@
         </div>
         {% endif %}
         {% endblock %}
+
+        {% block sidenav %}
+        {% endblock %}
         
-        
-        {% if request.user.is_superuser %}
-            {% block sidenav %}{% endblock %}
-        {% endif %}
         
 	</div>
 	

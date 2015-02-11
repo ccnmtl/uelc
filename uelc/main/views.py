@@ -600,9 +600,6 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
             return action_args
 
         cohort = Cohort.objects.create(name=name)
-        for user in users:
-            usr = User.objects.get(id=user)
-            cohort.user.add(usr)
         cohort.save()
         action_args = dict(cohort=cohort.id, name=cohort.name, error=None)
         return HttpResponseRedirect('/uelcadmin/')

@@ -20,12 +20,12 @@
 
 {% block title %}{{section.label}}{% endblock %}
 
-{% block pagetitle %}<h1>{{section.label}}</h1>{% endblock %}
+{% block pagetitle %}{% endblock %}
 
 
 
 {% block navrightextra %}
-{% if not request.user.is_anonymous %}
+{% if not request.user.profile_type == "group_usr" %}
 <li><a href="{{section.get_edit_url}}" class="btn-success">edit page</a></li>
 {% endif %}
 {% endblock %}
@@ -52,8 +52,6 @@
 {% if block.block.display_name == "Gate Block" %}
 
 <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-
-{% if block.label %}<h3>{{block.label}}</h3>{% endif %}
 {% render block %}
 </div>
 
