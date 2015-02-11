@@ -11,35 +11,25 @@ UELCAdmin = {
         };
         this.set_parts_on_gateblocks = function() {
             var partOneElms = jQuery('.part1:first-child');
-            var partTwoElms = [];
-            partTwoElms.push(jQuery('.part1:last').next())
-            partTwoElms.push(jQuery('.part1:first').parent()
-                .find('.part1').last().next())
+            var gsl = jQuery('.gate-section-list').length;
+            var p2l = jQuery('.part2').length;
+
             partOneElms.each(function() {
                 html = "<div class='part1text'>Part 1 </div>";
                 jQuery(this).prepend(html)
             })
+            
+            if (p2l){
+                for(var i=0;i<gsl;i++){
+                    var gs = jQuery('.gate-section-list').eq(i);
+                    var part2 = gs.eq(0).find('.part2').eq(0);
+                    var choice = part2.attr('class').split(' ').pop()
+                    part2.prepend('<div class="part2text">Part 2 ' + choice + ' </div>');
 
-            for (i = 0; i < partTwoElms.length; i++) {
-                    var elm = partTwoElms[i];
-                    var classname = elm.attr('class')
-                    var html2;
-                    console.log(elm.hasClass('part2choice2'));
-                    switch(elm) {
-                        case elm.hasClass("part2choice1"):
-                            html2 = jQuery("<div class='part2text'>Part 2 choice 1</div>");
-                            break;
-                        case elm.hasClass("part2choice2"):
-                            html2 = jQuery("<div class='part2text'>Part 2 choice 2</div>");
-                            break;
-                        case elm.hasClass("part2choice3"):
-                            html2 = jQuery("<div class='part2text'>Part 2 choice 3</div>");
-                            break;
-                    }
-                    elm.prepend(html2)
+                };
             }
         
-        }
+        };
         this.deleteLibraryItem = function() {
             jQuery('.library-item-admin .glyphicon-trash').click(function() {
                 var retVal = confirm('Do you want to delete the item?');
