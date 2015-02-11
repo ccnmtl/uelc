@@ -27,20 +27,15 @@
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-  <script src="{{STATIC_URL}}tiny_mce/tiny_mce.js"></script>
-  <script>
-    tinyMCE.init({
-        selector: ".mceEditor.form-control",
-        theme: "advanced",
-        plugins: "spellchecker,directionality,paste,searchreplace",
-        language: "{{ language }}",
-        directionality: "{{ directionality }}",
-        spellchecker_languages : "{{ spellchecker_languages }}",
-        spellchecker_rpc_url : "{{ spellchecker_rpc_url }}"
-    });
-  </script>
+  <script src="{{STATIC_URL}}/ckeditor/ckeditor/ckeditor.js"></script>
+<script src="{{STATIC_URL}}ckeditor/ckeditor/adapters/jquery.js"></script>
+
 {% compress js %}
 <script type="text/javascript">
+jQuery('[id^=editor]').ckeditor({
+    //filebrowserUploadUrl: '/uploads/',
+    filebrowserBrowseUrl: '/admin/main/imageuploaditem/'
+  });
 var saveOrderOfChildren = function() {
     var url = "{% url 'reorder-section-children' section.id %}?";
     var worktodo = 0;
@@ -52,6 +47,7 @@ var saveOrderOfChildren = function() {
     if (worktodo == 1) {
         var req = new XMLHttpRequest();
         req.open("POST",url,true);
+        req.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
         req.send(null);
     }
 };
@@ -68,9 +64,9 @@ var saveOrderOfPageBlocks = function() {
         /* only bother submitting if there are elements to be sorted */
         var req = new XMLHttpRequest();
         req.open("POST",url,true);
+        req.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
         req.send(null);
     }
-
 }
 
 </script>
