@@ -1,6 +1,7 @@
 {% extends 'pagetree/facilitator_base.html' %}
 {% load bootstrap %}
 {% block content %}
+{% load part_string %}
 <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
 <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
 <div id="content" class="container">
@@ -12,15 +13,16 @@
     <div class="gate-section text-center">Username - <span class="facilitator-usrnm">{{u.0}}</span>
     <div class="gate-section-list">
         {% for sec in u.1 %}
-            {{comment}}
+            {% comment %}
             <!-- 
                 section (sec.0), gateblock (sec.1), unlocked (sec.2), 
-                user (sec.3), status (sec.4), can_show_gateblock (sec.5)
+                user (sec.3), status (sec.4), can_show_gateblock (sec.5),
+                (sec.6) section part 
             -->
-            {{endcomment}}
+            {% endcomment %}
             {% if sec.2 %}
               {% if sec.5 %}
-                <div class="gate-button unlocked">
+                <div class="gate-button unlocked {{sec.6|convert}}">
                     <form action="." method="post">{% csrf_token %}
                         <button type="submit" class="btn btn-sm btn-success btn-block"><span class="pull-left">Unlocked - {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize" style="font-size: 8px;">{{sec.4}}</span></button>
                         <input type="hidden" name="gate-action" value="reset" />
@@ -35,7 +37,7 @@
                 {% endif %}
             {% else %}
               {% if sec.5 %}
-                <div class="gate-button locked">
+                <div class="gate-button locked {{sec.6|convert}}">
                     <form action ="." method="post">{% csrf_token %}
                         <button type ="submit" class="btn btn-sm btn-danger btn-block"><span class="pull-left">Locked - {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize" style="font-size: 8px;">{{sec.4}}</span></button>
                         <input type="hidden" name="gate-action" value="submit" />
