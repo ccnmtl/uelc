@@ -40,6 +40,31 @@
 
 {% block content %}
 <div id="content">
+  {% for message in messages %}
+  {% if message.level_tag == 'error' %}
+       <div id="message-modal" class="modal fade in" data-callback="{{message.extra_tags}}">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <div class="modal-header panel-heading">Message</div>
+              <div class="modal-body">
+                <div id="edit-user" class="panel panel-default">
+                  <div class="panel-heading">Choice submission error.</div>
+                  <div class="panel-body">
+                        It seems you forgot so select one of the choices! Please click on on of the choices and resubmit. Thanks!
+                  </div>
+                </div><!--end #hierarchiess-->
+                </div> <!--end modal-dialog-->
+          </div><!-- end modal-content-->
+      </div><!--end .model-body-->
+    </div><!--end #add-hierarchy-form-modal .modal-->
+    <script>
+        jQuery(document).ready(function(){
+            jQuery('#message-modal').modal('show');
+        })
+    </script>
+    {% endif %}
+  {% endfor %}
 {% if needs_submit %}
 {% if is_submitted %}
 {% else %}
@@ -59,7 +84,7 @@
 {% for quiz in case_quizblocks %}
             {% if quiz.id == block.id %}
                 {% if quiz.completed != True%}
-                <form action="." method="post">{% csrf_token %}
+                <form id="pageblock-{{block.id}}-quiz" action="." method="post">{% csrf_token %}
         {% endif %}
     {% endif %}
 {% endfor %}
@@ -72,10 +97,11 @@
 </div>
 {% for quiz in case_quizblocks %}
             {% if quiz.id == block.id %}
-                {% if quiz.completed != True%}
+                {% if quiz.completed != True %}
                 <input type="hidden" name="pageblock-{{block.id}}-case" value="{{case.id}}" />
-                <input type="submit" value="Submit Case Quiz" class="btn btn-primary" />
+                <input id="pageblock-{{block.id}}-submit" type="submit" value="Submit Case Quiz" class="btn btn-primary" />
                  </form>
+                
         {% endif %}
     {% endif %}
 {% endfor %}
