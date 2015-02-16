@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from pagetree.models import Hierarchy, Section, ReportableInterface
+from ckeditor.widgets import CKEditorWidget
 from pageblocks.models import TextBlock
 from quizblock.models import Quiz, Question, Submission, Response
 from gate_block.models import GateSubmission
@@ -21,10 +22,10 @@ class Cohort(models.Model):
         return '%s' % (self.name)
 
     def _get_case(self):
-        case = Case.objects.filter(cohort=self.id)
-        if len(case) == 0:
+        case = Case.objects.get(cohort=self.id)
+        if not case:
             return None
-        return case[0]
+        return case
 
     def _get_users(self):
         upros = UserProfile.objects.filter(
@@ -60,6 +61,16 @@ class Cohort(models.Model):
                 initial=self.name,
                 widget=forms.widgets.Input(
                     attrs={'class': 'edit-cohort-name'}))
+            user = forms.ModelChoiceField(
+                initial=[user.id for user in self.users],
+                widget=forms.SelectMultiple(
+                    attrs={'class': 'user-select'}),
+                queryset=User.objects.all().order_by('username'),
+                empty_label=None)
+            if self.case:
+                initial = self.case.id
+            else:
+                initial = ''
             case = forms.ModelChoiceField(
                 initial=[self.case.id if self.case else 0],
                 widget=forms.Select(
@@ -275,9 +286,7 @@ class TextBlockDT(TextBlock):
                 choices=CHOICES,
                 default=0)
             body = forms.CharField(
-                label="poop",
-                widget=forms.widgets.Textarea(
-                    attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}))
+                widget=CKEditorWidget(attrs={"id": "editor"}))
             after_decision = forms.ChoiceField(
                 choices=CHOICES,
                 widget=CustomSelectWidgetAD)
@@ -296,11 +305,11 @@ class TextBlockDT(TextBlock):
 
     def edit_form(self):
         class EditForm(forms.Form):
+            EDITOR = "editor-" + str(self.id)
             CHOICES = ((0, '0'), (1, '1'), (2, '2'),
                        (3, '3'), (4, '4'), (5, '5'))
             body = forms.CharField(
-                widget=forms.widgets.Textarea(
-                    attrs={'cols': 180, 'rows': 40, 'class': 'mceEditor'}),
+                widget=CKEditorWidget(attrs={"id": EDITOR}),
                 initial=self.body)
             after_decision = forms.ChoiceField(
                 choices=CHOICES,
@@ -431,6 +440,17 @@ class LibraryItem(models.Model):
                            }))
 
         return EditLibraryForm()
+
+
+class ImageUploadItem(models.Model):
+    name = models.TextField(blank=False)
+    doc = models.FileField(upload_to='documents/%Y/%m/%d')
+
+    def __unicode__(self):
+        return self.name
+
+    def display_name(self):
+        return '%s' % (self.name)
 
 
 class CaseQuiz(Quiz):
