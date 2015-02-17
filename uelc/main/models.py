@@ -220,7 +220,6 @@ class CaseMap(models.Model):
         self.save()
 
     def save_value(self, quiz, data):
-        #case = Case.objects.get(id=data['case'])
         section = quiz.pageblock().section
         case_depth = len(section.get_tree())
         count = 0
@@ -489,11 +488,16 @@ class CaseQuiz(Quiz):
             show_submit_state = forms.BooleanField(initial=True)
         return AddForm()
 
+    def is_q_answered(self, data):
+        for k in data.keys():
+            if k.startswith('question'):
+                return True
+
     def submit(self, user, data):
-        """ a big open question here is whether we should
-        be validating submitted answers here, on submission,
-        or let them submit whatever garbage they want and only
-        worry about it when we show the admins the results """
+        """ Do not allow blank submissions """
+        if not self.is_q_answered(data):
+            return
+
         s = Submission.objects.create(quiz=self, user=user)
         # create a CaseMap for the user
         # get Case the user is currently on
