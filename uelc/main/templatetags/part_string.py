@@ -2,6 +2,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter(name='convert')
 def convert(arg):
     if arg > 1:
