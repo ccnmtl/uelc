@@ -4,12 +4,12 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils.decorators import method_decorator
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
 from uelc.main.models import (
     Cohort, UserProfile, CreateUserForm, Case,
     CreateHierarchyForm, CaseMap,
-    UELCHandler, LibraryItem,
+    UELCHandler, LibraryItem, CaseAnswer
     )
 from gate_block.models import GateBlock, GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
@@ -19,6 +19,10 @@ from pagetree.helpers import get_section_from_path
 from django.db.models import Q
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
+from quizblock.models import Quiz, Question, Answer
+from django.core.urlresolvers import reverse
+from django.views.generic.base import View
+from django.views.generic.edit import DeleteView
 
 
 class LoggedInMixinSuperuser(object):
@@ -715,3 +719,65 @@ def pages_save_edit(request, hierarchy_name, path):
 @login_required
 def instructor_page(request, hierarchy_name, path):
     return generic_instructor_page(request, path, hierarchy=hierarchy_name)
+
+
+class AddCaseAnswerToQuestionView(View):
+    template_name = 'quizblock/edit_question.html'
+
+    def get(self, request, pk):
+        question = get_object_or_404(Question, pk=pk)
+        form = question.add_answer_form()
+        return render(
+            request,
+            self.template_name,
+            dict(question=question, answer_form=form))
+
+    def post(self, request, pk):
+        question = get_object_or_404(Question, pk=pk)
+        form = question.add_answer_form(request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.question = question
+            if answer.label == '':
+                answer.label = answer.value
+            answer.save()
+            return HttpResponseRedirect(reverse("edit-question",
+                                                args=[question.id]))
+        return render(
+            request,
+            self.template_name,
+            dict(question=question, answer_form=form))
+
+
+class EditCaseAnswerView(View):
+    template_name = 'quizblock/edit_answer.html'
+
+    def get(self, request, pk):
+        answer = get_object_or_404(CaseAnswer, pk=pk)
+        form = answer.edit_form()
+        return render(
+            request,
+            self.template_name,
+            dict(answer_form=form, answer=answer))
+
+    def post(self, request, pk):
+        answer = get_object_or_404(CaseAnswer, pk=pk)
+        form = answer.edit_form(request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.save()
+            return HttpResponseRedirect(reverse("edit-answer",
+                                                args=[answer.id]))
+        return render(
+            request,
+            self.template_name,
+            dict(answer_form=form, answer=answer))
+
+
+class DeleteCaseAnswerView(DeleteView):
+    model = CaseAnswer
+
+    def get_success_url(self):
+        question = self.object.question
+        return reverse("edit-question", args=[question.id])
+

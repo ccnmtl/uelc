@@ -565,6 +565,7 @@ class CaseQuiz(Quiz):
 
 class CaseAnswer(Answer):
     '''adding field for text area, label will be used as title'''
+    title = models.CharField(max_length=255, blank=False)
     description = models.TextField(blank=True)
     
     def edit_form(self, request=None):
