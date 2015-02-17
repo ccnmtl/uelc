@@ -44,7 +44,7 @@ def is_section_unlocked(request, section):
         bl = block.block()
         if hasattr(bl, 'needs_submit') and bl.display_name == 'Gate Block':
             unlocked = bl.unlocked(request.user, section)
-        if hasattr(bl, 'needs_submit') and bl.display_name == 'Case Quiz':
+        if hasattr(bl, 'needs_submit') and bl.display_name == 'Decision Block':
             unlocked = bl.unlocked(request.user, section)
         if not unlocked:
             return False
@@ -96,7 +96,7 @@ def get_quizblock_attr(quiz_id):
     pbs = PageBlock.objects.filter(object_id=quiz_id)
     for pb in pbs:
         block = pb.block()
-        if block.display_name == "Case Quiz":
+        if block.display_name == 'Decision Block':
             edit_url = block.pageblock().section.get_edit_url()
             label = block.pageblock().section.label
             return dict(edit_url=edit_url, label=label)
