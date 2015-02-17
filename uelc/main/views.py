@@ -456,7 +456,8 @@ class FacilitatorView(LoggedInMixinSuperuser,
                              self.get_tree_depth(g.pageblock().section),
                              g.status(user, hierarchy),
                              hand.can_show_gateblock(g.pageblock().section,
-                                                     part_usermap)]
+                                                     part_usermap),
+                             hand.get_part_by_section(g.pageblock().section)]
                             for g in gateblocks]
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section])
