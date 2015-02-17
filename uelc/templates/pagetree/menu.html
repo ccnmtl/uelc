@@ -1,4 +1,4 @@
-{% if request.user.is_superuser %}
+{% if not request.user.profile.profile_type == "group_user" %}
 <ul class="side-nav well well-lg">
     {% for s in module.get_descendants %}
     {% ifequal s.id module.id %}
@@ -37,4 +37,35 @@
     {% endifequal %}
     {% endfor %}
 </ul>
+{% else %}
+
+    {% for part in module.get_root.get_children %}
+        {% if forloop.counter == 1 %}
+                <ul class="side-nav well well-lg group-user">
+                    {% for s in module.get_children %}
+                        {% if section in s.get_siblings %}
+                            {% if module.id == part.id %}
+                                {% ifequal s.id module.id %}
+                                    {% else %}
+                                    <li class="menu-{{s.depth}}">
+                                        <a href="{{menu_base}}{{s.get_absolute_url}}">
+                                            {{s.label}}
+                                        </a>
+                                    </li>
+                                {% endifequal %}
+                            {% endif %}
+                        {% endif %}
+
+                    {% endfor %}
+                </ul>
+        {% endif %}
+    {% endfor %}
+    <script>
+        jQuery(document).ready(function(){
+            var ul = jQuery('ul.group-user');
+            if(ul.children().length == 0){
+                ul.remove();
+            }
+        })
+    </script>
 {% endif %}
