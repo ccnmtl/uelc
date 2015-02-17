@@ -6,10 +6,12 @@ from uelc.main.tests.factories import GroupUserFactory
 class GateBlockTest(TestCase):
     def test_add_form(self):
         f = GateBlock.add_form()
+        self.assertEqual(None, f.full_clean())
 
     def test_edit_form(self):
         tb = GateBlock.objects.create()
         f = tb.edit_form()
+        self.assertEqual(None, f.full_clean())
 
     def test_edit(self):
         tb = GateBlock.objects.create()
