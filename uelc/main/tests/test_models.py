@@ -228,7 +228,7 @@ class CaseQuizTest(TestCase):
                   'allow_redo': True, 'show_submit_state': False}
         casequiz = CaseQuiz.create(r)
         self.assertEquals(casequiz.description, 'description')
-        self.assertEquals(casequiz.display_name, 'Case Quiz')
+        self.assertEquals(casequiz.display_name, 'Decision Block')
 
     def test_create_from_dict(self):
         quizdictionary = CaseQuiz(description='description')

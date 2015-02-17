@@ -453,7 +453,7 @@ class ImageUploadItem(models.Model):
 
 
 class CaseQuiz(Quiz):
-    display_name = "Case Quiz"
+    display_name = "Decision Block"
     template_file = "quizblock/quizblock.html"
 
     @classmethod

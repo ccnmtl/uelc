@@ -248,7 +248,7 @@ class UELCPageView(LoggedInMixin,
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
             # Section.submit() in Pageblock library
-            if display_name == 'Case Quiz':
+            if display_name == 'Decision Block':
                 # is the quiz really submitted?
                 # if so add yes/no to dict
                 quiz = block.block()

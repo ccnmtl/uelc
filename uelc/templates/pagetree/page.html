@@ -80,7 +80,7 @@
 {% render block %}
 </div>
 
-{% elif block.block.display_name == "Case Quiz" %}
+{% elif block.block.display_name == "Decision Block" %}
 {% for quiz in case_quizblocks %}
             {% if quiz.id == block.id %}
                 {% if quiz.completed != True%}
@@ -99,7 +99,7 @@
             {% if quiz.id == block.id %}
                 {% if quiz.completed != True %}
                 <input type="hidden" name="pageblock-{{block.id}}-case" value="{{case.id}}" />
-                <input id="pageblock-{{block.id}}-submit" type="submit" value="Submit Case Quiz" class="btn btn-primary" />
+                <input id="pageblock-{{block.id}}-submit" type="submit" value="Submit Decision" class="btn btn-primary" />
                  </form>
                 
         {% endif %}
