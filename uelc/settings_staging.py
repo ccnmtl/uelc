@@ -31,7 +31,7 @@ STATIC_URL = 'https://%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
 DEFAULT_FILE_STORAGE = 'uelc.s3utils.MediaRootS3BotoStorage'
 MEDIA_URL = S3_URL + '/media/'
 COMPRESS_STORAGE = 'uelc.s3utils.CompressorS3BotoStorage'
-
+COMPRESS_URL = STATIC_URL
 COMPRESS_ROOT = "/var/www/uelc/uelc/media/"
 COMPRESS_ENABLED = True
 COMPRESS_OFFLINE = True
