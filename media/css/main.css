@@ -11,9 +11,11 @@ body {
 
 body > .container {
   background-color: #fff;
-  min-height: 100%;
+  min-height: 75%;
   padding-top: 75px;
 }
+
+footer {padding-top: 20px;}
 
 .jumbotron {background-image: url(../img/group.jpg); color: #fff;}
 
@@ -25,7 +27,6 @@ body > .container {
 .login-description {
     margin: 0px;
     text-align: center;
-    width: 100%;
 }
 
 .login-description h2 {
@@ -84,7 +85,7 @@ body > .container {
 
 .loginbox .fieldwrapper
 {
-    margin: 0 0 10px 10px;
+    margin: 0px;
     padding: 0;
     border: 0;
 }
@@ -115,7 +116,7 @@ body > .container {
 {
     cursor: pointer;
     padding: 4px 17px;
-    margin: 0 0 10px 10px;
+    margin: 0 0 10px 0px;
     color: #000;
     font-weight: normal;
     font-size: 14px;

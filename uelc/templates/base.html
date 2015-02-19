@@ -137,10 +137,10 @@
 		{% block content %}{% endblock %}
 		{% block content-nav %}{% endblock %}
 	</div>
-	    {% block library %}{% endblock %}
 	
-	    <div class="col-sm-3">
-	
+    <div class="col-sm-3">
+		    {% block library %}{% endblock %}
+
         {% block loginbox %}
         {% if request.user.is_anonymous %}
         <div class="loginbox-container columbia">
@@ -200,10 +200,29 @@
     </div>
     <!--end .row-->
 
+
+
 </div>
 
 {% block footer %}
-<footer class="footer text-center">
+<footer class="footer">
+
+<div class="container">
+
+<div class="row">
+
+    <div class="col-sm-2 col-sm-offset-4">
+    <a href="http://uelp.tc.columbia.edu/" title="UELC"><img class="img-responsive" src="{{STATIC_URL}}img/logo-uelc.png" /></a>
+    </div>
+    
+    <div class="col-sm-2">
+    <a href="http://ccnmtl.columbia.edu/" title="CCNMTL"><img class="img-responsive" src="{{STATIC_URL}}img/logo-ccnmtl.png" /></a>
+    </div>
+
+</div>
+
+</div>
+
 </footer>
 {% endblock %}
 
