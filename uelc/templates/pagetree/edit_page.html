@@ -408,7 +408,12 @@ method="post">{% csrf_token %}
             {% endif %}
         {% endwith %}
     </ul>
-
+{% comment %}
+<!--
+  this inline attempts to deal with a FF bug where the user cannot
+  edit/select the input on the edit_form. 
+-->
+{% endcomment %}
 <script>
 jQuery(document).ready(function(){
   jQuery('.form-control').click(function(){
