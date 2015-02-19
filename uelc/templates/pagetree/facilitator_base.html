@@ -41,23 +41,19 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-		<a class="navbar-brand" href="/"><img src="{{STATIC_URL}}img/logo.png" /> UELC ELDEx <span style="color: #ccc;"> Beta</span></a>
+		<a class="navbar-brand" href="/">ELDEx <span style="color: #ccc;"> Beta</span></a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse navbar-ex1-collapse">
   	<ul class="nav navbar-nav navbar-right">
+    <li><a href="#">About ELDEx</a></li>
+    <li><a href="#">Contact Us</a></li>
   	{% block topnavbarrightitems %}{% endblock %}
   	{% block usernav %}
-  	{% if request.user.is_anonymous %}
-  	{% else %}
-  	<li class="navbar-text">Logged in as 
-  	{% if request.user.last_name %}
-  	{{request.user.first_name}} {{request.user.last_name}}
-  	{% else %}
-  	<b>{{ request.user.username }}</b></li>
-  	{% endif %}
-  	{% if request.user.is_superuser %}
+  
+  
+  {% if request.user.is_superuser %}
   	{% if instructor_link %}
   	<!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
   	{% endif %}
@@ -70,6 +66,19 @@
   	{% endblock %}
   	<li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
   	{% endif %}
+  	
+    {% if request.user.is_anonymous %}
+        {% else %}
+        <li class="navbar-text"></li>
+        <li class="navbar-text">
+        Hi,
+        {% if request.user.last_name %}
+        {{request.user.first_name}} {{request.user.last_name}}
+        {% else %}
+        {{ request.user.username }}!
+        </li>
+        {% endif %}
+  	
   	<li><a href="/accounts/logout/">Log Out</a></li>
   	{% endif %}
   	{% endblock %}
@@ -171,9 +180,8 @@
 </div>
 
 {% block footer %}
-  <footer class="footer navbar-fixed-bottom hidden-phone">
-    <!--<img src="{{STATIC_URL}}img/logo_ccnmtl_sidebar.gif" class="printonly pull-right" />-->
-  </footer>
+<footer class="footer text-center">
+</footer>
 {% endblock %}
 
 <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>

@@ -3,9 +3,10 @@
 {% block content %}
 <!-- {{request.user.profile.profile_type}} -->
 {% if not request.user.is_anonymous %}
-    <h2>Choose Your Case</h2>
-    <div class="jumbotron"/>
+    <h1>Choose Your Case</h1>
+
         <h2>Case List</h2>
+        
         <ul class="case-index-list">
         {% for root in roots %}
             {% ifnotequal root.0 '/' %}
@@ -25,7 +26,7 @@
                 </ul>
             </div>
         {% endifequal %}
-    </div><!--end jumbotron-->
+
 {% else %}
 <h1>Welcome to UELC ELDEx!</h1>
 <p>Education Leadership Development Experience</p>
