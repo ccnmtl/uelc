@@ -180,7 +180,7 @@ STATICFILES_FINDERS = (
 
 COMPRESS_URL = "/media/"
 COMPRESS_ROOT = "media/"
-
+AWS_QUERYSTRING_AUTH = False
 # CAS settings
 
 AUTHENTICATION_BACKENDS = ('djangowind.auth.SAMLAuthBackend',

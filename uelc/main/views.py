@@ -248,7 +248,7 @@ class UELCPageView(LoggedInMixin,
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
             # Section.submit() in Pageblock library
-            if display_name == 'Case Quiz':
+            if display_name == 'Decision Block':
                 # is the quiz really submitted?
                 # if so add yes/no to dict
                 quiz = block.block()
@@ -312,17 +312,18 @@ class UELCPageView(LoggedInMixin,
     def post(self, request, path):
         # user has submitted a form. deal with it
         # make sure that they have not submitted
-        # a blank form, key "case" is included on
-        # all case_quiz submissions thus, must
-        # have more than one key
-
-        if len(request.POST.keys()) > 1:
+        # a hidden input, key "case" and csrf token
+        # is included on all case_quiz submissions thus,
+        # musthave more than two keys
+        if len(request.POST.keys()) > 2:
             if request.POST.get('action', '') == 'reset':
                 self.upv.visit(status="incomplete")
                 return reset_page(self.section, request)
-            #self.upv.visit(status="complete")
             return page_submit(self.section, request)
         else:
+            action_args = dict(error='error')
+            messages.error(request, action_args['error'],
+                           extra_tags='quizSubmissionError')
             return HttpResponseRedirect(request.path)
 
 
