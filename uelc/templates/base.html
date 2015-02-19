@@ -51,7 +51,7 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="/">ELDEx <span style="color: #ccc;"> Beta</span></a>
+		<a class="navbar-brand" href="/"><img src="{{STATIC_URL}}img/logo.png" /></a>
     {% if request.user.profile.profile_type == 'facilitator' or request.user.profile.profile_type == 'admin' %}
       <a class="navbar-brand" href="/uelcadmin/"><span class="glyphicon glyphicon-wrench"></span></a>
     {% endif %}
