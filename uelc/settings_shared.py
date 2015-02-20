@@ -169,7 +169,7 @@ SERVER_EMAIL = "uelc@ccnmtl.columbia.edu"
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 STATIC_ROOT = "/tmp/uelc/static"
-STATICFILES_DIRS = ('media/')
+STATICFILES_DIRS = ('media/',)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
