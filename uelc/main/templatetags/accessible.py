@@ -38,6 +38,19 @@ def submitted(parser, token):
 
 
 @register.assignment_tag
+def get_previous_group_user_section(request, section):
+    prev_sec = section.get_previous()
+    # make sure that group users cannot go to part
+    # root page
+    import pdb
+    pdb.set_trace()
+    if prev_sec.depth < 3:
+        p1 = section.get_root().get_children()[0]
+        prev_sec = p1.get_last_leaf()
+    return prev_sec
+
+
+@register.assignment_tag
 def is_section_unlocked(request, section):
     unlocked = True
     for block in section.pageblock_set.all():
