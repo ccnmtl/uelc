@@ -12,6 +12,7 @@ from django.contrib.flatpages.models import FlatPage
 from django.db import models
 from ckeditor.widgets import CKEditorWidget
 
+
 # Define an inline admin descriptor for UserProfile model
 # which acts a bit like a singleton
 class UserProfileInline(admin.StackedInline):
