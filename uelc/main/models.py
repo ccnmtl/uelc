@@ -566,4 +566,27 @@ class CaseQuiz(Quiz):
                 unlocked = True
         return unlocked
 
+
+class AnswerFields(models.Model):
+    answer = models.ForeignKey(Answer)
+    title = models.CharField(max_length=255, blank=True)
+    description = models.TextField(blank=True)
+
+    def display_answer(self):
+        return self.answer
+
+    def display_title(self):
+        return self.title
+
+    def display_description(self):
+        return self.description
+
+    def edit_form(self, request=None):
+        return AnswerFieldsForm(request, instance=self)
+
+    def as_dict(self):
+        return dict(title=self.title,
+                    description=self.description)
+
+
 ReportableInterface.register(CaseQuiz)
