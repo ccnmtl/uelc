@@ -4,7 +4,7 @@
   <input type="text" name="question{{question.id}}" class="form-control"/>
 {% else %}
   {% if response %}
-    <p class="yours">{{response.value|markdown}}</p>
+    <p class="text-primary ">{{response.value|markdown}}</p>
   {% else %}
     <input type="text" name="pageblock-{{block.pageblock.id}}-question{{question.id}}" class="form-control" />
   {% endif %}

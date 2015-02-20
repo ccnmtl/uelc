@@ -14,7 +14,7 @@
           response and more than one response by the user.
           {% endcomment %}
           {% ifanswerin response answer  %}
-            <span class="yours {% if answer.correct %}correct correctanswer{% else %}incorrect incorrectanswer{% endif %}">{{answer.label}}</span>
+            <span class="text-primary  {% if answer.correct %}correct correctanswer{% else %}incorrect incorrectanswer{% endif %}">{{answer.label}}</span>
           {% else %}
             <span class="{% if answer.correct %}correct{% else %}incorrect{% endif %}">{{answer.label}}</span>
           {% endifanswerin %}
