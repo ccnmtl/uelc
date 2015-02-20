@@ -1,8 +1,9 @@
 from django.test import TestCase
 from django.test.client import Client
 from pagetree.helpers import get_hierarchy
-from pagetree.tests.factories import get_hierarchy
 from django.contrib.auth.models import User
+from factories import GroupUpFactory
+from pagetree.tests.factories import ModuleFactory
 
 
 class BasicTest(TestCase):
@@ -78,7 +79,7 @@ class PagetreeViewTestsLoggedIn(TestCase):
 class TestGroupUserLoggedInViews(TestCase):
     def setUp(self):
         ModuleFactory("main", "/pages/main/")
-        self.hierarchy = Hierarchy.objects.get(name='main')
+        self.hierarchy = get_hierarchy(name='main')
         self.section = self.hierarchy.get_root().get_first_leaf()
 
         self.grp_usr = GroupUpFactory().user
@@ -93,8 +94,7 @@ class TestGroupUserLoggedInViews(TestCase):
         response = self.client.get(self.section.get_absolute_url(),
                                    follow=True)
         self.assertEqual(response.status_code, 200)
- 
+
     def test_index(self):
         response = self.client.get("/")
         self.assertTemplateUsed(response, 'main/index.html')
-

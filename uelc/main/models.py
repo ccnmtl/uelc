@@ -582,7 +582,7 @@ class CaseAnswer(models.Model):
         return self.description
 
     def edit_form(self, request=None):
-        return AnswerFieldsForm(request, instance=self)
+        return CaseAnswerForm(request, instance=self)
 
     def as_dict(self):
         return dict(title=self.title,
@@ -593,11 +593,11 @@ class CaseAnswerForm(forms.ModelForm):
     class Meta:
         model = CaseAnswer
         exclude = ("question",)
-     
+
         def clean(self):
             if 'value' not in self.cleaned_data:
                 raise forms.ValidationError(
-                     'Please enter a meaningful value for this answer.')
+                    'Please enter a meaningful value for this answer.')
             else:
                 return self.cleaned_data
 
