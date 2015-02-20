@@ -30,7 +30,7 @@
   <script src="{{STATIC_URL}}ckeditor/ckeditor/ckeditor.js"></script>
 <script src="{{STATIC_URL}}ckeditor/ckeditor/adapters/jquery.js"></script>
 
-{% compress js %}
+
 <script type="text/javascript">
 jQuery('[id^=editor]').ckeditor({
     //filebrowserUploadUrl: '/uploads/',
@@ -96,7 +96,6 @@ $(function() {
 });
 </script>
 
-{% endcompress %}
 {% endblock %}
 
 {% block moduletabs %}
@@ -409,7 +408,12 @@ method="post">{% csrf_token %}
             {% endif %}
         {% endwith %}
     </ul>
-
+{% comment %}
+<!--
+  this inline attempts to deal with a FF bug where the user cannot
+  edit/select the input on the edit_form. 
+-->
+{% endcomment %}
 <script>
 jQuery(document).ready(function(){
   jQuery('.form-control').click(function(){

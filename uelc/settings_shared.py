@@ -55,7 +55,7 @@ TIME_ZONE = 'America/New_York'
 LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
 USE_I18N = False
-MEDIA_ROOT = "/var/www/uelc/uploads"
+MEDIA_ROOT = "/tmp/"
 MEDIA_URL = '/uploads/'
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_IMAGE_BACKEND = "pillow"
@@ -168,9 +168,8 @@ EMAIL_HOST = 'localhost'
 SERVER_EMAIL = "uelc@ccnmtl.columbia.edu"
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
-STATIC_ROOT = os.path.join(os.path.dirname(__file__), "../media")
-STATICFILES_DIRS = (
-)
+STATIC_ROOT = "/tmp/uelc/static"
+STATICFILES_DIRS = ('media/',)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -180,7 +179,7 @@ STATICFILES_FINDERS = (
 
 COMPRESS_URL = "/media/"
 COMPRESS_ROOT = "media/"
-
+AWS_QUERYSTRING_AUTH = False
 # CAS settings
 
 AUTHENTICATION_BACKENDS = ('djangowind.auth.SAMLAuthBackend',

@@ -248,7 +248,7 @@ class UELCPageView(LoggedInMixin,
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
             # Section.submit() in Pageblock library
-            if display_name == 'Case Quiz':
+            if display_name == 'Decision Block':
                 # is the quiz really submitted?
                 # if so add yes/no to dict
                 quiz = block.block()
@@ -312,17 +312,18 @@ class UELCPageView(LoggedInMixin,
     def post(self, request, path):
         # user has submitted a form. deal with it
         # make sure that they have not submitted
-        # a blank form, key "case" is included on
-        # all case_quiz submissions thus, must
-        # have more than one key
-
-        if len(request.POST.keys()) > 1:
+        # a hidden input, key "case" and csrf token
+        # is included on all case_quiz submissions thus,
+        # musthave more than two keys
+        if len(request.POST.keys()) > 2:
             if request.POST.get('action', '') == 'reset':
                 self.upv.visit(status="incomplete")
                 return reset_page(self.section, request)
-            #self.upv.visit(status="complete")
             return page_submit(self.section, request)
         else:
+            action_args = dict(error='error')
+            messages.error(request, action_args['error'],
+                           extra_tags='quizSubmissionError')
             return HttpResponseRedirect(request.path)
 
 
@@ -456,7 +457,8 @@ class FacilitatorView(LoggedInMixinSuperuser,
                              self.get_tree_depth(g.pageblock().section),
                              g.status(user, hierarchy),
                              hand.can_show_gateblock(g.pageblock().section,
-                                                     part_usermap)]
+                                                     part_usermap),
+                             hand.get_part_by_section(g.pageblock().section)]
                             for g in gateblocks]
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section])
