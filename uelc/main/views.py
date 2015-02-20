@@ -19,7 +19,7 @@ from pagetree.helpers import get_section_from_path
 from django.db.models import Q
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
-from quizblock.models import Quiz, Question, Answer
+from quizblock.models import Question
 from django.core.urlresolvers import reverse
 from django.views.generic.base import View
 from django.views.generic.edit import DeleteView
@@ -782,4 +782,3 @@ class DeleteCaseAnswerView(DeleteView):
     def get_success_url(self):
         question = self.object.question
         return reverse("edit-question", args=[question.id])
-
