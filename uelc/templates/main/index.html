@@ -3,9 +3,10 @@
 {% block content %}
 <!-- {{request.user.profile.profile_type}} -->
 {% if not request.user.is_anonymous %}
-    <h2>Choose Your Case</h2>
-    <div class="jumbotron"/>
+    <h1>Choose Your Case</h1>
+
         <h2>Case List</h2>
+        
         <ul class="case-index-list">
         {% for root in roots %}
             {% ifnotequal root.0 '/' %}
@@ -25,9 +26,37 @@
                 </ul>
             </div>
         {% endifequal %}
-    </div><!--end jumbotron-->
+
 {% else %}
-<h1>Welcome to UELC ELDEx!</h1>
-<p>Education Leadership Development Experience</p>
+
+<div class="jumbotron text-center">
+    <img style="margin-bottom: 20px;" class="img-responsive" src="{{STATIC_URL}}img/logo-jumbotron.png" />
+    <p><a class="btn btn-success btn-lg" href=about.html" role="button">Learn More</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-4 text-center">
+    <img class="img-responsive img-rounded" src="{{STATIC_URL}}img/smallgroup.jpg" />
+    <h2>Engagement</h2>
+    <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dui arcu, condimentum vitae feugiat eget, convallis non ipsum.
+    </p>
+</div>
+<div class="col-md-4 text-center">
+    <img class="img-responsive img-rounded" src="{{STATIC_URL}}img/facilitator.jpg" />
+    <h2>Leadership</h2>
+    <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dui arcu, condimentum vitae feugiat eget, convallis non ipsum.
+    </p>
+</div>
+<div class="col-md-4 text-center">
+    <img class="img-responsive img-rounded" src="{{STATIC_URL}}img/experts.jpg" />
+    <h2>Discussion</h2>
+    <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dui arcu, condimentum vitae feugiat eget, convallis non ipsum.
+    </p>
+</div>
+</div>
+
 {% endif %}
 {% endblock %}

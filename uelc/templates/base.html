@@ -51,7 +51,7 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="/"><img src="{{STATIC_URL}}img/logo.png" /> UELC ELDEx <span style="color: #ccc;"> Beta</span></a>
+		<a class="navbar-brand" href="/"><img src="{{STATIC_URL}}img/logo.png" /></a>
     {% if request.user.profile.profile_type == 'facilitator' or request.user.profile.profile_type == 'admin' %}
       <a class="navbar-brand" href="/uelcadmin/"><span class="glyphicon glyphicon-wrench"></span></a>
     {% endif %}
@@ -61,18 +61,12 @@
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 				<ul class="nav navbar-nav navbar-right">
+                <li><a href="#">About ELDEx</a></li>
+                <li><a href="#">Contact Us</a></li>
 				{% block topnavbarrightitems %}{% endblock %}
 				{% block usernav %}
-				{% if request.user.is_anonymous %}
-				{% else %}
-				<li class="navbar-text">
-				Logged in as 
-				{% if request.user.last_name %}
-				{{request.user.first_name}} {{request.user.last_name}}
-				{% else %}
-				<b>{{ request.user.username }}</b>
-				</li>
-				{% endif %}
+				
+				
 				{% if request.user.is_superuser %}
 				{% if instructor_link %}
 				<!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
@@ -92,6 +86,19 @@
 				<a href="{% url 'impersonate-list' %}">Impersonate</a>
 				</li>
 				{% endif %}
+				
+				{% if request.user.is_anonymous %}
+				{% else %}
+                <li class="navbar-text"></li>
+				<li class="navbar-text">
+				Hi,
+				{% if request.user.last_name %}
+				{{request.user.first_name}} {{request.user.last_name}}
+				{% else %}
+				{{ request.user.username }}!
+				</li>
+				{% endif %}
+				
 				<li>
 				<a href="/accounts/logout/?next=/">Log Out</a>
 				</li>
@@ -106,41 +113,39 @@
 
 <div class="container" id="outer-container">
 
-{% if request.user.is_superuser %}
-<div class="col-md-12">
-{% block topnavbarleftitems %}{% endblock %}
-{% block moduletabs %}
-<ul class="nav nav-tabs nav-justified">
-{% for section in modules %}
-<li{% ifequal section.id module.id %} class="active"{% endifequal %}><a href="{{section.get_absolute_url}}">{{section.label}}</a></li>
-{% endfor %}
-</ul>
-{% endblock %}
-</div>
-{% endif %}
+    {% if request.user.is_superuser %}
+    <div class="col-md-12">
+    {% block topnavbarleftitems %}{% endblock %}
+    {% block moduletabs %}
+    <ul class="nav nav-tabs nav-justified">
+    {% for section in modules %}
+    <li{% ifequal section.id module.id %} class="active"{% endifequal %}><a href="{{section.get_absolute_url}}">{{section.label}}</a></li>
+    {% endfor %}
+    </ul>
+    {% endblock %}
+    </div>
+    {% endif %}
 
+    {% block masthead %}
+    {% block primarynav %}{% endblock %}
+    {% endblock %}
 
-{% block masthead %}
-{% block primarynav %}{% endblock %}
-{% endblock %}
-
-
-<div class="row">
+    <div class="row">
 	
-	<div class="col-sm-9">
+	    <div class="col-sm-9">
 		{% block pagetitle %}{% endblock %}
 		{% block content %}{% endblock %}
 		{% block content-nav %}{% endblock %}
 	</div>
-	{% block library %}{% endblock %}
 	
-	<div class="col-sm-3">
-	
+    <div class="col-sm-3">
+		    {% block library %}{% endblock %}
+
         {% block loginbox %}
         {% if request.user.is_anonymous %}
         <div class="loginbox-container columbia">
         <div class="loginbox">
-        <h2>Choose a login option...</h2>
+        <h2>Choose a login option.</h2>
         <div class="content">
         {% if CAS_BASE %}
         <form method="get" action="{{ CAS_BASE }}cas/login">
@@ -192,16 +197,32 @@
         
 	</div>
 	
+    </div>
+    <!--end .row-->
+
+
+
 </div>
-<!--end .row-->
-
-
-
-
 
 {% block footer %}
-<footer class="footer navbar-fixed-bottom hidden-phone">
-<!--<img src="{{STATIC_URL}}img/logo_ccnmtl_sidebar.gif" class="printonly pull-right" />-->
+<footer class="footer">
+
+<div class="container">
+
+<div class="row">
+
+    <div class="col-sm-2 col-sm-offset-4">
+    <a href="http://uelp.tc.columbia.edu/" title="UELC"><img class="img-responsive" src="{{STATIC_URL}}img/logo-uelc.png" /></a>
+    </div>
+    
+    <div class="col-sm-2">
+    <a href="http://ccnmtl.columbia.edu/" title="CCNMTL"><img class="img-responsive" src="{{STATIC_URL}}img/logo-ccnmtl.png" /></a>
+    </div>
+
+</div>
+
+</div>
+
 </footer>
 {% endblock %}
 

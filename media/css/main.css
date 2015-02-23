@@ -11,9 +11,13 @@ body {
 
 body > .container {
   background-color: #fff;
-  min-height: 100%;
+  min-height: 75%;
   padding-top: 75px;
 }
+
+footer {padding-top: 20px;}
+
+.jumbotron {background-image: url(../img/group.jpg); color: #fff;}
 
 #content {
   min-height: 100%;
@@ -21,9 +25,8 @@ body > .container {
 
 /* LOGIN PAGE */
 .login-description {
-    margin: 30px 30px 15px 30px;
+    margin: 0px;
     text-align: center;
-    width: 100%;
 }
 
 .login-description h2 {
@@ -34,7 +37,7 @@ body > .container {
 .loginbox-container {
     float: right;
     height: 265px;
-    margin-top: 10px;
+    margin-top: 0px;
 }
 
 .loginbox-container.columbia {
@@ -43,14 +46,15 @@ body > .container {
 .loginbox
 {
     display: block;
-    width: 300px;
-    margin: 0 30px 0 20px;
+    width: 100%;
+    margin: 0;
     padding: 0;
     border: 1px solid #999;
     background-color: #fff;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     font-size: 12px;
+    text-align: center;
 }
 .loginbox h2
 {
@@ -66,7 +70,7 @@ body > .container {
 .loginbox .content
 {
     margin: 0;
-    padding: 10px 10px 0 10px;
+    padding: 5px;
     border: 0;
 }
 
@@ -81,7 +85,7 @@ body > .container {
 
 .loginbox .fieldwrapper
 {
-    margin: 0 0 10px 10px;
+    margin: 0px;
     padding: 0;
     border: 0;
 }
@@ -94,13 +98,12 @@ body > .container {
 }
 
 .loginbox .fieldwrapper input {
-    width: 250px;
     margin: 2px 0;
     padding: 3px;
     border: 0;
     border: 1px solid #ccc;
     background-color: #f4f4f4;
-    font: bold 12px arial, helvetica, verdana, sans-serif;
+    font: bold 12px;
 }
 
 .loginbox .fieldwrapper input:focus
@@ -113,7 +116,7 @@ body > .container {
 {
     cursor: pointer;
     padding: 4px 17px;
-    margin: 0 0 10px 10px;
+    margin: 0 0 10px 0px;
     color: #000;
     font-weight: normal;
     font-size: 14px;

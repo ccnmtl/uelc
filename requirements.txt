@@ -32,6 +32,9 @@ factory_boy==2.1.1
 python-ldap==2.4.13
 sqlparse==0.1.11
 django-ckeditor==4.4.7
+boto==2.34.0
+django-storages==1.1.8
+python-dateutil==2.4.0
 
 djangowind==0.13.1
 sorl==3.1

@@ -567,31 +567,37 @@ class CaseQuiz(Quiz):
         return unlocked
 
 
-class CaseAnswer(Answer):
-    '''adding field for text area, label will be used as title'''
-    title = models.CharField(max_length=255, blank=False)
+class CaseAnswer(models.Model):
+    answer = models.ForeignKey(Answer)
+    title = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
-    
+
+    def display_answer(self):
+        return self.answer
+
+    def display_title(self):
+        return self.title
+
+    def display_description(self):
+        return self.description
+
     def edit_form(self, request=None):
         return CaseAnswerForm(request, instance=self)
 
     def as_dict(self):
-        return dict(value=self.value,
-                    label=self.label,
-                    description=self.description,
-                    correct=self.correct,
-                    explanation=self.explanation)
+        return dict(title=self.title,
+                    description=self.description)
 
 
 class CaseAnswerForm(forms.ModelForm):
     class Meta:
         model = CaseAnswer
         exclude = ("question",)
-     
+
         def clean(self):
             if 'value' not in self.cleaned_data:
                 raise forms.ValidationError(
-                     'Please enter a meaningful value for this answer.')
+                    'Please enter a meaningful value for this answer.')
             else:
                 return self.cleaned_data
 
