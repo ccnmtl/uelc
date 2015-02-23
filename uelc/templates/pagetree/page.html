@@ -142,9 +142,11 @@
     <ul class="pager">
     {% if previous %}
     {% get_previous_group_user_section request section as prev_sec %}
+      {% if prev_sec %}
       <li class="previous">
             <a href="{{prev_sec.get_absolute_url}}">&larr; Previous</a>
       </li>
+      {% endif %}
     {% endif %}
 
     {% if next_section %}

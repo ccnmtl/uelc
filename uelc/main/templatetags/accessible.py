@@ -40,12 +40,13 @@ def submitted(parser, token):
 @register.assignment_tag
 def get_previous_group_user_section(request, section):
     prev_sec = section.get_previous()
-    # make sure that group users cannot go to part
-    # root page
-    import pdb
-    pdb.set_trace()
+    p1 = section.get_root().get_children()[0]
+    # make sure that group users cannot go to the
+    # root page of the Part. Also make sure that the
+    # 1st page in Part 1 does not have a prev link.
+    if section in p1.get_descendants() and prev_sec.depth < 3:
+        return False
     if prev_sec.depth < 3:
-        p1 = section.get_root().get_children()[0]
         prev_sec = p1.get_last_leaf()
     return prev_sec
 
