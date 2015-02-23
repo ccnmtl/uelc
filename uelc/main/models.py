@@ -581,6 +581,13 @@ class CaseAnswer(models.Model):
     def display_description(self):
         return self.description
 
+    @classmethod
+    def add_form(self):
+        class AddForm(forms.Form):
+            title = forms.CharField(widget=forms.widgets.Textarea())
+            description = forms.CharField(widget=forms.widgets.Textarea())
+        return AddForm()
+
     def edit_form(self, request=None):
         return CaseAnswerForm(request, instance=self)
 

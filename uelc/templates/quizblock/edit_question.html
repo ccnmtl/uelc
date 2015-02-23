@@ -94,7 +94,7 @@
 
 {% if question.answerable %}
 <h3>Add CaseAnswer</h3>
-    <form action="/add-case-answer/{{question.id}}/" method="post" class="well form-horizontal">{% csrf_token %}
+    <form action="{% url 'add-case-answer-to-question' question.id %}" method="post" class="well form-horizontal">{% csrf_token %}
       <table width="100%">
       <tr>Case Answer Title: <br /> <input type="text" name="case-answer-title" /></tr><br />
       <tr>Case Answer Description: <br /><textarea name="case-answer-description" rows="10" cols="98">
