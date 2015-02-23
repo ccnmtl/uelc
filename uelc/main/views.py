@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from uelc.main.models import (
     Cohort, UserProfile, CreateUserForm, Case,
     CreateHierarchyForm, CaseMap,
-    UELCHandler, LibraryItem,
+    UELCHandler, LibraryItem
     )
 from gate_block.models import GateBlock, GateSubmission
 from django.core.exceptions import ObjectDoesNotExist

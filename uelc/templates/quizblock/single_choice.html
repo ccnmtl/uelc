@@ -16,7 +16,7 @@
         <label>
         {% if response %}
         {% ifequal response.value answer.value %}
-        <span class="yours {% if response.is_correct %}correct{% else %}incorrect{% endif %}">{{answer.label}}</span>
+        <span class="text-primary {% if response.is_correct %}correct{% else %}incorrect{% endif %}">{{answer.label}}</span>
         {% else %}
         {{answer.label}}
         {% endifequal %}

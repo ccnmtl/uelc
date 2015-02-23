@@ -2,31 +2,36 @@
 
 {% block content %}
 <!-- {{request.user.profile.profile_type}} -->
+
 {% if not request.user.is_anonymous %}
+
     <h1>Choose Your Case</h1>
-
+    
+    <div class="well">
         <h2>Case List</h2>
-        
         <ul class="case-index-list">
-        {% for root in roots %}
+            {% for root in roots %}
             {% ifnotequal root.0 '/' %}
-                <li><a href="{{ root.0 }}">{{root.1}}</a></li>
+            <li><a href="{{ root.0 }}">{{root.1}}</a></li>
             {% endifnotequal %}
-        {% endfor %}
+            {% endfor %}
         </ul>
-        {% ifequal request.user.profile.profile_type  'admin' %}
-            <div class="admin-section">
-                 <h2>Case control for facilitator</h2>
-                <ul>
-                {% for root in roots %}
-                    {% ifnotequal root.0 '/' %}
-                        <li><a href="{{ root.0 }}facilitator/">{{root.1}}</a></li>
-                    {% endifnotequal %}
-                {% endfor %}
-                </ul>
-            </div>
-        {% endifequal %}
-
+    </div>
+    
+    {% ifequal request.user.profile.profile_type  'admin' %}
+    
+    <div class="admin-section well">
+        <h2>Case Control for Facilitator</h2>
+        <ul>
+            {% for root in roots %}
+            {% ifnotequal root.0 '/' %}
+            <li><a href="{{ root.0 }}facilitator/">{{root.1}}</a></li>
+            {% endifnotequal %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endifequal %}
+    
 {% else %}
 
 <div class="jumbotron text-center">

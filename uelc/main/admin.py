@@ -7,6 +7,10 @@ from uelc.main.models import (
 from pagetree.models import Hierarchy
 from pageblocks.models import TextBlock, ImageBlock
 from gate_block.models import GateBlock
+from django.contrib.flatpages.admin import FlatPageAdmin
+from django.contrib.flatpages.models import FlatPage
+from django.db import models
+from ckeditor.widgets import CKEditorWidget
 
 
 # Define an inline admin descriptor for UserProfile model
@@ -26,6 +30,12 @@ def section_hierarchy(obj):
     return obj.section.hierarchy.name
 section_hierarchy.short_description = 'Hierarchy'
 
+
+class FlatPageCustom(FlatPageAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': CKEditorWidget}
+    }
+
 # Re-register UserAdmin
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
@@ -39,3 +49,5 @@ admin.site.register(Cohort)
 admin.site.register(LibraryItem)
 admin.site.register(ImageUploadItem)
 admin.site.register(GateBlock)
+admin.site.unregister(FlatPage)
+admin.site.register(FlatPage, FlatPageCustom)
