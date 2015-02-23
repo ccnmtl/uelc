@@ -141,7 +141,7 @@
 
     <ul class="pager">
     {% if previous %}
-    {% get_previous_group_user_section request section as prev_sec %}
+    {% get_previous_group_user_section request section previous part as prev_sec %}
       {% if prev_sec %}
       <li class="previous">
             <a href="{{prev_sec.get_absolute_url}}">&larr; Previous</a>
@@ -150,9 +150,11 @@
     {% endif %}
 
     {% if next_section %}
+    {% is_not_last_group_user_section request section part as not_last_sec %}
     {% is_section_unlocked request section as unlocked %}
-    <li class="next"><a class="{% if unlocked %}{% else %}disabled{%endif%}" href="{% if unlocked %}{{next_section.get_absolute_url}}{%endif%}">Next &rarr;</a></li>
-
+      {% if not_last_sec %}
+      <li class="next"><a class="{% if unlocked %}{% else %}disabled{%endif%}" href="{% if unlocked %}{{next_section.get_absolute_url}}{%endif%}">Next &rarr;</a></li>
+      {% endif %}
     {% endif %}
     </ul>
 
