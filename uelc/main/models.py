@@ -569,7 +569,7 @@ class CaseQuiz(Quiz):
 
 class CaseAnswer(models.Model):
     answer = models.ForeignKey(Answer)
-    title = models.CharField(max_length=255, blank=True)
+    title = models.TextField(blank=True)
     description = models.TextField(blank=True)
 
     def display_answer(self):
