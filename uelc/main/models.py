@@ -7,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from pagetree.models import Hierarchy, Section, ReportableInterface
 from ckeditor.widgets import CKEditorWidget
 from pageblocks.models import TextBlock
-from quizblock.models import Quiz, Question, Submission, Response
+from quizblock.models import Quiz, Question, Submission, Response, Answer
 from gate_block.models import GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -565,5 +565,41 @@ class CaseQuiz(Quiz):
                 upv.save()
                 unlocked = True
         return unlocked
+
+
+class CaseAnswer(models.Model):
+    answer = models.ForeignKey(Answer)
+    title = models.TextField(blank=True)
+    description = models.TextField(blank=True)
+
+    def display_answer(self):
+        return self.answer
+
+    def display_title(self):
+        return self.title
+
+    def display_description(self):
+        return self.description
+
+    def edit_form(self, request=None):
+        return CaseAnswerForm(request, instance=self)
+
+    def as_dict(self):
+        return dict(title=self.title,
+                    description=self.description)
+
+
+class CaseAnswerForm(forms.ModelForm):
+    class Meta:
+        model = CaseAnswer
+        exclude = ("question",)
+
+        def clean(self):
+            if 'value' not in self.cleaned_data:
+                raise forms.ValidationError(
+                    'Please enter a meaningful value for this answer.')
+            else:
+                return self.cleaned_data
+
 
 ReportableInterface.register(CaseQuiz)
