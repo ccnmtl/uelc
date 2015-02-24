@@ -3,23 +3,34 @@
 {% block content %}
 
 <ul class="breadcrumb">
-    <li><a href="{{answer.question.casequiz.pageblock.section.get_edit_url}}">{{answer.question.casequiz.pageblock.section.label}}</a></li>
-    <li><a href="{% url 'edit-quiz' answer.question.quiz.id %}">Edit Quiz</a></li>
     <li>
-        <a href="{% url 'edit-question' answer.question.id %}">Edit Question
-            {{answer.question.display_number}}: {{ answer.question.text }}
+      <a href="{{case_answer.answer.question.casequiz.pageblock.section.get_edit_url}}">
+        {{case_answer.answer.question.casequiz.pageblock.section.label}}
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'edit-quiz' case_answer.answer.question.quiz.id %}">
+        Edit Quiz
+      </a>
+    </li>
+    <li>
+        <a href="{% url 'edit-question' case_answer.answer.question.id %}">Edit Question
+            {{case_answer.answer.question.display_number}}: {{ case_answer.answer.question.text }}
         </a>
     </li>
 </ul>
 
 
-<h2>Answer {{answer.display_number}}: {{ answer.value }}</h2>
+<h2>Case Answer</h2>
+<p> <b>Title:</b> {{case_answer.title}} </p>
+<b>Description:</b> <br /> 
+<p> {{ case_answer.description }} </p>
 
 <form action="." method="post" class="well form-horizontal" >{% csrf_token %}
-<table width="100%">
-{{ answer_form|bootstrap}}
-</table>
-<input type="submit" value="save" class="btn btn-primary" />
+  <table width="100%">
+    {{ case_answer_form|bootstrap}}
+  </table>
+  <input type="submit" value="save" class="btn btn-primary" />
 </form>
 
 {% endblock %}

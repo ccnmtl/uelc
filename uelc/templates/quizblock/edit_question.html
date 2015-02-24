@@ -85,6 +85,7 @@
              {% for caseanswer in answer.caseanswer_set.all %}
                  Title: {{ caseanswer.title }}
                  Description: {{ caseanswer.description }}
+                 <a href="{% url 'edit-case-answer' caseanswer.id %}"> Edit Case Answer </a>
              {% endfor %}
          {% endif %}
       </li>
@@ -94,22 +95,18 @@
 
 {% if question.answerable %}
 <h3>Add CaseAnswer</h3>
-    <form action="{% url 'add-case-answer-to-question' question.id %}" method="post" class="well form-horizontal">{% csrf_token %}
+    <form action="{% url 'add-case-answer-to-question' question.id %}" method="post" class="well form-horizontal">
+    {% csrf_token %}
       <table width="100%">
-      <tr>Case Answer Title: <br /> <input type="text" name="case-answer-title" /></tr><br />
-      <tr>Case Answer Description: <br /><textarea name="case-answer-description" rows="10" cols="98">
-      </textarea></tr>
+        {% if case_answer_form %}
+          {{ case_answer_form|bootstrap}}
+        {% else %}
+          <tr>Case Answer Title: <br /> <input type="text" name="case-answer-title" value="" /></tr><br />
+          <tr>Case Answer Description: <br /><textarea name="case-answer-description" rows="10" cols="98"></textarea></tr>
+        {% endif %}
       </table>
       <input type="submit" value="add case answer" class="btn btn-primary" />
     </form>
-
-<h3>Add Answer</h3>
-<form action="{% url 'add-answer-to-question' question.id %}" method="post" class="well form-horizontal">{% csrf_token %}
-<table width="100%">
-{{ answer_form|bootstrap}}
-</table>
-<input type="submit" value="add answer" class="btn btn-primary" />
-</form>
 {% endif %}
 
 {% endblock %}

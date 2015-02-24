@@ -599,7 +599,7 @@ class CaseAnswer(models.Model):
 class CaseAnswerForm(forms.ModelForm):
     class Meta:
         model = CaseAnswer
-        exclude = ("question",)
+        exclude = ("question", "answer")
 
         def clean(self):
             if 'value' not in self.cleaned_data:

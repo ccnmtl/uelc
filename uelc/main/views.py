@@ -20,7 +20,7 @@ from pagetree.helpers import get_section_from_path
 from django.db.models import Q
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
-from quizblock.models import Question
+from quizblock.models import Question, Answer
 
 
 class LoggedInMixinSuperuser(object):
@@ -723,7 +723,7 @@ def instructor_page(request, hierarchy_name, path):
 
 class AddCaseAnswerToQuestionView(View):
     template_name = 'quizblock/edit_question.html'
-   
+
     def get(self, request, pk):
         question = get_object_or_404(Question, pk=pk)
         form = CaseAnswer.add_form()
@@ -733,18 +733,43 @@ class AddCaseAnswerToQuestionView(View):
             dict(question=question, case_answer_form=form))
 
     def post(self, request, pk):
+        print request.POST
         question = get_object_or_404(Question, pk=pk)
-        form = question.add_answer_form(request.POST)
-        if form.is_valid():
-            answer = form.save(commit=False)
-            answer.question = question
-        if answer.label == '':
-            answer.label = answer.value
-            answer.save()
+        ans = Answer.objects.create(question=question)
+        case_ans = CaseAnswer.objects.create(
+            answer=ans, title=request.POST.get('case-answer-title'),
+            description=request.POST.get('case-answer-description'))
+        form = CaseAnswerForm(request.POST)
+        print form
+        if case_ans.title == '' or case_ans.description == '':
             return HttpResponseRedirect(reverse("edit-question",
-                                                       args=[question.id]))
+                                                args=[question.id]))
         return render(
-                   request,
-                   self.template_name,
-                   dict(question=question, answer_form=form))
+            request,
+            self.template_name,
+            dict(question=question, case_answer_form=form))
 
+
+class EditCaseAnswerView(View):
+    template_name = 'quizblock/edit_answer.html'
+
+    def get(self, request, pk):
+        case_answer = get_object_or_404(CaseAnswer, pk=pk)
+        form = case_answer.edit_form()
+        return render(
+            request,
+            self.template_name,
+            dict(case_answer_form=form, case_answer=case_answer))
+
+    def post(self, request, pk):
+        case_answer = get_object_or_404(CaseAnswer, pk=pk)
+        form = case_answer.edit_form(request.POST)
+        if form.is_valid():
+            case_answer = form.save(commit=False)
+            case_answer.save()
+            return HttpResponseRedirect(reverse("edit-case-answer",
+                                                args=[case_answer.id]))
+        return render(
+            request,
+            self.template_name,
+            dict(case_answer_form=form, case_answer=case_answer))
