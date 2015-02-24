@@ -180,7 +180,7 @@ class Case(models.Model):
     cohort = models.ManyToManyField(
         Cohort,
         related_name="case_cohort",
-        default=1, blank=True)
+        blank=True)
 
     def __unicode__(self):
         return self.name
