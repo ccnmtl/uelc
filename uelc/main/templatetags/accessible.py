@@ -38,6 +38,28 @@ def submitted(parser, token):
 
 
 @register.assignment_tag
+def get_previous_group_user_section(request, section, previous, part):
+    # make sure that group users cannot go to the
+    # root page of the Part. Also make sure that the
+    # 1st page in Part 1 does not have a prev link.
+    prev_sec = previous
+    if prev_sec.depth < 3:
+        if part == 1:
+            return False
+        p1 = section.get_root().get_children()[0]
+        prev_sec = p1.get_last_leaf()
+    return prev_sec
+
+
+@register.assignment_tag
+def is_not_last_group_user_section(request, section, part):
+    # make sure next button does not render at end of part 2
+    if part > 1 and section == section.get_last_leaf():
+        return False
+    return True
+
+
+@register.assignment_tag
 def is_section_unlocked(request, section):
     unlocked = True
     for block in section.pageblock_set.all():
