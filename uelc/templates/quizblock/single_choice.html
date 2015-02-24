@@ -14,14 +14,25 @@
     
     <div class="radio well">
         <label>
+        {% comment %}
+          This first if is irrelevant to case quizzes, since users cannot go back and navigate over their past decisions 
+        {% endcomment %}
+        
         {% if response %}
-        {% ifequal response.value answer.value %}
-        <span class="text-primary {% if response.is_correct %}correct{% else %}incorrect{% endif %}">{{answer.label}}</span>
+          {% ifequal response.value answer.value %}
+            <span class="text-primary {% if response.is_correct %}correct{% else %}incorrect{% endif %}">{{answer.label}}</span>
+          {% else %}
+            {{answer.label}}
+          {% endifequal %}
         {% else %}
-        {{answer.label}}
-        {% endifequal %}
-        {% else %}
-         <input name="pageblock-{{block.pageblock.id}}-question{{question.id}}" value="{{answer.value}}" type="radio" /> {{answer.label}}
+          <input name="pageblock-{{block.pageblock.id}}-question{{question.id}}" value="{{answer.value}}" type="radio" />
+            {{answer.label}}
+            {% if answer.caseanswer_set.count %}
+              {% for caseanswer in answer.caseanswer_set.all %}
+                <b> {{ caseanswer.title }} </b>
+                <p> {{ caseanswer.description }} </p>
+              {% endfor %}
+           {% endif %}
         {% endif %}
         </label>
    </div>
