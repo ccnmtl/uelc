@@ -216,6 +216,23 @@ class Case(models.Model):
                 queryset=Cohort.objects.all().order_by('name'),)
         return AddForm()
 
+    def edit_form(self):
+        class EditForm(forms.Form):
+            name = forms.CharField(
+                widget=forms.widgets.Input(
+                    attrs={'class': 'add-case-name'}),
+                initial = self.name
+            )
+            hierarchy = forms.ModelChoiceField(
+                widget=forms.Select(
+                    attrs={'class': 'hierarchy-select'}),
+                queryset=Hierarchy.objects.all().order_by('name'),)
+            cohort = forms.ModelChoiceField(
+                widget=forms.Select(
+                    attrs={'class': 'cohort-select'}),
+                queryset=Cohort.objects.all().order_by('name'),)
+        return EditForm()
+
 
 class CaseMap(models.Model):
     case = models.ForeignKey(Case)

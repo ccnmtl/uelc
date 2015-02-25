@@ -108,8 +108,8 @@ button.close{
                               <div id="edit-case" class="panel panel-default">
                                 <div class="panel-heading">Edit Case</div>
                                 <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-case-form" action="/uelcadmin/edituser/" method="post">{% csrf_token %}
-                                    
+                                  <form data-toggle="validator" id="edit-case-form" action="/uelcadmin/editcase/" method="post">{% csrf_token %}
+                                    {{ case.edit_form|bootstrap }}
                                     <input type="hidden" name="case_id" value="{{case.id}}">
                                     <input type="submit" class="btn btn-primary form-submit" value="Submit">
                                     <input type="reset" class="reset-button hidden" value="Reset" />
