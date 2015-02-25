@@ -55,7 +55,7 @@ class Cohort(models.Model):
         class AddForm(forms.Form):
             name = forms.CharField(widget=forms.widgets.Input(
                 attrs={'class': 'add-cohort-name'}))
-            user = forms.ModelChoiceField(
+            users = forms.ModelChoiceField(
                 widget=forms.SelectMultiple(
                     attrs={'class': 'user-select'}),
                 queryset=User.objects.all().order_by('username'),
@@ -185,6 +185,21 @@ class Case(models.Model):
 
     def display_name(self):
         return '%s' % (self.name)
+
+    def _get_cohorts(self):
+        cohorts = Cohort.objects.filter(case_cohort=self.id)
+        if not cohorts:
+            return None
+        return cohorts
+
+    def cohortnames(self):
+        cohortnames = [cohort.name.encode(
+            encoding='UTF-8',
+            errors='strict') for cohort in self.cohorts]
+        nms = ', '.join(cohortnames)
+        return nms
+
+    cohorts = property(_get_cohorts)
 
     @classmethod
     def add_form(self):

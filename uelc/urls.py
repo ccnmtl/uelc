@@ -8,8 +8,8 @@ from uelc.main import views
 from uelc.main.models import UserProfile
 from uelc.main.views import (
     UELCPageView, UELCEditView, FacilitatorView, UELCAdminView,
-    UELCAdminCohortView, UELCAdminHierarchyView,
-    UELCAdminEditUserView, UELCAdminCreateUserView,
+    UELCAdminCohortView, UELCAdminHierarchyView, UELCAdminUserView,
+    UELCAdminCaseView, UELCAdminEditUserView, UELCAdminCreateUserView,
     UELCAdminCreateCohortView, UELCAdminEditCohortView,
     UELCAdminCreateCaseView, UELCAdminDeleteUserView)
 import os.path
@@ -72,8 +72,10 @@ urlpatterns = patterns(
     (r'^$', views.IndexView.as_view()),
     (r'^ckeditor/', include('ckeditor.urls')),
     (r'^admin/', include(admin.site.urls)),
+    (r'^uelcadmin/case/', UELCAdminCaseView.as_view()),
     (r'^uelcadmin/hierarchy/', UELCAdminHierarchyView.as_view()),
     (r'^uelcadmin/cohort/', UELCAdminCohortView.as_view()),
+    (r'^uelcadmin/user/', UELCAdminUserView.as_view()),
     (r'^uelcadmin/createcohort/', UELCAdminCreateCohortView.as_view()),
     (r'^uelcadmin/createcase/', UELCAdminCreateCaseView.as_view()),
     (r'^uelcadmin/editcohort/', UELCAdminEditCohortView.as_view()),

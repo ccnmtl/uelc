@@ -510,7 +510,8 @@ class UELCAdminCreateUserView(
             action_args = dict(
                 error="That username already exists! Please enter a new one.")
             print action_args
-        return HttpResponseRedirect('/uelcadmin/')
+        url = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
 
 
 class UELCAdminDeleteUserView(LoggedInMixinSuperuser,
@@ -553,7 +554,7 @@ class UELCAdminEditUserView(LoggedInMixinSuperuser,
             cohort=cohort.id,
             error=None)
         print action_args
-        
+
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
 
@@ -582,6 +583,37 @@ class UELCAdminHierarchyView(LoggedInMixinSuperuser,
             name=hier.name, value=hier.pk, url=hier.base_url, error=None)
         print action_args
         return HttpResponseRedirect('/uelcadmin/')
+
+
+class UELCAdminCaseView(LoggedInMixinSuperuser,
+                    TemplateView):
+    template_name = "pagetree/uelc_admin_case.html"
+    extra_context = dict()
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(UELCAdminCaseView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        path = self.request.path
+        casemodel = Case
+        cohortmodel = Cohort
+        create_user_form = CreateUserForm
+        create_hierarchy_form = CreateHierarchyForm
+        users = User.objects.all().order_by('username')
+        hierarchies = Hierarchy.objects.all()
+        cases = Case.objects.all()
+        cohorts = Cohort.objects.all().order_by('name')
+        context = dict(users=users,
+                       path=path,
+                       cases=cases,
+                       cohorts=cohorts,
+                       casemodel=casemodel,
+                       cohortmodel=cohortmodel,
+                       create_user_form=create_user_form,
+                       create_hierarchy_form=create_hierarchy_form,
+                       hierarchies=hierarchies,
+                       )
+        return context
 
 
 class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
@@ -717,6 +749,37 @@ class UELCAdminCohortView(LoggedInMixinSuperuser,
 
     def dispatch(self, request, *args, **kwargs):
         return super(UELCAdminCohortView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        path = self.request.path
+        casemodel = Case
+        cohortmodel = Cohort
+        create_user_form = CreateUserForm
+        create_hierarchy_form = CreateHierarchyForm
+        users = User.objects.all().order_by('username')
+        hierarchies = Hierarchy.objects.all()
+        cases = Case.objects.all()
+        cohorts = Cohort.objects.all().order_by('name')
+        context = dict(users=users,
+                       path=path,
+                       cases=cases,
+                       cohorts=cohorts,
+                       casemodel=casemodel,
+                       cohortmodel=cohortmodel,
+                       create_user_form=create_user_form,
+                       create_hierarchy_form=create_hierarchy_form,
+                       hierarchies=hierarchies,
+                       )
+        return context
+
+
+class UELCAdminUserView(LoggedInMixinSuperuser,
+                    TemplateView):
+    template_name = "pagetree/uelc_admin_user.html"
+    extra_context = dict()
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(UELCAdminUserView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         path = self.request.path

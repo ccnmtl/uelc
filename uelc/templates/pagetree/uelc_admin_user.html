@@ -11,7 +11,7 @@ button.close{
 }
 </style>
 <p>Welcome,</p>
-<p>This page is for creating Users, Cases, and Cohorts</p>
+<p>This page is for creating and editing Users</p>
 {% if messages %}
   {% for message in messages %}
   {% if message.level_tag == 'error' %}
@@ -34,57 +34,49 @@ button.close{
   {% endif %}
   {% endfor %}
 {% endif %}
-
-    <div class="panel panel-default">
+  <div class="panel panel-default">
       <div class="panel-heading">
-      <p>Cohorts</p>
-      <button class="glyphicon glyphicon-plus" data-toggle="modal"  data-target="#add-cohort-form-modal" href="#add-cohort-form-modal"></button>
-      <div id="add-cohort-form-modal" class="modal fade">
-          <div class="modal-dialog">
+        <p>Users</p>
+        <button class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#add-user-form-modal" href="#add-user-form-modal" aria-hidden="true"></button>
+          <div id="add-user-form-modal" class="modal fade">
+            <div class="modal-dialog">
               <div class="modal-content">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <div class="modal-header panel-heading">Add Cohort</div>
-                  <div class="modal-body">
-                    <div id="cohorts" class="panel panel-default">
-                      <div class="panel-heading">Cohorts</div>
-                      <div class="panel-body">
-                      <form role="form" data-toggle="validator" id="add-cohort-form" action="/uelcadmin/createcohort/" method="post">{% csrf_token %}
-                        {{cohortmodel.add_form|bootstrap}}
-                          <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                          <input type="reset" class="reset-button hidden" value="Reset" />
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-header panel-heading">Add User</div>
+                <div class="modal-body">
+                  <div id="users" class="panel panel-default">
+                    <div class="panel-heading">Users</div>
+                    <div class="panel-body">
+                      <form role="form" data-toggle="validator" id="add-user-form" action="/uelcadmin/createuser/" method="post">{% csrf_token %}
+                        {{create_user_form|bootstrap}}
+                        <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                        <input type="reset" class="reset-button hidden" value="Reset" />
                       </form>
-                      </div>
-                    </div><!--end #cohorts-->
-                    </div> <!--end modal-dialog-->
+                    </div>
+                  </div><!--end #users-->
+                </div> <!--end modal-dialog-->
               </div><!-- end modal-content-->
           </div><!--end .model-body-->
-      </div><!--end #add-cohort-form-modal .modal-->
-
-      </div>
+        </div><!--end #add-user-form-modal .modal-->
+      </div><!--end panel-heading-->
       <div class="panel-body">
-          <table id="user-list" class="table">
-            <thead>
+        <table id="user-list" class="table">
+           <thead>
               <tr>
-                <th>Name</th>
-                <th>Case</th>
-                <th>Users</th>
-                <th>Edit Cohort</th>
+                <th>Username</th>
+                <th>Profile Type</th>
+                <th>Cohort/s</th>
+                <th>Edit User</th>
               </tr>
             </thead>
             <tbody>
-              {% for cohort in cohorts %}
-              <tr id="cohort-{{cohort.id}}">
-                <td class="td-cohort-name">{{ cohort.name }}</td>
-                <td class="td-cohort-case">
-                {% if cohort.case %}
-                  {{ cohort.casename }}
-                {% endif %}
-                  
-                </td>
-                <td class="td-cohort-users">
-                  {% if cohort.users %}
-                    {% for user in cohort.users %}
-                      <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">{{user}}</button>
+              {% for user in users %}
+              <tr id="user-{{user.id}}">
+                <td class="td-username">{{ user.username }}</td>
+                <td class="td-profile">{{ user.profile.profile_type }}</td>
+                <td class="td-cohorts">{{ user.profile.cohort}}</td>
+                <td>
+                  <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">Edit</button>
                   <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -106,42 +98,32 @@ button.close{
                         </div><!-- end modal-content-->
                     </div><!--end .model-body-->
                   </div><!--end #edit-user-form-modal .modal-->
-                    {% endfor %}
-                  {% endif %}
-                  </td>
-                <td class="td-cohort-edit">
-                  
-                  <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-cohort-form-modal-{{cohort.id}}" href="#edit-cohort-form-modal-{{cohort.id}}">Edit Cohort</button>
-                  <div id="edit-cohort-form-modal-{{cohort.id}}" class="modal fade">
+
+                  <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-user-form-modal-{{user.id}}" href="#delete-user-form-modal-{{user.id}}">Delete</button>
+                  <div id="delete-user-form-modal-{{user.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <div class="modal-header panel-heading">Edit Cohort</div>
+                            <div class="modal-header panel-heading">Delete User</div>
                             <div class="modal-body">
-                              <div id="edit-cohort" class="panel panel-default">
-                                <div class="panel-heading">Edit Cohort</div>
+                              <div id="edit-user" class="panel panel-default">
+                                <div class="panel-heading">ARE YOU SURE?</div>
                                 <div class="panel-body">
-                                {% if cohort.edit_form %}
-                                  <form data-toggle="validator" id="edit-cohort-form-{{cohort.id}}" action="/uelcadmin/editcohort/" method="post">{% csrf_token %}
-                                    {{cohort.edit_form|bootstrap}}
-                                    <input type="hidden" name="cohort_id" value="{{cohort.id}}">
-                                    <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                                    <input type="reset" class="reset-button hidden" value="Reset" />
+                                  <form data-toggle="validator" id="edit-user-form" action="/uelcadmin/deleteuser/" method="post">{% csrf_token %}
+                                    <input type="hidden" name="user_id" value="{{user.id}}">
+                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
                                   </form>
-                                {% endif %}
                                 </div>
                               </div><!--end #hierarchiess-->
                               </div> <!--end modal-dialog-->
                         </div><!-- end modal-content-->
                     </div><!--end .model-body-->
-                  </div><!--end #edit-user-form-modal .modal-->
-
+                  </div><!--end #add-hierarchy-form-modal .modal-->
                 </td>
               </tr>
               {% endfor %}
-            </tbody>
-          </table>
-        </div><!--end panel-body-->
-      </div><!-- end panel -->
-
+          </tbody>
+        </table>
+      </div><!--end panel-body-->
+  </div><!--end panel-->
 {% endblock %}
