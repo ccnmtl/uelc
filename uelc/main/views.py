@@ -553,7 +553,9 @@ class UELCAdminEditUserView(LoggedInMixinSuperuser,
             cohort=cohort.id,
             error=None)
         print action_args
-        return HttpResponseRedirect('/uelcadmin/')
+        
+        url = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
 
 
 class UELCAdminHierarchyView(LoggedInMixinSuperuser,
@@ -684,6 +686,37 @@ class UELCAdminView(LoggedInMixinSuperuser,
 
     def dispatch(self, request, *args, **kwargs):
         return super(UELCAdminView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        path = self.request.path
+        casemodel = Case
+        cohortmodel = Cohort
+        create_user_form = CreateUserForm
+        create_hierarchy_form = CreateHierarchyForm
+        users = User.objects.all().order_by('username')
+        hierarchies = Hierarchy.objects.all()
+        cases = Case.objects.all()
+        cohorts = Cohort.objects.all().order_by('name')
+        context = dict(users=users,
+                       path=path,
+                       cases=cases,
+                       cohorts=cohorts,
+                       casemodel=casemodel,
+                       cohortmodel=cohortmodel,
+                       create_user_form=create_user_form,
+                       create_hierarchy_form=create_hierarchy_form,
+                       hierarchies=hierarchies,
+                       )
+        return context
+
+
+class UELCAdminCohortView(LoggedInMixinSuperuser,
+                    TemplateView):
+    template_name = "pagetree/uelc_admin_cohort.html"
+    extra_context = dict()
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(UELCAdminCohortView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         path = self.request.path

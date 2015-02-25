@@ -34,26 +34,33 @@ button.close{
   {% endif %}
   {% endfor %}
 {% endif %}
-  <div class="panel panel-default">
-      <div class="panel-heading">Users</div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">Cohorts</div>
       <div class="panel-body">
-        <table id="user-list" class="table">
-           <thead>
+          <table id="user-list" class="table">
+            <thead>
               <tr>
-                <th>Username</th>
-                <th>Profile Type</th>
-                <th>Cohort/s</th>
-                <th>Edit User</th>
+                <th>Name</th>
+                <th>Case</th>
+                <th>Users</th>
+                <th>Edit Cohort</th>
               </tr>
             </thead>
             <tbody>
-              {% for user in users %}
-              <tr id="user-{{user.id}}">
-                <td class="td-username">{{ user.username }}</td>
-                <td class="td-profile">{{ user.profile.profile_type }}</td>
-                <td class="td-cohorts">{{ user.profile.cohort}}</td>
-                <td>
-                  <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">Edit</button>
+              {% for cohort in cohorts %}
+              <tr id="cohort-{{cohort.id}}">
+                <td class="td-cohort-name">{{ cohort.name }}</td>
+                <td class="td-cohort-case">
+                {% if cohort.case %}
+                  {{ cohort.casename }}
+                {% endif %}
+                  
+                </td>
+                <td class="td-cohort-users">
+                  {% if cohort.users %}
+                    {% for user in cohort.users %}
+                      <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">{{user}}</button>
                   <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -75,58 +82,8 @@ button.close{
                         </div><!-- end modal-content-->
                     </div><!--end .model-body-->
                   </div><!--end #edit-user-form-modal .modal-->
-
-                  <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-user-form-modal-{{user.id}}" href="#delete-user-form-modal-{{user.id}}">Delete</button>
-                  <div id="delete-user-form-modal-{{user.id}}" class="modal fade">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <div class="modal-header panel-heading">Delete User</div>
-                            <div class="modal-body">
-                              <div id="edit-user" class="panel panel-default">
-                                <div class="panel-heading">ARE YOU SURE?</div>
-                                <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-user-form" action="/uelcadmin/deleteuser/" method="post">{% csrf_token %}
-                                    <input type="hidden" name="user_id" value="{{user.id}}">
-                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
-                                  </form>
-                                </div>
-                              </div><!--end #hierarchiess-->
-                              </div> <!--end modal-dialog-->
-                        </div><!-- end modal-content-->
-                    </div><!--end .model-body-->
-                  </div><!--end #add-hierarchy-form-modal .modal-->
-                </td>
-              </tr>
-              {% endfor %}
-          </tbody>
-        </table>
-      </div><!--end panel-body-->
-  </div><!--end panel-->
-
-    <div class="panel panel-default">
-      <div class="panel-heading">Cohorts</div>
-      <div class="panel-body">
-          <table id="user-list" class="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Case</th>
-                <th>Users</th>
-                <th>Edit Cohort</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for cohort in cohorts %}
-              <tr id="cohort-{{cohort.id}}">
-                <td class="td-cohort-name">{{ cohort.name }}</td>
-                <td class="td-cohort-case">
-                  {% for case in cohort.case %}
-                    {{ case }}{% if forloop.last %}{% else%},{% endif %}
-                  {% endfor %}
-                </td>
-                <td class="td-cohort-users">
-                  {{cohort.usernames}}
+                    {% endfor %}
+                  {% endif %}
                   </td>
                 <td class="td-cohort-edit">
                   
