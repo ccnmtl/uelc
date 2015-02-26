@@ -584,29 +584,23 @@ class CaseAnswer(models.Model):
     @classmethod
     def add_form(cls):
         class AddForm(forms.Form):
+            value = forms.IntegerField()
             title = forms.CharField(widget=forms.widgets.Textarea())
             description = forms.CharField(widget=forms.widgets.Textarea())
         return AddForm()
 
     def edit_form(self, request=None):
-        return CaseAnswerForm(request, instance=self)
+        return CaseAnswerForm(request)
 
     def as_dict(self):
         return dict(title=self.title,
                     description=self.description)
 
 
-class CaseAnswerForm(forms.ModelForm):
-    class Meta:
-        model = CaseAnswer
-        exclude = ("question", "answer")
-
-        def clean(self):
-            if 'value' not in self.cleaned_data:
-                raise forms.ValidationError(
-                    'Please enter a meaningful value for this answer.')
-            else:
-                return self.cleaned_data
+class CaseAnswerForm(forms.Form):
+    value = forms.IntegerField()
+    title = forms.CharField(max_length=100)
+    description = forms.CharField(widget=forms.Textarea)
 
 
 ReportableInterface.register(CaseQuiz)

@@ -727,7 +727,7 @@ class AddCaseAnswerToQuestionView(View):
 
     def get(self, request, pk):
         question = get_object_or_404(Question, pk=pk)
-        form = CaseAnswer.add_form()
+        form = CaseAnswerForm()
         return render(
             request,
             self.template_name,
@@ -735,20 +735,25 @@ class AddCaseAnswerToQuestionView(View):
 
     def post(self, request, pk):
         print request.POST
+        '''This solution assumes that the user cannot submit
+        multiple responses - it does not check to see if an answer is
+        alreay associated with the question...'''
         question = get_object_or_404(Question, pk=pk)
-        ans = Answer.objects.create(question=question)
+        # form = CaseAnswerForm(request.POST)
+        inty = int(request.POST.get('value'))
+        ans = Answer.objects.create(
+            question=question,
+            value=inty)
         case_ans = CaseAnswer.objects.create(
-            answer=ans, title=request.POST.get('case-answer-title'),
-            description=request.POST.get('case-answer-description'))
-        form = CaseAnswerForm(request.POST)
-        print form
+            answer=ans, title=request.POST.get('title'),
+            description=request.POST.get('description'))
         if case_ans.title == '' or case_ans.description == '':
             return HttpResponseRedirect(reverse("edit-question",
-                                                args=[question.id]))
+                                        args=[question.id]))
         return render(
             request,
             self.template_name,
-            dict(question=question, case_answer_form=form))
+            dict(question=question, case_answer_form=CaseAnswerForm()))
 
 
 class EditCaseAnswerView(View):
@@ -756,7 +761,9 @@ class EditCaseAnswerView(View):
 
     def get(self, request, pk):
         case_answer = get_object_or_404(CaseAnswer, pk=pk)
-        form = case_answer.edit_form()
+        form = CaseAnswerForm(initial={'value': case_answer.answer.value,
+                                       'title': case_answer.title,
+                                       'description': case_answer.description})
         return render(
             request,
             self.template_name,
@@ -764,10 +771,14 @@ class EditCaseAnswerView(View):
 
     def post(self, request, pk):
         case_answer = get_object_or_404(CaseAnswer, pk=pk)
-        form = case_answer.edit_form(request.POST)
+        form = CaseAnswerForm(request.POST)
         if form.is_valid():
-            case_answer = form.save(commit=False)
+            case_answer.title = request.POST.get('title')
+            case_answer.description = request.POST.get('description')
             case_answer.save()
+            ans = Answer.objects.get(caseanswer=case_answer.pk)
+            ans.value = int(request.POST.get('value'))
+            ans.save()
             return HttpResponseRedirect(reverse("edit-case-answer",
                                                 args=[case_answer.id]))
         return render(
