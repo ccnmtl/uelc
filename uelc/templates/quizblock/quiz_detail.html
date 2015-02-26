@@ -70,7 +70,7 @@
     <li class="draggable" id="question-{{casequestion.id}}">
     <span title="drag to reorder pageblocks" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>[<a href="{% url 'delete-question' question.id %}">delete</a>] 
     Question {{ question.display_number }}: 
-    <a href="{% url 'edit-question' question.id %}">{{question.text|truncatewords:5}}</a></li>
+    <a href="{% url 'add-case-answer-to-question' question.id %}">{{question.text|truncatewords:5}}</a></li>
 {% endfor %}
 </ul>
 
