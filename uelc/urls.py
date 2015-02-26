@@ -8,10 +8,10 @@ from uelc.main import views
 from uelc.main.models import UserProfile
 from uelc.main.views import (
     UELCPageView, UELCEditView, FacilitatorView, UELCAdminView,
-    UELCAdminCohortView, UELCAdminHierarchyView, UELCAdminUserView,
+    UELCAdminCohortView, UELCAdminCreateHierarchyView, UELCAdminUserView,
     UELCAdminCaseView, UELCAdminEditUserView, UELCAdminCreateUserView,
-    UELCAdminCreateCohortView, UELCAdminEditCohortView,
-    UELCAdminCreateCaseView, UELCAdminDeleteUserView)
+    UELCAdminEditCaseView, UELCAdminCreateCohortView, UELCAdminEditCohortView,
+    UELCAdminDeleteCaseView, UELCAdminCreateCaseView, UELCAdminDeleteUserView)
 import os.path
 admin.autodiscover()
 
@@ -73,11 +73,13 @@ urlpatterns = patterns(
     (r'^ckeditor/', include('ckeditor.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^uelcadmin/case/', UELCAdminCaseView.as_view()),
-    (r'^uelcadmin/hierarchy/', UELCAdminHierarchyView.as_view()),
+    (r'^uelcadmin/createhierarchy/', UELCAdminCreateHierarchyView.as_view()),
     (r'^uelcadmin/cohort/', UELCAdminCohortView.as_view()),
     (r'^uelcadmin/user/', UELCAdminUserView.as_view()),
     (r'^uelcadmin/createcohort/', UELCAdminCreateCohortView.as_view()),
     (r'^uelcadmin/createcase/', UELCAdminCreateCaseView.as_view()),
+    (r'^uelcadmin/editcase/', UELCAdminEditCaseView.as_view()),
+    (r'^uelcadmin/deletecase/', UELCAdminDeleteCaseView.as_view()),
     (r'^uelcadmin/editcohort/', UELCAdminEditCohortView.as_view()),
     (r'^uelcadmin/createuser/', UELCAdminCreateUserView.as_view()),
     (r'^uelcadmin/edituser/', UELCAdminEditUserView.as_view()),

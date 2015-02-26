@@ -55,11 +55,6 @@ class Cohort(models.Model):
         class AddForm(forms.Form):
             name = forms.CharField(widget=forms.widgets.Input(
                 attrs={'class': 'add-cohort-name'}))
-            users = forms.ModelChoiceField(
-                widget=forms.SelectMultiple(
-                    attrs={'class': 'user-select'}),
-                queryset=User.objects.all().order_by('username'),
-                empty_label=None)
         return AddForm()
 
     def edit_form(self):
@@ -88,8 +83,7 @@ class UserProfile(models.Model):
     profile_type = models.CharField(max_length=12, choices=PROFILE_CHOICES)
     cohort = models.ForeignKey(
         Cohort,
-        related_name="user_profile_cohort",
-        default=1)
+        related_name="user_profile_cohort")
 
     def edit_form(self):
         class EditForm(forms.Form):
@@ -177,8 +171,7 @@ class Case(models.Model):
     hierarchy = models.ForeignKey(Hierarchy)
     cohort = models.ManyToManyField(
         Cohort,
-        related_name="case_cohort",
-        default=1, blank=True)
+        related_name="case_cohort", blank=True)
 
     def __unicode__(self):
         return self.name
@@ -193,11 +186,12 @@ class Case(models.Model):
         return cohorts
 
     def cohortnames(self):
-        cohortnames = [cohort.name.encode(
-            encoding='UTF-8',
-            errors='strict') for cohort in self.cohorts]
-        nms = ', '.join(cohortnames)
-        return nms
+        if self.cohort.all():
+            cohortnames = [cohort.name.encode(
+                encoding='UTF-8',
+                errors='strict') for cohort in self.cohorts]
+            nms = ', '.join(cohortnames)
+            return nms
 
     cohorts = property(_get_cohorts)
 
@@ -223,14 +217,19 @@ class Case(models.Model):
                     attrs={'class': 'add-case-name'}),
                 initial = self.name
             )
+
             hierarchy = forms.ModelChoiceField(
+                initial=self.hierarchy,
                 widget=forms.Select(
                     attrs={'class': 'hierarchy-select'}),
                 queryset=Hierarchy.objects.all().order_by('name'),)
+
             cohort = forms.ModelChoiceField(
-                widget=forms.Select(
+                initial=[cohort.id for cohort in self.cohort.all()],
+                widget=forms.SelectMultiple(
                     attrs={'class': 'cohort-select'}),
                 queryset=Cohort.objects.all().order_by('name'),)
+
         return EditForm()
 
 

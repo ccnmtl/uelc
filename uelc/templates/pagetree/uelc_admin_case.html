@@ -68,7 +68,7 @@ button.close{
                       <div id="hierarchies" class="panel panel-default">
                         <div class="panel-heading">Hierarchies</div>
                         <div class="panel-body">
-                          <form data-toggle="validator" id="add-hierarchy-form" action="/uelcadmin/hierarchy/" method="post">{% csrf_token %}
+                          <form data-toggle="validator" id="add-hierarchy-form" action="/uelcadmin/createhierarchy/" method="post">{% csrf_token %}
                             {{create_hierarchy_form|bootstrap}}
                             <input type="submit" class="btn btn-primary form-submit" value="Submit">
                             <input type="reset" class="reset-button hidden" value="Reset" />
@@ -128,10 +128,10 @@ button.close{
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <div class="modal-header panel-heading">Delete Case</div>
                             <div class="modal-body">
-                              <div id="edit-case" class="panel panel-default">
+                              <div id="delete-case" class="panel panel-default">
                                 <div class="panel-heading">ARE YOU SURE?</div>
                                 <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-case-form" action="/uelcadmin/editcase/" method="post">{% csrf_token %}
+                                  <form data-toggle="validator" id="delete-case-form" action="/uelcadmin/deletecase/" method="post">{% csrf_token %}
                                     <input type="hidden" name="case_id" value="{{case.id}}">
                                     <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
                                   </form>

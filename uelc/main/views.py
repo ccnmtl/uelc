@@ -52,7 +52,7 @@ def get_cases(request):
         user = User.objects.get(id=request.user.id)
         cohort = user.profile.cohort
         case = cohort.case
-        return [case]
+        return case
     except ObjectDoesNotExist:
         return
 
@@ -559,7 +559,7 @@ class UELCAdminEditUserView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminHierarchyView(LoggedInMixinSuperuser,
+class UELCAdminCreateHierarchyView(LoggedInMixinSuperuser,
                              TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -581,8 +581,8 @@ class UELCAdminHierarchyView(LoggedInMixinSuperuser,
         hier.save()
         action_args = dict(
             name=hier.name, value=hier.pk, url=hier.base_url, error=None)
-        print action_args
-        return HttpResponseRedirect('/uelcadmin/')
+        url = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
 
 
 class UELCAdminCaseView(LoggedInMixinSuperuser,
@@ -623,7 +623,7 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
 
     def post(self, request):
         name = request.POST.get('name', '')
-        users = request.POST.getlist('user', '')
+        
         cohort_exists = Cohort.objects.filter(Q(name=name))
         if len(cohort_exists) > 0:
             action_args = dict(
@@ -631,15 +631,12 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
                       Please change the name,\
                       or use the existing cohort.")
             return action_args
-        if len(users) == 0:
-            action_args = dict(
-                error="Please add at least one user to the cohort.")
-            return action_args
 
         cohort = Cohort.objects.create(name=name)
         cohort.save()
         action_args = dict(cohort=cohort.id, name=cohort.name, error=None)
-        return HttpResponseRedirect('/uelcadmin/')
+        url = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
 
 
 class UELCAdminEditCohortView(LoggedInMixinSuperuser,
@@ -649,22 +646,21 @@ class UELCAdminEditCohortView(LoggedInMixinSuperuser,
 
     def post(self, request):
         name = request.POST.get('name', '')
-        case = request.POST.get('case', '')
         cohort_id = request.POST.get('cohort_id', '')
         users = request.POST.getlist('users')
         cohort_obj = Cohort.objects.get(pk=cohort_id)
-        case_obj = Case.objects.get(pk=case)
         cohort_users = User.objects.filter(id__in=users)
         cohort_obj.name = name
-        cohort_obj.user.all().delete()
-        cohort_obj.user.add(*cohort_users)
-        case_obj.cohort = cohort_obj
-        case_obj.save()
+        user_objs = User.objects.filter(pk__in=users)
+        for user in user_objs:
+            user.profile.cohort = cohort_obj
+            user.profile.save()
         action_args = dict(
             error=None,
             cohort_id=cohort_id)
-        print action_args
-        return HttpResponseRedirect('/uelcadmin/')
+
+        url = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
 
 
 class UELCAdminCreateCaseView(LoggedInMixinSuperuser,
@@ -705,10 +701,77 @@ class UELCAdminCreateCaseView(LoggedInMixinSuperuser,
 
         hier_obj = Hierarchy.objects.get(id=hierarchy)
         coh_obj = Cohort.objects.get(id=cohort)
-        Case.objects.create(name=name, hierarchy=hier_obj, cohort=coh_obj)
+        case = Case.objects.create(name=name, hierarchy=hier_obj)
+        case.cohort.add(coh_obj)
         action_args = dict(error=None)
 
-        return HttpResponseRedirect('/uelcadmin/')
+        url = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
+
+
+class UELCAdminDeleteCaseView(LoggedInMixinSuperuser,
+                              TemplateView):
+    extra_context = dict()
+
+    def post(self, request):
+        case_id = request.POST.get('case_id')
+        case = Case.objects.get(id=case_id)
+        case.delete()
+        action_args = dict(
+            case_id=case_id,
+            error=None)
+        print action_args
+        url = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
+
+
+class UELCAdminEditCaseView(LoggedInMixinSuperuser,
+                              TemplateView):
+    extra_context = dict()
+
+    def post(self, request):
+        name = request.POST.get('name', '')
+        hierarchy = request.POST.get('hierarchy', '')
+        cohorts = request.POST.getlist('cohort', '')
+        case_exists_name = Case.objects.filter(Q(name=name))
+        case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
+
+        if len(case_exists_name) > 1:
+            action_args = dict(
+                error="Case already exists! Please use existing\
+                      case or rename.")
+            messages.error(request, action_args['error'],
+                           extra_tags='createCaseViewError')
+            url = request.META['HTTP_REFERER']
+            return HttpResponseRedirect(url)
+        if len(case_exists_hier) >1 :
+            action_args = dict(
+                error="Case already exists! A case has already\
+                      been created that is attached to the\
+                      selected hierarchy. Do you need to create\
+                      another hierarchy or should you use\
+                      an existing case?")
+            messages.error(request, action_args['error'],
+                           extra_tags='createCaseViewError')
+            url = request.META['HTTP_REFERER']
+            return HttpResponseRedirect(url)
+        if hierarchy == "" or cohorts == "":
+            action_args = dict(
+                error="Please make sure a hierarchy and\
+                      cohort is selected")
+            messages.error(request, action_args['error'],
+                           extra_tags='createCaseViewError')
+            return HttpResponseRedirect('/uelcadmin/')
+
+        hier_obj = Hierarchy.objects.get(id=hierarchy)
+        coh_obj = Cohort.objects.filter(id__in=cohorts)
+        case = Case.objects.get(name=name, hierarchy=hier_obj)
+        case.cohort.clear()
+        case.cohort.add(*coh_obj)
+        action_args = dict(error=None)
+
+        url = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
 
 
 class UELCAdminView(LoggedInMixinSuperuser,

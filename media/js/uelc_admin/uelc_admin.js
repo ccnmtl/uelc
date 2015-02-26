@@ -72,9 +72,11 @@ jQuery(document).ready(function() {
                   },
                   user: 'required',
                   hierarchy: 'required',
+                  /*
                   cohort:{
                     required:true,
                   }
+                  */
               },
               ignore: '.ignore',
               errorClass: 'has-error',
