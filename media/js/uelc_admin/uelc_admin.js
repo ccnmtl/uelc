@@ -248,10 +248,23 @@ jQuery(document).ready(function() {
 
       };
 
+      this.set_navbar_active_tab = function() {
+          var loc = window.location.href;
+          var url_array = loc.split('/');
+          var page = url_array[url_array.length - 2]
+          var activeLi = jQuery('li[data-tab="' + page + '"]');
+          console.log(activeLi)
+          jQuery("#uelc-admin-menu ul li").each(function() {
+              jQuery(this).removeClass('active');
+          })
+          activeLi.addClass('active');
+      }
+
       this.init = function() {
           this.setMultiselects();
           this.addListeners();
           this.checkForMessages();
+          this.set_navbar_active_tab();
       };
   };
 

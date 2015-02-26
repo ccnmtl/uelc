@@ -1,43 +1,15 @@
-{% extends 'pagetree/base_pagetree.html' %}
+{% extends 'pagetree/uelc_admin.html' %}
 {% load bootstrap %}
-{% block content %}
-<script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/uelc_admin.js"></script>
-<link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
+{% block cohort %}
 <style type="text/css">
 button.close{
   padding: 10px;
 }
 </style>
-<p>Welcome,</p>
-<p>This page is for creating Users, Cases, and Cohorts</p>
-{% if messages %}
-  {% for message in messages %}
-  {% if message.level_tag == 'error' %}
-    <div id="message-modal" class="modal fade" data-callback="{{message.extra_tags}}">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <div class="modal-header panel-heading">Message</div>
-              <div class="modal-body">
-                <div id="edit-user" class="panel panel-default">
-                  <div class="panel-heading">{{ message.level_tag }}</div>
-                  <div class="panel-body">
-                        {{ message }}
-                  </div>
-                </div><!--end #hierarchiess-->
-                </div> <!--end modal-dialog-->
-          </div><!-- end modal-content-->
-      </div><!--end .model-body-->
-    </div><!--end #add-hierarchy-form-modal .modal-->
-  {% endif %}
-  {% endfor %}
-{% endif %}
 
     <div class="panel panel-default">
       <div class="panel-heading">
-      <p>Cohorts</p>
+      <p>Create and Edit Cohorts</p>
       <button class="glyphicon glyphicon-plus" data-toggle="modal"  data-target="#add-cohort-form-modal" href="#add-cohort-form-modal"></button>
       <div id="add-cohort-form-modal" class="modal fade">
           <div class="modal-dialog">

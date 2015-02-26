@@ -601,7 +601,7 @@ class UELCAdminCaseView(LoggedInMixinSuperuser,
         create_hierarchy_form = CreateHierarchyForm
         users = User.objects.all().order_by('username')
         hierarchies = Hierarchy.objects.all()
-        cases = Case.objects.all()
+        cases = Case.objects.all().order_by('name')
         cohorts = Cohort.objects.all().order_by('name')
         context = dict(users=users,
                        path=path,
@@ -676,11 +676,12 @@ class UELCAdminCreateCaseView(LoggedInMixinSuperuser,
         case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
         if len(case_exists_name):
             action_args = dict(
-                error="Case already exists! Please use existing\
-                      case or rename.")
+                error="Case with this name already exists!\
+                      Please use existing case or rename.")
             messages.error(request, action_args['error'],
                            extra_tags='createCaseViewError')
-            return HttpResponseRedirect('/uelcadmin/')
+            url = request.META['HTTP_REFERER']
+            return HttpResponseRedirect(url)
         if len(case_exists_hier):
             action_args = dict(
                 error="Case already exists! A case has already\
@@ -690,14 +691,16 @@ class UELCAdminCreateCaseView(LoggedInMixinSuperuser,
                       an existing case?")
             messages.error(request, action_args['error'],
                            extra_tags='createCaseViewError')
-            return HttpResponseRedirect('/uelcadmin/')
+            url = request.META['HTTP_REFERER']
+            return HttpResponseRedirect(url)
         if hierarchy == "" or cohort == "":
             action_args = dict(
                 error="Please make sure a hierarchy and\
                       cohort is selected")
             messages.error(request, action_args['error'],
                            extra_tags='createCaseViewError')
-            return HttpResponseRedirect('/uelcadmin/')
+            url = request.META['HTTP_REFERER']
+            return HttpResponseRedirect(url)
 
         hier_obj = Hierarchy.objects.get(id=hierarchy)
         coh_obj = Cohort.objects.get(id=cohort)
@@ -735,11 +738,12 @@ class UELCAdminEditCaseView(LoggedInMixinSuperuser,
         cohorts = request.POST.getlist('cohort', '')
         case_exists_name = Case.objects.filter(Q(name=name))
         case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
+        case_id = request.POST.get('case_id','')
 
         if len(case_exists_name) > 1:
             action_args = dict(
-                error="Case already exists! Please use existing\
-                      case or rename.")
+                error="Case with this name already exists!\
+                      Please use existing case or rename.")
             messages.error(request, action_args['error'],
                            extra_tags='createCaseViewError')
             url = request.META['HTTP_REFERER']
@@ -765,9 +769,11 @@ class UELCAdminEditCaseView(LoggedInMixinSuperuser,
 
         hier_obj = Hierarchy.objects.get(id=hierarchy)
         coh_obj = Cohort.objects.filter(id__in=cohorts)
-        case = Case.objects.get(name=name, hierarchy=hier_obj)
+        case = Case.objects.get(id=case_id)
+        case.name = name
         case.cohort.clear()
         case.cohort.add(*coh_obj)
+        case.save()
         action_args = dict(error=None)
 
         url = request.META['HTTP_REFERER']
