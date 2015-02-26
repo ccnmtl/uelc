@@ -51,7 +51,7 @@ class Cohort(models.Model):
     users = property(_get_users)
 
     @classmethod
-    def add_form(self):
+    def add_form(cls):
         class AddForm(forms.Form):
             name = forms.CharField(widget=forms.widgets.Input(
                 attrs={'class': 'add-cohort-name'}))
@@ -171,7 +171,8 @@ class Case(models.Model):
     hierarchy = models.ForeignKey(Hierarchy)
     cohort = models.ManyToManyField(
         Cohort,
-        related_name="case_cohort", blank=True)
+        related_name="case_cohort",
+        blank=True)
 
     def __unicode__(self):
         return self.name
@@ -196,7 +197,7 @@ class Case(models.Model):
     cohorts = property(_get_cohorts)
 
     @classmethod
-    def add_form(self):
+    def add_form(cls):
         class AddForm(forms.Form):
             name = forms.CharField(widget=forms.widgets.Input(
                 attrs={'class': 'add-case-name'}))
@@ -305,7 +306,7 @@ class TextBlockDT(TextBlock):
     choice = models.CharField(max_length=2, blank=True, default=0)
 
     @classmethod
-    def add_form(self):
+    def add_form(cls):
         class AddForm(forms.Form):
             CHOICES = ((0, '0'), (1, '1'), (2, '2'),
                        (3, '3'), (4, '4'), (5, '5'))
@@ -324,7 +325,7 @@ class TextBlockDT(TextBlock):
         return AddForm(auto_id=False)
 
     @classmethod
-    def create(self, request):
+    def create(cls, request):
         return TextBlockDT.objects.create(
             body=request.POST.get('body', ''),
             after_decision=request.POST.get('after_decision', ''),
@@ -445,7 +446,7 @@ class LibraryItem(models.Model):
         return users
 
     @classmethod
-    def add_form(self):
+    def add_form(cls):
         class AddForm(forms.Form):
             doc = forms.FileField(label="select doc")
             name = forms.CharField(widget=forms.widgets.Textarea(
@@ -486,11 +487,11 @@ class CaseQuiz(Quiz):
     template_file = "quizblock/quizblock.html"
 
     @classmethod
-    def get_pageblock(self):
+    def get_pageblock(cls):
         return True
 
     @classmethod
-    def create(self, request):
+    def create(cls, request):
         return CaseQuiz.objects.create(
             description=request.POST.get('description', ''),
             rhetorical=request.POST.get('rhetorical', ''),
@@ -498,7 +499,7 @@ class CaseQuiz(Quiz):
             show_submit_state=request.POST.get('show_submit_state', False))
 
     @classmethod
-    def create_from_dict(self, d):
+    def create_from_dict(cls, d):
         q = CaseQuiz.objects.create(
             description=d.get('description', ''),
             rhetorical=d.get('rhetorical', False),
@@ -509,7 +510,7 @@ class CaseQuiz(Quiz):
         return q
 
     @classmethod
-    def add_form(self):
+    def add_form(cls):
         class AddForm(forms.Form):
             description = forms.CharField(widget=forms.widgets.Textarea())
             rhetorical = forms.BooleanField()
@@ -610,25 +611,26 @@ class CaseAnswer(models.Model):
     def display_description(self):
         return self.description
 
+    @classmethod
+    def add_form(cls):
+        class AddForm(forms.Form):
+            value = forms.IntegerField()
+            title = forms.CharField(widget=forms.widgets.Textarea())
+            description = forms.CharField(widget=forms.widgets.Textarea())
+        return AddForm()
+
     def edit_form(self, request=None):
-        return CaseAnswerForm(request, instance=self)
+        return CaseAnswerForm(request)
 
     def as_dict(self):
         return dict(title=self.title,
                     description=self.description)
 
 
-class CaseAnswerForm(forms.ModelForm):
-    class Meta:
-        model = CaseAnswer
-        exclude = ("question",)
-
-        def clean(self):
-            if 'value' not in self.cleaned_data:
-                raise forms.ValidationError(
-                    'Please enter a meaningful value for this answer.')
-            else:
-                return self.cleaned_data
+class CaseAnswerForm(forms.Form):
+    value = forms.IntegerField()
+    title = forms.CharField(max_length=100)
+    description = forms.CharField(widget=forms.Textarea)
 
 
 ReportableInterface.register(CaseQuiz)
