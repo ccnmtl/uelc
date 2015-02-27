@@ -581,21 +581,6 @@ class CaseAnswer(models.Model):
     def display_description(self):
         return self.description
 
-    @classmethod
-    def add_form(cls):
-        class AddForm(forms.Form):
-            value = forms.IntegerField()
-            title = forms.CharField(widget=forms.widgets.Textarea())
-            description = forms.CharField(widget=forms.widgets.Textarea())
-        return AddForm()
-
-    def edit_form(self, request=None):
-        return CaseAnswerForm(request)
-
-    def as_dict(self):
-        return dict(title=self.title,
-                    description=self.description)
-
 
 class CaseAnswerForm(forms.Form):
     value = forms.IntegerField()
