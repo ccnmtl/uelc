@@ -12,7 +12,7 @@ from uelc.main.views import (
     UELCAdminHierarchyView, UELCAdminCreateCohortView,
     UELCAdminEditCohortView, UELCAdminCreateCaseView,
     UELCAdminDeleteUserView, AddCaseAnswerToQuestionView,
-    EditCaseAnswerView)
+    EditCaseAnswerView, DeleteCaseAnswerView)
 import os.path
 admin.autodiscover()
 
@@ -86,6 +86,9 @@ urlpatterns = patterns(
      'add-case-answer-to-question'),
     (r'^edit_case_answer/(?P<pk>\d+)/$', EditCaseAnswerView.as_view(), {},
      'edit-case-answer'),
+    (r'^edit_question/(?P<pk>\d+)/delete_case_answer/$',
+     DeleteCaseAnswerView.as_view(), {},
+     'delete-case-answer'),
     url(r'^_impersonate/', include('impersonate.urls')),
     (r'^stats/$', TemplateView.as_view(template_name="stats.html")),
     (r'smoketest/', include('smoketest.urls')),

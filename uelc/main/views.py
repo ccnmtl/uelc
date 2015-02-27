@@ -734,24 +734,27 @@ class AddCaseAnswerToQuestionView(View):
             dict(question=question, case_answer_form=form))
 
     def post(self, request, pk):
-        print request.POST
         '''This solution assumes that the user cannot submit
         multiple responses - it does not check to see if an answer is
-        alreay associated with the question...'''
+        already associated with the question...'''
         question = get_object_or_404(Question, pk=pk)
-        # form = CaseAnswerForm(request.POST)
         value = request.POST.get('value')
         title = request.POST.get('title')
         description = request.POST.get('description')
         if value:
             inty = int(value)
+        elif request.POST.get('answer-value'):
+            inty = request.POST.get('answer-value')
         else:
             inty = 0
         if not title:
-            title = '---'
+            title = request.POST.get('case-answer-title')
+            if not title:
+                title = '---'
         if not description:
-            description = '----'
-
+            description = request.POST.get('case-answer-description')
+            if not description:
+                description = '----'
         ans = Answer.objects.create(
             question=question,
             value=inty)
@@ -759,9 +762,7 @@ class AddCaseAnswerToQuestionView(View):
             answer=ans,
             title=title,
             description=description)
-        if case_ans.title == '' or case_ans.description == '':
-            return HttpResponseRedirect(reverse("edit-question",
-                                        args=[question.id]))
+        case_ans.save()
         return render(
             request,
             self.template_name,
@@ -797,3 +798,16 @@ class EditCaseAnswerView(View):
             request,
             self.template_name,
             dict(case_answer_form=form, case_answer=case_answer))
+
+
+class DeleteCaseAnswerView(View):
+    '''I am doing a regular view instead of a delete view,
+    because the delete view will only delete the caseanswer,
+    we want to delete the case answer and corresponding answer'''
+
+    def get(self, request, pk):
+        case_answer = get_object_or_404(CaseAnswer, pk=pk)
+        question = case_answer.answer.question.id
+        case_answer.answer.delete()
+        case_answer.delete()
+        return HttpResponseRedirect(reverse("edit-question", args=[question]))
