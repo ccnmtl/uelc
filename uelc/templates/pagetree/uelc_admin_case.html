@@ -31,27 +31,6 @@ button.close{
                 </div><!-- end modal-content-->
             </div><!--end .model-body-->
         </div><!--end #add-case-form-modal .modal-->
-        <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-hierarchy-form-modal" href="#add-hierarchy-form-modal">Add Hierarchy Item</button>
-        <div id="add-hierarchy-form-modal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <div class="modal-header panel-heading">Add Hierarchy</div>
-                    <div class="modal-body">
-                      <div id="hierarchies" class="panel panel-default">
-                        <div class="panel-heading">Hierarchies</div>
-                        <div class="panel-body">
-                          <form data-toggle="validator" id="add-hierarchy-form" action="/uelcadmin/createhierarchy/" method="post">{% csrf_token %}
-                            {{create_hierarchy_form|bootstrap}}
-                            <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                            <input type="reset" class="reset-button hidden" value="Reset" />
-                          </form>
-                        </div>
-                      </div><!--end #hierarchiess-->
-                      </div> <!--end modal-dialog-->
-                </div><!-- end modal-content-->
-            </div><!--end .model-body-->
-        </div><!--end #add-hierarchy-form-modal .modal-->
       </div>
       <div class="panel-body">
         <table id="case-list" class="table">
@@ -93,6 +72,78 @@ button.close{
                         </div><!-- end modal-content-->
                     </div><!--end .model-body-->
                   </div><!--end #edit-case-form-modal .modal-->
+
+                  <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-case-form-modal-{{case.id}}" href="#delete-case-form-modal-{{case.id}}">Delete</button>
+                  <div id="delete-case-form-modal-{{case.id}}" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="modal-header panel-heading">Delete Case</div>
+                            <div class="modal-body">
+                              <div id="delete-case" class="panel panel-default">
+                                <div class="panel-heading">ARE YOU SURE?</div>
+                                <div class="panel-body">
+                                  <form data-toggle="validator" id="delete-case-form" action="/uelcadmin/deletecase/" method="post">{% csrf_token %}
+                                    <input type="hidden" name="case_id" value="{{case.id}}">
+                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
+                                  </form>
+                                </div>
+                              </div><!--end #hierarchiess-->
+                              </div> <!--end modal-dialog-->
+                        </div><!-- end modal-content-->
+                    </div><!--end .model-body-->
+                  </div><!--end #add-hierarchy-form-modal .modal-->
+                </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      </div><!--end panel-body-->
+  </div><!--end panel-->
+
+  <div class="panel panel-default">
+      <div class="panel-heading">
+        <p>Create and Edit Hierarchies</p>
+        <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-hierarchy-form-modal" href="#add-hierarchy-form-modal">Add Hierarchy Item</button>
+        <div id="add-hierarchy-form-modal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-header panel-heading">Add Hierarchy</div>
+                    <div class="modal-body">
+                      <div id="hierarchies" class="panel panel-default">
+                        <div class="panel-heading">Hierarchies</div>
+                        <div class="panel-body">
+                          <form data-toggle="validator" id="add-hierarchy-form" action="/uelcadmin/createhierarchy/" method="post">{% csrf_token %}
+                            {{create_hierarchy_form|bootstrap}}
+                            <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                            <input type="reset" class="reset-button hidden" value="Reset" />
+                          </form>
+                        </div>
+                      </div><!--end #hierarchiess-->
+                      </div> <!--end modal-dialog-->
+                </div><!-- end modal-content-->
+            </div><!--end .model-body-->
+        </div><!--end #add-hierarchy-form-modal .modal-->
+      </div>
+      <div class="panel-body">
+        <table id="case-list" class="table">
+           <thead>
+              <tr>
+                <th>Hierarchy Name</th>
+                <th>Hierarchy URL</th>
+                <th>Case</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for h in hierarchies %}
+              <tr id="case-{{vase.id}}">
+                <td class="td-casename">{{ h.name }}</td>
+                <td class="td-hierarchy">{{ h.base_url }}</td>
+                <td class="td-cohorts">
+                    {{ h.case }}
+                </td>
+                <td>
 
                   <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-case-form-modal-{{case.id}}" href="#delete-case-form-modal-{{case.id}}">Delete</button>
                   <div id="delete-case-form-modal-{{case.id}}" class="modal fade">
