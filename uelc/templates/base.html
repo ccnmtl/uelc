@@ -11,7 +11,7 @@
 	
 	<link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
 
-	<title>UELC Case Manager Beta: {% block title %}{% endblock %}</title>
+	<title>ELDEx: {% block title %}{% endblock %}</title>
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="uelc">
@@ -135,12 +135,11 @@
 	    <div class="col-sm-9">
 		{% block pagetitle %}{% endblock %}
 		{% block content %}{% endblock %}
-		{% block content-nav %}{% endblock %}
+        {% block library %}{% endblock %}
 	</div>
 	
     <div class="col-sm-3">
-		    {% block library %}{% endblock %}
-
+		{% block content-nav %}{% endblock %}
         {% block loginbox %}
         {% if request.user.is_anonymous %}
         <div class="loginbox-container columbia">
@@ -205,7 +204,7 @@
 </div>
 
 {% block footer %}
-<footer class="footer">
+<footer class="footer sr-only">
 
 <div class="container">
 

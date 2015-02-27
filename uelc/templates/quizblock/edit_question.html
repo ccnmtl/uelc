@@ -33,6 +33,7 @@
             if (worktodo == 1) {
                 var req = new XMLHttpRequest();
                 req.open("POST",url,true);
+                req.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
                 req.send(null);
             }
         };
@@ -47,8 +48,7 @@
                 ,stop: function (event,ui) { saveOrder();}
             });
             jQuery("#answers").disableSelection();
-            
-            jQuery().
+          
         });
     </script>
 

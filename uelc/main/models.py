@@ -614,7 +614,7 @@ class CaseAnswer(models.Model):
     @classmethod
     def add_form(cls):
         class AddForm(forms.Form):
-            value = forms.IntegerField()
+            value = forms.IntegerField(blank=True)
             title = forms.CharField(widget=forms.widgets.Textarea())
             description = forms.CharField(widget=forms.widgets.Textarea())
         return AddForm()

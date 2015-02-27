@@ -905,13 +905,25 @@ class AddCaseAnswerToQuestionView(View):
         alreay associated with the question...'''
         question = get_object_or_404(Question, pk=pk)
         # form = CaseAnswerForm(request.POST)
-        inty = int(request.POST.get('value'))
+        value = request.POST.get('value')
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        if value:
+            inty = int(value)
+        else:
+            inty = 0
+        if not title:
+            title = '---'
+        if not description:
+            description = '----'
+
         ans = Answer.objects.create(
             question=question,
             value=inty)
         case_ans = CaseAnswer.objects.create(
-            answer=ans, title=request.POST.get('title'),
-            description=request.POST.get('description'))
+            answer=ans,
+            title=title,
+            description=description)
         if case_ans.title == '' or case_ans.description == '':
             return HttpResponseRedirect(reverse("edit-question",
                                         args=[question.id]))
