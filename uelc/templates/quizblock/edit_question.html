@@ -76,6 +76,7 @@
     <ul class="dragparent" id="answers">
     {% for answer in question.answer_set.all %}
       <li class="draggable" id="answer-{{answer.id}}">
+      {% comment %}{% endcomment %}
         <span title="drag to reorder answers" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>[<a href="{% url 'delete-answer' answer.id %}">delete</a>] 
           Answer {{ answer.display_number }}: 
           <a href="{% url 'edit-answer' answer.id %}">{{answer.label}}</a>
@@ -87,6 +88,7 @@
                  Title: {{ caseanswer.title }}
                  Description: {{ caseanswer.description }}
                  <a href="{% url 'edit-case-answer' caseanswer.id %}"> Edit Case Answer </a>
+                 [<a href="{% url 'delete-case-answer' caseanswer.id %}"> Delete Case Answer </a>]
              {% endfor %}
          {% endif %}
       </li>
