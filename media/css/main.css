@@ -229,3 +229,11 @@ ul.gate-section-list{
 .has-error{
     color:#a94442;
 }
+
+/* Discussion for submitted quizzes */
+.discussion {
+	background-color: #D3FFD3;
+    border-style: solid;
+    border-color: #438343;
+    border-radius: 2em;
+}
