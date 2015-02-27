@@ -18,13 +18,29 @@
           This first if is irrelevant to case quizzes, since users cannot go back and navigate over their past decisions 
         {% endcomment %}
         
+        {% comment %}Group has made decision...{% endcomment %}
         {% if response %}
           {% ifequal response.value answer.value %}
-            <span class="text-primary {% if response.is_correct %}correct{% else %}incorrect{% endif %}">{{answer.label}}</span>
+            <span class="text-primary {% if response.is_correct %}correct{% else %}incorrect{% endif %}">
+                {{answer.label}}
+                    {% if answer.caseanswer_set.count %}
+                         {% for caseanswer in answer.caseanswer_set.all %}
+                            <b> {{ caseanswer.title }} </b>
+                            <p> {{ caseanswer.description }} </p>
+                         {% endfor %}
+                   {% endif %}
+            </span>
           {% else %}
             {{answer.label}}
+            {% if answer.caseanswer_set.count %}
+                         {% for caseanswer in answer.caseanswer_set.all %}
+                            <b> {{ caseanswer.title }} </b>
+                            <p> {{ caseanswer.description }} </p>
+                         {% endfor %}
+                   {% endif %}
           {% endifequal %}
         {% else %}
+        {% comment %}Group has NOT made decision... present as radio buttons {% endcomment %}
           <input name="pageblock-{{block.pageblock.id}}-question{{question.id}}" value="{{answer.value}}" type="radio" />
             {{answer.label}}
             {% if answer.caseanswer_set.count %}
@@ -40,3 +56,5 @@
     {% endif %}
 
     {% endfor %}
+
+    
