@@ -38,6 +38,7 @@ button.close{
               <tr>
                 <th>Case</th>
                 <th>Hierarchy</th>
+                <th>URL</th>
                 <th>Cohort/s</th>
               </tr>
             </thead>
@@ -46,6 +47,7 @@ button.close{
               <tr id="case-{{vase.id}}">
                 <td class="td-casename">{{ case.name }}</td>
                 <td class="td-hierarchy">{{ case.hierarchy }}</td>
+                <td class="td-hierarchy">{{ case.hierarchy.base_url }}</td>
                 <td class="td-cohorts">
                     {{ case.cohortnames }}
                 </td>
@@ -136,12 +138,12 @@ button.close{
               </tr>
             </thead>
             <tbody>
-              {% for h in hierarchies %}
+              {% for h in hierarchy_cases %}
               <tr id="case-{{vase.id}}">
-                <td class="td-casename">{{ h.name }}</td>
-                <td class="td-hierarchy">{{ h.base_url }}</td>
+                <td class="td-casename">{{ h.0.name }}</td>
+                <td class="td-hierarchy">{{ h.0.base_url }}</td>
                 <td class="td-cohorts">
-                    {{ h.case }}
+                    {{ h.1.name }}
                 </td>
                 <td>
 
