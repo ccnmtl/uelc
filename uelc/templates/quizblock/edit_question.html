@@ -77,7 +77,7 @@
     {% for answer in question.answer_set.all %}
       <li class="draggable" id="answer-{{answer.id}}">
       {% comment %}{% endcomment %}
-        <span title="drag to reorder answers" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>[<a href="{% url 'delete-answer' answer.id %}">delete</a>] 
+        <span title="drag to reorder answers" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>
           Answer {{ answer.display_number }}: 
           <a href="{% url 'edit-answer' answer.id %}">{{answer.label}}</a>
          {% if answer.correct %}<i class="icon-ok"></i>{% endif %}
