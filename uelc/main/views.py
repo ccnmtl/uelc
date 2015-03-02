@@ -666,7 +666,7 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
 
 
 class UELCAdminDeleteCohortView(LoggedInMixinSuperuser,
-                              TemplateView):
+                                TemplateView):
     extra_context = dict()
 
     def post(self, request):
