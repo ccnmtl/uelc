@@ -35,12 +35,14 @@ class GroupUserFactory(factory.DjangoModelFactory):
 class AdminUpFactory(factory.DjangoModelFactory):
     FACTORY_FOR = UserProfile
     user = factory.SubFactory(AdminUserFactory)
+    cohort = factory.SubFactory(CohortFactory)
     profile_type = 'admin'
 
 
 class FacilitatorUpFactory(factory.DjangoModelFactory):
     FACTORY_FOR = UserProfile
     user = factory.SubFactory(FacilitatorUserFactory)
+    cohort = factory.SubFactory(CohortFactory)
     profile_type = 'assistant'
 
 

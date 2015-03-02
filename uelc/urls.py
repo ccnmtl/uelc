@@ -8,11 +8,12 @@ from uelc.main import views
 from uelc.main.models import UserProfile
 from uelc.main.views import (
     UELCPageView, UELCEditView, FacilitatorView, UELCAdminView,
-    UELCAdminCohortView, UELCAdminCreateHierarchyView, UELCAdminDeleteHierarchyView,
-    UELCAdminUserView, UELCAdminCaseView, UELCAdminEditUserView,
-    UELCAdminCreateUserView, UELCAdminEditCaseView, UELCAdminCreateCohortView,
-    UELCAdminEditCohortView, UELCAdminDeleteCaseView, UELCAdminCreateCaseView,
-    UELCAdminDeleteUserView, AddCaseAnswerToQuestionView, EditCaseAnswerView)
+    UELCAdminCohortView, UELCAdminCreateHierarchyView,
+    UELCAdminDeleteHierarchyView, UELCAdminUserView, UELCAdminCaseView,
+    UELCAdminEditUserView, UELCAdminCreateUserView, UELCAdminEditCaseView,
+    UELCAdminCreateCohortView, UELCAdminEditCohortView,
+    UELCAdminDeleteCaseView, UELCAdminCreateCaseView, UELCAdminDeleteUserView,
+    AddCaseAnswerToQuestionView, EditCaseAnswerView)
 import os.path
 admin.autodiscover()
 

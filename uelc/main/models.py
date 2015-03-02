@@ -210,7 +210,7 @@ class Case(models.Model):
             name = forms.CharField(
                 widget=forms.widgets.Input(
                     attrs={'class': 'add-case-name'}),
-                initial = self.name
+                initial=self.name
             )
 
             hierarchy = forms.ModelChoiceField(
