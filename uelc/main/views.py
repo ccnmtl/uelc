@@ -587,6 +587,22 @@ class UELCAdminCreateHierarchyView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
+class UELCAdminDeleteHierarchyView(LoggedInMixinSuperuser,
+                              TemplateView):
+    extra_context = dict()
+
+    def post(self, request):
+        hierarchy_id = request.POST.get('hierarchy_id')
+        hier = Hierarchy.objects.get(id=hierarchy_id)
+        hier.delete()
+        action_args = dict(
+            hierarchy_id=hierarchy_id,
+            error=None)
+        print action_args
+        url = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
+
+
 class UELCAdminCaseView(LoggedInMixinSuperuser,
                     TemplateView):
     template_name = "pagetree/uelc_admin_case.html"
