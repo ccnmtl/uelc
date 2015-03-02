@@ -41,6 +41,7 @@ button.close{
                 <th>Case</th>
                 <th>Users</th>
                 <th>Edit Cohort</th>
+                <th>Delete Cohort</th>
               </tr>
             </thead>
             <tbody>
@@ -106,7 +107,30 @@ button.close{
                               </div> <!--end modal-dialog-->
                         </div><!-- end modal-content-->
                     </div><!--end .model-body-->
-                  </div><!--end #edit-user-form-modal .modal-->
+                  </div><!--end #edit-cohort-form-modal .modal-->
+                </td>
+                <td>
+
+                <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-cohort-form-modal-{{cohort.id}}" href="#delete-cohort-form-modal-{{cohort.id}}">Delete</button>
+                  <div id="delete-cohort-form-modal-{{cohort.id}}" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="modal-header panel-heading">Delete cohort</div>
+                            <div class="modal-body">
+                              <div id="delete-cohort" class="panel panel-default">
+                                <div class="panel-heading">ARE YOU SURE?</div>
+                                <div class="panel-body">
+                                  <form data-toggle="validator" id="delete-cohort-form" action="/uelcadmin/deletecohort/" method="post">{% csrf_token %}
+                                    <input type="hidden" name="cohort_id" value="{{cohort.id}}">
+                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
+                                  </form>
+                                </div>
+                              </div><!--end #hierarchiess-->
+                              </div> <!--end modal-dialog-->
+                        </div><!-- end modal-content-->
+                    </div><!--end .model-body-->
+                  </div><!--end #add-hierarchy-form-modal .modal-->
 
                 </td>
               </tr>

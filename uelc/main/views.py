@@ -665,6 +665,22 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
+class UELCAdminDeleteCohortView(LoggedInMixinSuperuser,
+                              TemplateView):
+    extra_context = dict()
+
+    def post(self, request):
+        cohort_id = request.POST.get('cohort_id')
+        cohort = Cohort.objects.get(id=cohort_id)
+        cohort.delete()
+        action_args = dict(
+            case_id=cohort_id,
+            error=None)
+        print action_args
+        url = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
+
+
 class UELCAdminEditCohortView(LoggedInMixinSuperuser,
                               TemplateView):
     template_name = "pagetree/uelc_admin.html"
