@@ -810,4 +810,5 @@ class DeleteCaseAnswerView(View):
         question = case_answer.answer.question.id
         case_answer.answer.delete()
         case_answer.delete()
-        return HttpResponseRedirect(reverse("edit-question", args=[question]))
+        return HttpResponseRedirect(reverse("add-case-answer-to-question",
+                                            args=[question]))
