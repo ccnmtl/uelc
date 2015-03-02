@@ -107,7 +107,7 @@ class IndexView(TemplateView):
             cases = get_cases(request)
             if cases:
                 roots = [(case.hierarchy.get_absolute_url(),
-                          case.hierarchy.name)
+                          case.name)
                          for case in cases]
                 context = dict(roots=roots)
         except ObjectDoesNotExist:
@@ -568,7 +568,7 @@ class UELCAdminCreateHierarchyView(LoggedInMixinSuperuser,
 
     def post(self, request):
         name = request.POST.get('name', '')
-        url = '/pages/'+request.POST.get('url', '')+'/'
+        url = '/pages/'+ name +'/'
         hier = Hierarchy.objects.filter(Q(base_url=url) | Q(name=name))
 
         if len(hier) > 0:

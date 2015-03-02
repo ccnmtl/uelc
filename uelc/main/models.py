@@ -159,12 +159,6 @@ class CreateHierarchyForm(forms.Form):
             attrs={'class': 'add-hierarchy-name',
                    'required': True}))
 
-    url = forms.CharField(
-        required=True,
-        widget=forms.widgets.Input(
-            attrs={'class': 'add-hierarchy-url', 'required': True}),
-        label=mark_safe('<strong>Url - the base url for your case.</strong>'))
-
 
 class Case(models.Model):
     name = models.CharField(max_length=255, blank=False)
