@@ -49,23 +49,6 @@
             });
             jQuery("#answers").disableSelection();
             
-            jQuery(document).on("click", ".cancl", event.data, function(e){
-            	var caseAnsId = $(this).data('caseanswer');
-            	$(this).parent().html('[ <a href="/edit_question/' + String(caseAnsId) + '/delete_case_answer/" data-caseanswer="' + String(caseAnsId) + '"> Delete Case Answer </a> ]');            
-            });
-            jQuery(document).on("click", ".rm-ca", event.data, function(e){
-            	var caseAnsId = $(this).data('caseanswer');
-            	window.location.replace(window.location.origin + "/edit_question/" + String(caseAnsId) + "/delete_case_answer/");
-            });
-            
-            jQuery(document).on("click", ".conf-rmv a[href$='delete_case_answer/'", event.data, function(e){
-                e.preventDefault();
-                var caseAnsId = $(this).data('caseanswer');
-                $(this).parent().html('<b>Are you sure you want to delete this answer?</b>' +
-                		'<button class="btn btn-xs btn-default pull-right rm-ca" data-caseanswer="' + String(caseAnsId) + '"> Yes Delete Answer </button>' +
-                		'<button class="btn btn-xs btn-default pull-right cancl" data-caseanswer="' + String(caseAnsId) + '"> Canel </button>');
-
-                });
         });
         
     </script>
@@ -96,17 +79,37 @@
       <li class="draggable" id="answer-{{answer.id}}">
       {% comment %}{% endcomment %}
         <span title="drag to reorder answers" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>
-          Answer {{ answer.display_number }}: 
           <a href="{% url 'edit-answer' answer.id %}">{{answer.label}}</a>
          {% if answer.correct %}<i class="icon-ok"></i>{% endif %}
          
          {% if answer.caseanswer_set.count %}
              {% for caseanswer in answer.caseanswer_set.all %}
-                 Answer: {{ answer.value }}
-                 Title: {{ caseanswer.title }}
-                 Description: {{ caseanswer.description }}
-                 <a href="{% url 'edit-case-answer' caseanswer.id %}"> Edit Case Answer </a>
-                 <span class="conf-rmv"> [<a href="{% url 'delete-case-answer' caseanswer.id %}" data-caseanswer="{{caseanswer.id}}"> Delete Case Answer </a>]</span>
+                 <div class="case-answer-title">{{ caseanswer.title }}</div>
+                 
+                 <div class="case-answer-description">{{ caseanswer.description }}</div>
+                 <div class"case-answer-edit-btn"><a href="{% url 'edit-case-answer' caseanswer.id %}">Edit</a></div>
+
+                 <a class="link" data-toggle="modal"  data-target="#delete-caseanswer-form-modal-{{caseanswer.id}}" href="#delete-caseanswer-form-modal-{{caseanswer.id}}">Delete</a>
+                  <div id="delete-caseanswer-form-modal-{{caseanswer.id}}" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="modal-header panel-heading">Delete</div>
+                            <div class="modal-body">
+                              <div id="edit-caseanswer" class="panel panel-default">
+                                <div class="panel-heading">ARE YOU SURE?</div>
+                                <div class="panel-body">
+                                  <form data-toggle="validator" id="edit-caseanswer-form" action="/edit_question/{{caseanswer.id}}/delete_case_answer/" method="post">{% csrf_token %}
+                                    <input type="hidden" name="caseanswer_id" value="{{caseanswer.id}}">
+                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
+                                  </form>
+                                </div>
+                              </div><!--end #hierarchiess-->
+                              </div> <!--end modal-dialog-->
+                        </div><!-- end modal-content-->
+                    </div><!--end .model-body-->
+                  </div><!--end #add-hierarchy-form-modal .modal-->
+
              {% endfor %}
          {% endif %}
       </li>

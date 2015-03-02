@@ -800,15 +800,16 @@ class EditCaseAnswerView(View):
             dict(case_answer_form=form, case_answer=case_answer))
 
 
-class DeleteCaseAnswerView(View):
+class DeleteCaseAnswerView(LoggedInMixinSuperuser,
+                           TemplateView):
     '''I am doing a regular view instead of a delete view,
     because the delete view will only delete the caseanswer,
     we want to delete the case answer and corresponding answer'''
 
-    def get(self, request, pk):
+    def post(self, request, pk):
         case_answer = get_object_or_404(CaseAnswer, pk=pk)
         question = case_answer.answer.question.id
         case_answer.answer.delete()
         case_answer.delete()
-        return HttpResponseRedirect(reverse("add-case-answer-to-question",
-                                            args=[question]))
+        return HttpResponseRedirect(reverse(
+            "add-case-answer-to-question", args=[question]))
