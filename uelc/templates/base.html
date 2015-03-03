@@ -52,9 +52,14 @@
 			<span class="icon-bar"></span>
 		</button>
 		<a class="navbar-brand" href="/"><img src="{{STATIC_URL}}img/logo.png" /></a>
-    {% if request.user.profile.profile_type == 'facilitator' or request.user.profile.profile_type == 'admin' %}
+    {% if request.user.profile.profile_type == 'admin' %}
       <a class="navbar-brand" href="/uelcadmin/"><span class="glyphicon glyphicon-wrench"></span></a>
     {% endif %}
+    {% ifnotequal request.user.profile.profile_type  'group_user'  %}
+        {% for root in roots %}
+            <a href="{{ root.0 }}facilitator/"><span class="glyphicon glyphicon-tree-deciduous" aria-hidden="true"></span></a>
+        {% endfor %}
+    {% endifnotequal %}
 		</div>
 		
 		
