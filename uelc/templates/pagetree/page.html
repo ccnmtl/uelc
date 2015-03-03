@@ -133,7 +133,6 @@
 {% endblock %}
 
 {% block content-nav %}
-
 {% if request.user.is_superuser %}
 {% else %}
 
@@ -164,7 +163,7 @@
 
 {% block library %}
 {% if library_items|length > 0 %}
-    <div class="col-md-4" id="library-item-view">
+    <div id="library-item-view">
         <div class="panel panel-default">
         <!-- Default panel contents -->
         <div class="panel-heading header">Library</div>

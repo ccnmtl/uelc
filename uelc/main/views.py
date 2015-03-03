@@ -247,7 +247,7 @@ class UELCPageView(LoggedInMixin,
         part = hand.get_part_by_section(self.section)
         tree_path = self.check_part_path(casemap, hand, part)
         roots = get_root_context(self.request)
-        
+
         if tree_path[0]:
             return HttpResponseRedirect(tree_path[1])
 
@@ -345,7 +345,7 @@ class UELCPageView(LoggedInMixin,
             return HttpResponseRedirect(request.path)
 
 
-class UELCEditView(LoggedInMixinSuperuser,
+class UELCEditView(LoggedInMixinFacilitator,
                    DynamicHierarchyMixin,
                    EditView):
     template_name = "pagetree/edit_page.html"
