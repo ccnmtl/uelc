@@ -501,8 +501,9 @@ class UELCAdminCreateUserView(
             user = User.objects.create(username=username, password=password)
             UserProfile.objects.create(
                 user=user,
-                profile_type=profile_type)
-            user.profile.cohort = cohort
+                profile_type=profile_type,
+                cohort=cohort)
+
             user.save()
             action_args = dict(
                 user=user.pk, username=username, error=None)
