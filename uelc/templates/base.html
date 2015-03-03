@@ -72,25 +72,25 @@
 				{% block usernav %}
 				
 				
-				{% if request.user.is_superuser %}
-				{% if instructor_link %}
-				<!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
-				{% endif %}
-				{% block edit-or-view-page %}
-				{% if is_view %}
-				<li>
-				<a href="{{section.get_edit_url}}">Edit Page</a>
-				</li>
-				{% else %}
-				<li>
-				<a href="{{section.get_absolute_url}}">View Page</a>
-				</li>
-				{% endif %} 
-				{% endblock %}
-				<li>
-				<a href="{% url 'impersonate-list' %}">Impersonate</a>
-				</li>
-				{% endif %}
+				{% ifnotequal request.user.profile.profile_type "group_user" %}
+    				{% if instructor_link %}
+    				<!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
+    				{% endif %}
+    				{% block edit-or-view-page %}
+    				{% if is_view %}
+    				<li>
+    				<a href="{{section.get_edit_url}}">Edit Page</a>
+    				</li>
+    				{% else %}
+    				<li>
+    				<a href="{{section.get_absolute_url}}">View Page</a>
+    				</li>
+    				{% endif %} 
+    				{% endblock %}
+    				<li>
+    				<a href="{% url 'impersonate-list' %}">Impersonate</a>
+    				</li>
+				{% endifnotequal %}
 				
 				{% if request.user.is_anonymous %}
 				{% else %}

@@ -246,6 +246,8 @@ class UELCPageView(LoggedInMixin,
         casemap = get_user_map(hierarchy, request.user)
         part = hand.get_part_by_section(self.section)
         tree_path = self.check_part_path(casemap, hand, part)
+        roots = get_root_context(self.request)
+        
         if tree_path[0]:
             return HttpResponseRedirect(tree_path[1])
 
@@ -293,6 +295,7 @@ class UELCPageView(LoggedInMixin,
             casemap=casemap,
             library_items=self.get_library_items(case),
             part=part,
+            roots=roots['roots']
         )
         context.update(self.get_extra_context())
         return render(request, self.template_name, context)
