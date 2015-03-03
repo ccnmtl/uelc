@@ -82,9 +82,10 @@ class TestGroupUserLoggedInViews(TestCase):
         self.hierarchy = get_hierarchy(name='main')
         self.section = self.hierarchy.get_root().get_first_leaf()
 
-        self.grp_usr = GroupUpFactory().user
+        self.grp_usr = GroupUpFactory()
+        self.grp_usr.profile.profile_type = 'group_user'
         self.client = Client()
-        self.client.login(username=self.grp_usr.username, password="test")
+        self.client.login(username=self.grp_usr.user.username, password="test")
 
     def test_edit_page_form(self):
         response = self.client.get(self.section.get_edit_url())
