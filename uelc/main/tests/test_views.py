@@ -2,8 +2,8 @@ from django.test import TestCase
 from django.test.client import Client
 from pagetree.helpers import get_hierarchy
 from django.contrib.auth.models import User
-from factories import GroupUpFactory
 from pagetree.tests.factories import ModuleFactory
+from uelc.main.models import UserProfile
 
 
 class BasicTest(TestCase):
@@ -43,7 +43,7 @@ class PagetreeViewTestsLoggedOut(TestCase):
 
     def test_instructor_page(self):
         r = self.c.get("/pages/main/instructor/section-1/")
-        self.assertEqual(r.status_code, 302)
+        self.assertEqual(r.status_code, 200)
 
 
 class PagetreeViewTestsLoggedIn(TestCase):
@@ -59,6 +59,7 @@ class PagetreeViewTestsLoggedIn(TestCase):
                 'children': [],
             })
         self.u = User.objects.create(username="testuser")
+        UserProfile.objects.create(user=self.u, profile_type='group_user')
         self.u.set_password("test")
         self.u.save()
         self.c.login(username="testuser", password="test")
@@ -81,11 +82,12 @@ class TestGroupUserLoggedInViews(TestCase):
         ModuleFactory("main", "/pages/main/")
         self.hierarchy = get_hierarchy(name='main')
         self.section = self.hierarchy.get_root().get_first_leaf()
-
-        self.grp_usr = GroupUpFactory()
-        self.grp_usr.profile.profile_type = 'group_user'
+        self.grp_usr = User.objects.create(username="testuser")
+        UserProfile.objects.create(
+            user=self.grp_usr,
+            profile_type='group_user')
         self.client = Client()
-        self.client.login(username=self.grp_usr.user.username, password="test")
+        self.client.login(username=self.grp_usr.username, password="test")
 
     def test_edit_page_form(self):
         response = self.client.get(self.section.get_edit_url())
