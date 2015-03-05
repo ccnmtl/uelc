@@ -2,7 +2,8 @@ from django.test import TestCase
 from django.test.client import Client
 from pagetree.helpers import get_hierarchy
 from django.contrib.auth.models import User
-from factories import GroupUpFactory
+from factories import GroupUpFactory, AdminUpFactory, \
+    CaseFactory, CohortFactory
 from pagetree.tests.factories import ModuleFactory
 
 
@@ -98,3 +99,103 @@ class TestGroupUserLoggedInViews(TestCase):
     def test_index(self):
         response = self.client.get("/")
         self.assertTemplateUsed(response, 'main/index.html')
+
+
+class TestAdminTemplateViews(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.h = get_hierarchy("main", "/pages/main/")
+        self.root = self.h.get_root()
+        self.root.add_child_section_from_dict(
+            {
+                'label': 'Section 1',
+                'slug': 'section-1',
+                'pageblocks': [],
+                'children': [],
+            })
+        self.case = CaseFactory()
+        self.profile = AdminUpFactory()
+        self.gu = GroupUpFactory()
+        self.cohort = CohortFactory()
+        self.client.login(username=self.profile.user.username, password='test')
+
+    def test_uelc_admin(self):
+        request = self.client.get("/uelcadmin/", follow=True)
+        self.assertEqual(request.status_code, 200)
+        self.assertTemplateUsed(request,
+                                'pagetree/uelc_admin.html')
+
+    def test_uelc_admin_case(self):
+        request = self.client.get("/uelcadmin/case/", follow=True)
+        self.assertEqual(request.status_code, 200)
+        self.assertTemplateUsed(request,
+                                'pagetree/uelc_admin_case.html')
+
+    def test_uelc_admin_create_hierarchy(self):
+        request = self.client.post(
+            "/uelcadmin/createhierarchy/", {'name': 'NewHierarchy'},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
+    def test_uelc_admin_create_cohort(self):
+        request = self.client.post(
+            "/uelcadmin/createcohort/", {'name': 'NewCohort'},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
+    def test_uelc_admin_create_user(self):
+        request = self.client.post(
+            "/uelcadmin/createuser/",
+            {'username': 'NewUser', 'password1': 'magic_password',
+             'user_profile': 'assistant', 'cohort': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
+    def test_uelc_admin_create_case(self):
+        request = self.client.post(
+            "/uelcadmin/createcase/",
+            {'name': 'NewCase', 'hierarchy': str(self.h.id),
+             'cohort': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
+    def test_uelc_admin_edit_cohort(self):
+        request = self.client.post(
+            "/uelcadmin/editcohort/",
+            {'name': 'EditCohort', 'cohort_id': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
+    def test_uelc_admin_edit_user(self):
+        request = self.client.post(
+            "/uelcadmin/edituser/",
+            {'username': 'EditUser', 'user_id': str(self.gu.user.pk),
+             'profile_type': 'group_user', 'cohort': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
+    def test_uelc_admin_edit_case(self):
+        request = self.client.post(
+            "/uelcadmin/editcase/",
+            {'name': 'EditCase', 'hierarchy': str(self.h.id),
+             'cohort': str(self.cohort.id), 'case_id': str(self.case.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
+    # def test_uelc_admin_delete_cohort(self):
+
+    # def test_uelc_admin_delete_user(self):
+
+    # def test_uelc_admin_delete_case(self):
+
+    # def test_uelc_admin_delete_hierarchy(self):
+
+#     (r'^uelcadmin/editcase/', UELCAdminEditCaseView.as_view()),
+
+#     (r'^uelcadmin/cohort/', UELCAdminCohortView.as_view()),
+#     (r'^uelcadmin/user/', UELCAdminUserView.as_view()),
+#     (r'^uelcadmin/deletehierarchy/', UELCAdminDeleteHierarchyView.as_view()),
+#     (r'^uelcadmin/deletecase/', UELCAdminDeleteCaseView.as_view()),
+#     (r'^uelcadmin/deletecohort/', UELCAdminDeleteCohortView.as_view()),
+#     (r'^uelcadmin/deleteuser/', UELCAdminDeleteUserView.as_view()),

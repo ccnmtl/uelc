@@ -72,9 +72,11 @@ jQuery(document).ready(function() {
                   },
                   user: 'required',
                   hierarchy: 'required',
+                  /*
                   cohort:{
                     required:true,
                   }
+                  */
               },
               ignore: '.ignore',
               errorClass: 'has-error',
@@ -246,10 +248,23 @@ jQuery(document).ready(function() {
 
       };
 
+      this.setNavbarActiveTab = function() {
+          var loc = window.location.href;
+          var urlArray = loc.split('/');
+          var page = urlArray[urlArray.length - 2];
+          var activeLi = jQuery('li[data-tab="' + page + '"]');
+          console.log(activeLi);
+          jQuery('#uelc-admin-menu ul li').each(function() {
+              jQuery(this).removeClass('active');
+          });
+          activeLi.addClass('active');
+      };
+
       this.init = function() {
           this.setMultiselects();
           this.addListeners();
           this.checkForMessages();
+          this.setNavbarActiveTab();
       };
   };
 
