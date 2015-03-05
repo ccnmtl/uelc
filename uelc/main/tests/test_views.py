@@ -189,17 +189,20 @@ class TestAdminViews(TestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
         self.assertEqual(request.status_code, 302)
 
-    # def test_uelc_admin_delete_user(self):
+    def test_uelc_admin_delete_user(self):
+        request = self.client.post(
+            "/uelcadmin/deleteuser/", {'user_id': str(self.gu.user.pk)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
 
-    # def test_uelc_admin_delete_case(self):
+    def test_uelc_admin_delete_case(self):
+        request = self.client.post(
+            "/uelcadmin/deletecase/", {'case_id': str(self.case.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
 
-    # def test_uelc_admin_delete_hierarchy(self):
-
-#     (r'^uelcadmin/editcase/', UELCAdminEditCaseView.as_view()),
-
-#     (r'^uelcadmin/cohort/', UELCAdminCohortView.as_view()),
-#     (r'^uelcadmin/user/', UELCAdminUserView.as_view()),
-#     (r'^uelcadmin/deletehierarchy/', UELCAdminDeleteHierarchyView.as_view()),
-#     (r'^uelcadmin/deletecase/', UELCAdminDeleteCaseView.as_view()),
-#     (r'^uelcadmin/deletecohort/', UELCAdminDeleteCohortView.as_view()),
-#     (r'^uelcadmin/deleteuser/', UELCAdminDeleteUserView.as_view()),
+    def test_uelc_admin_delete_hierarchy(self):
+        request = self.client.post(
+            "/uelcadmin/deletehierarchy/", {'hierarchy_id': str(self.h.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
