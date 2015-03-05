@@ -101,7 +101,7 @@ class TestGroupUserLoggedInViews(TestCase):
         self.assertTemplateUsed(response, 'main/index.html')
 
 
-class TestAdminTemplateViews(TestCase):
+class TestAdminViews(TestCase):
 
     def setUp(self):
         self.client = Client()
@@ -183,7 +183,11 @@ class TestAdminTemplateViews(TestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
         self.assertEqual(request.status_code, 302)
 
-    # def test_uelc_admin_delete_cohort(self):
+    def test_uelc_admin_delete_cohort(self):
+        request = self.client.post(
+            "/uelcadmin/deletecohort/", {'cohort_id': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
 
     # def test_uelc_admin_delete_user(self):
 
