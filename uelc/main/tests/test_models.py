@@ -133,15 +133,10 @@ class TextBlockDTTest(TestCase):
 
     def test_save(self):
         t = TextBlockDTFactory()
-#         vals = dict(body="a new body",
-#                     after_decision="new after decision",
-#                     choice="new choice")
         vals = dict(body="a new body",
-                    after_decision="1",
                     choice="2")
         t.edit(vals, None)
         self.assertEqual(t.body, "a new body")
-        self.assertEqual(t.after_decision, "1")
         self.assertEqual(t.choice, "2")
 
     def test_summary_render_short(self):
