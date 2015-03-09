@@ -241,3 +241,25 @@ ul.gate-section-list{
     border-color: #438343;
     border-radius: 2em;
 }
+
+/* facilitator page */
+.btn-block.btn-incomplete{
+    background: #d9534f;
+    border-color: #d43f3a;
+    color: #fff;
+}
+.btn-block.btn-incomplete .badge{
+    background: #fff;
+    color:#d9534f;
+}
+.btn-block.btn-waiting{
+    background: #fcf8e3;
+    border-color: #faebcc;
+    color: #8a6d3b;
+}
+.btn-block.btn-waiting .badge{
+    background: #fff;
+    color:#8a6d3b;
+}
+
+

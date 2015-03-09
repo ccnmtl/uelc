@@ -39,7 +39,7 @@
               {% if sec.5 %}
                 <div class="gate-button locked {{sec.6|convert}}">
                     <form action ="." method="post">{% csrf_token %}
-                        <button type ="submit" class="btn btn-sm btn-danger btn-block"><span class="pull-left"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> - {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize" style="font-size: 8px;">{{sec.4}}</span></button>
+                        <button type ="submit" class="btn btn-sm btn-{{sec.4}} btn-block"><span class="pull-left"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> - {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize" style="font-size: 8px;">{{sec.4}}</span></button>
                         <input type="hidden" name="gate-action" value="submit" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />
