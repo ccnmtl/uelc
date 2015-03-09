@@ -52,9 +52,14 @@
 			<span class="icon-bar"></span>
 		</button>
 		<a class="navbar-brand" href="/"><img src="{{STATIC_URL}}img/logo.png" /></a>
-    {% if request.user.profile.profile_type == 'facilitator' or request.user.profile.profile_type == 'admin' %}
+    {% if request.user.profile.profile_type == 'admin' %}
       <a class="navbar-brand" href="/uelcadmin/"><span class="glyphicon glyphicon-wrench"></span></a>
     {% endif %}
+    {% ifnotequal request.user.profile.profile_type  'group_user'  %}
+        {% for root in roots %}
+            <a href="{{ root.0 }}facilitator/"><span class="glyphicon glyphicon-tree-deciduous" aria-hidden="true"></span></a>
+        {% endfor %}
+    {% endifnotequal %}
 		</div>
 		
 		
@@ -67,25 +72,25 @@
 				{% block usernav %}
 				
 				
-				{% if request.user.is_superuser %}
-				{% if instructor_link %}
-				<!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
-				{% endif %}
-				{% block edit-or-view-page %}
-				{% if is_view %}
-				<li>
-				<a href="{{section.get_edit_url}}">Edit Page</a>
-				</li>
-				{% else %}
-				<li>
-				<a href="{{section.get_absolute_url}}">View Page</a>
-				</li>
-				{% endif %} 
-				{% endblock %}
-				<li>
-				<a href="{% url 'impersonate-list' %}">Impersonate</a>
-				</li>
-				{% endif %}
+				{% ifnotequal request.user.profile.profile_type "group_user" %}
+    				{% if instructor_link %}
+    				<!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
+    				{% endif %}
+    				{% block edit-or-view-page %}
+    				{% if is_view %}
+    				<li>
+    				<a href="{{section.get_edit_url}}">Edit Page</a>
+    				</li>
+    				{% else %}
+    				<li>
+    				<a href="{{section.get_absolute_url}}">View Page</a>
+    				</li>
+    				{% endif %} 
+    				{% endblock %}
+    				<li>
+    				<a href="{% url 'impersonate-list' %}">Impersonate</a>
+    				</li>
+				{% endifnotequal %}
 				
 				{% if request.user.is_anonymous %}
 				{% else %}
@@ -129,78 +134,67 @@
     {% block masthead %}
     {% block primarynav %}{% endblock %}
     {% endblock %}
-
-    <div class="row">
-	
-	    <div class="col-sm-9">
+	   <div class="col-sm-9">
 		{% block pagetitle %}{% endblock %}
 		{% block content %}{% endblock %}
-        {% block library %}{% endblock %}
-	</div>
-	
-    <div class="col-sm-3">
-		{% block content-nav %}{% endblock %}
-        {% block loginbox %}
-        {% if request.user.is_anonymous %}
-        <div class="loginbox-container columbia">
-        <div class="loginbox">
-        <h2>Choose a login option.</h2>
-        <div class="content">
-        {% if CAS_BASE %}
-        <form method="get" action="{{ CAS_BASE }}cas/login">
-        {% csrf_token %}
-        <input type="hidden" name="destination" value="https://{{ request.get_host }}/accounts/caslogin/?next={{ request.get_full_path|urlencode }}" />
-        <p>If you have a Columbia University Network ID (UNI)...</p>
-        <input class="regbutton" type="submit" value="Columbia Log In" />
-        </form>
-        {% endif %}
-        <p class="smalltxt"><a href="http://cuit.columbia.edu/cuit/manage-my-uni" title="Learn more about UNI" target="_blank">What is a UNI?</a></p>
-        <!-- End UNI LOG IN -->
-        {% if login_form.errors %}
-        <p class="errornote">
-        <span>
-        <b>ERROR:</b> Invalid username or password.
-        </span>
-        Please try again. Note that both username and password are case-sensitive.
-        </p>
-        {% endif %}
-        <p>If you have a guest account...</p>
-        <form id="login-local" name="login_local" method="post" action="/accounts/login/">
-        {% csrf_token %}
-        <div class="login-local-form" {% if not login_form.errors %}style="display: none"{% endif %}>
-        <div class="fieldwrapper">
-        <label for="id_username">Username:</label>
-        {{ login_form.username }}
-        </div>
-        <!-- fieldwrapper -->
-        <div class="fieldwrapper">
-        <label for="id_password">Password:</label>
-        {{ login_form.password }}
-        </div><!-- fieldwrapper -->
-        </div>      
-        <input class="regbutton" type="button" value="Guest Log In" {% if login_form.errors %}style="display: none"{% endif %}
-        onclick="jQuery('.login-local-form').show(); jQuery(this).hide(); return false;"/>
-        <input class="regbutton login-local-form" type="submit" value="Log In" {% if not login_form.errors %}style="display: none;"{% endif %} />                        
-        <input type="hidden" name="next" value="{{ request.get_full_path }}" />
-        </form>
-        <p class="smalltxt"><a href="/registration/register/" title="Create your new project account">Need a new account?</a></p>
-        </div>
-        </div>
-        </div>
-        {% endif %}
-        {% endblock %}
+        {% block content-nav %}{% endblock %}
+	   </div>
+           <div class="col-sm-3">
+                {% if request.user.is_anonymous %}
+            {% block loginbox %}
+                          <div class="loginbox-container columbia">
+            <div class="loginbox">
+            <h2>Choose a login option.</h2>
+            <div class="content">
+            {% if CAS_BASE %}
+            <form method="get" action="{{ CAS_BASE }}cas/login">
+            {% csrf_token %}
+            <input type="hidden" name="destination" value="https://{{ request.get_host }}/accounts/caslogin/?next={{ request.get_full_path|urlencode }}" />
+            <p>If you have a Columbia University Network ID (UNI)...</p>
+            <input class="regbutton" type="submit" value="Columbia Log In" />
+            </form>
+            {% endif %}
+            <p class="smalltxt"><a href="http://cuit.columbia.edu/cuit/manage-my-uni" title="Learn more about UNI" target="_blank">What is a UNI?</a></p>
+            <!-- End UNI LOG IN -->
+            {% if login_form.errors %}
+            <p class="errornote">
+            <span>
+            <b>ERROR:</b> Invalid username or password.
+            </span>
+            Please try again. Note that both username and password are case-sensitive.
+            </p>
+            {% endif %}
+            <p>If you have a guest account...</p>
+            <form id="login-local" name="login_local" method="post" action="/accounts/login/">
+            {% csrf_token %}
+            <div class="login-local-form" {% if not login_form.errors %}style="display: none"{% endif %}>
+            <div class="fieldwrapper">
+            <label for="id_username">Username:</label>
+            {{ login_form.username }}
+            </div>
+            <!-- fieldwrapper -->
+            <div class="fieldwrapper">
+            <label for="id_password">Password:</label>
+            {{ login_form.password }}
+            </div><!-- fieldwrapper -->
+            </div>      
+            <input class="regbutton" type="button" value="Guest Log In" {% if login_form.errors %}style="display: none"{% endif %}
+            onclick="jQuery('.login-local-form').show(); jQuery(this).hide(); return false;"/>
+            <input class="regbutton login-local-form" type="submit" value="Log In" {% if not login_form.errors %}style="display: none;"{% endif %} />                        
+            <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+            </form>
+            <p class="smalltxt"><a href="/registration/register/" title="Create your new project account">Need a new account?</a></p>
+            </div>
+            </div>
+            </div>
+                {% endblock %}
+            {% endif %}
+            {% block sidenav %}{% endblock %}
+            {% block library %}{% endblock %}
 
-        {% block sidenav %}
-        {% endblock %}
-        
-        
-	</div>
-	
-    </div>
+       </div>
+
     <!--end .row-->
-
-
-
 </div>
 
 {% block footer %}
