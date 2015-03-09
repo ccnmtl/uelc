@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from pagetree.models import Hierarchy
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap, TextBlockDT, UELCHandler,
-    LibraryItem, CaseQuiz)
+    LibraryItem, CaseQuiz, CaseAnswer)
 import factory
 
 
@@ -90,3 +90,9 @@ class LibraryItemFactory(factory.DjangoModelFactory):
     FACTORY_FOR = LibraryItem
     name = factory.Sequence(lambda n: "item %03d" % n)
     case = factory.SubFactory(CaseFactory)
+
+
+class CaseAnswer(factory.DjangoModelFactory):
+    FACTORY_FOR = CaseAnswer
+    name = factory.Sequence(lambda n: "case %03d" % n)
+    hierarchy = factory.SubFactory(HierarchyFactory)
