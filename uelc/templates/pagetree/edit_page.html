@@ -14,15 +14,15 @@
 
 {% compress css %}
 <style type="text/css">
-	.draghandle {float: left;}
-	#children-order-list {list-style-type: none; margin: 0; padding: 0;}
-	#children li { margin: 0 3px 3px 3px; padding: 0.4em;
-	padding-left: 1.5em; 
+  .draghandle {float: left;}
+  #children-order-list {list-style-type: none; margin: 0; padding: 0;}
+  #children li { margin: 0 3px 3px 3px; padding: 0.4em;
+  padding-left: 1.5em; 
           background-color: #ddd;
-	}
-	#children li span { position: absolute; margin-left: -1.3em; }
-	.dragging {background-color: #fee;}
-	</style>
+  }
+  #children li span { position: absolute; margin-left: -1.3em; }
+  .dragging {background-color: #fee;}
+  </style>
 {% endcompress %}
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -112,7 +112,7 @@ $(function() {
 
 
 {% block sidenav %}
-	<!-- ###### Secondary Navigation ###### -->
+  <!-- ###### Secondary Navigation ###### -->
     {% with "/edit" as menu_base %}
         {% include "pagetree/menu.html" %}
     {% endwith %}
@@ -172,38 +172,60 @@ $(function() {
 {% for block in section.pageblock_set.all %}
 <div class="row block-dragger" id="pageblock-{{block.id}}" style="margin-top: 5px; padding-top: 5px; border-top: 1px solid #eee;">
 
-	<div class="col-sm-1 draghandle">
-		<span class="glyphicon glyphicon-resize-vertical"></span>
-	</div>
+  <div class="col-sm-1 draghandle">
+    <span class="glyphicon glyphicon-resize-vertical"></span>
+  </div>
 
-	<div class="col-sm-2">
-		<b><a data-toggle="modal" href="#edit-pageblock-{{block.id}}">{{block.block.display_name}}</a></b>
-	</div>
+  <div class="col-sm-2">
+    <b><a data-toggle="modal" href="#edit-pageblock-{{block.id}}">{{block.block.display_name}}</a></b>
+  </div>
 
-	<div class="col-sm-6">
-		<a data-toggle="modal" href="#edit-pageblock-{{block.id}}">{{block.label}}</a>
+  <div class="col-sm-6">
+    <a data-toggle="modal" href="#edit-pageblock-{{block.id}}">{{block.label}}</a>
 {% rendersummary block %}
-	</div>
+  </div>
 
-	<div class="col-sm-3">
-		<div class="btn-group">
-			<a data-toggle="modal" class="btn btn-default btn-xs"
-			 href="#edit-pageblock-{{block.id}}">
-		<span class="glyphicon glyphicon-edit"></span>
-			edit</a>
+  <div class="col-sm-3">
+    <div class="btn-group">
+      <a data-toggle="modal" class="btn btn-default btn-xs"
+       href="#edit-pageblock-{{block.id}}">
+    <span class="glyphicon glyphicon-edit"></span>
+      edit</a>
 
-		<a href="{% url 'delete-pageblock' block.id %}" class="btn
-		btn-danger btn-xs">		<span class="glyphicon glyphicon-trash"></span> delete</a>
+    <a href="#" class="btn
+    btn-danger btn-xs" data-toggle="modal" data-target="#delete-pageblock-{{block.id}}">
+      <span class="glyphicon glyphicon-trash"></span> delete
+    </a>
 
-		{% if block.block.exportable %}
-		<a class="btn btn-xs"
-			 rel="tooltip" title="Download JSON dump of this block"
-			 id="export-{{block.id}}"
-			 href="{% url 'export-pageblock-json' block.id %}"><span class="glyphicon glyphicon-download"></span> export</a>
+    <div id="delete-pageblock-{{block.id}}" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Delete Page Block</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you Sure you want to delete the page block?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <a href="{% url 'delete-pageblock' block.id %}" class="btn
+    btn-danger">Yes, Delete Page Block!</a>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
-		{% endif %}
-		</div>
-	</div>
+
+    {% if block.block.exportable %}
+    <a class="btn btn-xs"
+       rel="tooltip" title="Download JSON dump of this block"
+       id="export-{{block.id}}"
+       href="{% url 'export-pageblock-json' block.id %}"><span class="glyphicon glyphicon-download"></span> export</a>
+
+    {% endif %}
+    </div>
+  </div>
 
 
 </div>
@@ -239,8 +261,8 @@ class=""
 
   <div class="modal-footer">
     <a href="#" class="btn" data-dismiss="modal">Cancel</a>
-		<input type="submit" value="Save" 
-			 class="btn btn-primary" />
+    <input type="submit" value="Save" 
+       class="btn btn-primary" />
   </div>
 
 </form>
@@ -272,12 +294,12 @@ class=""
 
 <h2>Add Child</h2>
 <form action="{% url 'add-child-section' section.id %}" method="post"
-			class="well form-inline" >{% csrf_token %}
+      class="well form-inline" >{% csrf_token %}
 
 {{ section.add_child_section_form|bootstrap }}
 
 <input type="submit" value="add child section" class="btn btn-primary"
-			 />
+       />
 </form>
 </div>
 
@@ -287,7 +309,7 @@ class=""
 <ul>
 {% for blocktype in available_pageblocks %}
 <li><a data-toggle="modal"
-			 href="#add-block-{{forloop.counter}}">Add {{blocktype.display_name}}</a></li>
+       href="#add-block-{{forloop.counter}}">Add {{blocktype.display_name}}</a></li>
 {% endfor %}
 </ul>
 
@@ -322,8 +344,8 @@ method="post">{% csrf_token %}
   </div>
   <div class="modal-footer">
     <a href="#" class="btn" data-dismiss="modal">Cancel</a>
-		<input type="submit" value="add {{blocktype.display_name}}" 
-			 class="btn btn-primary" />
+    <input type="submit" value="add {{blocktype.display_name}}" 
+       class="btn btn-primary" />
   </div>
 </form>
 </div></div>
@@ -336,7 +358,7 @@ method="post">{% csrf_token %}
 <div id="edit-page-tab" class="tab-pane">
 
 <form action="{% url 'edit-section' section.id %}" method="post"
-			class="form-horizontal well">
+      class="form-horizontal well">
 {% csrf_token %}
 <fieldset><legend>Edit Page</legend>
 
@@ -369,23 +391,23 @@ method="post">{% csrf_token %}
 
 {% if section.version_set.count %}
 <table class="table table-bordered table-striped table-condensed">
-	<thead>
-		<tr>
-			<th>Saved At</th>
-			<th>User</th>
-			<th>Activity</th>
-			<th>Actions</th>
-		</tr>
-	</thead>
-	<tbody>
+  <thead>
+    <tr>
+      <th>Saved At</th>
+      <th>User</th>
+      <th>Activity</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
 {% for version in section.version_set.all %}
     <tr>
-			<td>{{version.saved_at}}</td>
-			<td>{{version.user}}</td>
-			<td>{{version.activity}}</td>
-			<td><a href="{% url 'revert-to-version' version.id %}" class="btn
-			btn-sm btn-warning"><span class="glyphicon glyphicon-repeat"></span> revert</a></td>
-		</tr>
+      <td>{{version.saved_at}}</td>
+      <td>{{version.user}}</td>
+      <td>{{version.activity}}</td>
+      <td><a href="{% url 'revert-to-version' version.id %}" class="btn
+      btn-sm btn-warning"><span class="glyphicon glyphicon-repeat"></span> revert</a></td>
+    </tr>
 {% endfor %}
 </tbody>
 </table>
