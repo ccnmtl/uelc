@@ -176,8 +176,6 @@ class Case(models.Model):
 
     def _get_cohorts(self):
         cohorts = Cohort.objects.filter(case_cohort=self.id)
-        if not cohorts:
-            return None
         return cohorts
 
     def cohortnames(self):
