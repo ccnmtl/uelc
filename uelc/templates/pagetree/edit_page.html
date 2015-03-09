@@ -166,34 +166,35 @@ $(function() {
 
 <p>Drag the <span class="glyphicon glyphicon-resize-vertical"></span> arrows to reorder pageblocks:</p>
 
+<div class="container-fluid">
 {% for block in section.pageblock_set.all %}
-<div class="row block-dragger" id="pageblock-{{block.id}}">
+<div class="row block-dragger" id="pageblock-{{block.id}}" style="margin-top: 5px; padding-top: 5px; border-top: 1px solid #eee;">
 
-	<div class="col-md-1 draghandle">
+	<div class="col-sm-1 draghandle">
 		<span class="glyphicon glyphicon-resize-vertical"></span>
 	</div>
 
-	<div class="col-md-2">
+	<div class="col-sm-2">
 		<b><a data-toggle="modal" href="#edit-pageblock-{{block.id}}">{{block.block.display_name}}</a></b>
 	</div>
 
-	<div class="col-md-6">
+	<div class="col-sm-6">
 		<a data-toggle="modal" href="#edit-pageblock-{{block.id}}">{{block.label}}</a>
 {% rendersummary block %}
 	</div>
 
-	<div class="col-md-3">
+	<div class="col-sm-3">
 		<div class="btn-group">
-			<a data-toggle="modal" class="btn btn-default btn-sm"
+			<a data-toggle="modal" class="btn btn-default btn-xs"
 			 href="#edit-pageblock-{{block.id}}">
 		<span class="glyphicon glyphicon-edit"></span>
 			edit</a>
 
 		<a href="{% url 'delete-pageblock' block.id %}" class="btn
-		btn-danger btn-sm">		<span class="glyphicon glyphicon-trash"></span> delete</a>
+		btn-danger btn-xs">		<span class="glyphicon glyphicon-trash"></span> delete</a>
 
 		{% if block.block.exportable %}
-		<a class="btn btn-sm"
+		<a class="btn btn-xs"
 			 rel="tooltip" title="Download JSON dump of this block"
 			 id="export-{{block.id}}"
 			 href="{% url 'export-pageblock-json' block.id %}"><span class="glyphicon glyphicon-download"></span> export</a>
@@ -205,7 +206,7 @@ $(function() {
 
 </div>
 {% endfor %}
-
+</div>
 
 {% for block in section.pageblock_set.all %}
 <div class="modal fade block-edit" id="edit-pageblock-{{block.id}}" role="dialog">
