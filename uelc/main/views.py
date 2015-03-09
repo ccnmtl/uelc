@@ -31,7 +31,8 @@ class LoggedInMixinSuperuser(object):
 
 class LoggedInMixinFacilitator(object):
     @method_decorator(user_passes_test(
-        lambda u: not u.profile.profile_type == "group_user"))
+        lambda u: not u.is_anonymous and
+        not u.profile.profile_type == "group_user"))
     def dispatch(self, *args, **kwargs):
         return super(LoggedInMixinFacilitator, self).dispatch(*args, **kwargs)
 
