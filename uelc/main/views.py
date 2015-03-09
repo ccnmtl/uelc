@@ -975,7 +975,7 @@ class EditCaseAnswerView(View):
 
 
 class DeleteCaseAnswerView(LoggedInMixinSuperuser,
-                           TemplateView):
+                           View):
     '''I am doing a regular view instead of a delete view,
     because the delete view will only delete the caseanswer,
     we want to delete the case answer and corresponding answer'''
