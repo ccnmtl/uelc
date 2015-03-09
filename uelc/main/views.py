@@ -29,6 +29,14 @@ class LoggedInMixinSuperuser(object):
         return super(LoggedInMixinSuperuser, self).dispatch(*args, **kwargs)
 
 
+class LoggedInFacilitatorMixin(object):
+    @method_decorator(user_passes_test(
+        lambda u: not u.is_anonymous() and
+        not u.profile.profile_type == "group_user"))
+    def dispatch(self, *args, **kwargs):
+        return super(LoggedInFacilitatorMixin, self).dispatch(*args, **kwargs)
+
+
 class LoggedInMixin(object):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -98,21 +106,26 @@ def reset_page(section, request):
     return HttpResponseRedirect(section.get_absolute_url())
 
 
+def get_root_context(request):
+    context = dict()
+    try:
+        cases = get_cases(request)
+        if cases:
+            roots = [(case.hierarchy.get_absolute_url(),
+                      case.hierarchy.name)
+                     for case in cases]
+            context = dict(roots=roots)
+    except ObjectDoesNotExist:
+        pass
+    return context
+
+
 class IndexView(TemplateView):
     template_name = "main/index.html"
 
     def get(self, request):
-        context = dict()
-        try:
-            cases = get_cases(request)
-            if cases:
-                roots = [(case.hierarchy.get_absolute_url(),
-                          case.name)
-                         for case in cases]
-                context = dict(roots=roots)
-        except ObjectDoesNotExist:
-            pass
-        return render(request, self.template_name, context)
+        root_context = get_root_context(request)
+        return render(request, self.template_name, root_context)
 
 
 def has_responses(section):
@@ -234,6 +247,8 @@ class UELCPageView(LoggedInMixin,
         casemap = get_user_map(hierarchy, request.user)
         part = hand.get_part_by_section(self.section)
         tree_path = self.check_part_path(casemap, hand, part)
+        roots = get_root_context(self.request)
+
         if tree_path[0]:
             return HttpResponseRedirect(tree_path[1])
 
@@ -281,6 +296,7 @@ class UELCPageView(LoggedInMixin,
             casemap=casemap,
             library_items=self.get_library_items(case),
             part=part,
+            roots=roots['roots']
         )
         context.update(self.get_extra_context())
         return render(request, self.template_name, context)
@@ -330,13 +346,13 @@ class UELCPageView(LoggedInMixin,
             return HttpResponseRedirect(request.path)
 
 
-class UELCEditView(LoggedInMixinSuperuser,
+class UELCEditView(LoggedInFacilitatorMixin,
                    DynamicHierarchyMixin,
                    EditView):
     template_name = "pagetree/edit_page.html"
 
 
-class FacilitatorView(LoggedInMixinSuperuser,
+class FacilitatorView(LoggedInFacilitatorMixin,
                       DynamicHierarchyMixin,
                       TemplateView,
                       SectionMixin):
@@ -435,6 +451,7 @@ class FacilitatorView(LoggedInMixinSuperuser,
         user = self.request.user
         section = self.get_section(path)
         root = section.hierarchy.get_root()
+        roots = get_root_context(self.request)
         hierarchy = section.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
         library_item = LibraryItem
@@ -478,6 +495,7 @@ class FacilitatorView(LoggedInMixinSuperuser,
                        library_item=library_item,
                        library_items=library_items,
                        case=case,
+                       roots=roots['roots']
                        )
         context.update(self.get_extra_context())
         return context

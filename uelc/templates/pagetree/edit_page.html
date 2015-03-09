@@ -32,10 +32,12 @@
 
 
 <script type="text/javascript">
-jQuery('[id^=editor]').ckeditor({
+var wysiwyg = jQuery('[id^=editor]').ckeditor({
     //filebrowserUploadUrl: '/uploads/',
-    filebrowserBrowseUrl: '/admin/main/imageuploaditem/'
+    filebrowserBrowseUrl: '/admin/main/imageuploaditem/',
+    allowedContent: true
   });
+//wysiwyg.config.allowedContent = true;
 var saveOrderOfChildren = function() {
     var url = "{% url 'reorder-section-children' section.id %}?";
     var worktodo = 0;
