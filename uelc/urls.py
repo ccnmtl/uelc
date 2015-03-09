@@ -8,11 +8,13 @@ from uelc.main import views
 from uelc.main.models import UserProfile
 from uelc.main.views import (
     UELCPageView, UELCEditView, FacilitatorView, UELCAdminView,
-    UELCAdminEditUserView, UELCAdminCreateUserView,
-    UELCAdminHierarchyView, UELCAdminCreateCohortView,
-    UELCAdminEditCohortView, UELCAdminCreateCaseView,
-    UELCAdminDeleteUserView, AddCaseAnswerToQuestionView,
-    EditCaseAnswerView, DeleteCaseAnswerView)
+    UELCAdminCohortView, UELCAdminCreateHierarchyView,
+    UELCAdminDeleteHierarchyView, UELCAdminUserView, UELCAdminCaseView,
+    UELCAdminEditUserView, UELCAdminCreateUserView, UELCAdminEditCaseView,
+    UELCAdminCreateCohortView, UELCAdminEditCohortView,
+    UELCAdminDeleteCohortView, UELCAdminDeleteCaseView,
+    UELCAdminCreateCaseView, UELCAdminDeleteUserView,
+    AddCaseAnswerToQuestionView, EditCaseAnswerView)
 import os.path
 admin.autodiscover()
 
@@ -73,10 +75,17 @@ urlpatterns = patterns(
     (r'^$', views.IndexView.as_view()),
     (r'^ckeditor/', include('ckeditor.urls')),
     (r'^admin/', include(admin.site.urls)),
-    (r'^uelcadmin/hierarchy/', UELCAdminHierarchyView.as_view()),
+    (r'^uelcadmin/case/', UELCAdminCaseView.as_view()),
+    (r'^uelcadmin/createhierarchy/', UELCAdminCreateHierarchyView.as_view()),
+    (r'^uelcadmin/cohort/', UELCAdminCohortView.as_view()),
+    (r'^uelcadmin/user/', UELCAdminUserView.as_view()),
     (r'^uelcadmin/createcohort/', UELCAdminCreateCohortView.as_view()),
     (r'^uelcadmin/createcase/', UELCAdminCreateCaseView.as_view()),
+    (r'^uelcadmin/deletehierarchy/', UELCAdminDeleteHierarchyView.as_view()),
+    (r'^uelcadmin/editcase/', UELCAdminEditCaseView.as_view()),
+    (r'^uelcadmin/deletecase/', UELCAdminDeleteCaseView.as_view()),
     (r'^uelcadmin/editcohort/', UELCAdminEditCohortView.as_view()),
+    (r'^uelcadmin/deletecohort/', UELCAdminDeleteCohortView.as_view()),
     (r'^uelcadmin/createuser/', UELCAdminCreateUserView.as_view()),
     (r'^uelcadmin/edituser/', UELCAdminEditUserView.as_view()),
     (r'^uelcadmin/deleteuser/', UELCAdminDeleteUserView.as_view()),
@@ -86,9 +95,6 @@ urlpatterns = patterns(
      'add-case-answer-to-question'),
     (r'^edit_case_answer/(?P<pk>\d+)/$', EditCaseAnswerView.as_view(), {},
      'edit-case-answer'),
-    (r'^edit_question/(?P<pk>\d+)/delete_case_answer/$',
-     DeleteCaseAnswerView.as_view(), {},
-     'delete-case-answer'),
     url(r'^_impersonate/', include('impersonate.urls')),
     (r'^stats/$', TemplateView.as_view(template_name="stats.html")),
     (r'smoketest/', include('smoketest.urls')),
