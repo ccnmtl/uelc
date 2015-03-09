@@ -1,0 +1,102 @@
+{% extends 'pagetree/uelc_admin.html' %}
+{% load bootstrap %}
+{% block user %}
+<style type="text/css">
+button.close{
+  padding: 10px;
+}
+</style>
+
+  <div class="panel panel-default">
+      <div class="panel-heading">
+        <p>Users</p>
+        <button class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#add-user-form-modal" href="#add-user-form-modal" aria-hidden="true"></button>
+          <div id="add-user-form-modal" class="modal fade">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-header panel-heading">Add User</div>
+                <div class="modal-body">
+                  <div id="users" class="panel panel-default">
+                    <div class="panel-heading">Users</div>
+                    <div class="panel-body">
+                      <form role="form" data-toggle="validator" id="add-user-form" action="/uelcadmin/createuser/" method="post">{% csrf_token %}
+                        {{create_user_form|bootstrap}}
+                        <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                        <input type="reset" class="reset-button hidden" value="Reset" />
+                      </form>
+                    </div>
+                  </div><!--end #users-->
+                </div> <!--end modal-dialog-->
+              </div><!-- end modal-content-->
+          </div><!--end .model-body-->
+        </div><!--end #add-user-form-modal .modal-->
+      </div><!--end panel-heading-->
+      <div class="panel-body">
+        <table id="user-list" class="table">
+           <thead>
+              <tr>
+                <th>Username</th>
+                <th>Profile Type</th>
+                <th>Cohort/s</th>
+                <th>Edit User</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in users %}
+              <tr id="user-{{user.id}}">
+                <td class="td-username">{{ user.username }}</td>
+                <td class="td-profile">{{ user.profile.profile_type }}</td>
+                <td class="td-cohorts">{{ user.profile.cohort}}</td>
+                <td>
+                  <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">Edit</button>
+                  <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="modal-header panel-heading">Edit User</div>
+                            <div class="modal-body">
+                              <div id="edit-user" class="panel panel-default">
+                                <div class="panel-heading">Edit User</div>
+                                <div class="panel-body">
+                                  <form data-toggle="validator" id="edit-user-form" action="/uelcadmin/edituser/" method="post">{% csrf_token %}
+                                    {{user.profile.edit_form|bootstrap}}
+                                    <input type="hidden" name="user_id" value="{{user.id}}">
+                                    <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                                    <input type="reset" class="reset-button hidden" value="Reset" />
+                                  </form>
+                                </div>
+                              </div><!--end #hierarchiess-->
+                              </div> <!--end modal-dialog-->
+                        </div><!-- end modal-content-->
+                    </div><!--end .model-body-->
+                  </div><!--end #edit-user-form-modal .modal-->
+
+                  <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-user-form-modal-{{user.id}}" href="#delete-user-form-modal-{{user.id}}">Delete</button>
+                  <div id="delete-user-form-modal-{{user.id}}" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="modal-header panel-heading">Delete User</div>
+                            <div class="modal-body">
+                              <div id="edit-user" class="panel panel-default">
+                                <div class="panel-heading">ARE YOU SURE?</div>
+                                <div class="panel-body">
+                                  <form data-toggle="validator" id="edit-user-form" action="/uelcadmin/deleteuser/" method="post">{% csrf_token %}
+                                    <input type="hidden" name="user_id" value="{{user.id}}">
+                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
+                                  </form>
+                                </div>
+                              </div><!--end #hierarchiess-->
+                              </div> <!--end modal-dialog-->
+                        </div><!-- end modal-content-->
+                    </div><!--end .model-body-->
+                  </div><!--end #add-hierarchy-form-modal .modal-->
+                </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      </div><!--end panel-body-->
+  </div><!--end panel-->
+{% endblock %}
