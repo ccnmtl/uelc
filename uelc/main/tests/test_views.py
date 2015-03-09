@@ -1,11 +1,9 @@
 from django.test import TestCase
 from django.test.client import Client
 from pagetree.helpers import get_hierarchy
-from django.contrib.auth.models import User
 from factories import GroupUpFactory, AdminUpFactory, \
     CaseFactory, CohortFactory
 from pagetree.tests.factories import ModuleFactory
-from uelc.main.models import UserProfile, Cohort
 
 
 class BasicTest(TestCase):
@@ -60,15 +58,12 @@ class PagetreeViewTestsLoggedIn(TestCase):
                 'pageblocks': [],
                 'children': [],
             })
-        self.u = User.objects.create(username="testuser")
-        cohort = Cohort.objects.create(name='test cohort')
-        UserProfile.objects.create(
-            user=self.u,
-            profile_type='group_user',
-            cohort=cohort)
-        self.u.set_password("test")
-        self.u.save()
-        self.c.login(username="testuser", password="test")
+        self.grp_usr_profile = GroupUpFactory()
+        self.grp_usr_profile.user.set_password("test")
+        self.grp_usr_profile.user.save()
+        self.c.login(
+            username=self.grp_usr_profile.user.username,
+            password="test")
 
     def test_page(self):
         r = self.c.get("/pages/main/section-1/")
@@ -88,14 +83,13 @@ class TestGroupUserLoggedInViews(TestCase):
         ModuleFactory("main", "/pages/main/")
         self.hierarchy = get_hierarchy(name='main')
         self.section = self.hierarchy.get_root().get_first_leaf()
-        self.grp_usr = User.objects.create(username="testuser")
-        cohort = Cohort.objects.create(name='test cohort')
-        UserProfile.objects.create(
-            user=self.grp_usr,
-            profile_type='group_user',
-            cohort=cohort)
+        self.grp_usr_profile = GroupUpFactory()
+        self.grp_usr_profile.user.set_password("test")
+        self.grp_usr_profile.user.save()
         self.client = Client()
-        self.client.login(username=self.grp_usr.username, password="test")
+        self.client.login(
+            username=self.grp_usr_profile.user.username,
+            password="test")
 
     def test_edit_page_form(self):
         response = self.client.get(self.section.get_edit_url())

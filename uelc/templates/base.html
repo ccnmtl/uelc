@@ -87,9 +87,11 @@
     				</li>
     				{% endif %} 
     				{% endblock %}
-    				<li>
-    				<a href="{% url 'impersonate-list' %}">Impersonate</a>
-    				</li>
+                    {% comment %}
+        				<li>
+        				<a href="{% url 'impersonate-list' %}">Impersonate</a>
+        				</li>
+                    {% endcomment %}
 				{% endifnotequal %}
 				
 				{% if request.user.is_anonymous %}
@@ -232,15 +234,15 @@
 	<p>This site was last updated on: <b>{{STAGING_DEPLOY_TIME}}</b></p>
 </div>
 {% endif %}
-
-{% if request.user.is_impersonate %}
-<div class="alert alert-danger alert-dismissable" style="position: fixed; left: 0px; top: 75px">
-	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-	You are impersonating.<br />
-	<a class="btn" href="{% url 'impersonate-stop' %}">Stop</a>
-</div>
-{% endif %}
-
+{% comment %}
+    {% if request.user.is_impersonate %}
+    <div class="alert alert-danger alert-dismissable" style="position: fixed; left: 0px; top: 75px">
+    	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    	You are impersonating.<br />
+    	<a class="btn" href="{% url 'impersonate-stop' %}">Stop</a>
+    </div>
+    {% endif %}
+{% endcomment %}
 {% if GA_CODE %}
 <script type="text/javascript">
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

@@ -29,12 +29,12 @@ class LoggedInMixinSuperuser(object):
         return super(LoggedInMixinSuperuser, self).dispatch(*args, **kwargs)
 
 
-class LoggedInMixinFacilitator(object):
+class LoggedInFacilitatorMixin(object):
     @method_decorator(user_passes_test(
         lambda u: not u.is_anonymous and
         not u.profile.profile_type == "group_user"))
     def dispatch(self, *args, **kwargs):
-        return super(LoggedInMixinFacilitator, self).dispatch(*args, **kwargs)
+        return super(LoggedInFacilitatorMixin, self).dispatch(*args, **kwargs)
 
 
 class LoggedInMixin(object):
@@ -346,13 +346,13 @@ class UELCPageView(LoggedInMixin,
             return HttpResponseRedirect(request.path)
 
 
-class UELCEditView(LoggedInMixinFacilitator,
+class UELCEditView(LoggedInFacilitatorMixin,
                    DynamicHierarchyMixin,
                    EditView):
     template_name = "pagetree/edit_page.html"
 
 
-class FacilitatorView(LoggedInMixinFacilitator,
+class FacilitatorView(LoggedInFacilitatorMixin,
                       DynamicHierarchyMixin,
                       TemplateView,
                       SectionMixin):
