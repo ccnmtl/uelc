@@ -277,13 +277,6 @@ class CaseMap(models.Model):
             self.save()
 
 
-class CustomSelectWidgetAD(widgets.Select):
-    def render(self, name, value, attrs=None):
-        return mark_safe(
-            u'''<span>After Decision</span>%s''' %
-            (super(CustomSelectWidgetAD, self).render(name, value, attrs)))
-
-
 class CustomSelectWidgetAC(widgets.Select):
     def render(self, name, value, attrs=None):
         return mark_safe(
@@ -294,7 +287,6 @@ class CustomSelectWidgetAC(widgets.Select):
 class TextBlockDT(TextBlock):
     template_file = "pageblocks/textblock.html"
     display_name = "Text BlockDT"
-    after_decision = models.CharField(max_length=2, blank=True, default=0)
     choice = models.CharField(max_length=2, blank=True, default=0)
 
     @classmethod
@@ -308,9 +300,6 @@ class TextBlockDT(TextBlock):
                 default=0)
             body = forms.CharField(
                 widget=CKEditorWidget(attrs={"id": "editor"}))
-            after_decision = forms.ChoiceField(
-                choices=CHOICES,
-                widget=CustomSelectWidgetAD)
             choice = forms.ChoiceField(
                 choices=CHOICES,
                 widget=CustomSelectWidgetAC)
@@ -320,7 +309,6 @@ class TextBlockDT(TextBlock):
     def create(cls, request):
         return TextBlockDT.objects.create(
             body=request.POST.get('body', ''),
-            after_decision=request.POST.get('after_decision', ''),
             choice=request.POST.get('choice', ''),
             )
 
@@ -332,10 +320,6 @@ class TextBlockDT(TextBlock):
             body = forms.CharField(
                 widget=CKEditorWidget(attrs={"id": EDITOR}),
                 initial=self.body)
-            after_decision = forms.ChoiceField(
-                choices=CHOICES,
-                widget=CustomSelectWidgetAD,
-                initial=self.after_decision)
             choice = forms.ChoiceField(
                 choices=CHOICES,
                 initial=self.choice,
@@ -344,7 +328,6 @@ class TextBlockDT(TextBlock):
 
     def edit(self, vals, files):
         self.body = vals.get('body', '')
-        self.after_decision = vals.get('after_decision', '')
         self.choice = vals.get('choice', '')
         self.save()
 
