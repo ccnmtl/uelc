@@ -132,33 +132,6 @@ class TestFacilitatorLoggedInViews(TestCase):
         self.assertTemplateUsed(response, 'main/index.html')
 
 
-# class TestInstructorLoggedInViews(TestCase):
-#     def setUp(self):
-#         ModuleFactory("main", "/pages/main/")
-#         self.hierarchy = get_hierarchy(name='main')
-#         self.section = self.hierarchy.get_root().get_first_leaf()
-#         self.grp_usr_profile = GroupUpFactory()
-#         self.grp_usr_profile.user.set_password("test")
-#         self.grp_usr_profile.user.save()
-#         self.client = Client()
-#         self.client.login(
-#             username=self.grp_usr_profile.user.username,
-#             password="test")
-# 
-#     def test_edit_page_form(self):
-#         response = self.client.get(self.section.get_edit_url())
-#         self.assertEqual(response.status_code, 302)
-# 
-#     def test_page(self):
-#         response = self.client.get(self.section.get_absolute_url(),
-#                                    follow=True)
-#         self.assertEqual(response.status_code, 200)
-# 
-#     def test_index(self):
-#         response = self.client.get("/")
-#         self.assertTemplateUsed(response, 'main/index.html')
-
-
 class TestAdminViews(TestCase):
 
     def setUp(self):
