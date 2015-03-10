@@ -1,9 +1,11 @@
+import factory
 from django.contrib.auth.models import User
+
 from pagetree.models import Hierarchy
+
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap, TextBlockDT, UELCHandler,
-    LibraryItem, CaseQuiz, CaseAnswer)
-import factory
+    LibraryItem, CaseQuiz)
 
 
 class CohortFactory(factory.DjangoModelFactory):
@@ -90,9 +92,3 @@ class LibraryItemFactory(factory.DjangoModelFactory):
     FACTORY_FOR = LibraryItem
     name = factory.Sequence(lambda n: "item %03d" % n)
     case = factory.SubFactory(CaseFactory)
-
-
-class CaseAnswer(factory.DjangoModelFactory):
-    FACTORY_FOR = CaseAnswer
-    name = factory.Sequence(lambda n: "case %03d" % n)
-    hierarchy = factory.SubFactory(HierarchyFactory)
