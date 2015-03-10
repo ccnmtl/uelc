@@ -1,7 +1,6 @@
 from django.views.generic.base import TemplateView, View
 from pagetree.generic.views import PageView, EditView
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 from django.shortcuts import render, get_object_or_404
@@ -16,46 +15,13 @@ from gate_block.models import GateBlock, GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseNotFound
-from pagetree.helpers import get_section_from_path
 from django.db.models import Q
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from quizblock.models import Question, Answer
-
-
-class LoggedInMixinSuperuser(object):
-    @method_decorator(user_passes_test(
-        lambda u: u.profile.profile_type == 'admin'))
-    def dispatch(self, *args, **kwargs):
-        return super(LoggedInMixinSuperuser, self).dispatch(*args, **kwargs)
-
-
-class LoggedInFacilitatorMixin(object):
-    @method_decorator(user_passes_test(
-        lambda u: not u.is_anonymous() and
-        not u.profile.profile_type == "group_user"))
-    def dispatch(self, *args, **kwargs):
-        return super(LoggedInFacilitatorMixin, self).dispatch(*args, **kwargs)
-
-
-class LoggedInMixin(object):
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(LoggedInMixin, self).dispatch(*args, **kwargs)
-
-
-class SectionMixin(object):
-    def get_section(self, path):
-        return get_section_from_path(
-            path,
-            hierarchy_name=self.hierarchy_name,
-            hierarchy_base=self.hierarchy_base)
-
-    def get_extra_context(self):
-        return self.extra_context
-
-    def perform_checks(self, request, path):
-        return None
+from uelc.mixins import (
+    LoggedInMixin, LoggedInFacilitatorMixin,
+    SectionMixin, LoggedInMixinSuperuser)
 
 
 def get_cases(request):

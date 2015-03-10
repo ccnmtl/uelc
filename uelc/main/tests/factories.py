@@ -1,9 +1,11 @@
+import factory
 from django.contrib.auth.models import User
+
 from pagetree.models import Hierarchy
+
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap, TextBlockDT, UELCHandler,
     LibraryItem, CaseQuiz)
-import factory
 
 
 class CohortFactory(factory.DjangoModelFactory):

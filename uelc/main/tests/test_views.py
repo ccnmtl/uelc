@@ -148,6 +148,12 @@ class TestAdminViews(TestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
         self.assertEqual(request.status_code, 302)
 
+    def test_uelc_admin_create_already_existing_cohort(self):
+        request = self.client.post(
+            "/uelcadmin/createcohort/", {'name': self.cohort.name},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
     def test_uelc_admin_create_user(self):
         request = self.client.post(
             "/uelcadmin/createuser/",
