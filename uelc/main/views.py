@@ -1,90 +1,30 @@
-from django.views.generic.base import TemplateView, View
-from pagetree.generic.views import PageView, EditView
-from django.contrib.auth.decorators import login_required
-from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
-from pagetree.generic.views import generic_instructor_page, generic_edit_page
-from django.shortcuts import render, get_object_or_404
-from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
-from uelc.main.models import (
-    Cohort, UserProfile, CreateUserForm, Case,
-    CreateHierarchyForm, CaseMap, CaseAnswerForm,
-    CaseAnswer, UELCHandler, LibraryItem
-    )
-from gate_block.models import GateBlock, GateSubmission
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse, HttpResponseRedirect
-from django.http.response import HttpResponseNotFound
 from django.db.models import Q
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
+from django.http import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponseNotFound
+from django.shortcuts import render, get_object_or_404
+from django.views.generic.base import TemplateView, View
+
+from pagetree.generic.views import PageView, EditView
+from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
+
+from gate_block.models import GateBlock
+from uelc.main.functional_views import (
+    get_cases, get_root_context, get_user_map,
+    has_responses, reset_page, page_submit, admin_ajax_page_submit,
+    admin_ajax_reset_page)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinSuperuser)
-
-
-def get_cases(request):
-    try:
-        user = User.objects.get(id=request.user.id)
-        cohort = user.profile.cohort
-        case = cohort.case
-        return case
-    except ObjectDoesNotExist:
-        return
-
-
-def admin_ajax_page_submit(section, user, post):
-    for block in section.pageblock_set.all():
-        if block.block().display_name == "Gate Block":
-            block_obj = block.block()
-            GateSubmission.objects.create(
-                gateblock_id=block_obj.id,
-                section=section,
-                gate_user_id=user.id)
-
-
-def admin_ajax_reset_page(section, user):
-    for block in section.pageblock_set.all():
-        if block.block().display_name == "Gate Block":
-            gso = GateSubmission.objects.filter(
-                section=section,
-                gate_user_id=user.id)
-            gso.delete()
-    section.reset(user)
-
-
-def page_submit(section, request):
-    proceed = section.submit(request.POST, request.user)
-    if proceed:
-        next_section = section.get_next()
-        if next_section:
-            return HttpResponseRedirect(next_section.get_absolute_url())
-        else:
-            # they are on the "last" section of the site
-            # all we can really do is send them back to this page
-            return HttpResponseRedirect(section.get_absolute_url())
-    # giving them feedback before they proceed
-    return HttpResponseRedirect(section.get_absolute_url())
-
-
-def reset_page(section, request):
-    section.reset(request.user)
-    return HttpResponseRedirect(section.get_absolute_url())
-
-
-def get_root_context(request):
-    context = dict()
-    try:
-        cases = get_cases(request)
-        if cases:
-            roots = [(case.hierarchy.get_absolute_url(),
-                      case.hierarchy.name)
-                     for case in cases]
-            context = dict(roots=roots)
-    except ObjectDoesNotExist:
-        pass
-    return context
+from uelc.main.models import (
+    Cohort, UserProfile, CreateUserForm, Case,
+    CreateHierarchyForm, CaseAnswerForm,
+    CaseAnswer, UELCHandler, LibraryItem
+    )
 
 
 class IndexView(TemplateView):
@@ -93,13 +33,6 @@ class IndexView(TemplateView):
     def get(self, request):
         root_context = get_root_context(request)
         return render(request, self.template_name, root_context)
-
-
-def has_responses(section):
-    quizzes = [p.block() for p in section.pageblock_set.all()
-               if hasattr(p.block(), 'needs_submit')
-               and p.block().needs_submit()]
-    return quizzes != []
 
 
 class DynamicHierarchyMixin(object):
@@ -125,18 +58,6 @@ class RestrictedModuleMixin(object):
                     return super(RestrictedModuleMixin,
                                  self).dispatch(*args, **kwargs)
         return HttpResponse("you don't have permission")
-
-
-def get_user_map(hierarchy, user):
-    case = Case.objects.get(hierarchy=hierarchy)
-    # first check and see if a case map exists for the user
-    # if not, they have not submitted an answer to a question
-    try:
-        casemap = CaseMap.objects.get(user=user, case=case)
-    except ObjectDoesNotExist:
-        casemap = CaseMap.objects.create(user=user, case=case)
-        casemap.save()
-    return casemap
 
 
 class UELCPageView(LoggedInMixin,
@@ -867,18 +788,6 @@ class UELCAdminUserView(LoggedInMixinSuperuser,
                        hierarchies=hierarchies,
                        )
         return context
-
-
-@login_required
-def pages_save_edit(request, hierarchy_name, path):
-    # do auth on the request if you need the user to be logged in
-    # or only want some particular users to be able to get here
-    return generic_edit_page(request, path, hierarchy=hierarchy_name)
-
-
-@login_required
-def instructor_page(request, hierarchy_name, path):
-    return generic_instructor_page(request, path, hierarchy=hierarchy_name)
 
 
 class AddCaseAnswerToQuestionView(View):
