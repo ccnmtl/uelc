@@ -65,7 +65,7 @@
 
 <h2>Question {{question.display_number}}: {{ question.text }}</h2>
 
-<form action="." method="post" class="well form-horizontal" >{% csrf_token %}
+<form action="{% url 'edit-question' question.id %}" method="post" class="well form-horizontal" >{% csrf_token %}
 <table width="100%">
 {{ question.edit_form|bootstrap }}
 </table>
