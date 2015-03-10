@@ -286,7 +286,7 @@ class CustomSelectWidgetAC(widgets.Select):
 
 class TextBlockDT(TextBlock):
     template_file = "pageblocks/textblock.html"
-    display_name = "Text BlockDT"
+    display_name = "Text Block"
     choice = models.CharField(max_length=2, blank=True, default=0)
 
     @classmethod

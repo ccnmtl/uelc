@@ -85,7 +85,7 @@ def is_block_on_user_path(request, section, block, casemap_value):
         path=section.hierarchy.base_url)[0]
     can_show = hand.can_show(request, section, casemap_value)
     bl = block.block()
-    if hasattr(bl, 'choice') and bl.display_name == 'Text BlockDT':
+    if hasattr(bl, 'choice') and bl.display_name == 'Text Block':
         choice = bl.choice
         if int(choice) == can_show or int(choice) == 0:
             return True

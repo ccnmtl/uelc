@@ -105,7 +105,7 @@
         {% endif %}
     {% endif %}
 {% endfor %}
-{% elif block.block.display_name == "Text BlockDT" %}
+{% elif block.block.display_name == "Text Block" %}
 {% is_block_on_user_path request section block casemap.value as user_path %}
   {% if user_path %}
     <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
