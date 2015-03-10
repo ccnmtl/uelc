@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.test.client import Client
 from pagetree.helpers import get_hierarchy
 from factories import GroupUpFactory, AdminUpFactory, \
-    CaseFactory, CohortFactory
+    CaseFactory, CohortFactory, FacilitatorUpFactory
 from pagetree.tests.factories import ModuleFactory
 
 
@@ -94,6 +94,33 @@ class TestGroupUserLoggedInViews(TestCase):
     def test_edit_page_form(self):
         response = self.client.get(self.section.get_edit_url())
         self.assertEqual(response.status_code, 302)
+
+    def test_page(self):
+        response = self.client.get(self.section.get_absolute_url(),
+                                   follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_index(self):
+        response = self.client.get("/")
+        self.assertTemplateUsed(response, 'main/index.html')
+
+
+class TestFacilitatorLoggedInViews(TestCase):
+    def setUp(self):
+        ModuleFactory("main", "/pages/main/")
+        self.hierarchy = get_hierarchy(name='main')
+        self.section = self.hierarchy.get_root().get_first_leaf()
+        self.facilitator_profile = FacilitatorUpFactory()
+        self.facilitator_profile.user.set_password("test")
+        self.facilitator_profile.user.save()
+        self.client = Client()
+        self.client.login(
+            username=self.facilitator_profile.user.username,
+            password="test")
+
+    def test_edit_page_form(self):
+        response = self.client.get(self.section.get_edit_url())
+        self.assertEqual(response.status_code, 200)
 
     def test_page(self):
         response = self.client.get(self.section.get_absolute_url(),
