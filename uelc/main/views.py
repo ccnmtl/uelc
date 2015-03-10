@@ -24,7 +24,7 @@ from quizblock.models import Question, Answer
 
 
 class LoggedInMixinSuperuser(object):
-    @method_decorator(user_passes_test(lambda u: u.is_superuser))
+    @method_decorator(user_passes_test(lambda u: u.profile.profile_type == 'admin'))
     def dispatch(self, *args, **kwargs):
         return super(LoggedInMixinSuperuser, self).dispatch(*args, **kwargs)
 
