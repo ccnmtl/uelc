@@ -63,9 +63,19 @@
     <script>
         jQuery(document).ready(function(){
             var ul = jQuery('ul.group-user');
+            var loc = window.location.href;
+            menuLinks = jQuery('side-nav').find('a');
+            
             if(ul.children().length == 0){
                 ul.remove();
             }
+            menuLinks.each(function(){
+                if(jQuery(this).attr('href') == loc){
+                    jQuery(this).addClass('active');
+                }
+            })
+
+
         })
     </script>
 {% endif %}
