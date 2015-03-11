@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.test.client import Client
 from pagetree.helpers import get_hierarchy
+
 from factories import GroupUpFactory, AdminUpFactory, \
     CaseFactory, CohortFactory, FacilitatorUpFactory
 from pagetree.tests.factories import ModuleFactory

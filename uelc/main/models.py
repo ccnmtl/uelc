@@ -1,15 +1,16 @@
-from django.db import models
 from django import forms
+from django.db import models
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms import widgets
 from django.utils.safestring import mark_safe
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
-from pagetree.models import Hierarchy, Section, ReportableInterface
+
 from ckeditor.widgets import CKEditorWidget
 from pageblocks.models import TextBlock
+from pagetree.models import Hierarchy, Section, ReportableInterface
 from quizblock.models import Quiz, Question, Submission, Response, Answer
 from gate_block.models import GateSubmission
-from django.core.exceptions import ObjectDoesNotExist
 
 
 class Cohort(models.Model):
