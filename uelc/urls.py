@@ -14,7 +14,7 @@ from uelc.main.views import (
     UELCAdminEditCaseView, UELCAdminCreateCohortView, UELCAdminEditCohortView,
     UELCAdminDeleteCohortView, UELCAdminDeleteCaseView,
     UELCAdminCreateCaseView, UELCAdminDeleteUserView,
-    AddCaseAnswerToQuestionView, EditCaseAnswerView,DeleteCaseAnswerView)
+    AddCaseAnswerToQuestionView, EditCaseAnswerView, DeleteCaseAnswerView)
 import os.path
 admin.autodiscover()
 
@@ -88,7 +88,8 @@ urlpatterns = patterns(
     (r'^uelcadmin/deletecohort/', UELCAdminDeleteCohortView.as_view()),
     (r'^uelcadmin/createuser/', UELCAdminCreateUserView.as_view()),
     (r'^uelcadmin/edituser/', UELCAdminEditUserView.as_view()),
-    (r'^uelcadmin/edituserpass/(?P<pk>\d+)/$', UELCAdminEditUserPassView.as_view()),
+    (r'^uelcadmin/edituserpass/(?P<pk>\d+)/$',
+        UELCAdminEditUserPassView.as_view()),
     (r'^uelcadmin/deleteuser/', UELCAdminDeleteUserView.as_view()),
     (r'^uelcadmin/', UELCAdminView.as_view()),
     (r'^edit_question/(?P<pk>\d+)/add_case_answer/$',

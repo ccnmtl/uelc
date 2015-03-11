@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from uelc.main.models import (
     Cohort, UserProfile, CreateUserForm,
     Case, CreateHierarchyForm, CaseMap, CaseAnswerForm,
-    CaseAnswer, UELCHandler, LibraryItem
+    EditUserPassForm, CaseAnswer, UELCHandler, LibraryItem
     )
 from gate_block.models import GateBlock, GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,7 +17,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseNotFound
 from django.db.models import Q
 from django.db import IntegrityError
-from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from quizblock.models import Question, Answer
@@ -531,21 +530,19 @@ class UELCAdminEditUserView(LoggedInMixinSuperuser,
         user.profile.profile_type = profile
         user.profile.save()
         user.username = username
-        import pdb
-        pdb.set_trace()
         user.save()
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
 
 
 class UELCAdminEditUserPassView(LoggedInMixinSuperuser,
-                            TemplateView):
+                                TemplateView):
     template_name = "pagetree/uelc_admin_user_pass_reset.html"
     extra_context = dict()
 
     def get(self, request, pk):
         user = User.objects.get(pk=pk)
-        form = SetPasswordForm(user=user)
+        form = EditUserPassForm
         return render(
             request,
             self.template_name,
@@ -553,13 +550,13 @@ class UELCAdminEditUserPassView(LoggedInMixinSuperuser,
 
     def post(self, request, pk):
         user = User.objects.get(pk=pk)
-        password = make_password(request.POST.get('password1', ''))
+        password = request.POST.get('newPassword1', '')
         user.set_password(password)
         user.save()
         action_args = dict(
-                success="User password has been updated!")
+            success="User password has been updated!")
         messages.success(request, action_args['success'],
-                       extra_tags='userPasswordSuccess')
+                         extra_tags='userPasswordSuccess')
         return HttpResponseRedirect('uelcadmin')
 
 

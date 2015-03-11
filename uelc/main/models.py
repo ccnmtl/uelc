@@ -160,6 +160,17 @@ class CreateHierarchyForm(forms.Form):
                    'required': True}))
 
 
+class EditUserPassForm(forms.Form):
+    newPassword1 = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput(
+            attrs={'class': 'new-user-password1', 'type': 'password', }))
+    newPassword2 = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput(
+            attrs={'class': 'new-user-password2', 'type': 'password', }))
+
+
 class Case(models.Model):
     name = models.CharField(max_length=255, blank=False)
     hierarchy = models.ForeignKey(Hierarchy)
