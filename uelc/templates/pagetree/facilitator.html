@@ -4,11 +4,11 @@
 {% load part_string %}
 <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
 <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
-<div id="content" class="container">
+<div id="content" class="container-fluid">
     <h1>Case Control</h1>
     {% for u in user_sections %}
     {% if u.0.profile.profile_type == "group_user" %}
-    <div class="col-md-4">
+    <div class="col-xs-6">
     <!-- user (u.0), gateblocks (u.1) -->
     <div class="gate-section text-center">Username - <span class="facilitator-usrnm">{{u.0}}</span>
     <div class="gate-section-list">
@@ -24,7 +24,7 @@
               {% if sec.5 %}
                 <div class="gate-button unlocked {{sec.6|convert}}">
                     <form action="." method="post">{% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-success btn-block"><span class="pull-left"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> - {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize" style="font-size: 8px;">{{sec.4}}</span></button>
+                        <button type="submit" class="btn btn-sm btn-success btn-block"><span class="pull-left"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize" style="font-size: 8px;">{{sec.4}}</span></button>
                         <input type="hidden" name="gate-action" value="reset" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />
@@ -39,7 +39,7 @@
               {% if sec.5 %}
                 <div class="gate-button locked {{sec.6|convert}}">
                     <form action ="." method="post">{% csrf_token %}
-                        <button type ="submit" class="btn btn-sm btn-{{sec.4}} btn-block"><span class="pull-left"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> - {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize" style="font-size: 8px;">{{sec.4}}</span></button>
+                        <button type ="submit" class="btn btn-sm btn-{{sec.4}} btn-block"><span class="pull-left"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> {{ sec.1.pageblock.label }}</span><span class="badge pull-right text-capitalize" style="font-size: 8px;">{{sec.4}}</span></button>
                         <input type="hidden" name="gate-action" value="submit" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />
@@ -56,7 +56,9 @@
    </div>
    {% endif %}
     {% endfor %}
-<br style="clear:both"/>
+<br style="clear:both;"/>
+<hr />
+<br style="clear:both;"/>
 <div id="library-content">
     <div id="library-add-form" class="modal fade">
         <div class="modal-dialog">
