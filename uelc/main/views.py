@@ -14,7 +14,7 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
 
 from gate_block.models import GateBlock
-from uelc.main.functional_views import (
+from uelc.main.helper_functions import (
     get_cases, get_root_context, get_user_map,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
     admin_ajax_reset_page)
