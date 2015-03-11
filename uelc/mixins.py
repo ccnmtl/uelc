@@ -35,3 +35,28 @@ class SectionMixin(object):
 
     def perform_checks(self, request, path):
         return None
+
+
+class DynamicHierarchyMixin(object):
+    def dispatch(self, *args, **kwargs):
+        name = kwargs.pop('hierarchy_name', None)
+        if name is None:
+            msg = "No hierarchy named %s found" % name
+            return HttpResponseNotFound(msg)
+        else:
+            self.hierarchy_name = name
+            self.hierarchy_base = Hierarchy.objects.get(name=name).base_url
+        return super(DynamicHierarchyMixin, self).dispatch(*args, **kwargs)
+
+
+class RestrictedModuleMixin(object):
+    def dispatch(self, *args, **kwargs):
+        cases = get_cases(self.request)
+        if cases:
+            for case in cases:
+                case_hier_id = case.hierarchy_id
+                case_hier = Hierarchy.objects.get(id=case_hier_id)
+                if case_hier.name == self.hierarchy_name:
+                    return super(RestrictedModuleMixin,
+                                 self).dispatch(*args, **kwargs)
+        return HttpResponse("you don't have permission")

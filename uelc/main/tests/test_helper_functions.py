@@ -20,21 +20,15 @@ class TestHelperFunctions(TestCase):
         self.grp_usr_profile = GroupUpFactory()
 
     def test_admin_ajax_page_submit(self):
-        '''It looks like the post being passed to the functions
-        isn't actually used'''
-        r = FakeReq()
-        r.POST = {'something_here': 'is post used?'}
-        #'description': 'description', 'rhetorical': 'rhetorical',
-        #'allow_redo': True, 'show_submit_state': False}
         '''Prior to running method it should be false no?'''
-        # self.assertFalse(self.section.unlocked(self.grp_usr_profile.user))
-        admin_ajax_page_submit(self.section, self.grp_usr_profile.user, r.POST)
+        self.assertFalse(self.section.unlocked(self.grp_usr_profile.user))
+        admin_ajax_page_submit(self.section, self.grp_usr_profile.user)
         self.assertTrue(self.section.unlocked(self.grp_usr_profile.user))
-        # admin_ajax_reset_page(self.section, self.grp_usr_profile.user)
-        # self.assertFalse(self.section.unlocked(self.grp_usr_profile.user))
 
     def test_admin_ajax_reset_page(self):
-        pass
+        self.assertTrue(self.section.unlocked(self.grp_usr_profile.user))
+        admin_ajax_reset_page(self.section, self.grp_usr_profile.user)
+        self.assertFalse(self.section.unlocked(self.grp_usr_profile.user))
 
     def test_page_submit(self):
         pass
