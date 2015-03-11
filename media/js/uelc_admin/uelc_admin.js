@@ -70,6 +70,15 @@ jQuery(document).ready(function() {
                     required: true,
                     equalTo : '#id_password1',
                   },
+                  newPassword1:{
+                    minlength: 3,
+                    required: true,
+                  },
+                  newPassword2:{
+                    minlength: 3,
+                    required: true,
+                    equalTo : '#id_newPassword1',
+                  },
                   user: 'required',
                   hierarchy: 'required',
                   /*

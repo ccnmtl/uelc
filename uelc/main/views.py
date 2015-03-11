@@ -8,11 +8,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
-
 from pagetree.generic.views import PageView, EditView
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
-
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
     get_cases, get_root_context, get_user_map,
@@ -23,8 +21,9 @@ from uelc.mixins import (
     SectionMixin, LoggedInMixinSuperuser)
 from uelc.main.models import (
     Cohort, UserProfile, CreateUserForm, Case,
-    CreateHierarchyForm, CaseAnswerForm,
-    CaseAnswer, UELCHandler, LibraryItem
+    EditUserPassForm, CreateHierarchyForm,
+    CaseAnswerForm, CaseAnswer, UELCHandler,
+    LibraryItem,
     )
 
 
@@ -454,6 +453,31 @@ class UELCAdminEditUserView(LoggedInMixinSuperuser,
         user.save()
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
+
+
+class UELCAdminEditUserPassView(LoggedInMixinSuperuser,
+                                TemplateView):
+    template_name = "pagetree/uelc_admin_user_pass_reset.html"
+    extra_context = dict()
+
+    def get(self, request, pk):
+        user = User.objects.get(pk=pk)
+        form = EditUserPassForm
+        return render(
+            request,
+            self.template_name,
+            dict(edit_user_pass_form=form, user=user))
+
+    def post(self, request, pk):
+        user = User.objects.get(pk=pk)
+        password = request.POST.get('newPassword1', '')
+        user.set_password(password)
+        user.save()
+        action_args = dict(
+            success="User password has been updated!")
+        messages.success(request, action_args['success'],
+                         extra_tags='userPasswordSuccess')
+        return HttpResponseRedirect('uelcadmin')
 
 
 class UELCAdminCreateHierarchyView(LoggedInMixinSuperuser,
