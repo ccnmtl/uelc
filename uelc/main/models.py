@@ -575,14 +575,15 @@ class CaseQuiz(Quiz):
                     if obj.display_name == "Gate Block":
                         unlocked = obj.unlocked(user, section)
             is_quiz_submitted = self.is_submitted(self, user)
-            if not (unlocked and is_quiz_submitted):
-                unlocked = False
-                upv.status = 'complete'
-                upv.save()
-            else:
-                upv.status = 'complete'
-                upv.save()
-                unlocked = True
+            if upv:
+                if not (unlocked and is_quiz_submitted):
+                    unlocked = False
+                    upv.status = 'complete'
+                    upv.save()
+                else:
+                    upv.status = 'complete'
+                    upv.save()
+                    unlocked = True
         return unlocked
 
 
