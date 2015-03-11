@@ -13,7 +13,10 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 class Cohort(models.Model):
-    name = models.CharField(max_length=255, blank=False)
+    name = models.CharField(
+        max_length=255,
+        blank=False,
+        unique=True)
 
     def __unicode__(self):
         return self.name
@@ -158,6 +161,17 @@ class CreateHierarchyForm(forms.Form):
         widget=forms.widgets.Input(
             attrs={'class': 'add-hierarchy-name',
                    'required': True}))
+
+
+class EditUserPassForm(forms.Form):
+    newPassword1 = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput(
+            attrs={'class': 'new-user-password1', 'type': 'password', }))
+    newPassword2 = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput(
+            attrs={'class': 'new-user-password2', 'type': 'password', }))
 
 
 class Case(models.Model):

@@ -3,13 +3,13 @@ from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect
-from django.http.response import HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
-
 from pagetree.generic.views import PageView, EditView
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
+from django.http import HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponseNotFound
+from django.db import IntegrityError
 from quizblock.models import Question, Answer
 
 from gate_block.models import GateBlock
@@ -22,8 +22,9 @@ from uelc.mixins import (
     SectionMixin, LoggedInMixinSuperuser)
 from uelc.main.models import (
     Cohort, UserProfile, CreateUserForm, Case,
-    CreateHierarchyForm, CaseAnswerForm,
-    CaseAnswer, UELCHandler, LibraryItem
+    EditUserPassForm, CreateHierarchyForm,
+    CaseAnswerForm, CaseAnswer, UELCHandler,
+    LibraryItem,
     )
 
 
@@ -455,6 +456,31 @@ class UELCAdminEditUserView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
+class UELCAdminEditUserPassView(LoggedInMixinSuperuser,
+                                TemplateView):
+    template_name = "pagetree/uelc_admin_user_pass_reset.html"
+    extra_context = dict()
+
+    def get(self, request, pk):
+        user = User.objects.get(pk=pk)
+        form = EditUserPassForm
+        return render(
+            request,
+            self.template_name,
+            dict(edit_user_pass_form=form, user=user))
+
+    def post(self, request, pk):
+        user = User.objects.get(pk=pk)
+        password = request.POST.get('newPassword1', '')
+        user.set_password(password)
+        user.save()
+        action_args = dict(
+            success="User password has been updated!")
+        messages.success(request, action_args['success'],
+                         extra_tags='userPasswordSuccess')
+        return HttpResponseRedirect('uelcadmin')
+
+
 class UELCAdminCreateHierarchyView(LoggedInMixinSuperuser,
                                    TemplateView):
         template_name = "pagetree/uelc_admin.html"
@@ -538,8 +564,10 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
 
     def post(self, request):
         name = request.POST.get('name', '')
-        cohort_exists = Cohort.objects.filter(Q(name=name))
-        if len(cohort_exists) > 0:
+        try:
+            cohort = Cohort.objects.create(name=name)
+            cohort.save()
+        except IntegrityError:
             action_args = dict(
                 error="A cohort with that name already exists!\
                       Please change the name,\
@@ -547,11 +575,6 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
             messages.error(request, action_args['error'],
                            extra_tags='createCohortViewError')
 
-            url = request.META['HTTP_REFERER']
-            return HttpResponseRedirect(url)
-
-        cohort = Cohort.objects.create(name=name)
-        cohort.save()
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
 
@@ -578,11 +601,21 @@ class UELCAdminEditCohortView(LoggedInMixinSuperuser,
         cohort_id = request.POST.get('cohort_id', '')
         users = request.POST.getlist('users')
         cohort_obj = Cohort.objects.get(pk=cohort_id)
-        cohort_obj.name = name
-        user_objs = User.objects.filter(pk__in=users)
-        for user in user_objs:
-            user.profile.cohort = cohort_obj
-            user.profile.save()
+        try:
+            cohort_obj.name = name
+            cohort_obj.save()
+            user_objs = User.objects.filter(pk__in=users)
+            for user in user_objs:
+                user.profile.cohort = cohort_obj
+                user.profile.save()
+        except IntegrityError:
+            action_args = dict(
+                error="A cohort with that name already exists!\
+                      Please change the name,\
+                      or use the existing cohort.")
+            messages.error(request, action_args['error'],
+                           extra_tags='editCohortViewError')
+
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
 
