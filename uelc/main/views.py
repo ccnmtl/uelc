@@ -1,8 +1,9 @@
+from django.db import IntegrityError
 from django.db.models import Q
-from django.contrib.auth.hashers import make_password
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http.response import HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404
@@ -538,8 +539,10 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
 
     def post(self, request):
         name = request.POST.get('name', '')
-        cohort_exists = Cohort.objects.filter(Q(name=name))
-        if len(cohort_exists) > 0:
+        try:
+            cohort = Cohort.objects.create(name=name)
+            cohort.save()
+        except IntegrityError:
             action_args = dict(
                 error="A cohort with that name already exists!\
                       Please change the name,\
@@ -547,11 +550,6 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
             messages.error(request, action_args['error'],
                            extra_tags='createCohortViewError')
 
-            url = request.META['HTTP_REFERER']
-            return HttpResponseRedirect(url)
-
-        cohort = Cohort.objects.create(name=name)
-        cohort.save()
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
 
@@ -578,11 +576,21 @@ class UELCAdminEditCohortView(LoggedInMixinSuperuser,
         cohort_id = request.POST.get('cohort_id', '')
         users = request.POST.getlist('users')
         cohort_obj = Cohort.objects.get(pk=cohort_id)
-        cohort_obj.name = name
-        user_objs = User.objects.filter(pk__in=users)
-        for user in user_objs:
-            user.profile.cohort = cohort_obj
-            user.profile.save()
+        try:
+            cohort_obj.name = name
+            cohort_obj.save()
+            user_objs = User.objects.filter(pk__in=users)
+            for user in user_objs:
+                user.profile.cohort = cohort_obj
+                user.profile.save()
+        except IntegrityError:
+            action_args = dict(
+                error="A cohort with that name already exists!\
+                      Please change the name,\
+                      or use the existing cohort.")
+            messages.error(request, action_args['error'],
+                           extra_tags='editCohortViewError')
+
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
 

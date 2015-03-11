@@ -13,7 +13,10 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 class Cohort(models.Model):
-    name = models.CharField(max_length=255, blank=False)
+    name = models.CharField(
+        max_length=255,
+        blank=False,
+        unique=True)
 
     def __unicode__(self):
         return self.name
