@@ -245,7 +245,6 @@ ul.gate-section-list{
 /* facilitator page */
 .btn-block.btn-incomplete{
     background: #d9534f;
-    border-color: #d43f3a;
     color: #fff;
 }
 .btn-block.btn-incomplete .badge{
@@ -262,4 +261,9 @@ ul.gate-section-list{
     color:#8a6d3b;
 }
 
-
+.progress {
+  height: inherit;
+  margin-bottom: 0px;
+  background-color: #fc6;
+  -webkit-box-shadow: none;
+  box-shadow:  none;
