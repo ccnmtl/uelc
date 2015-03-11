@@ -7,9 +7,9 @@ from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from uelc.main.models import (
-    Cohort, UserProfile, CreateUserForm, Case,
-    CreateHierarchyForm, CaseMap, CaseAnswerForm,
-    CaseAnswer, UELCHandler, LibraryItem
+    Cohort, UserProfile, CreateUserForm,
+    Case, CreateHierarchyForm, CaseMap, CaseAnswerForm,
+    EditUserPassForm, CaseAnswer, UELCHandler, LibraryItem
     )
 from gate_block.models import GateBlock, GateSubmission
 from django.core.exceptions import ObjectDoesNotExist
@@ -533,6 +533,31 @@ class UELCAdminEditUserView(LoggedInMixinSuperuser,
         user.save()
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
+
+
+class UELCAdminEditUserPassView(LoggedInMixinSuperuser,
+                                TemplateView):
+    template_name = "pagetree/uelc_admin_user_pass_reset.html"
+    extra_context = dict()
+
+    def get(self, request, pk):
+        user = User.objects.get(pk=pk)
+        form = EditUserPassForm
+        return render(
+            request,
+            self.template_name,
+            dict(edit_user_pass_form=form, user=user))
+
+    def post(self, request, pk):
+        user = User.objects.get(pk=pk)
+        password = request.POST.get('newPassword1', '')
+        user.set_password(password)
+        user.save()
+        action_args = dict(
+            success="User password has been updated!")
+        messages.success(request, action_args['success'],
+                         extra_tags='userPasswordSuccess')
+        return HttpResponseRedirect('uelcadmin')
 
 
 class UELCAdminCreateHierarchyView(LoggedInMixinSuperuser,
