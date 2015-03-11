@@ -618,7 +618,6 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
 
     def post(self, request):
         name = request.POST.get('name', '')
-        cohort_exists = Cohort.objects.filter(Q(name=name))
         try:
             cohort = Cohort.objects.create(name=name)
             cohort.save()
@@ -629,7 +628,7 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
                       or use the existing cohort.")
             messages.error(request, action_args['error'],
                            extra_tags='createCohortViewError')
-        
+
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
 
@@ -670,7 +669,7 @@ class UELCAdminEditCohortView(LoggedInMixinSuperuser,
                       or use the existing cohort.")
             messages.error(request, action_args['error'],
                            extra_tags='editCohortViewError')
-        
+
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
 
