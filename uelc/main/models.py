@@ -296,7 +296,10 @@ class CaseMap(models.Model):
 class CustomSelectWidgetAC(widgets.Select):
     def render(self, name, value, attrs=None):
         return mark_safe(
-            u'''<span>After Choice</span>%s''' %
+            u'''<span class="after-choice">After Choice - \
+                <span class="small">the content that will \
+                show for the decision made. This is \
+                cohort-wide.</span></span>%s''' %
             (super(CustomSelectWidgetAC, self).render(name, value, attrs)))
 
 
