@@ -101,7 +101,7 @@ class UELCPageView(LoggedInMixin,
                     return HttpResponseRedirect(back_url)
 
     def check_part_path(self, casemap, hand, part):
-        if part > 1 and not self.request.user.is_superuser:
+        if part > 1 and self.request.user.profile.is_group_user():
             # set user on right path
             # get user 1st par chice p1c1 and
             # forward to that part
