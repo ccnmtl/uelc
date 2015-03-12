@@ -4,8 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
-from django.http.response import HttpResponseNotFound
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
 from pagetree.generic.views import PageView, EditView
@@ -13,7 +12,7 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
-    get_cases, get_root_context, get_user_map,
+    get_root_context, get_user_map,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
     admin_ajax_reset_page)
 from uelc.mixins import (

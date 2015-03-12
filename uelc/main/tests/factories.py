@@ -105,7 +105,6 @@ class UELCModuleFactory(object):
             {'label': "One", 'slug': "one",
              'children': [{'label': "Three", 'slug': "introduction"}]})
         root.add_child_section_from_dict({'label': "Two", 'slug': "two"})
-  
         r = FakeReq()
         r.POST = {'description': 'description', 'rhetorical': 'rhetorical',
                   'allow_redo': True, 'show_submit_state': False}
@@ -119,6 +118,7 @@ class UELCModuleFactory(object):
         root.add_child_section_from_dict(casequiz.as_dict())
         self.root = root
 
+
 class UELCCaseQuizModuleFactory(object):
     '''Stealing module factory from pagetree factories to adapt for
     casequiz tests'''
@@ -129,7 +129,6 @@ class UELCCaseQuizModuleFactory(object):
             {'label': "One", 'slug': "one",
              'children': [{'label': "Three", 'slug': "introduction"}]})
         root.add_child_section_from_dict({'label': "Two", 'slug': "two"})
-  
         r = FakeReq()
         r.POST = {'description': 'description', 'rhetorical': 'rhetorical',
                   'allow_redo': True, 'show_submit_state': False}

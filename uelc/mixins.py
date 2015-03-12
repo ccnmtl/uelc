@@ -1,14 +1,10 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.http.response import HttpResponseNotFound
-from django.shortcuts import render, get_object_or_404
 from django.utils.decorators import method_decorator
 from pagetree.helpers import get_section_from_path
 from pagetree.models import Hierarchy
-from uelc.main.helper_functions import (
-    get_cases, get_root_context, get_user_map,
-    has_responses, reset_page, page_submit, admin_ajax_page_submit,
-    admin_ajax_reset_page)
+from uelc.main.helper_functions import get_cases
 
 
 class LoggedInMixinSuperuser(object):
