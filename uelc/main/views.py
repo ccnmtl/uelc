@@ -607,8 +607,6 @@ class UELCAdminEditCohortView(LoggedInMixinSuperuser,
             cohort_obj.save()
             user_list_objs = User.objects.filter(pk__in=user_list)
             for user in cohort_users:
-                import pdb
-                pdb.set_trace()
                 if not user.id in user_list:
                     user.profile.cohort = None
                     user.profile.save()
