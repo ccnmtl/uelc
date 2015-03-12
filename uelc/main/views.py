@@ -599,13 +599,20 @@ class UELCAdminEditCohortView(LoggedInMixinSuperuser,
     def post(self, request):
         name = request.POST.get('name', '')
         cohort_id = request.POST.get('cohort_id', '')
-        users = request.POST.getlist('users')
+        user_list = request.POST.getlist('users')
         cohort_obj = Cohort.objects.get(pk=cohort_id)
+        cohort_users = cohort_obj.users
         try:
             cohort_obj.name = name
             cohort_obj.save()
-            user_objs = User.objects.filter(pk__in=users)
-            for user in user_objs:
+            user_list_objs = User.objects.filter(pk__in=user_list)
+            for user in cohort_users:
+                import pdb
+                pdb.set_trace()
+                if not user.id in user_list:
+                    user.profile.cohort = None
+                    user.profile.save()
+            for user in user_list_objs:
                 user.profile.cohort = cohort_obj
                 user.profile.save()
         except IntegrityError:
