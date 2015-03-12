@@ -86,7 +86,9 @@ class UserProfile(models.Model):
     profile_type = models.CharField(max_length=12, choices=PROFILE_CHOICES)
     cohort = models.ForeignKey(
         Cohort,
-        related_name="user_profile_cohort")
+        related_name="user_profile_cohort",
+        blank=True,
+        null=True)
 
     def edit_form(self):
         class EditForm(forms.Form):
