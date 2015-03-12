@@ -104,12 +104,9 @@
 			        	{% if request.user.is_superuser %}
 			        	  <li><a href="/uelcadmin/">Manage</a></li>
 			        	{% endif %}
-			        	 <!-- <li><a href="{{ root.0 }}facilitator/">Faciliatate</a></li> -->
-{% for root in roots %}
-            <li><a href="{{ root.0 }}facilitator/">Faciliatate</a></li>
-        {% endfor %}
-                        <!-- <li><a href="{{ root.0 }}facilitator/">Faciliatate</a></li> -->
-                        <!-- <li><a href="{{section.get_absolute_url}}">Faciliatate</a></li> -->
+			        	{% for root in roots %}
+                            <li><a href="{{ root.0 }}facilitator/">Faciliatate</a></li>
+                        {% endfor %}
                         <li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
                       </ul>
 			        {% endifnotequal %}
