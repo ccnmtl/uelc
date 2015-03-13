@@ -52,64 +52,65 @@
 			<span class="icon-bar"></span>
 		</button>
 		<a class="navbar-brand" href="/"><img src="{{STATIC_URL}}img/logo.png" /></a>
-    {% if request.user.profile.profile_type == 'admin' %}
-      <a class="navbar-brand" href="/uelcadmin/"><span class="glyphicon glyphicon-wrench"></span></a>
-    {% endif %}
-    {% ifnotequal request.user.profile.profile_type  'group_user'  %}
-        {% for root in roots %}
-            <a href="{{ root.0 }}facilitator/"><span class="glyphicon glyphicon-tree-deciduous" aria-hidden="true"></span></a>
-        {% endfor %}
-    {% endifnotequal %}
 		</div>
 		
 		
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
-				<ul class="nav navbar-nav navbar-right">
-                <li><a href="/about/">About ELDEx</a></li>
-                <li><a href="/contact/">Contact Us</a></li>
-				{% block topnavbarrightitems %}{% endblock %}
-				{% block usernav %}
-				
-				{% if request.user.is_anonymous %}
-				{% else %}
-				{% ifnotequal request.user.profile.profile_type "group_user" %}
-    				{% if instructor_link %}
-    				<!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
-    				{% endif %}
-    				{% block edit-or-view-page %}
+		  <ul class="nav navbar-nav navbar-right">
+		    <li><a href="/">Home</a></li>
+            <li><a href="/about/">About ELDEx</a></li>
+            <li><a href="/contact/">Contact Us</a></li>
+			{% block topnavbarrightitems %}{% endblock %}
+			{% block usernav %}
+			  {% ifnotequal request.user.profile.profile_type "group_user" %}
+    		    {% if instructor_link %}
+    				    <!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
+    			{% endif %}
+    			{% block edit-or-view-page %}
     				{% if is_view %}
-    				<li>
-    				<a href="{{section.get_edit_url}}">Edit Page</a>
-    				</li>
-    				{% else %}
-    				<li>
-    				<a href="{{section.get_absolute_url}}">View Page</a>
-    				</li>
+        				<li>
+        				    <a href="{{section.get_edit_url}}">Edit Page</a>
+        				</li>
+        				{% else %}
+        				<li>
+        				    <a href="{{section.get_absolute_url}}">View Page</a>
+        				</li>
     				{% endif %} 
-    				{% endblock %}
-    				<li>
-    				<a href="{% url 'impersonate-list' %}">Impersonate</a>
-    				</li>
+    			{% endblock %}
 				{% endifnotequal %}
-				{% endif %}
+
 				
-				
-				{% if request.user.is_anonymous %}
-				{% else %}
-                <li class="navbar-text"></li>
-				<li class="navbar-text">
-				Hi,
-				{% if request.user.last_name %}
-				{{request.user.first_name}} {{request.user.last_name}}
-				{% else %}
-				{{ request.user.username }}!
-				</li>
-				{% endif %}
-				
-				<li>
-				<a href="/accounts/logout/?next=/">Log Out</a>
-				</li>
+			  {% if request.user.is_anonymous %}
+			  {% else %}
+                <!-- <li class="navbar-text"></li> -->
+			    <li class="dropdown">
+			      {% ifnotequal request.user.profile.profile_type "group_user" %}
+			        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+			      {% endifnotequal %}
+			        Hi,
+			        {% if request.user.last_name %}
+			            {{request.user.first_name}} {{request.user.last_name}}
+			        {% else %}
+			            {{ request.user.username }}!
+			        {% endif %}
+			        {% ifnotequal request.user.profile.profile_type "group_user" %}
+			          <span class="caret"></span>
+			          </a>
+			          <ul class="dropdown-menu" role="menu">
+			        	{% if request.user.is_superuser %}
+			        	  <li><a href="/uelcadmin/">Manage</a></li>
+			        	{% endif %}
+			        	{% for root in roots %}
+                            <li><a href="{{ root.0 }}facilitator/">Faciliatate</a></li>
+                        {% endfor %}
+                        <li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
+                      </ul>
+			        {% endifnotequal %}
+			    	</li>
+				    <li>
+				        <a href="/accounts/logout/?next=/">Log Out</a>
+				    </li>
 				{% endif %}
 				{% endblock %}
 				</ul>
