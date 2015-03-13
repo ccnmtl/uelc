@@ -125,7 +125,25 @@
                 </div> <!--end modal-dialog-->
             </div><!-- end modal-content-->
         </div><!--end .model-body-->
-    </div><!--end #library-add-form .modal-->
+    </div><!--end #library-edit-form .modal-->
+
+    <div id="library-delete-form-{{library_doc.id}}" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-header panel-heading">Edit Library Item</div>
+                <div class="modal-body">
+                    <form action="." method="post">{% csrf_token %}
+                        <input type="hidden" name="case" value="{{case.id}}" />
+                        <input type="hidden" name="library-item-id" value="{{library_doc.id}}" />
+                        <input type="hidden" name="library-item-delete" value="true" />
+                        <input type ="submit" value="delete" class="btn btn-primary library-item">
+                    </form>
+                </div> <!--end modal-dialog-->
+            </div><!-- end modal-content-->
+        </div><!--end .model-body-->
+    </div><!--end #library-edit-form .modal-->
+
     {%endfor%}
 </div><!--end #library-content-->
 
@@ -150,7 +168,7 @@
                 <td> {{item.name}} </td>
                 <td class="library-item-document"> 
                     <span class="hidden">{{item.id}}</span>
-                    <a target="_blank" href="/uploads/{{item.doc}}">Document link</a> 
+                    <a target="_blank" href="{{MEDIA_URL}}{{item.doc}}">Document link</a> 
                 </td>
                 <td class="library-item-users">
                     {% if item.user.all.count == 0 %}
@@ -163,8 +181,8 @@
                     {% endfor %}
                 </td>
                 <td class="library-item-admin">
-                    <button class="glyphicon glyphicon-edit" data-toggle="modal"  data-target="#library-edit-form-{{item.id}}" href="#library-edit-form-{{library_doc.id}}"></button>
-                    <button class="glyphicon glyphicon-trash"></button></td>
+                    <button class="glyphicon glyphicon-edit" data-toggle="modal"  data-target="#library-edit-form-{{item.id}}" href="#library-edit-form-{{item.id}}"></button>
+                    <button class="glyphicon glyphicon-trash" data-toggle="modal" data-target="#library-delete-form-{{item.id}}"  href="#library-delete-form-{{item.id}}"></button></td>
             </tr>
         {% endfor %}
         </tbody>

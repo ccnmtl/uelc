@@ -251,7 +251,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             li.user.add(user)
 
     def post_library_item_delete(self, request):
-        item_id = request.POST.get('library_item_id')
+        item_id = request.POST.get('library-item-id')
         li = LibraryItem.objects.get(id=item_id)
         li.delete()
 
@@ -304,13 +304,12 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             return rv
         return super(FacilitatorView, self).dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, *args, **kwargs):
+    def get(self, request, path):
         '''
         * get the section of each gateblock
         * determine number of levels in tree
         * determine the level and place of the section in the tree
         '''
-        path = kwargs['path']
         user = self.request.user
         section = self.get_section(path)
         root = section.hierarchy.get_root()
@@ -360,8 +359,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                        case=case,
                        roots=roots['roots']
                        )
-        context.update(self.get_extra_context())
-        return context
+        return render(request, self.template_name, context)
 
 
 class UELCAdminCreateUserView(

@@ -35,7 +35,7 @@ COMPRESS_OFFLINE = True
 COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_URL = STATIC_URL
 DEFAULT_FILE_STORAGE = 'uelc.s3utils.MediaRootS3BotoStorage'
-MEDIA_URL = S3_URL + '/media/'
+MEDIA_URL = S3_URL + 'media/'
 COMPRESS_STORAGE = 'uelc.s3utils.CompressorS3BotoStorage'
 AWS_QUERYSTRING_AUTH = False
 
