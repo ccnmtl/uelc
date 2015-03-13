@@ -63,6 +63,8 @@
             <li><a href="/contact/">Contact Us</a></li>
 			{% block topnavbarrightitems %}{% endblock %}
 			{% block usernav %}
+            {% if request.user.is_anonymous %}
+            {% else %}
 			  {% ifnotequal request.user.profile.profile_type "group_user" %}
     		    {% if instructor_link %}
     				    <!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
@@ -79,7 +81,7 @@
     				{% endif %} 
     			{% endblock %}
 				{% endifnotequal %}
-
+            {% endif %}
 				
 			  {% if request.user.is_anonymous %}
 			  {% else %}
