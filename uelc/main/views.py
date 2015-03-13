@@ -75,7 +75,7 @@ class UELCPageView(LoggedInMixin,
                     return HttpResponseRedirect(back_url)
 
     def check_part_path(self, casemap, hand, part):
-        if part > 1 and not self.request.user.is_superuser:
+        if part > 1 and self.request.user.profile.is_group_user():
             # set user on right path
             # get user 1st par chice p1c1 and
             # forward to that part
@@ -251,7 +251,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             li.user.add(user)
 
     def post_library_item_delete(self, request):
-        item_id = request.POST.get('library_item_id')
+        item_id = request.POST.get('library-item-id')
         li = LibraryItem.objects.get(id=item_id)
         li.delete()
 
@@ -304,13 +304,12 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             return rv
         return super(FacilitatorView, self).dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, *args, **kwargs):
+    def get(self, request, path):
         '''
         * get the section of each gateblock
         * determine number of levels in tree
         * determine the level and place of the section in the tree
         '''
-        path = kwargs['path']
         user = self.request.user
         section = self.get_section(path)
         root = section.hierarchy.get_root()
@@ -360,8 +359,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                        case=case,
                        roots=roots['roots']
                        )
-        context.update(self.get_extra_context())
-        return context
+        return render(request, self.template_name, context)
 
 
 class UELCAdminCreateUserView(
@@ -573,13 +571,18 @@ class UELCAdminEditCohortView(LoggedInMixinSuperuser,
     def post(self, request):
         name = request.POST.get('name', '')
         cohort_id = request.POST.get('cohort_id', '')
-        users = request.POST.getlist('users')
+        user_list = request.POST.getlist('users')
         cohort_obj = Cohort.objects.get(pk=cohort_id)
+        cohort_users = cohort_obj.users
         try:
             cohort_obj.name = name
             cohort_obj.save()
-            user_objs = User.objects.filter(pk__in=users)
-            for user in user_objs:
+            user_list_objs = User.objects.filter(pk__in=user_list)
+            for user in cohort_users:
+                if not user.id in user_list:
+                    user.profile.cohort = None
+                    user.profile.save()
+            for user in user_list_objs:
                 user.profile.cohort = cohort_obj
                 user.profile.save()
         except IntegrityError:

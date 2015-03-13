@@ -1,6 +1,6 @@
 Django==1.7.6
 feedparser==5.1.3
-Markdown==2.3.1
+Markdown==2.6.1
 smartypants==1.6.0.3
 uuid==1.30
 psycopg2==2.5.4
@@ -48,7 +48,7 @@ django-nose==1.2
 django-appconf==0.6
 django_compressor==1.4
 django-statsd-mozilla==0.3.11
-raven==4.0.3
+raven==5.1.1
 django-bootstrap3==4.8.2
 django-bootstrap-form==3.1.0
 django-debug-toolbar==1.1
@@ -64,7 +64,7 @@ django-treebeard==2.0b2
 django-pagetree==1.0.8
 django-pageblocks==1.0.0
 django-quizblock==0.9.4
-django-markwhat==1.0
+django-markwhat==2014.9.20
 gunicorn==19.1.1
 django-infranil==0.1.0
 django-flatblocks==0.9

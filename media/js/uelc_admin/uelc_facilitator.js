@@ -25,6 +25,7 @@ UELCAdmin = {
                     var part2 = gs.eq(0).find('.part2').eq(0);
                     var choice = part2.attr('class').split(' ').pop();
                     var divHtml = '<div class="part2text">Part 2 ';
+                    choice = 'Choice ' + choice.split('-').pop();
                     divHtml += choice + ' </div>';
                     part2.prepend(divHtml);
                 }

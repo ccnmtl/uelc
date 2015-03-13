@@ -87,7 +87,9 @@ class UserProfile(models.Model):
     profile_type = models.CharField(max_length=12, choices=PROFILE_CHOICES)
     cohort = models.ForeignKey(
         Cohort,
-        related_name="user_profile_cohort")
+        related_name="user_profile_cohort",
+        blank=True,
+        null=True)
 
     def edit_form(self):
         class EditForm(forms.Form):
@@ -295,7 +297,10 @@ class CaseMap(models.Model):
 class CustomSelectWidgetAC(widgets.Select):
     def render(self, name, value, attrs=None):
         return mark_safe(
-            u'''<span>After Choice</span>%s''' %
+            u'''<span class="after-choice">After Choice - \
+                <span class="small">the content that will \
+                show for the decision made. This is \
+                cohort-wide.</span></span>%s''' %
             (super(CustomSelectWidgetAC, self).render(name, value, attrs)))
 
 
@@ -576,14 +581,15 @@ class CaseQuiz(Quiz):
                     if obj.display_name == "Gate Block":
                         unlocked = obj.unlocked(user, section)
             is_quiz_submitted = self.is_submitted(self, user)
-            if not (unlocked and is_quiz_submitted):
-                unlocked = False
-                upv.status = 'complete'
-                upv.save()
-            else:
-                upv.status = 'complete'
-                upv.save()
-                unlocked = True
+            if upv:
+                if not (unlocked and is_quiz_submitted):
+                    unlocked = False
+                    upv.status = 'complete'
+                    upv.save()
+                else:
+                    upv.status = 'complete'
+                    upv.save()
+                    unlocked = True
         return unlocked
 
 
