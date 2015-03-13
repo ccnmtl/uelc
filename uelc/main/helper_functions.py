@@ -19,7 +19,7 @@ def get_cases(request):
         return
 
 
-def admin_ajax_page_submit(section, user, post):
+def admin_ajax_page_submit(section, user):
     for block in section.pageblock_set.all():
         if block.block().display_name == "Gate Block":
             block_obj = block.block()

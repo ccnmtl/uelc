@@ -1,25 +1,24 @@
+from django.db import IntegrityError
 from django.db.models import Q
-from django.contrib.auth.hashers import make_password
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
 from pagetree.generic.views import PageView, EditView
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
-from django.http import HttpResponse, HttpResponseRedirect
-from django.http.response import HttpResponseNotFound
-from django.db import IntegrityError
 from quizblock.models import Question, Answer
-
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
-    get_cases, get_root_context, get_user_map,
+    get_root_context, get_user_map,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
     admin_ajax_reset_page)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
-    SectionMixin, LoggedInMixinSuperuser)
+    SectionMixin, LoggedInMixinSuperuser, DynamicHierarchyMixin,
+    RestrictedModuleMixin)
 from uelc.main.models import (
     Cohort, UserProfile, CreateUserForm, Case,
     EditUserPassForm, CreateHierarchyForm,
@@ -34,31 +33,6 @@ class IndexView(TemplateView):
     def get(self, request):
         root_context = get_root_context(request)
         return render(request, self.template_name, root_context)
-
-
-class DynamicHierarchyMixin(object):
-    def dispatch(self, *args, **kwargs):
-        name = kwargs.pop('hierarchy_name', None)
-        if name is None:
-            msg = "No hierarchy named %s found" % name
-            return HttpResponseNotFound(msg)
-        else:
-            self.hierarchy_name = name
-            self.hierarchy_base = Hierarchy.objects.get(name=name).base_url
-        return super(DynamicHierarchyMixin, self).dispatch(*args, **kwargs)
-
-
-class RestrictedModuleMixin(object):
-    def dispatch(self, *args, **kwargs):
-        cases = get_cases(self.request)
-        if cases:
-            for case in cases:
-                case_hier_id = case.hierarchy_id
-                case_hier = Hierarchy.objects.get(id=case_hier_id)
-                if case_hier.name == self.hierarchy_name:
-                    return super(RestrictedModuleMixin,
-                                 self).dispatch(*args, **kwargs)
-        return HttpResponse("you don't have permission")
 
 
 class UELCPageView(LoggedInMixin,
