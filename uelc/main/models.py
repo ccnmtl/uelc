@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import widgets
 from django.utils.safestring import mark_safe
-
+from django.core.urlresolvers import reverse
 from ckeditor.widgets import CKEditorWidget
 from pageblocks.models import TextBlock
 from pagetree.models import Hierarchy, Section, ReportableInterface
@@ -508,10 +508,16 @@ class CaseQuiz(Quiz):
     def add_form(cls):
         class AddForm(forms.Form):
             description = forms.CharField(widget=forms.widgets.Textarea())
-            rhetorical = forms.BooleanField()
-            allow_redo = forms.BooleanField()
-            show_submit_state = forms.BooleanField(initial=True)
         return AddForm()
+
+    def edit_form(self):
+        class EditForm(forms.Form):
+            description = forms.CharField(
+                widget=forms.widgets.Textarea(),
+                initial=self.description)
+            alt_text = ("<a href=\"" + reverse("edit-quiz", args=[self.id])
+                        + "\">manage questions/answers</a>")
+        return EditForm()
 
     def is_q_answered(self, data):
         for k in data.keys():
