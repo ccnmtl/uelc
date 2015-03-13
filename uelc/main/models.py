@@ -599,10 +599,29 @@ class CaseQuiz(Quiz):
         return unlocked
 
 
+class CaseQuestion(models.Model):
+    quiz = models.ForeignKey(Quiz)
+    question_type = models.CharField(
+        max_length=256,
+        choices=(
+            ("single choice", "Multiple Choice: Single answer"),
+        ))
+    explanation = models.TextField(blank=True)
+    intro_text = models.TextField(blank=True)
+
+
 class CaseAnswer(models.Model):
+    def default_question(self):
+        return self.answer.question.id
+
     answer = models.ForeignKey(Answer)
+    question = models.ForeignKey(
+        CaseQuestion,
+        default=default_question(self))
     title = models.TextField(blank=True)
     description = models.TextField(blank=True)
+
+    
 
     def display_answer(self):
         return self.answer
@@ -612,7 +631,6 @@ class CaseAnswer(models.Model):
 
     def display_description(self):
         return self.description
-
 
 class CaseAnswerForm(forms.Form):
     value = forms.IntegerField()
