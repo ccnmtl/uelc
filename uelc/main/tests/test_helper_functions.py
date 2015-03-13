@@ -8,7 +8,7 @@ from uelc.main.helper_functions import (
     page_submit, reset_page)
 
 
-class TestGateBlockandCaseQuizUnlockedFunctions(TestCase):
+class TestSubmissionResetFunctions(TestCase):
 
     def setUp(self):
         self.hierarchy = HierarchyFactory(name="main", base_url="/pages/main/")
@@ -54,7 +54,7 @@ class TestGateBlockandCaseQuizUnlockedFunctions(TestCase):
             self.gate_block.unlocked(self.grp_usr_profile.user, self.section))
 
 
-class TestPageSubmitFunctions(TestCase):
+class TestPageSubmitFunction(TestCase):
 
     def setUp(self):
         self.hierarchy = HierarchyFactory(name="main", base_url="/pages/main/")
