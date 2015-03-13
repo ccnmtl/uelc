@@ -55,7 +55,7 @@ TIME_ZONE = 'America/New_York'
 LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
 USE_I18N = False
-MEDIA_ROOT = "/tmp/"
+MEDIA_ROOT = '/var/www/uelc/uploads/'
 MEDIA_URL = '/uploads/'
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_IMAGE_BACKEND = "pillow"
@@ -74,7 +74,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'gacontext.ga_processor',
     'djangowind.context.context_processor',
     'django.core.context_processors.static',
-    'django.contrib.messages.context_processors.messages'
+    'django.contrib.messages.context_processors.messages',
+    'django.core.context_processors.media'
 )
 
 MIDDLEWARE_CLASSES = (
