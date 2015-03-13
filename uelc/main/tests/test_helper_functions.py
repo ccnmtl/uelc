@@ -78,8 +78,6 @@ class TestPageSubmitFunctions(TestCase):
         self.otr.user = self.grp_usr_profile.user
 
     def test_page_submit(self):
-        # from nose.tools import set_trace
-        # set_trace()
         self.first_request = page_submit(self.section, self.otr)
         self.assertEqual(
             self.first_request['Location'],
