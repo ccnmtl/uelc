@@ -100,13 +100,15 @@
 			          <span class="caret"></span>
 			          </a>
 			          <ul class="dropdown-menu" role="menu">
-			        	{% if request.user.is_superuser %}
+			        	{% if request.user.profile.is_admin %}
 			        	  <li><a href="/uelcadmin/">Manage</a></li>
 			        	{% endif %}
 			        	{% for root in roots %}
                             <li><a href="{{ root.0 }}facilitator/">Faciliatate</a></li>
                         {% endfor %}
-                        <li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
+                        <!--
+                            <li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
+                        -->
                       </ul>
 			        {% endifnotequal %}
 			    	</li>
@@ -124,7 +126,7 @@
 
 <div class="container" id="outer-container">
 
-    {% if request.user.is_superuser %}
+    {% if request.user.profile.is_admin %}
     <div class="col-md-12">
     {% block topnavbarleftitems %}{% endblock %}
     {% block moduletabs %}
