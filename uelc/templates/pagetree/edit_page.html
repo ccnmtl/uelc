@@ -37,6 +37,7 @@ var wysiwyg = jQuery('[id^=editor]').ckeditor({
     filebrowserBrowseUrl: '/admin/main/imageuploaditem/',
     allowedContent: true
   });
+
 //wysiwyg.config.allowedContent = true;
 var saveOrderOfChildren = function() {
     var url = "{% url 'reorder-section-children' section.id %}?";
@@ -442,7 +443,7 @@ method="post">{% csrf_token %}
 <script>
 jQuery(document).ready(function(){
   jQuery('.form-control').click(function(){
-    elem = jQuery(this)
+    elem = jQuery(this);
     if(elem.createTextRange) {
             var range = elem.createTextRange();
             range.move('character', caretPos);
@@ -456,8 +457,15 @@ jQuery(document).ready(function(){
             else
                 elem.focus();
         }
-  })
-})
+  });
+window.ckeditorInstance;
+  for(var id in CKEDITOR.instances) {
+      CKEDITOR.instances[id].on('mode', function(e) {
+          //alert('poop')
+      });
+  }
+
+});
 </script>
 
 {% endblock %}
