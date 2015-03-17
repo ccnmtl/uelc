@@ -70,15 +70,16 @@
     				    <!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
     			{% endif %}
     			{% block edit-or-view-page %}
-    				{% if is_view %}
-        				<li>
-        				    <a href="{{section.get_edit_url}}">Edit Page</a>
-        				</li>
-        				{% else %}
-        				<li>
-        				    <a href="{{section.get_absolute_url}}">View Page</a>
-        				</li>
-    				{% endif %} 
+        				{% if is_view %}
+            				<li>
+            				    <a href="{{section.get_edit_url}}">Edit Page</a>
+            				</li>
+            				{% endif %}
+            				<li>
+                            {% if edit_view %}
+            				    <a href="{{section.get_absolute_url}}">View Page</a>
+            				</li>
+        				{% endif %}
     			{% endblock %}
 				{% endifnotequal %}
             {% endif %}
@@ -103,9 +104,7 @@
 			        	{% if request.user.profile.is_admin %}
 			        	  <li><a href="/uelcadmin/">Manage</a></li>
 			        	{% endif %}
-			        	{% for root in roots %}
-                            <li><a href="{{ root.0 }}facilitator/">Faciliatate</a></li>
-                        {% endfor %}
+                            <li><a href="{{request.user.profile.cohort.case.0.hierarchy.get_absolute_url}}facilitator/">Faciliatate</a></li>
                         <!--
                             <li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
                         -->
