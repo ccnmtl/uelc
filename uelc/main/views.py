@@ -17,7 +17,7 @@ from uelc.main.helper_functions import (
     admin_ajax_reset_page)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
-    SectionMixin, LoggedInMixinSuperuser, DynamicHierarchyMixin,
+    SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
     RestrictedModuleMixin)
 from uelc.main.models import (
     Cohort, UserProfile, CreateUserForm, Case,
@@ -363,7 +363,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
 
 
 class UELCAdminCreateUserView(
-        LoggedInMixinSuperuser,
+        LoggedInMixinAdmin,
         TemplateView):
 
     template_name = "pagetree/uelc_admin.html"
@@ -394,7 +394,7 @@ class UELCAdminCreateUserView(
         return HttpResponseRedirect(url)
 
 
-class UELCAdminDeleteUserView(LoggedInMixinSuperuser,
+class UELCAdminDeleteUserView(LoggedInMixinAdmin,
                               TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -407,7 +407,7 @@ class UELCAdminDeleteUserView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminEditUserView(LoggedInMixinSuperuser,
+class UELCAdminEditUserView(LoggedInMixinAdmin,
                             TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -428,7 +428,7 @@ class UELCAdminEditUserView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminEditUserPassView(LoggedInMixinSuperuser,
+class UELCAdminEditUserPassView(LoggedInMixinAdmin,
                                 TemplateView):
     template_name = "pagetree/uelc_admin_user_pass_reset.html"
     extra_context = dict()
@@ -453,7 +453,7 @@ class UELCAdminEditUserPassView(LoggedInMixinSuperuser,
         return HttpResponseRedirect('uelcadmin')
 
 
-class UELCAdminCreateHierarchyView(LoggedInMixinSuperuser,
+class UELCAdminCreateHierarchyView(LoggedInMixinAdmin,
                                    TemplateView):
         template_name = "pagetree/uelc_admin.html"
         extra_context = dict()
@@ -480,7 +480,7 @@ class UELCAdminCreateHierarchyView(LoggedInMixinSuperuser,
             return HttpResponseRedirect(url)
 
 
-class UELCAdminDeleteHierarchyView(LoggedInMixinSuperuser,
+class UELCAdminDeleteHierarchyView(LoggedInMixinAdmin,
                                    TemplateView):
     extra_context = dict()
 
@@ -492,7 +492,7 @@ class UELCAdminDeleteHierarchyView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminCaseView(LoggedInMixinSuperuser,
+class UELCAdminCaseView(LoggedInMixinAdmin,
                         TemplateView):
     template_name = "pagetree/uelc_admin_case.html"
     extra_context = dict()
@@ -529,7 +529,7 @@ class UELCAdminCaseView(LoggedInMixinSuperuser,
         return context
 
 
-class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
+class UELCAdminCreateCohortView(LoggedInMixinAdmin,
                                 TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -551,7 +551,7 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminDeleteCohortView(LoggedInMixinSuperuser,
+class UELCAdminDeleteCohortView(LoggedInMixinAdmin,
                                 TemplateView):
     extra_context = dict()
 
@@ -563,7 +563,7 @@ class UELCAdminDeleteCohortView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminEditCohortView(LoggedInMixinSuperuser,
+class UELCAdminEditCohortView(LoggedInMixinAdmin,
                               TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -597,7 +597,7 @@ class UELCAdminEditCohortView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminCreateCaseView(LoggedInMixinSuperuser,
+class UELCAdminCreateCaseView(LoggedInMixinAdmin,
                               TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -644,7 +644,7 @@ class UELCAdminCreateCaseView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminDeleteCaseView(LoggedInMixinSuperuser,
+class UELCAdminDeleteCaseView(LoggedInMixinAdmin,
                               TemplateView):
     extra_context = dict()
 
@@ -656,7 +656,7 @@ class UELCAdminDeleteCaseView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminEditCaseView(LoggedInMixinSuperuser,
+class UELCAdminEditCaseView(LoggedInMixinAdmin,
                             TemplateView):
     extra_context = dict()
 
@@ -705,7 +705,7 @@ class UELCAdminEditCaseView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminView(LoggedInMixinSuperuser,
+class UELCAdminView(LoggedInMixinAdmin,
                     TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -736,7 +736,7 @@ class UELCAdminView(LoggedInMixinSuperuser,
         return context
 
 
-class UELCAdminCohortView(LoggedInMixinSuperuser,
+class UELCAdminCohortView(LoggedInMixinAdmin,
                           TemplateView):
     template_name = "pagetree/uelc_admin_cohort.html"
     extra_context = dict()
@@ -768,7 +768,7 @@ class UELCAdminCohortView(LoggedInMixinSuperuser,
         return context
 
 
-class UELCAdminUserView(LoggedInMixinSuperuser,
+class UELCAdminUserView(LoggedInMixinAdmin,
                         TemplateView):
     template_name = "pagetree/uelc_admin_user.html"
     extra_context = dict()
@@ -878,7 +878,7 @@ class EditCaseAnswerView(View):
             dict(case_answer_form=form, case_answer=case_answer))
 
 
-class DeleteCaseAnswerView(LoggedInMixinSuperuser,
+class DeleteCaseAnswerView(LoggedInMixinAdmin,
                            View):
     '''I am doing a regular view instead of a delete view,
     because the delete view will only delete the caseanswer,

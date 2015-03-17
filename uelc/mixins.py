@@ -7,10 +7,11 @@ from pagetree.models import Hierarchy
 from uelc.main.helper_functions import get_cases
 
 
-class LoggedInMixinSuperuser(object):
-    @method_decorator(user_passes_test(lambda u: u.is_superuser))
+class LoggedInMixinAdmin(object):
+    @method_decorator(user_passes_test(
+        lambda u: not u.is_anonymous() and u.profile.profile_type == "admin"))
     def dispatch(self, *args, **kwargs):
-        return super(LoggedInMixinSuperuser, self).dispatch(*args, **kwargs)
+        return super(LoggedInMixinAdmin, self).dispatch(*args, **kwargs)
 
 
 class LoggedInFacilitatorMixin(object):

@@ -100,7 +100,7 @@
 			          <span class="caret"></span>
 			          </a>
 			          <ul class="dropdown-menu" role="menu">
-			        	{% if request.user.is_superuser %}
+			        	{% if request.user.profile.is_admin %}
 			        	  <li><a href="/uelcadmin/">Manage</a></li>
 			        	{% endif %}
 			        	{% for root in roots %}
