@@ -124,7 +124,7 @@
 
 <div class="container" id="outer-container">
 
-    {% if request.user.is_superuser %}
+    {% if request.user.profile.is_admin %}
     <div class="col-md-12">
     {% block topnavbarleftitems %}{% endblock %}
     {% block moduletabs %}
