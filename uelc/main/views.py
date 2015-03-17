@@ -215,6 +215,7 @@ class UELCEditView(LoggedInFacilitatorMixin,
     template_name = "pagetree/edit_page.html"
     extra_context = dict(edit_view=True)
 
+
 class FacilitatorView(LoggedInFacilitatorMixin,
                       DynamicHierarchyMixin,
                       TemplateView,
