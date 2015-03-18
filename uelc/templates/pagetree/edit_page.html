@@ -457,28 +457,28 @@ jQuery(document).ready(function(){
         elem.focus();
     }//end if
   });// end .click
+  if(CKEDITOR){
+    for(var id in CKEDITOR.instances) {
+      CKEDITOR.instances[id].on('mode', function(event) {
+        
+        var editor = event.editor;
+        window.editor = editor;
+        if(typeof(editor) !== 'undefined') {
+           editor.focus();
 
-  window.ckeditorInstance;
-  for(var id in CKEDITOR.instances) {
-    CKEDITOR.instances[id].on('mode', function(event) {
+           var element = editor.element;
+           var range = editor.createRange();
+           if(range) {
+              range.moveToElementEditablePosition(element, false);
+              range.select();
+           }
+        }
+
+
+      });//end .on
       
-      var editor = event.editor;
-      window.editor = editor;
-      if(typeof(editor) !== 'undefined') {
-         editor.focus();
-
-         var element = editor.element;
-         var range = editor.createRange();
-         if(range) {
-            range.moveToElementEditablePosition(element, false);
-            range.select();
-         }
-      }
-
-
-    });//end .on
-    
-  }//end for
+    }//end for
+  }//end if CKEDITOR
 });//end doc.ready
 </script>
 
