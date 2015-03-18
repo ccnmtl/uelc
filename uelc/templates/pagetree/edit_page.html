@@ -35,8 +35,10 @@
 var wysiwyg = jQuery('[id^=editor]').ckeditor({
     //filebrowserUploadUrl: '/uploads/',
     filebrowserBrowseUrl: '/admin/main/imageuploaditem/',
-    allowedContent: true
+    allowedContent: true,
+    autofocus: true,
   });
+
 //wysiwyg.config.allowedContent = true;
 var saveOrderOfChildren = function() {
     var url = "{% url 'reorder-section-children' section.id %}?";
@@ -442,22 +444,42 @@ method="post">{% csrf_token %}
 <script>
 jQuery(document).ready(function(){
   jQuery('.form-control').click(function(){
-    elem = jQuery(this)
+    elem = jQuery(this);
     if(elem.createTextRange) {
-            var range = elem.createTextRange();
-            range.move('character', caretPos);
-            range.select();
+      var range = elem.createTextRange();
+      range.move('character', caretPos);
+      range.select();
+    }
+    else if(elem.selectionStart) {
+      elem.focus();
+      elem.setSelectionRange(caretPos, caretPos);
+    }else{
+        elem.focus();
+    }//end if
+  });// end .click
+  if(CKEDITOR){
+    for(var id in CKEDITOR.instances) {
+      CKEDITOR.instances[id].on('mode', function(event) {
+        
+        var editor = event.editor;
+        window.editor = editor;
+        if(typeof(editor) !== 'undefined') {
+           editor.focus();
+
+           var element = editor.element;
+           var range = editor.createRange();
+           if(range) {
+              range.moveToElementEditablePosition(element, false);
+              range.select();
+           }
         }
-        else {
-            if(elem.selectionStart) {
-                elem.focus();
-                elem.setSelectionRange(caretPos, caretPos);
-            }
-            else
-                elem.focus();
-        }
-  })
-})
+
+
+      });//end .on
+      
+    }//end for
+  }//end if CKEDITOR
+});//end doc.ready
 </script>
 
 {% endblock %}
