@@ -88,16 +88,13 @@
 			  {% else %}
                 <!-- <li class="navbar-text"></li> -->
 			    <li class="dropdown">
-			      {% ifnotequal request.user.profile.profile_type "group_user" %}
-			        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-			      {% endifnotequal %}
-			        <li><a>Hi,
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+			        Hi,
 			        {% if request.user.last_name %}
 			            {{request.user.first_name}} {{request.user.last_name}}
 			        {% else %}
 			            {{ request.user.username }}!
 			        {% endif %}
-                    </a></li>
 			        {% ifnotequal request.user.profile.profile_type "group_user" %}
 			          <span class="caret"></span>
 			          </a>
