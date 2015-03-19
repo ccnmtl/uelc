@@ -87,27 +87,37 @@
 			  {% if request.user.is_anonymous %}
 			  {% else %}
                 <!-- <li class="navbar-text"></li> -->
-			    <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-			        Hi,
-			        {% if request.user.last_name %}
-			            {{request.user.first_name}} {{request.user.last_name}}
-			        {% else %}
-			            {{ request.user.username }}!
-			        {% endif %}
-			        {% ifnotequal request.user.profile.profile_type "group_user" %}
-			          <span class="caret"></span>
-			          </a>
-			          <ul class="dropdown-menu" role="menu">
-			        	{% if request.user.profile.is_admin %}
-			        	  <li><a href="/uelcadmin/">Manage</a></li>
-			        	{% endif %}
-                            <li><a href="{{request.user.profile.cohort.case.0.hierarchy.get_absolute_url}}facilitator/">Facilitate</a></li>
-                        <!--
-                            <li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
-                        -->
-                      </ul>
-			        {% endifnotequal %}
+			        <li class="dropdown">
+                    {% if request.user.profile.profile_type == "group_user" %}
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    			        Hi,
+    			        {% if request.user.last_name %}
+    			            {{request.user.first_name}} {{request.user.last_name}}
+    			        {% else %}
+    			            {{ request.user.username }}!
+    			        {% endif %}
+                        </a>
+
+        			     {% else %}
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                Hi,
+                                {% if request.user.last_name %}
+                                    {{request.user.first_name}} {{request.user.last_name}}
+                                {% else %}
+                                    {{ request.user.username }}!
+                                {% endif %}
+            			          <span class="caret"></span>
+            			     </a>
+        			          <ul class="dropdown-menu" role="menu">
+        			        	{% if request.user.profile.is_admin %}
+        			        	  <li><a href="/uelcadmin/">Manage</a></li>
+        			        	{% endif %}
+                                    <li><a href="{{request.user.profile.cohort.case.0.hierarchy.get_absolute_url}}facilitator/">Facilitate</a></li>
+                                <!--
+                                    <li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
+                                -->
+                              </ul>
+    			        {% endif %}
 			    	</li>
 				    <li>
 				        <a href="/accounts/logout/?next=/">Log Out</a>
