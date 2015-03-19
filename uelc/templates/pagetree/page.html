@@ -181,7 +181,7 @@
                 <td> {{item.name}} </td>
                 <td class="library-item-document"> 
                     <span class="hidden">{{item.id}}</span>
-                    <a target="_blank" href="/uploads/{{item.doc}}">Document link</a> 
+                    <a target="_blank" href="{{MEDIA_URL}}{{item.doc}}">Document link</a> 
                 </td>
             </tr>
         {% endfor %}
