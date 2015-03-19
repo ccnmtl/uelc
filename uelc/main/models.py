@@ -78,7 +78,6 @@ class Cohort(models.Model):
 
 class UserProfile(models.Model):
     PROFILE_CHOICES = (
-        (None, '--------'),
         ('admin', 'Administrator'),
         ('assistant', 'Assistant'),
         ('group_user', 'Group User'),
@@ -134,7 +133,8 @@ class CreateUserForm(UserCreationForm):
         required=True,
         widget=forms.Select(
             attrs={'class': 'create-user-profile', 'required': True}),
-        choices=UserProfile.PROFILE_CHOICES)
+        choices=UserProfile.PROFILE_CHOICES,
+        initial='group_user')
     cohort = forms.ModelChoiceField(
         widget=forms.Select(
             attrs={'class': 'cohort-select', 'required': True}),
