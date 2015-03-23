@@ -1,17 +1,23 @@
 {% extends 'base.html' %}
+{% block title %} | Start Page{% endblock %}
 
 {% block content %}
 
 {% if not request.user.is_anonymous %}
 
-    <h1>Choose Your Case</h1>
+    <h1>{% if request.user.last_name %}{{request.user.first_name}} {{request.user.last_name}}{% else %}{{ request.user.username }}{% endif %}'s Start Page</h1>
+    
+    <p class="badge">Cohort ID: ###, Group ###</p>
+    
+    <p></p>
     
     <div class="well">
-        <h2>Case List</h2>
+        <h2>Group Leader Case List</h2>
+        <p>Select a case for your group to work on.</p>
         <ul class="case-index-list">
             {% for root in roots %}
             {% ifnotequal root.0 '/' %}
-            <li><a href="{{ root.0 }}">{{root.1}}</a></li>
+            <li><a href="{{ root.0 }}">CASETITLE ({{root.1}})</a> - This is a description of this case.</li>
             {% endifnotequal %}
             {% endfor %}
         </ul>
@@ -20,11 +26,12 @@
     {% ifnotequal request.user.profile.profile_type  'group_user'  %}
     
     <div class="admin-section well">
-        <h2>Case Control for Facilitator</h2>
+        <h2>Facilitator Case Control</h2>
+        <p>Select a case for helping your group with.</p>
         <ul>
             {% for root in roots %}
             {% ifnotequal root.0 '/' %}
-            <li><a href="{{ root.0 }}facilitator/">{{root.1}}</a></li>
+            <li><a href="{{ root.0 }}facilitator/">CASETITLE ({{root.1}})</a> - This is a description of this case.</li>
             {% endifnotequal %}
             {% endfor %}
         </ul>
