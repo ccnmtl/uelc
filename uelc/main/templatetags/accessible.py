@@ -36,6 +36,7 @@ def submitted(parser, token):
         nodelist_false = None
     return SubmittedNode(section, nodelist_true, nodelist_false)
 
+
 @register.assignment_tag
 def get_next_hierarchy_section(request, section):
     hierarchy = section.hierarchy
