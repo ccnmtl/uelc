@@ -63,7 +63,6 @@ class UELCPageView(LoggedInMixin,
     def run_section_gatecheck(self, user, path):
         section_gatecheck = self.section.gate_check(self.request.user)
         if not section_gatecheck[0]:
-            #gate_section = section_gatecheck[1]
             gate_section_gateblock = self.get_next_gate(self.section)
             if not gate_section_gateblock:
                 block_unlocked = True
@@ -580,7 +579,7 @@ class UELCAdminEditCohortView(LoggedInMixinAdmin,
             cohort_obj.save()
             user_list_objs = User.objects.filter(pk__in=user_list)
             for user in cohort_users:
-                if not user.id in user_list:
+                if user.id not in user_list:
                     user.profile.cohort = None
                     user.profile.save()
             for user in user_list_objs:
