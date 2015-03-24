@@ -531,15 +531,15 @@ class UELCAdminCaseView(LoggedInMixinAdmin,
         return context
 
     def get(self, request):
-        import pdb
-        pdb.set_trace()
-        if request.GET['no_root']:
+        if request.GET.get('no_root'):
             action_args = dict(
-                error="You tried to access a case that does not have any content!\
-                        Please go to the edit page for the case and add content.")
+                error="You tried to access a case that does \
+                      not have any content! Please go to \
+                      the edit page for the case and add content.")
             messages.error(request, action_args['error'],
                            extra_tags='accessCaseViewError')
-        return render(request, self.template_name, self.get_context_data(request))
+        return render(request, self.template_name,
+                      self.get_context_data(request))
 
 
 class UELCAdminCreateCohortView(LoggedInMixinAdmin,
