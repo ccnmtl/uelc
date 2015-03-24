@@ -40,6 +40,7 @@ class UELCPageView(LoggedInMixin,
                    RestrictedModuleMixin,
                    PageView):
     template_name = "pagetree/page.html"
+    no_root_fallback_url = "/uelcadmin/case/?no_root=true"
     gated = False
 
     def itterate_blocks(self, section):
@@ -527,6 +528,17 @@ class UELCAdminCaseView(LoggedInMixinAdmin,
                        hierarchy_cases=hierarchy_cases,
                        )
         return context
+
+    def get(self, request):
+        if request.GET.get('no_root'):
+            action_args = dict(
+                error="You tried to access a case that does \
+                      not have any content! Please go to \
+                      the edit page for the case and add content.")
+            messages.error(request, action_args['error'],
+                           extra_tags='accessCaseViewError')
+        return render(request, self.template_name,
+                      self.get_context_data(request))
 
 
 class UELCAdminCreateCohortView(LoggedInMixinAdmin,
