@@ -111,7 +111,7 @@ def visit_root(section, fallback_url):
     ns = section.get_next()
     hierarchy = section.hierarchy
     if ns:
-        if ns.hierarchy == section.hierarchy
+        if ns.hierarchy == hierarchy:
             # just send them to the first child
             return HttpResponseRedirect(section.get_next().get_absolute_url())
     # no sections available so
