@@ -108,9 +108,12 @@ def visit_root(section, fallback_url):
     either to the first section on the site, or to
     the admin page if there are no sections (so they
     can add some)"""
-    if section.get_next():
-        # just send them to the first child
-        return HttpResponseRedirect(section.get_next().get_absolute_url())
+    ns = section.get_next()
+    hierarchy = section.hierarchy
+    if ns:
+        if ns.hierarchy == section.hierarchy
+            # just send them to the first child
+            return HttpResponseRedirect(section.get_next().get_absolute_url())
     # no sections available so
     # send them to the fallback
     return HttpResponseRedirect(fallback_url)
