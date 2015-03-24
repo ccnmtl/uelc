@@ -17,7 +17,7 @@
         <ul class="case-index-list">
             {% for root in roots %}
             {% ifnotequal root.0 '/' %}
-            <li><a href="{{ root.0 }}">CASETITLE ({{root.1}})</a> - This is a description of this case.</li>
+            <li><a href="{{ root.0 }}">Title of Case ({{root.1}})</a> - This is a description of this case.</li>
             {% endifnotequal %}
             {% endfor %}
         </ul>
@@ -27,11 +27,11 @@
     
     <div class="admin-section well">
         <h2>Facilitator Case Control</h2>
-        <p>Select a case for helping your group with.</p>
+        <p>Select the case that the group you are coaching is working on.</p>
         <ul>
             {% for root in roots %}
             {% ifnotequal root.0 '/' %}
-            <li><a href="{{ root.0 }}facilitator/">CASETITLE ({{root.1}})</a> - This is a description of this case.</li>
+            <li><a href="{{ root.0 }}facilitator/">Title of Case ({{root.1}})</a> - This is a description of this case.</li>
             {% endifnotequal %}
             {% endfor %}
         </ul>
