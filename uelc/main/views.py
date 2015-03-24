@@ -7,14 +7,14 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
-from pagetree.generic.views import PageView, EditView
+from pagetree.generic.views import PageView, EditView, UserPageVisitor
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
     get_root_context, get_user_map,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
-    admin_ajax_reset_page)
+    admin_ajax_reset_page, visit_root)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
@@ -42,6 +42,18 @@ class UELCPageView(LoggedInMixin,
     template_name = "pagetree/page.html"
     no_root_fallback_url = "/uelcadmin/case/?no_root=true"
     gated = False
+
+    def perform_checks(self, request, path):
+        self.section = self.get_section(path)
+        self.root = self.section.hierarchy.get_root()
+        self.module = self.section.get_module()
+        if self.section.is_root():
+            return visit_root(self.section, self.no_root_fallback_url)
+        r = self.gate_check(request.user)
+        if r is not None:
+            return r
+        self.upv = UserPageVisitor(self.section, request.user)
+        return None
 
     def itterate_blocks(self, section):
         for block in section.pageblock_set.all():
