@@ -3,6 +3,7 @@ UELCAdmin = {
     Admin: function() {
         this.init = function() {
             this.setPartsOnGateblocks();
+            this.setChoicesOnSecondParts()
             jQuery('.library-item-user-select').multiselect();
             jQuery('[data-toggle="tooltip"]').tooltip({
                 'placement': 'top'
@@ -29,6 +30,26 @@ UELCAdmin = {
                     divHtml += choice + ' </div>';
                     part2.prepend(divHtml);
                 }
+            }
+        };
+        this.setChoicesOnSecondParts = function() {
+            var part2Gates = jQuery('.part2');
+            var lastPart2Gates = [];
+            part2Gates.parent().each(function(){
+                lastChild = jQuery(this).last();
+                lastPart2Gates.push(lastChild);
+            })
+            for (var i = 0; i < lastPart2Gates.length; i ++){
+                var gate = lastPart2Gates[i];
+                window.gate = gate;
+                choiceAttr = gate.children().last().attr('data-part-decision');
+                if (choiceAttr.match('p2c2-')) {
+                    var choice = choiceAttr.split('p2c2-')[1];
+                    decision = 'Part 2 Second Decision ' + choice
+                }else{
+                    decision = '';
+                }
+                gate.append(decision);
             }
         };
         this.deleteLibraryItem = function() {

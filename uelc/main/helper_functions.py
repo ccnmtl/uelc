@@ -30,6 +30,10 @@ def admin_ajax_page_submit(section, user):
 
 
 def admin_ajax_reset_page(section, user):
+    case = Case.objects.get(hierarchy=section.hierarchy)
+    casemap = CaseMap.objects.get(user=user, case=case)
+    data = dict(question=0)
+    casemap.save_value(section, data)
     for block in section.pageblock_set.all():
         if block.block().display_name == "Gate Block":
             gso = GateSubmission.objects.filter(
