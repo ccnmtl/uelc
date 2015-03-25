@@ -292,7 +292,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         post = request.POST
         if action == 'submit':
             self.set_upv(user, section, "complete")
-            admin_ajax_page_submit(section, user, post)
+            admin_ajax_page_submit(section, user)
         if action == 'reset':
             self.set_upv(user, section, "incomplete")
             admin_ajax_reset_page(section, user)
