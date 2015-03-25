@@ -101,3 +101,19 @@ def pages_save_edit(request, hierarchy_name, path):
 @login_required
 def instructor_page(request, hierarchy_name, path):
     return generic_instructor_page(request, path, hierarchy=hierarchy_name)
+
+
+def visit_root(section, fallback_url):
+    """ if they try to visit the root, we need to send them
+    either to the first section on the site, or to
+    the admin page if there are no sections (so they
+    can add some)"""
+    ns = section.get_next()
+    hierarchy = section.hierarchy
+    if ns:
+        if ns.hierarchy == hierarchy:
+            # just send them to the first child
+            return HttpResponseRedirect(section.get_next().get_absolute_url())
+    # no sections available so
+    # send them to the fallback
+    return HttpResponseRedirect(fallback_url)

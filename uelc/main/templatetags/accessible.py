@@ -38,6 +38,13 @@ def submitted(parser, token):
 
 
 @register.assignment_tag
+def get_next_hierarchy_section(request, section):
+    hierarchy = section.hierarchy
+    if hierarchy == section.get_next().hierarchy:
+        return True
+
+
+@register.assignment_tag
 def get_previous_group_user_section(request, section, previous, part):
     # make sure that group users cannot go to the
     # root page of the Part. Also make sure that the

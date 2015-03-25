@@ -7,7 +7,7 @@
 
     <h1>{% if request.user.last_name %}{{request.user.first_name}} {{request.user.last_name}}{% else %}{{ request.user.username }}{% endif %}'s Start Page</h1>
     
-    <p class="badge">Cohort ID: ###, Group ###</p>
+    <p class="badge">Cohort: {{ request.user.profile.cohort}}</p>
     
     <p></p>
     

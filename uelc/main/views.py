@@ -7,14 +7,14 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
-from pagetree.generic.views import PageView, EditView
+from pagetree.generic.views import PageView, EditView, UserPageVisitor
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
     get_root_context, get_user_map,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
-    admin_ajax_reset_page)
+    admin_ajax_reset_page, visit_root)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
@@ -40,7 +40,20 @@ class UELCPageView(LoggedInMixin,
                    RestrictedModuleMixin,
                    PageView):
     template_name = "pagetree/page.html"
+    no_root_fallback_url = "/uelcadmin/case/?no_root=true"
     gated = False
+
+    def perform_checks(self, request, path):
+        self.section = self.get_section(path)
+        self.root = self.section.hierarchy.get_root()
+        self.module = self.section.get_module()
+        if self.section.is_root():
+            return visit_root(self.section, self.no_root_fallback_url)
+        r = self.gate_check(request.user)
+        if r is not None:
+            return r
+        self.upv = UserPageVisitor(self.section, request.user)
+        return None
 
     def itterate_blocks(self, section):
         for block in section.pageblock_set.all():
@@ -63,7 +76,6 @@ class UELCPageView(LoggedInMixin,
     def run_section_gatecheck(self, user, path):
         section_gatecheck = self.section.gate_check(self.request.user)
         if not section_gatecheck[0]:
-            #gate_section = section_gatecheck[1]
             gate_section_gateblock = self.get_next_gate(self.section)
             if not gate_section_gateblock:
                 block_unlocked = True
@@ -277,10 +289,9 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         user = User.objects.get(id=request.POST.get('user_id'))
         action = request.POST.get('gate-action')
         section = Section.objects.get(id=request.POST.get('section'))
-        post = request.POST
         if action == 'submit':
             self.set_upv(user, section, "complete")
-            admin_ajax_page_submit(section, user, post)
+            admin_ajax_page_submit(section, user)
         if action == 'reset':
             self.set_upv(user, section, "incomplete")
             admin_ajax_reset_page(section, user)
@@ -375,7 +386,10 @@ class UELCAdminCreateUserView(
         password = make_password(request.POST.get('password1', ''))
         profile_type = request.POST.get('user_profile', '')
         cohort_id = request.POST.get('cohort', '')
-        cohort = Cohort.objects.get(id=cohort_id)
+        if cohort_id:
+            cohort = Cohort.objects.get(id=cohort_id)
+        else:
+            cohort = None
         user_exists = User.objects.filter(Q(username=username))
         if len(user_exists) == 0 and not profile_type == "":
             user = User.objects.create(username=username, password=password)
@@ -529,6 +543,17 @@ class UELCAdminCaseView(LoggedInMixinAdmin,
                        )
         return context
 
+    def get(self, request):
+        if request.GET.get('no_root'):
+            action_args = dict(
+                error="You tried to access a case that does \
+                      not have any content! Please go to \
+                      the edit page for the case and add content.")
+            messages.error(request, action_args['error'],
+                           extra_tags='accessCaseViewError')
+        return render(request, self.template_name,
+                      self.get_context_data(request))
+
 
 class UELCAdminCreateCohortView(LoggedInMixinAdmin,
                                 TemplateView):
@@ -580,7 +605,7 @@ class UELCAdminEditCohortView(LoggedInMixinAdmin,
             cohort_obj.save()
             user_list_objs = User.objects.filter(pk__in=user_list)
             for user in cohort_users:
-                if not user.id in user_list:
+                if user.id not in user_list:
                     user.profile.cohort = None
                     user.profile.save()
             for user in user_list_objs:
