@@ -289,7 +289,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         user = User.objects.get(id=request.POST.get('user_id'))
         action = request.POST.get('gate-action')
         section = Section.objects.get(id=request.POST.get('section'))
-        post = request.POST
         if action == 'submit':
             self.set_upv(user, section, "complete")
             admin_ajax_page_submit(section, user)
