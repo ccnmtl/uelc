@@ -30,8 +30,12 @@ def admin_ajax_page_submit(section, user):
 
 
 def admin_ajax_reset_page(section, user):
-    case = Case.objects.get(hierarchy=section.hierarchy)
-    casemap = CaseMap.objects.get(user=user, case=case)
+    case = Case.objects.get_or_create(hierarchy=section.hierarchy)
+    try:
+        casemap = CaseMap.objects.get(user=user, case=case)
+    except ObjectDoesNotExist:
+        casemap = CaseMap.objects.create(user=user, case=case)
+        casemap.save()
     data = dict(question=0)
     casemap.save_value(section, data)
     for block in section.pageblock_set.all():

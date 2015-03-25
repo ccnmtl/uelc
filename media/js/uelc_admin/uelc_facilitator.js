@@ -35,18 +35,18 @@ UELCAdmin = {
         this.setChoicesOnSecondParts = function() {
             var part2Gates = jQuery('.part2');
             var lastPart2Gates = [];
-            part2Gates.parent().each(function(){
+            part2Gates.parent().each(function() {
                 lastChild = jQuery(this).last();
                 lastPart2Gates.push(lastChild);
             });
-            for (var i = 0; i < lastPart2Gates.length; i ++){
+            for (var i = 0; i < lastPart2Gates.length; i ++) {
                 var gate = lastPart2Gates[i];
                 window.gate = gate;
                 choiceAttr = gate.children().last().attr('data-part-decision');
                 var decision;
                 if (choiceAttr.match('p2c2-')) {
                     var choice = choiceAttr.split('p2c2-')[1];
-                     decision = 'Part 2 Second Decision ' + choice;
+                    decision = 'Part 2 Second Decision ' + choice;
                 } else {
                     decision = '';
                 }
