@@ -258,7 +258,6 @@ class CaseMap(models.Model):
         self.value = val
         self.save()
 
-
     def save_value(self, section, data):
         case_depth = len(section.get_tree())
         count = 0
@@ -384,8 +383,6 @@ class UELCHandler(Section):
     def get_partchoice_by_usermap(self, usermap):
         vals = self.get_vals_from_casemap(usermap.value)
         part = 1
-        #import pdb
-        #pdb.set_trace()
         if len(vals) >= 2:
             part = float(2) + (vals[1] * .1)
         if len(vals) >= 3:

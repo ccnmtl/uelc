@@ -14,12 +14,11 @@ def convert(arg):
         return 'part' + str(arg)
 
 
-
 @register.filter(name='convert_part2')
-def convert(arg):
+def convert_part2(arg):
     if arg > 1:
         if not round(arg, 1) == round(arg, 2):
-            #then part 2 decision has been made
+            '''then part 2 decision has been made'''
             choice = str(arg).split('.')[1][1]
             return 'p2c2-' + choice
         else:
