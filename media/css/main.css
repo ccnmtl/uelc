@@ -222,18 +222,11 @@ ul.gate-section-list{
 .gate-section{
     float: left
 }
-.gate-button{
-    margin: 0px;
-    padding: 10px 0 16px 0;
-}
-.gate-button form{
-    float: left;
-    width: 89%;
-}
-.preview-page{
-    float: right;
-    margin: 13px 0 0 0;
-}
+
+.gate-button {}
+.gate-button form{}
+.preview-page{}
+
 .glyphicon-trash, .glyphicon-edit{
     cursor: pointer;
 }
