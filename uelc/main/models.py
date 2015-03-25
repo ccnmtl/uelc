@@ -137,7 +137,7 @@ class CreateUserForm(UserCreationForm):
         initial='group_user')
     cohort = forms.ModelChoiceField(
         widget=forms.Select(
-            attrs={'class': 'cohort-select', 'required': True}),
+            attrs={'class': 'cohort-select'}),
         queryset=Cohort.objects.all().order_by('name'),)
     username = forms.CharField(
         widget=forms.widgets.Input(
