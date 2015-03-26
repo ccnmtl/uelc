@@ -181,7 +181,7 @@ class UELCPageView(LoggedInMixin,
             case=case,
             case_quizblocks=case_quizblocks,
             casemap=casemap,
-            library_items=self.get_library_items(case),
+            # library_items=self.get_library_items(case),
             part=part,
             roots=roots['roots']
         )
@@ -340,8 +340,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         roots = get_root_context(self.request)
         hierarchy = section.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
-        library_item = LibraryItem
-        library_items = LibraryItem.objects.all()
+        # library_item = LibraryItem
+        # library_items = LibraryItem.objects.all()
         # is there really only going to be one cohort per case?
         cohort = case.cohort.get(user_profile_cohort__user=user)
         cohort_user_profiles = cohort.user_profile_cohort.filter(
@@ -379,8 +379,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                        module=section.get_module(),
                        modules=root.get_children(),
                        root=section.hierarchy.get_root(),
-                       library_item=library_item,
-                       library_items=library_items,
+                       # library_item=library_item,
+                       # library_items=library_items,
                        case=case,
                        roots=roots['roots']
                        )
