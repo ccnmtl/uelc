@@ -52,14 +52,39 @@ class UELCPageView(LoggedInMixin,
                    RestrictedModuleMixin,
                    PageView):
     template_name = "pagetree/page.html"
-    no_root_fallback_url = "/uelcadmin/case/?no_root=true"
+    no_root_fallback_url = "/"
     gated = False
 
     def perform_checks(self, request, path):
         self.section = self.get_section(path)
         self.root = self.section.hierarchy.get_root()
         self.module = self.section.get_module()
+        pt = request.user.profile.profile_type
+        ns = self.section.get_next()
+        base_url = self.section.hierarchy.base_url
         if self.section.is_root():
+            if not ns:
+                if not pt == "group_user":
+                    # then root has no children yet
+                    action_args = dict(
+                        error="You just tried accessing a case that has \
+                              no content. You have been forwarded over \
+                              to the root page of the case, so that you \
+                              can go ahead and add some content now.")
+                    messages.error(request, action_args['error'],
+                                   extra_tags='rootUrlError')
+                    request.path = base_url+'edit/'
+                    return HttpResponseRedirect(request.path)
+                else:
+                    action_args = dict(
+                        error="For some reason the case you tried to \
+                              access does not have any content yet. \
+                              Please choose another case, or alert \
+                              your facilitator.")
+                    messages.error(request, action_args['error'],
+                                   extra_tags='rootUrlError')
+                    request.path = '/'
+                    return HttpResponseRedirect(request.path)
             return visit_root(self.section, self.no_root_fallback_url)
         r = self.gate_check(request.user)
         if r is not None:
