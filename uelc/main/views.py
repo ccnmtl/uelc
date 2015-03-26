@@ -69,8 +69,8 @@ class UELCPageView(LoggedInMixin,
                     action_args = dict(
                         error="You just tried accessing a case that has \
                               no content. You have been forwarded over \
-                              to the root page of the case, so that you \
-                              can go ahead and add some content now.")
+                              to the root page of the case so that you \
+                              can and add some content if you wish to.")
                     messages.error(request, action_args['error'],
                                    extra_tags='rootUrlError')
                     request.path = base_url+'edit/'
