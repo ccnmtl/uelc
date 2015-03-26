@@ -22,7 +22,7 @@ UELCAdmin = {
             if (p2l) {
                 for (var i = 0; i < gsl ; i ++) {
                     var gs = jQuery('.gate-section-list').eq(i);
-                    window.part2 = gs.eq(0).find('.part2').eq(0);
+                    var part2 = gs.eq(0).find('.part2').eq(0);
                     if (part2.length > 0) {
                         var choice = part2.attr('class').split(' ').pop();
                         var divHtml = '<div class="part2text">Part 2 ';
