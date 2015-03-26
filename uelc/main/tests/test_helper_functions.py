@@ -2,7 +2,7 @@ from django.test import TestCase
 from factories import GroupUpFactory, HierarchyFactory
 from quizblock.tests.test_models import FakeReq
 from gate_block.models import GateBlock
-from uelc.main.models import CaseQuiz
+from uelc.main.models import CaseQuiz, Cohort, Case
 from uelc.main.helper_functions import (
     admin_ajax_page_submit, admin_ajax_reset_page,
     page_submit, reset_page)
@@ -14,6 +14,10 @@ class TestSubmissionResetFunctions(TestCase):
         self.hierarchy = HierarchyFactory(name="main", base_url="/pages/main/")
         self.root = self.hierarchy.get_root()
         self.r = FakeReq()
+        self.cohort = Cohort.objects.create(name="main_cohort")
+        self.case = Case.objects.create(
+            name="main_case",
+            hierarchy=self.hierarchy)
         self.r.POST = {'description': 'description', 'rhetorical': False,
                        'allow_redo': True, 'show_submit_state': False}
         self.casequiz = CaseQuiz.create(self.r)

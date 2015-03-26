@@ -3,6 +3,7 @@ UELCAdmin = {
     Admin: function() {
         this.init = function() {
             this.setPartsOnGateblocks();
+            this.setChoicesOnSecondParts();
             jQuery('.library-item-user-select').multiselect();
             jQuery('[data-toggle="tooltip"]').tooltip({
                 'placement': 'top'
@@ -18,17 +19,38 @@ UELCAdmin = {
                 html = '<div class="part1text">Part 1 </div>';
                 jQuery(this).prepend(html);
             });
-
             if (p2l) {
                 for (var i = 0; i < gsl ; i ++) {
                     var gs = jQuery('.gate-section-list').eq(i);
                     var part2 = gs.eq(0).find('.part2').eq(0);
-                    var choice = part2.attr('class').split(' ').pop();
-                    var divHtml = '<div class="part2text">Part 2 ';
-                    choice = 'Choice ' + choice.split('-').pop();
-                    divHtml += choice + ' </div>';
-                    part2.prepend(divHtml);
+                    if (part2.length > 0) {
+                        var choice = part2.attr('class').split(' ').pop();
+                        var divHtml = '<div class="part2text">Part 2 ';
+                        choice = 'Choice ' + choice.split('-').pop();
+                        divHtml += choice + ' </div>';
+                        part2.prepend(divHtml);
+                    }
                 }
+            }
+        };
+        this.setChoicesOnSecondParts = function() {
+            var part2Gates = jQuery('.part2');
+            var lastPart2Gates = [];
+            part2Gates.parent().each(function() {
+                lastChild = jQuery(this).last();
+                lastPart2Gates.push(lastChild);
+            });
+            for (var i = 0; i < lastPart2Gates.length; i ++) {
+                var gate = lastPart2Gates[i];
+                choiceAttr = gate.children().last().attr('data-part-decision');
+                var decision;
+                if (choiceAttr.match('p2c2-')) {
+                    var choice = choiceAttr.split('p2c2-')[1];
+                    decision = 'Part 2 Second Decision ' + choice;
+                } else {
+                    decision = '';
+                }
+                gate.append(decision);
             }
         };
         this.deleteLibraryItem = function() {
