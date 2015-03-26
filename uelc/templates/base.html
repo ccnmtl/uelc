@@ -33,7 +33,6 @@
 	
 	<script src="{{STATIC_URL}}js/jquery-1.11.1.min.js"></script>
 	{% block feeds %}{% endblock %}
-
 </head>
 
 <body class="{% block bodyclass %}{% endblock %}" id="{% block bodyid %}{% endblock %}">
@@ -112,7 +111,16 @@
         			        	{% if request.user.profile.is_admin %}
         			        	  <li><a href="/uelcadmin/">Manage</a></li>
         			        	{% endif %}
-                                    <li><a href="{{request.user.profile.cohort.case.0.hierarchy.get_absolute_url}}facilitator/">Facilitate</a></li>
+                                        <li class="menu-item dropdown dropdown-submenu">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Facilitate</a>
+                                            <ul class="dropdown-menu">
+                                                <li class="menu-item ">
+                                                    {% for case in request.user.profile.cohort.case %}
+                                                        <li><a href="{{case.hierarchy.get_absolute_url}}facilitator/">{{ case.name }}</a></li>
+                                                    {% endfor %}
+                                                </li>
+                                                
+                                            </ul>
                                 <!--
                                     <li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
                                 -->
