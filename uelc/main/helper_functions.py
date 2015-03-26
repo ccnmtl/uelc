@@ -30,7 +30,7 @@ def admin_ajax_page_submit(section, user):
 
 
 def admin_ajax_reset_page(section, user):
-    case = Case.objects.get_or_create(hierarchy=section.hierarchy)
+    case = Case.objects.get(hierarchy=section.hierarchy)
     try:
         casemap = CaseMap.objects.get(user=user, case=case)
     except ObjectDoesNotExist:

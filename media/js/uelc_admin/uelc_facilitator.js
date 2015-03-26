@@ -19,16 +19,17 @@ UELCAdmin = {
                 html = '<div class="part1text">Part 1 </div>';
                 jQuery(this).prepend(html);
             });
-
             if (p2l) {
                 for (var i = 0; i < gsl ; i ++) {
                     var gs = jQuery('.gate-section-list').eq(i);
-                    var part2 = gs.eq(0).find('.part2').eq(0);
-                    var choice = part2.attr('class').split(' ').pop();
-                    var divHtml = '<div class="part2text">Part 2 ';
-                    choice = 'Choice ' + choice.split('-').pop();
-                    divHtml += choice + ' </div>';
-                    part2.prepend(divHtml);
+                    window.part2 = gs.eq(0).find('.part2').eq(0);
+                    if (part2.length > 0) {
+                        var choice = part2.attr('class').split(' ').pop();
+                        var divHtml = '<div class="part2text">Part 2 ';
+                        choice = 'Choice ' + choice.split('-').pop();
+                        divHtml += choice + ' </div>';
+                        part2.prepend(divHtml);
+                    }
                 }
             }
         };
