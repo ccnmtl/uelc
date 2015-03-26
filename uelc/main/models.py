@@ -179,6 +179,7 @@ class EditUserPassForm(forms.Form):
 
 class Case(models.Model):
     name = models.CharField(max_length=255, blank=False)
+    description = models.TextField(blank=True, null=True)
     hierarchy = models.ForeignKey(Hierarchy)
     cohort = models.ManyToManyField(
         Cohort,
@@ -210,6 +211,8 @@ class Case(models.Model):
         class AddForm(forms.Form):
             name = forms.CharField(widget=forms.widgets.Input(
                 attrs={'class': 'add-case-name'}))
+            description = forms.CharField(widget=forms.widgets.Textarea(
+                attrs={'class': 'add-case-description'}))
             hierarchy = forms.ModelChoiceField(
                 widget=forms.Select(
                     attrs={'class': 'hierarchy-select'}),
@@ -226,6 +229,12 @@ class Case(models.Model):
                 widget=forms.widgets.Input(
                     attrs={'class': 'add-case-name'}),
                 initial=self.name
+            )
+
+            description = forms.CharField(
+                widget=forms.widgets.Textarea(
+                    attrs={'class': 'add-case-description'}),
+                initial=self.description
             )
 
             hierarchy = forms.ModelChoiceField(

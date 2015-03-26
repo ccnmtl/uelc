@@ -32,6 +32,18 @@ class IndexView(TemplateView):
 
     def get(self, request):
         root_context = get_root_context(request)
+        if 'roots' in root_context.keys():
+            roots = [root for root in root_context['roots']]
+            hierarchy_names = [root[1] for root in roots]
+            hierarchies = Hierarchy.objects.filter(name__in=hierarchy_names)
+            cases = Case.objects.filter(
+                hierarchy__in=hierarchies).order_by('id')
+            context = dict(
+                roots=roots,
+                cases=cases
+            )
+            return render(request, self.template_name, context)
+
         return render(request, self.template_name, root_context)
 
 
@@ -633,6 +645,7 @@ class UELCAdminCreateCaseView(LoggedInMixinAdmin,
         name = request.POST.get('name', '')
         hierarchy = request.POST.get('hierarchy', '')
         cohort = request.POST.get('cohort', '')
+        description = request.POST.get('description', '')
         case_exists_name = Case.objects.filter(Q(name=name))
         case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
         if len(case_exists_name):
@@ -665,7 +678,10 @@ class UELCAdminCreateCaseView(LoggedInMixinAdmin,
 
         hier_obj = Hierarchy.objects.get(id=hierarchy)
         coh_obj = Cohort.objects.get(id=cohort)
-        case = Case.objects.create(name=name, hierarchy=hier_obj)
+        case = Case.objects.create(
+            name=name,
+            description=description,
+            hierarchy=hier_obj)
         case.cohort.add(coh_obj)
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
@@ -689,6 +705,7 @@ class UELCAdminEditCaseView(LoggedInMixinAdmin,
 
     def post(self, request):
         name = request.POST.get('name', '')
+        description = request.POST.get('description', '')
         hierarchy = request.POST.get('hierarchy', '')
         cohorts = request.POST.getlist('cohort', '')
         case_exists_name = Case.objects.filter(Q(name=name))
@@ -725,6 +742,7 @@ class UELCAdminEditCaseView(LoggedInMixinAdmin,
         coh_obj = Cohort.objects.filter(id__in=cohorts)
         case = Case.objects.get(id=case_id)
         case.name = name
+        case.description = description
         case.cohort.clear()
         case.cohort.add(*coh_obj)
         case.save()
