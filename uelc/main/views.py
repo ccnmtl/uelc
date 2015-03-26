@@ -32,16 +32,19 @@ class IndexView(TemplateView):
 
     def get(self, request):
         root_context = get_root_context(request)
-        
-        roots = [root for root in root_context['roots']]
-        hierarchy_names = [root[1] for root in roots]
-        hierarchies = Hierarchy.objects.filter(name__in=hierarchy_names)
-        cases = Case.objects.filter(hierarchy__in=hierarchies).order_by('id')
-        context = dict(
-            roots=roots,
-            cases=cases
-        )
-        return render(request, self.template_name, context)
+        if 'roots' in root_context.keys():
+            roots = [root for root in root_context['roots']]
+            hierarchy_names = [root[1] for root in roots]
+            hierarchies = Hierarchy.objects.filter(name__in=hierarchy_names)
+            cases = Case.objects.filter(
+                hierarchy__in=hierarchies).order_by('id')
+            context = dict(
+                roots=roots,
+                cases=cases
+            )
+            return render(request, self.template_name, context)
+
+        return render(request, self.template_name, root_context)
 
 
 class UELCPageView(LoggedInMixin,
