@@ -42,7 +42,6 @@ UELCAdmin = {
             });
             for (var i = 0; i < lastPart2Gates.length; i ++) {
                 var gate = lastPart2Gates[i];
-                window.gate = gate;
                 choiceAttr = gate.children().last().attr('data-part-decision');
                 var decision;
                 if (choiceAttr.match('p2c2-')) {
