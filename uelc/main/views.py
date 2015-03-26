@@ -61,9 +61,14 @@ class UELCPageView(LoggedInMixin,
         self.module = self.section.get_module()
         pt = request.user.profile.profile_type
         ns = self.section.get_next()
+        hierarchy = self.section.hierarchy
+        if ns:
+            ns_hierarchy = ns.hierarchy
+        else:
+            ns_hierarchy = False
         base_url = self.section.hierarchy.base_url
         if self.section.is_root():
-            if not ns:
+            if not ns or not(ns_hierarchy == hierarchy):
                 if not pt == "group_user":
                     # then root has no children yet
                     action_args = dict(
