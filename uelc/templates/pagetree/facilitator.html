@@ -3,8 +3,10 @@
 {% block title %} | Facilitation{% endblock %}
 {% block content %}
 {% load part_string %}
-<script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
-<link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
+{% comment %}
+    <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
+    <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
+{% endcomment %}
 <div id="content" class="container-fluid">
     <h1>Case control for {{case.name}}</h1>
     <p>Facilitators can lock, inlock, manage, and preview content for their groups here.</p>

@@ -4,11 +4,13 @@ UELCAdmin = {
         this.init = function() {
             this.setPartsOnGateblocks();
             this.setChoicesOnSecondParts();
-            jQuery('.library-item-user-select').multiselect();
-            jQuery('[data-toggle="tooltip"]').tooltip({
+            /*
+             jQuery('.library-item-user-select').multiselect();
+             jQuery('[data-toggle="tooltip"]').tooltip({
                 'placement': 'top'
             });
             this.deleteLibraryItem();
+            */
         };
         this.setPartsOnGateblocks = function() {
             var partOneElms = jQuery('.part1:first-child');
@@ -53,6 +55,7 @@ UELCAdmin = {
                 gate.append(decision);
             }
         };
+        /*
         this.deleteLibraryItem = function() {
             jQuery('.library-item-admin .glyphicon-trash').click(function() {
                 var retVal = confirm('Do you want to delete the item?');
@@ -72,6 +75,7 @@ UELCAdmin = {
                 }
             });
         };
+        */
 
         this.init();
     }
