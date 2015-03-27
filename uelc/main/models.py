@@ -179,6 +179,7 @@ class EditUserPassForm(forms.Form):
 
 class Case(models.Model):
     name = models.CharField(max_length=255, blank=False)
+    description = models.TextField(blank=True, null=True)
     hierarchy = models.ForeignKey(Hierarchy)
     cohort = models.ManyToManyField(
         Cohort,
@@ -210,6 +211,8 @@ class Case(models.Model):
         class AddForm(forms.Form):
             name = forms.CharField(widget=forms.widgets.Input(
                 attrs={'class': 'add-case-name'}))
+            description = forms.CharField(widget=forms.widgets.Textarea(
+                attrs={'class': 'add-case-description'}))
             hierarchy = forms.ModelChoiceField(
                 widget=forms.Select(
                     attrs={'class': 'hierarchy-select'}),
@@ -226,6 +229,12 @@ class Case(models.Model):
                 widget=forms.widgets.Input(
                     attrs={'class': 'add-case-name'}),
                 initial=self.name
+            )
+
+            description = forms.CharField(
+                widget=forms.widgets.Textarea(
+                    attrs={'class': 'add-case-description'}),
+                initial=self.description
             )
 
             hierarchy = forms.ModelChoiceField(
@@ -254,12 +263,11 @@ class CaseMap(models.Model):
         return self.value
 
     def set_value(self, quiz, data):
-        val = self.save_value(quiz, data)
+        val = self.save_value(quiz.pageblock().section, data)
         self.value = val
         self.save()
 
-    def save_value(self, quiz, data):
-        section = quiz.pageblock().section
+    def save_value(self, section, data):
         case_depth = len(section.get_tree())
         count = 0
         section_depth = 0
@@ -386,6 +394,8 @@ class UELCHandler(Section):
         part = 1
         if len(vals) >= 2:
             part = float(2) + (vals[1] * .1)
+        if len(vals) >= 3:
+            part = part + float((vals[2] * .01))
         return part
 
     def get_p1c1(self, casemap_value):
@@ -409,7 +419,7 @@ class UELCHandler(Section):
     def can_show_gateblock(self, gate_section, part_usermap):
         can_show = False
         part_section = self.get_part_by_section(gate_section)
-        if part_section == 1 or part_section == part_usermap:
+        if part_section == 1 or part_section == round(part_usermap, 1):
             can_show = True
         return can_show
 

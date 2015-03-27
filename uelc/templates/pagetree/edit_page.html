@@ -1,4 +1,4 @@
-{% extends "pagetree/base_pagetree.html" %}
+{% extends "base.html" %}
 {% load compress %}
 {% load bootstrap %}
 {% load render %}
@@ -24,7 +24,6 @@
   .dragging {background-color: #fee;}
   </style>
 {% endcompress %}
-
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
   <script src="{{STATIC_URL}}ckeditor/ckeditor/ckeditor.js"></script>
@@ -481,5 +480,56 @@ jQuery(document).ready(function(){
   }//end if CKEDITOR
 });//end doc.ready
 </script>
+{% if messages %}
+  {% for message in messages %}
+  {% if message.level_tag == 'error' %}
+    <div id="message-modal" class="modal fade" data-callback="{{message.extra_tags}}">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <div class="modal-header panel-heading">Message</div>
+              <div class="modal-body bg-danger">
+                <div id="edit-user" class="panel panel-default">
+                  <div class="panel-heading">{{ message.level_tag }}</div>
+                  <div class="panel-body">
+                        {{ message }}
+                  </div>
+                </div><!--end #hierarchiess-->
+                </div> <!--end modal-dialog-->
+          </div><!-- end modal-content-->
+      </div><!--end .model-body-->
+    </div><!--end #add-hierarchy-form-modal .modal-->
+  {% endif %}
+
+  {% if message.level_tag == 'success' %}
+    <div id="message-modal" class="modal fade" data-callback="{{message.extra_tags}}">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <div class="modal-header panel-heading">Message</div>
+              <div class="modal-body bg-success">
+                <div id="edit-user" class="panel panel-default">
+                  <div class="panel-heading">{{ message.level_tag }}</div>
+                  <div class="panel-body">
+                        {{ message }}
+                  </div>
+                </div><!--end #hierarchiess-->
+                </div> <!--end modal-dialog-->
+          </div><!-- end modal-content-->
+      </div><!--end .model-body-->
+    </div><!--end #add-hierarchy-form-modal .modal-->
+  {% endif %}
+ {% endfor %}
+
+ <script>
+jQuery(document).ready(function(){
+  if (jQuery('#message-modal').length > 0) {
+      window.modal = jQuery('#message-modal');
+      window.callback = modal.attr('data-callback');
+      modal.modal('show');
+  }
+})
+</script>
+{% endif %}
 
 {% endblock %}
