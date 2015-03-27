@@ -4,6 +4,7 @@ UELCAdmin = {
         this.init = function() {
             this.setPartsOnGateblocks();
             this.setChoicesOnSecondParts();
+            this.impersonate();
             /*
              jQuery('.library-item-user-select').multiselect();
              jQuery('[data-toggle="tooltip"]').tooltip({
@@ -54,6 +55,17 @@ UELCAdmin = {
                 }
                 gate.append(decision);
             }
+        };
+        this.impersonate = function() {
+            jQuery('a.preview-link').click(function(e) {
+                e.preventDefault();
+                var destination = jQuery(this).attr('href');
+                var userId = jQuery(this).data('user');
+                var impersonateUrl = '/_impersonate/' + userId + '/';
+                $.get(impersonateUrl).complete(function() {
+                    window.open(destination, '_blank');
+                });
+            });
         };
         /*
         this.deleteLibraryItem = function() {

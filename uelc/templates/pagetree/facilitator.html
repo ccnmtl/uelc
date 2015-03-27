@@ -36,7 +36,7 @@
                         <br />
                         <span class="badge  text-capitalize">{{sec.4}}</span>
                         <br />
-                        <a style="color: #000;" target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</a>
+                        <a class="preview-link" data-user="{{u.0.id}}" style="color: #000;" target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</a>
                         </button>
                         <div class="clearfix visible-lg-block"></div>
                         <input type="hidden" name="gate-action" value="reset" />
@@ -60,7 +60,7 @@
                         <br />
                         <span class="badge text-capitalize">{{sec.4}}</span>
                         <br />
-                        <a style="color: #000;" target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</span></a>
+                        <a class="preview-link" data-user="{{u.0.id}}" style="color: #000;" target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</span></a>
                         </button>
                         <div class="clearfix visible-lg-block"></div>
                         <input type="hidden" name="gate-action" value="submit" />

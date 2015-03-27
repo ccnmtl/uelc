@@ -94,7 +94,8 @@ class UELCPageView(LoggedInMixin,
         r = self.gate_check(request.user)
         if r is not None:
             return r
-        self.upv = UserPageVisitor(self.section, request.user)
+        if not request.user.is_impersonate:
+            self.upv = UserPageVisitor(self.section, request.user)
         return None
 
     def itterate_blocks(self, section):
@@ -173,7 +174,8 @@ class UELCPageView(LoggedInMixin,
         needs_submit = self.section.needs_submit()
         if needs_submit:
             allow_redo = self.section.allow_redo()
-        self.upv.visit()
+        if not request.user.is_impersonate:
+            self.upv.visit()
         instructor_link = has_responses(self.section)
         case_quizblocks = []
 
@@ -440,6 +442,8 @@ class UELCAdminCreateUserView(
                 user=user,
                 profile_type=profile_type,
                 cohort=cohort)
+            if not profile_type == "group_user":
+                user.is_staff = True
             user.save()
 
         if len(user_exists) > 0:
@@ -476,9 +480,16 @@ class UELCAdminEditUserView(LoggedInMixinAdmin,
         profile = request.POST.get('profile_type', '')
         cohort_id = request.POST.get('cohort', '')
         user = User.objects.get(pk=user_id)
-        cohort = Cohort.objects.get(id=cohort_id)
+        if cohort_id:
+            cohort = Cohort.objects.get(id=cohort_id)
+        else:
+            cohort = None
         user.profile.cohort = cohort
         user.profile.profile_type = profile
+        if not profile == "group_user":
+            user.is_staff = True
+        else:
+            user.is_staff = False
         user.profile.save()
         user.username = username
         user.save()
