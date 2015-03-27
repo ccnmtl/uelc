@@ -4,7 +4,7 @@ UELCAdmin = {
         this.init = function() {
             this.setPartsOnGateblocks();
             this.setChoicesOnSecondParts();
-            this.impersonate()
+            this.impersonate();
             /*
              jQuery('.library-item-user-select').multiselect();
              jQuery('[data-toggle="tooltip"]').tooltip({
@@ -60,13 +60,12 @@ UELCAdmin = {
             jQuery('a.preview-link').click(function(e) {
                 e.preventDefault();
                 var destination = jQuery(this).attr('href');
-                var user_id = jQuery(this).data('user');
-                var impersonateUrl = '/_impersonate/' + user_id + '/';
-                $.get(impersonateUrl).complete(function(){
-                    window.open(destination, '_blank'); 
+                var userId = jQuery(this).data('user');
+                var impersonateUrl = '/_impersonate/' + userId + '/';
+                $.get(impersonateUrl).complete(function() {
+                    window.open(destination, '_blank');
                 });
-
-            })
+            });
         };
         /*
         this.deleteLibraryItem = function() {
