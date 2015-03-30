@@ -9,26 +9,26 @@
 <div class="jumbotron text-center">
     <img style="margin-bottom: 20px;" class="img-responsive" src="{{STATIC_URL}}img/logo-jumbotron.png" />
     
-{% block loginbox %}
-<div class="row well" style="color: black;">
-{% if form.errors %}
-<p class="alert alert-danger">
-<strong>ERROR:</strong> Invalid username or password. Please try again. Note that both username and password are case-sensitive.
-</p>
-{% endif %}
-    <form id="login-local" name="login_local" method="post" action=".">
-        {% csrf_token %}
-                
-        <label for="id_username">Username:</label> {{ form.username }}
-
-        <label for="id_password">Password:</label> {{ form.password }}
-
-        <input class="btn btn-default" type="submit" value="Sign In" />                        
-        <input type="hidden" name="next" value="{{ next|urlencode }}" />
-        
-    </form>
-</div>
-{% endblock %}
+    {% block loginbox %}
+    <div class="row well" style="color: black;">
+    {% if form.errors %}
+    <p class="alert alert-danger">
+    <strong>ERROR:</strong> Invalid username or password. Please try again. Note that both username and password are case-sensitive.
+    </p>
+    {% endif %}
+        <form id="login-local" name="login_local" method="post" action=".">
+            {% csrf_token %}
+                    
+            <label for="id_username">Username:</label> {{ form.username }}
+    
+            <label for="id_password">Password:</label> {{ form.password }}
+    
+            <input class="btn btn-default" type="submit" value="Sign In" />                        
+            <input type="hidden" name="next" value="{{ next|urlencode }}" />
+            
+        </form>
+    </div>
+    {% endblock %}
 
 </div>
 
