@@ -92,8 +92,38 @@
 {% else %}
 
 <div class="jumbotron text-center">
+
     <img style="margin-bottom: 20px;" class="img-responsive" src="{{STATIC_URL}}img/logo-jumbotron.png" />
-    <p><a class="btn btn-success btn-lg" href="about.html" role="button">Learn More</a></p>
+    
+    {% if request.user.is_anonymous %}
+    {% block loginbox %}
+    <div class="row well" style="color: black;">
+    {% if login_form.errors %}
+    <p class="alert alert-danger">
+    <strong>ERROR:</strong> Invalid username or password. Please try again. Note that both username and password are case-sensitive.
+    </p>
+    {% endif %}
+    
+    <form id="login-local" name="login_local" method="post" action="/accounts/login/">
+    {% csrf_token %}
+    
+    <label for="id_username">Username:</label> {{ login_form.username }}
+    
+    <label for="id_password">Password:</label> {{ login_form.password }}
+    
+    <input class="btn btn-default" type="submit" value="Sign In" />                        
+    <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+    
+    </form>
+    
+    </div>
+    {% endblock %}
+    {% endif %}
+    {% block sidenav %}{% endblock %}
+    {% comment %}
+    {% block library %}{% endblock %}
+    {% endcomment %}
+    
 </div>
 
 <div class="row">

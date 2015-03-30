@@ -8,7 +8,28 @@
 {% block content %}
 <div class="jumbotron text-center">
     <img style="margin-bottom: 20px;" class="img-responsive" src="{{STATIC_URL}}img/logo-jumbotron.png" />
-    <p><a class="btn btn-success btn-lg" href="/about/" role="button">Learn More</a></p>
+    
+{% block loginbox %}
+<div class="row well" style="color: black;">
+{% if form.errors %}
+<p class="alert alert-danger">
+<strong>ERROR:</strong> Invalid username or password. Please try again. Note that both username and password are case-sensitive.
+</p>
+{% endif %}
+    <form id="login-local" name="login_local" method="post" action=".">
+        {% csrf_token %}
+                
+        <label for="id_username">Username:</label> {{ form.username }}
+
+        <label for="id_password">Password:</label> {{ form.password }}
+
+        <input class="btn btn-default" type="submit" value="Sign In" />                        
+        <input type="hidden" name="next" value="{{ next|urlencode }}" />
+        
+    </form>
+</div>
+{% endblock %}
+
 </div>
 
 <div class="row">
@@ -37,38 +58,5 @@
 {% endblock %}
 
 
-{% block loginbox %}
-<div class="loginbox-container columbia">
-    <div class="loginbox">
-        <h2>Login</h2>
-        <div class="content">                      
-        {% if form.errors %}
-            <p class="errornote">
-                <span>
-                    <b>ERROR:</b> Invalid username or password.
-                </span>
-                Please try again. Note that both username and password are case-sensitive.
-            </p>
-        {% endif %}
-            <form id="login-local" name="login_local" method="post" action=".">
-                {% csrf_token %}
-                <div class="login-local-form">
-                    <div class="fieldwrapper">
-                        <label for="id_username">Username:</label>
-                        {{ form.username }}
-                    </div><!-- fieldwrapper -->
-                
-                    <div class="fieldwrapper">
-                        <label for="id_password">Password:</label>
-                        {{ form.password }}
-                    </div><!-- fieldwrapper -->
-                </div>      
-                <input class="regbutton login-local-form" type="submit" value="Log In" />                        
-                <input type="hidden" name="next" value="{{ next|urlencode }}" />
-            </form>
-        </div>
-    </div>
-</div>
-{% endblock %}
 
 
