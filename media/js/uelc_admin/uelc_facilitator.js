@@ -4,11 +4,14 @@ UELCAdmin = {
         this.init = function() {
             this.setPartsOnGateblocks();
             this.setChoicesOnSecondParts();
-            jQuery('.library-item-user-select').multiselect();
-            jQuery('[data-toggle="tooltip"]').tooltip({
+            this.impersonate();
+            /*
+             jQuery('.library-item-user-select').multiselect();
+             jQuery('[data-toggle="tooltip"]').tooltip({
                 'placement': 'top'
             });
             this.deleteLibraryItem();
+            */
         };
         this.setPartsOnGateblocks = function() {
             var partOneElms = jQuery('.part1:first-child');
@@ -53,6 +56,18 @@ UELCAdmin = {
                 gate.append(decision);
             }
         };
+        this.impersonate = function() {
+            jQuery('a.preview-link').click(function(e) {
+                e.preventDefault();
+                var destination = jQuery(this).attr('href');
+                var userId = jQuery(this).data('user');
+                var impersonateUrl = '/_impersonate/' + userId + '/';
+                $.get(impersonateUrl).complete(function() {
+                    window.open(destination, '_blank');
+                });
+            });
+        };
+        /*
         this.deleteLibraryItem = function() {
             jQuery('.library-item-admin .glyphicon-trash').click(function() {
                 var retVal = confirm('Do you want to delete the item?');
@@ -72,6 +87,7 @@ UELCAdmin = {
                 }
             });
         };
+        */
 
         this.init();
     }

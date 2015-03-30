@@ -3,8 +3,10 @@
 {% block title %} | Facilitation{% endblock %}
 {% block content %}
 {% load part_string %}
-<script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
-<link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
+{% comment %}
+    <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
+    <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
+{% endcomment %}
 <div id="content" class="container-fluid">
     <h1>Case Control for {{case.name}}</h1>
     <p>Facilitators can lock, inlock, manage, and preview content for their groups here.</p>
@@ -36,7 +38,7 @@
                         <span class="badge  text-capitalize">{{sec.4}}</span>
                         </button>
                          <button type="submit" class="btn btn-xs btn-default btn-block text-center">
-                        <a target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</a>
+                        <a data-user="{{u.0.id}}" target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</a>
                         </button>
                         </div>
                         <div class="clearfix visible-lg-block"></div>
@@ -63,7 +65,7 @@
                         <span class="badge text-capitalize">{{sec.4}}</span>
                        </button>
                          <button type="submit" class="btn btn-xs btn-default btn-block text-center">
-                         <a target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</span></a>
+                         <a data-user="{{u.0.id}}" target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</span></a>
                         </button>
                         </div>
                         <div class="clearfix visible-lg-block"></div>

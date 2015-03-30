@@ -67,7 +67,10 @@
             var menuLinks = jQuery('.side-nav').find('a');
             
             if(ul.children().length == 0){
-                ul.remove();
+                window.ul = ul;
+                ul.parent().remove();
+            }else{
+                ul.parent().prev().removeClass('col-sm-12').addClass('col-sm-9');
             }
             menuLinks.each(function(){
                 hosturl = window.location.host;
