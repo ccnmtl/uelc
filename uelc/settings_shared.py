@@ -48,7 +48,7 @@ PROJECT_APPS = [
     'gate_block',
 ]
 
-ALLOWED_HOSTS = ['localhost', '.ccnmtl.columbia.edu']
+ALLOWED_HOSTS = ['localhost', '.ccnmtl.columbia.edu', 'eldex.org']
 
 USE_TZ = True
 TIME_ZONE = 'America/New_York'
