@@ -33,13 +33,16 @@
 
 {% block sidenav %}
         <!-- ###### Secondary Navigation ###### -->
-        {% if module.get_children %}
-        {% include "pagetree/menu.html" %}
-        {% endif %}
+        
 {% endblock %}
 
 {% block content %}
 <div id="content">
+
+  {% if module.get_children %}
+    {% include "pagetree/menu.html" %}
+  {% endif %}
+
   {% for message in messages %}
   {% if message.level_tag == 'error' %}
        <div id="message-modal" class="modal fade in" data-callback="{{message.extra_tags}}">
@@ -84,7 +87,7 @@
 {% for quiz in case_quizblocks %}
             {% if quiz.id == block.id %}
                 {% if quiz.completed != True%}
-                <form id="pageblock-{{block.id}}-quiz" action="." method="post">{% csrf_token %}
+                <form class="decision-block" id="pageblock-{{block.id}}-quiz" action="." method="post">{% csrf_token %}
         {% endif %}
     {% endif %}
 {% endfor %}
