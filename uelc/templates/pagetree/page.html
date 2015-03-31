@@ -38,10 +38,11 @@
 
 {% block content %}
 <div id="content">
-
-  {% if module.get_children %}
-    {% include "pagetree/menu.html" %}
-  {% endif %}
+  <div id="side-navigation">
+    {% if module.get_children %}
+      {% include "pagetree/menu.html" %}
+    {% endif %}
+  </div>
 
   {% for message in messages %}
   {% if message.level_tag == 'error' %}

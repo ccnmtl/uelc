@@ -75,8 +75,6 @@
             menuLinks.each(function(){
                 hosturl = window.location.host;
                 fullUrl = hosturl + jQuery(this).attr('href');
-                //alert(fullUrl);
-                //alert(loc);
                 if(fullUrl == loc){
                     jQuery(this).addClass('active');
                 }
