@@ -19,5 +19,10 @@ button.close{
                         <input type="reset" class="reset-button hidden" value="Reset" />
                       </form>
   </div>
-
+<script>
+jQuery(document).ready(function(){
+  jQuery('label[for="id_newPassword1"]').text('New Password')
+  jQuery('label[for="id_newPassword2"]').text('Confirm New Password')
+})
+</script>
 {% endblock %}

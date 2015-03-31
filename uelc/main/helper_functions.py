@@ -30,6 +30,14 @@ def admin_ajax_page_submit(section, user):
 
 
 def admin_ajax_reset_page(section, user):
+    case = Case.objects.get(hierarchy=section.hierarchy)
+    try:
+        casemap = CaseMap.objects.get(user=user, case=case)
+    except ObjectDoesNotExist:
+        casemap = CaseMap.objects.create(user=user, case=case)
+        casemap.save()
+    data = dict(question=0)
+    casemap.save_value(section, data)
     for block in section.pageblock_set.all():
         if block.block().display_name == "Gate Block":
             gso = GateSubmission.objects.filter(
@@ -101,3 +109,19 @@ def pages_save_edit(request, hierarchy_name, path):
 @login_required
 def instructor_page(request, hierarchy_name, path):
     return generic_instructor_page(request, path, hierarchy=hierarchy_name)
+
+
+def visit_root(section, fallback_url):
+    """ if they try to visit the root, we need to send them
+    either to the first section on the site, or to
+    the admin page if there are no sections (so they
+    can add some)"""
+    ns = section.get_next()
+    hierarchy = section.hierarchy
+    if ns:
+        if ns.hierarchy == hierarchy:
+            # just send them to the first child
+            return HttpResponseRedirect(section.get_next().get_absolute_url())
+    # no sections available so
+    # send them to the fallback
+    return HttpResponseRedirect(fallback_url)

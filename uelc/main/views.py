@@ -7,17 +7,17 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
-from pagetree.generic.views import PageView, EditView
+from pagetree.generic.views import PageView, EditView, UserPageVisitor
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
     get_root_context, get_user_map,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
-    admin_ajax_reset_page)
+    admin_ajax_reset_page, visit_root)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
-    SectionMixin, LoggedInMixinSuperuser, DynamicHierarchyMixin,
+    SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
     RestrictedModuleMixin)
 from uelc.main.models import (
     Cohort, UserProfile, CreateUserForm, Case,
@@ -32,6 +32,18 @@ class IndexView(TemplateView):
 
     def get(self, request):
         root_context = get_root_context(request)
+        if 'roots' in root_context.keys():
+            roots = [root for root in root_context['roots']]
+            hierarchy_names = [root[1] for root in roots]
+            hierarchies = Hierarchy.objects.filter(name__in=hierarchy_names)
+            cases = Case.objects.filter(
+                hierarchy__in=hierarchies).order_by('id')
+            context = dict(
+                roots=roots,
+                cases=cases
+            )
+            return render(request, self.template_name, context)
+
         return render(request, self.template_name, root_context)
 
 
@@ -40,7 +52,51 @@ class UELCPageView(LoggedInMixin,
                    RestrictedModuleMixin,
                    PageView):
     template_name = "pagetree/page.html"
+    no_root_fallback_url = "/"
     gated = False
+
+    def perform_checks(self, request, path):
+        self.section = self.get_section(path)
+        self.root = self.section.hierarchy.get_root()
+        self.module = self.section.get_module()
+        pt = request.user.profile.profile_type
+        ns = self.section.get_next()
+        hierarchy = self.section.hierarchy
+        if ns:
+            ns_hierarchy = ns.hierarchy
+        else:
+            ns_hierarchy = False
+        base_url = self.section.hierarchy.base_url
+        if self.section.is_root():
+            if not ns or not(ns_hierarchy == hierarchy):
+                if not pt == "group_user":
+                    # then root has no children yet
+                    action_args = dict(
+                        error="You just tried accessing a case that has \
+                              no content. You have been forwarded over \
+                              to the root page of the case so that you \
+                              can and add some content if you wish to.")
+                    messages.error(request, action_args['error'],
+                                   extra_tags='rootUrlError')
+                    request.path = base_url+'edit/'
+                    return HttpResponseRedirect(request.path)
+                else:
+                    action_args = dict(
+                        error="For some reason the case you tried to \
+                              access does not have any content yet. \
+                              Please choose another case, or alert \
+                              your facilitator.")
+                    messages.error(request, action_args['error'],
+                                   extra_tags='rootUrlError')
+                    request.path = '/'
+                    return HttpResponseRedirect(request.path)
+            return visit_root(self.section, self.no_root_fallback_url)
+        r = self.gate_check(request.user)
+        if r is not None:
+            return r
+        if not request.user.is_impersonate:
+            self.upv = UserPageVisitor(self.section, request.user)
+        return None
 
     def itterate_blocks(self, section):
         for block in section.pageblock_set.all():
@@ -63,7 +119,6 @@ class UELCPageView(LoggedInMixin,
     def run_section_gatecheck(self, user, path):
         section_gatecheck = self.section.gate_check(self.request.user)
         if not section_gatecheck[0]:
-            #gate_section = section_gatecheck[1]
             gate_section_gateblock = self.get_next_gate(self.section)
             if not gate_section_gateblock:
                 block_unlocked = True
@@ -119,7 +174,8 @@ class UELCPageView(LoggedInMixin,
         needs_submit = self.section.needs_submit()
         if needs_submit:
             allow_redo = self.section.allow_redo()
-        self.upv.visit()
+        if not request.user.is_impersonate:
+            self.upv.visit()
         instructor_link = has_responses(self.section)
         case_quizblocks = []
 
@@ -157,7 +213,7 @@ class UELCPageView(LoggedInMixin,
             case=case,
             case_quizblocks=case_quizblocks,
             casemap=casemap,
-            library_items=self.get_library_items(case),
+            # library_items=self.get_library_items(case),
             part=part,
             roots=roots['roots']
         )
@@ -213,6 +269,7 @@ class UELCEditView(LoggedInFacilitatorMixin,
                    DynamicHierarchyMixin,
                    EditView):
     template_name = "pagetree/edit_page.html"
+    extra_context = dict(edit_view=True)
 
 
 class FacilitatorView(LoggedInFacilitatorMixin,
@@ -276,10 +333,9 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         user = User.objects.get(id=request.POST.get('user_id'))
         action = request.POST.get('gate-action')
         section = Section.objects.get(id=request.POST.get('section'))
-        post = request.POST
         if action == 'submit':
             self.set_upv(user, section, "complete")
-            admin_ajax_page_submit(section, user, post)
+            admin_ajax_page_submit(section, user)
         if action == 'reset':
             self.set_upv(user, section, "incomplete")
             admin_ajax_reset_page(section, user)
@@ -316,8 +372,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         roots = get_root_context(self.request)
         hierarchy = section.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
-        library_item = LibraryItem
-        library_items = LibraryItem.objects.all()
+        # library_item = LibraryItem
+        # library_items = LibraryItem.objects.all()
         # is there really only going to be one cohort per case?
         cohort = case.cohort.get(user_profile_cohort__user=user)
         cohort_user_profiles = cohort.user_profile_cohort.filter(
@@ -340,7 +396,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                              g.status(user, hierarchy),
                              hand.can_show_gateblock(g.pageblock().section,
                                                      part_usermap),
-                             hand.get_part_by_section(g.pageblock().section)]
+                             (hand.get_part_by_section(g.pageblock().section),
+                              part_usermap)]
                             for g in gateblocks]
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section])
@@ -354,8 +411,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                        module=section.get_module(),
                        modules=root.get_children(),
                        root=section.hierarchy.get_root(),
-                       library_item=library_item,
-                       library_items=library_items,
+                       # library_item=library_item,
+                       # library_items=library_items,
                        case=case,
                        roots=roots['roots']
                        )
@@ -363,7 +420,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
 
 
 class UELCAdminCreateUserView(
-        LoggedInMixinSuperuser,
+        LoggedInMixinAdmin,
         TemplateView):
 
     template_name = "pagetree/uelc_admin.html"
@@ -374,7 +431,10 @@ class UELCAdminCreateUserView(
         password = make_password(request.POST.get('password1', ''))
         profile_type = request.POST.get('user_profile', '')
         cohort_id = request.POST.get('cohort', '')
-        cohort = Cohort.objects.get(id=cohort_id)
+        if cohort_id:
+            cohort = Cohort.objects.get(id=cohort_id)
+        else:
+            cohort = None
         user_exists = User.objects.filter(Q(username=username))
         if len(user_exists) == 0 and not profile_type == "":
             user = User.objects.create(username=username, password=password)
@@ -382,6 +442,8 @@ class UELCAdminCreateUserView(
                 user=user,
                 profile_type=profile_type,
                 cohort=cohort)
+            if not profile_type == "group_user":
+                user.is_staff = True
             user.save()
 
         if len(user_exists) > 0:
@@ -394,7 +456,7 @@ class UELCAdminCreateUserView(
         return HttpResponseRedirect(url)
 
 
-class UELCAdminDeleteUserView(LoggedInMixinSuperuser,
+class UELCAdminDeleteUserView(LoggedInMixinAdmin,
                               TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -407,7 +469,7 @@ class UELCAdminDeleteUserView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminEditUserView(LoggedInMixinSuperuser,
+class UELCAdminEditUserView(LoggedInMixinAdmin,
                             TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -418,9 +480,16 @@ class UELCAdminEditUserView(LoggedInMixinSuperuser,
         profile = request.POST.get('profile_type', '')
         cohort_id = request.POST.get('cohort', '')
         user = User.objects.get(pk=user_id)
-        cohort = Cohort.objects.get(id=cohort_id)
+        if cohort_id:
+            cohort = Cohort.objects.get(id=cohort_id)
+        else:
+            cohort = None
         user.profile.cohort = cohort
         user.profile.profile_type = profile
+        if not profile == "group_user":
+            user.is_staff = True
+        else:
+            user.is_staff = False
         user.profile.save()
         user.username = username
         user.save()
@@ -428,7 +497,7 @@ class UELCAdminEditUserView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminEditUserPassView(LoggedInMixinSuperuser,
+class UELCAdminEditUserPassView(LoggedInMixinAdmin,
                                 TemplateView):
     template_name = "pagetree/uelc_admin_user_pass_reset.html"
     extra_context = dict()
@@ -453,7 +522,7 @@ class UELCAdminEditUserPassView(LoggedInMixinSuperuser,
         return HttpResponseRedirect('uelcadmin')
 
 
-class UELCAdminCreateHierarchyView(LoggedInMixinSuperuser,
+class UELCAdminCreateHierarchyView(LoggedInMixinAdmin,
                                    TemplateView):
         template_name = "pagetree/uelc_admin.html"
         extra_context = dict()
@@ -480,7 +549,7 @@ class UELCAdminCreateHierarchyView(LoggedInMixinSuperuser,
             return HttpResponseRedirect(url)
 
 
-class UELCAdminDeleteHierarchyView(LoggedInMixinSuperuser,
+class UELCAdminDeleteHierarchyView(LoggedInMixinAdmin,
                                    TemplateView):
     extra_context = dict()
 
@@ -492,7 +561,7 @@ class UELCAdminDeleteHierarchyView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminCaseView(LoggedInMixinSuperuser,
+class UELCAdminCaseView(LoggedInMixinAdmin,
                         TemplateView):
     template_name = "pagetree/uelc_admin_case.html"
     extra_context = dict()
@@ -529,7 +598,7 @@ class UELCAdminCaseView(LoggedInMixinSuperuser,
         return context
 
 
-class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
+class UELCAdminCreateCohortView(LoggedInMixinAdmin,
                                 TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -551,7 +620,7 @@ class UELCAdminCreateCohortView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminDeleteCohortView(LoggedInMixinSuperuser,
+class UELCAdminDeleteCohortView(LoggedInMixinAdmin,
                                 TemplateView):
     extra_context = dict()
 
@@ -563,7 +632,7 @@ class UELCAdminDeleteCohortView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminEditCohortView(LoggedInMixinSuperuser,
+class UELCAdminEditCohortView(LoggedInMixinAdmin,
                               TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -579,7 +648,7 @@ class UELCAdminEditCohortView(LoggedInMixinSuperuser,
             cohort_obj.save()
             user_list_objs = User.objects.filter(pk__in=user_list)
             for user in cohort_users:
-                if not user.id in user_list:
+                if user.id not in user_list:
                     user.profile.cohort = None
                     user.profile.save()
             for user in user_list_objs:
@@ -597,7 +666,7 @@ class UELCAdminEditCohortView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminCreateCaseView(LoggedInMixinSuperuser,
+class UELCAdminCreateCaseView(LoggedInMixinAdmin,
                               TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -606,6 +675,7 @@ class UELCAdminCreateCaseView(LoggedInMixinSuperuser,
         name = request.POST.get('name', '')
         hierarchy = request.POST.get('hierarchy', '')
         cohort = request.POST.get('cohort', '')
+        description = request.POST.get('description', '')
         case_exists_name = Case.objects.filter(Q(name=name))
         case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
         if len(case_exists_name):
@@ -638,13 +708,16 @@ class UELCAdminCreateCaseView(LoggedInMixinSuperuser,
 
         hier_obj = Hierarchy.objects.get(id=hierarchy)
         coh_obj = Cohort.objects.get(id=cohort)
-        case = Case.objects.create(name=name, hierarchy=hier_obj)
+        case = Case.objects.create(
+            name=name,
+            description=description,
+            hierarchy=hier_obj)
         case.cohort.add(coh_obj)
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
 
 
-class UELCAdminDeleteCaseView(LoggedInMixinSuperuser,
+class UELCAdminDeleteCaseView(LoggedInMixinAdmin,
                               TemplateView):
     extra_context = dict()
 
@@ -656,12 +729,13 @@ class UELCAdminDeleteCaseView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminEditCaseView(LoggedInMixinSuperuser,
+class UELCAdminEditCaseView(LoggedInMixinAdmin,
                             TemplateView):
     extra_context = dict()
 
     def post(self, request):
         name = request.POST.get('name', '')
+        description = request.POST.get('description', '')
         hierarchy = request.POST.get('hierarchy', '')
         cohorts = request.POST.getlist('cohort', '')
         case_exists_name = Case.objects.filter(Q(name=name))
@@ -698,6 +772,7 @@ class UELCAdminEditCaseView(LoggedInMixinSuperuser,
         coh_obj = Cohort.objects.filter(id__in=cohorts)
         case = Case.objects.get(id=case_id)
         case.name = name
+        case.description = description
         case.cohort.clear()
         case.cohort.add(*coh_obj)
         case.save()
@@ -705,7 +780,7 @@ class UELCAdminEditCaseView(LoggedInMixinSuperuser,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminView(LoggedInMixinSuperuser,
+class UELCAdminView(LoggedInMixinAdmin,
                     TemplateView):
     template_name = "pagetree/uelc_admin.html"
     extra_context = dict()
@@ -736,7 +811,7 @@ class UELCAdminView(LoggedInMixinSuperuser,
         return context
 
 
-class UELCAdminCohortView(LoggedInMixinSuperuser,
+class UELCAdminCohortView(LoggedInMixinAdmin,
                           TemplateView):
     template_name = "pagetree/uelc_admin_cohort.html"
     extra_context = dict()
@@ -768,7 +843,7 @@ class UELCAdminCohortView(LoggedInMixinSuperuser,
         return context
 
 
-class UELCAdminUserView(LoggedInMixinSuperuser,
+class UELCAdminUserView(LoggedInMixinAdmin,
                         TemplateView):
     template_name = "pagetree/uelc_admin_user.html"
     extra_context = dict()
@@ -878,7 +953,7 @@ class EditCaseAnswerView(View):
             dict(case_answer_form=form, case_answer=case_answer))
 
 
-class DeleteCaseAnswerView(LoggedInMixinSuperuser,
+class DeleteCaseAnswerView(LoggedInMixinAdmin,
                            View):
     '''I am doing a regular view instead of a delete view,
     because the delete view will only delete the caseanswer,

@@ -60,7 +60,9 @@ button.close{
                                 <div class="panel-heading">Edit User</div>
                                 <div class="panel-body">
                                   <form data-toggle="validator" id="edit-user-form" action="/uelcadmin/edituser/" method="post">{% csrf_token %}
+                                    {% if user.profile %}
                                     {{user.profile.edit_form|bootstrap}}
+                                    {% endif %}
                                     <p><a target="_blank" href="/uelcadmin/edituserpass/{{user.id}}/">Change Password</a></p>
                                     <input type="hidden" name="user_id" value="{{user.id}}">
                                     <input type="submit" class="btn btn-primary form-submit" value="Submit">

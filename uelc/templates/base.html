@@ -11,12 +11,12 @@
 	
 	<link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
 
-	<title>ELDEx: {% block title %}{% endblock %}</title>
+	<title>ELDEx {% block title %}{% endblock %}</title>
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="uelc">
+	<meta name="description" content="ELDEx Education Leadership Development Experience from Urban Education Leaders Collaborative, Teachers College Columbia University">
 	<meta name="author" content="CCNMTL">
-	
+
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
 	<script src="../assets/js/html5shiv.js"></script>
@@ -28,12 +28,11 @@
 	{% compress css %}
 	<link href="{{STATIC_URL}}css/main.css" rel="stylesheet">
 	{% endcompress %}
-	<link rel="shortcut icon" href="{{STATIC_URL}}img/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" type="image/png" href="{{STATIC_URL}}img/favicon-16x16.png" sizes="16x16">
 	{% block css %}{% endblock %}
 	
 	<script src="{{STATIC_URL}}js/jquery-1.11.1.min.js"></script>
 	{% block feeds %}{% endblock %}
-
 </head>
 
 <body class="{% block bodyclass %}{% endblock %}" id="{% block bodyid %}{% endblock %}">
@@ -58,9 +57,10 @@
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 		  <ul class="nav navbar-nav navbar-right">
-		    <li><a href="/">Home</a></li>
+		    <li><a href="/">Start</a></li>
             <li><a href="/about/">About ELDEx</a></li>
             <li><a href="/contact/">Contact Us</a></li>
+            <li><a href="/contact/">Help</a></li>
 			{% block topnavbarrightitems %}{% endblock %}
 			{% block usernav %}
             {% if request.user.is_anonymous %}
@@ -70,15 +70,16 @@
     				    <!--<a href="{{section.get_instructor_url}}" class="btn btn-default">Responses</a></li>-->
     			{% endif %}
     			{% block edit-or-view-page %}
-    				{% if is_view %}
-        				<li>
-        				    <a href="{{section.get_edit_url}}">Edit Page</a>
-        				</li>
-        				{% else %}
-        				<li>
-        				    <a href="{{section.get_absolute_url}}">View Page</a>
-        				</li>
-    				{% endif %} 
+        				{% if is_view %}
+            				<li>
+            				    <a href="{{section.get_edit_url}}">Edit Page</a>
+            				</li>
+            				{% endif %}
+            				<li>
+                            {% if edit_view %}
+            				    <a href="{{section.get_absolute_url}}">View Page</a>
+            				</li>
+        				{% endif %}
     			{% endblock %}
 				{% endifnotequal %}
             {% endif %}
@@ -86,29 +87,46 @@
 			  {% if request.user.is_anonymous %}
 			  {% else %}
                 <!-- <li class="navbar-text"></li> -->
-			    <li class="dropdown">
-			      {% ifnotequal request.user.profile.profile_type "group_user" %}
-			        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-			      {% endifnotequal %}
-			        Hi,
-			        {% if request.user.last_name %}
-			            {{request.user.first_name}} {{request.user.last_name}}
-			        {% else %}
-			            {{ request.user.username }}!
-			        {% endif %}
-			        {% ifnotequal request.user.profile.profile_type "group_user" %}
-			          <span class="caret"></span>
-			          </a>
-			          <ul class="dropdown-menu" role="menu">
-			        	{% if request.user.is_superuser %}
-			        	  <li><a href="/uelcadmin/">Manage</a></li>
-			        	{% endif %}
-			        	{% for root in roots %}
-                            <li><a href="{{ root.0 }}facilitator/">Faciliatate</a></li>
-                        {% endfor %}
-                        <li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
-                      </ul>
-			        {% endifnotequal %}
+			        <li class="dropdown">
+                    {% if request.user.profile.profile_type == "group_user" %}
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    			        Hi,
+    			        {% if request.user.last_name %}
+    			            {{request.user.first_name}} {{request.user.last_name}}
+    			        {% else %}
+    			            {{ request.user.username }}!
+    			        {% endif %}
+                        </a>
+
+        			     {% else %}
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                Hi,
+                                {% if request.user.last_name %}
+                                    {{request.user.first_name}} {{request.user.last_name}}
+                                {% else %}
+                                    {{ request.user.username }}!
+                                {% endif %}
+            			          <span class="caret"></span>
+            			     </a>
+        			          <ul class="dropdown-menu" role="menu">
+        			        	{% if request.user.profile.is_admin %}
+        			        	  <li><a href="/uelcadmin/">Manage</a></li>
+        			        	{% endif %}
+                                        <li class="menu-item dropdown dropdown-submenu">
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Facilitate</a>
+                                            <ul class="dropdown-menu">
+                                                <li class="menu-item ">
+                                                    {% for case in request.user.profile.cohort.case %}
+                                                        <li><a href="{{case.hierarchy.get_absolute_url}}facilitator/">{{ case.name }}</a></li>
+                                                    {% endfor %}
+                                                </li>
+                                                
+                                            </ul>
+                                <!--
+                                    <li><a href="{% url 'impersonate-list' %}">Impersonate</a></li>
+                                -->
+                              </ul>
+    			        {% endif %}
 			    	</li>
 				    <li>
 				        <a href="/accounts/logout/?next=/">Log Out</a>
@@ -124,7 +142,7 @@
 
 <div class="container" id="outer-container">
 
-    {% if request.user.is_superuser %}
+    {% if request.user.profile.is_admin %}
     <div class="col-md-12">
     {% block topnavbarleftitems %}{% endblock %}
     {% block moduletabs %}
@@ -140,76 +158,21 @@
     {% block masthead %}
     {% block primarynav %}{% endblock %}
     {% endblock %}
-	   <div class="col-sm-9">
+	   <div class="col-sm-12">
 		{% block pagetitle %}{% endblock %}
 		{% block content %}{% endblock %}
         {% block content-nav %}{% endblock %}
 	   </div>
-           <div class="col-sm-3">
-                {% if request.user.is_anonymous %}
-            {% block loginbox %}
-                          <div class="loginbox-container columbia">
-            <div class="loginbox">
-            <h2>Choose a login option.</h2>
-            <div class="content">
-            {% if CAS_BASE %}
-            <form method="get" action="{{ CAS_BASE }}cas/login">
-            {% csrf_token %}
-            <input type="hidden" name="destination" value="https://{{ request.get_host }}/accounts/caslogin/?next={{ request.get_full_path|urlencode }}" />
-            <p>If you have a Columbia University Network ID (UNI)...</p>
-            <input class="regbutton" type="submit" value="Columbia Log In" />
-            </form>
-            {% endif %}
-            <p class="smalltxt"><a href="http://cuit.columbia.edu/cuit/manage-my-uni" title="Learn more about UNI" target="_blank">What is a UNI?</a></p>
-            <!-- End UNI LOG IN -->
-            {% if login_form.errors %}
-            <p class="errornote">
-            <span>
-            <b>ERROR:</b> Invalid username or password.
-            </span>
-            Please try again. Note that both username and password are case-sensitive.
-            </p>
-            {% endif %}
-            <p>If you have a guest account...</p>
-            <form id="login-local" name="login_local" method="post" action="/accounts/login/">
-            {% csrf_token %}
-            <div class="login-local-form" {% if not login_form.errors %}style="display: none"{% endif %}>
-            <div class="fieldwrapper">
-            <label for="id_username">Username:</label>
-            {{ login_form.username }}
-            </div>
-            <!-- fieldwrapper -->
-            <div class="fieldwrapper">
-            <label for="id_password">Password:</label>
-            {{ login_form.password }}
-            </div><!-- fieldwrapper -->
-            </div>      
-            <input class="regbutton" type="button" value="Guest Log In" {% if login_form.errors %}style="display: none"{% endif %}
-            onclick="jQuery('.login-local-form').show(); jQuery(this).hide(); return false;"/>
-            <input class="regbutton login-local-form" type="submit" value="Log In" {% if not login_form.errors %}style="display: none;"{% endif %} />                        
-            <input type="hidden" name="next" value="{{ request.get_full_path }}" />
-            </form>
-            <p class="smalltxt"><a href="/registration/register/" title="Create your new project account">Need a new account?</a></p>
-            </div>
-            </div>
-            </div>
-                {% endblock %}
-            {% endif %}
-            {% block sidenav %}{% endblock %}
-            {% block library %}{% endblock %}
-
-       </div>
-
     <!--end .row-->
 </div>
 
 {% block footer %}
-<footer class="footer sr-only">
+<footer class="footer">
 <div class="container">
 <div class="row">
 
     <div class="col-sm-2 col-sm-offset-4">
-    <a href="http://uelp.tc.columbia.edu/" title="UELC"><img class="img-responsive" src="{{STATIC_URL}}media/img/logo-uelc.png" /></a>
+    <a href="http://uelp.tc.columbia.edu/" title="UELC"><img class="img-responsive" src="{{STATIC_URL}}img/logo-uelc.png" /></a>
     </div>
     
     <div class="col-sm-2">
@@ -223,9 +186,9 @@
 
 <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 
-<script src="{% bootstrap_javascript_url %}"></script>
-{% block js %}{% endblock %}
 
+{% block js %}{% endblock %}
+<script src="{% bootstrap_javascript_url %}"></script>
 {% if STAGING_ENV %}
 <div class="alert alert-danger alert-dismissable" style="position: fixed; bottom: 0px;">
 	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -236,9 +199,11 @@
 {% endif %}
 
 {% if request.user.is_impersonate %}
-<div class="alert alert-danger alert-dismissable" style="position: fixed; left: 0px; top: 75px">
+<div class="alert alert-danger alert-dismissable" style="position: fixed; left: 0px; top: 75px; width:200px">
 	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-	You are impersonating.<br />
+    <p>Greetings, {{ request.impersonator }}!<p>
+    <p>You are impersonating the user, {{ request.user }}. Please be aware that you are temporarily logged in as {{ request.user }} and viewing the site just as that user sees the site.</p>
+    <p>If you are done, please click the "Stop" link below.</p>
 	<a class="btn" href="{% url 'impersonate-stop' %}">Stop</a>
 </div>
 {% endif %}
