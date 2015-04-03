@@ -358,7 +358,48 @@ class TestAdminErrorHandlingInCaseViews(TestCase):
         pass
 
 
-class TestAdminCohortViews(TestCase):
+class TestAdminCohortViewContext(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.h = get_hierarchy("main", "/pages/main/")
+        self.root = self.h.get_root()
+        self.root.add_child_section_from_dict(
+            {
+                'label': 'Section 1',
+                'slug': 'section-1',
+                'pageblocks': [],
+                'children': [],
+            })
+        self.case = CaseFactory()
+        self.profile = AdminUpFactory()
+        self.gu = GroupUpFactory()
+        self.cohort = CohortFactory()
+        self.client.login(username=self.profile.user.username, password='test')
+
+    def test_login_uelc_admin(self):
+        response = self.client.get("/uelcadmin/", follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'pagetree/uelc_admin.html')
+
+    def test_uelc_admin_case_response_context(self):
+        response = self.client.get("/uelcadmin/cohort/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'pagetree/uelc_admin_cohort.html')
+        self.assertTrue(response.context['path'])
+        self.assertTrue(response.context['casemodel'])
+        self.assertTrue(response.context['cohortmodel'])
+        self.assertTrue(response.context['create_user_form'])
+        self.assertTrue(response.context['create_hierarchy_form'])
+        self.assertTrue(response.context['users'])
+        self.assertTrue(response.context['hierarchies'])
+        self.assertTrue(response.context['cases'])
+        self.assertTrue(response.context['cohorts'])
+
+
+class TestAdminUserViewContext(TestCase):
 
     def setUp(self):
         self.client = Client()
@@ -384,33 +425,16 @@ class TestAdminCohortViews(TestCase):
         #                        'pagetree/uelc_admin_cohort.html')
 
     def test_uelc_admin_case_response_context(self):
-        response = self.client.get("/uelcadmin/cohort/")
+        response = self.client.get("/uelcadmin/user/")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,
-                                'pagetree/uelc_admin_cohort.html')
+                                'pagetree/uelc_admin_user.html')
         self.assertTrue(response.context['path'])
-
-
-
-   
-# 823    1        def get_context_data(self, *args, **kwargs):
-# 824    0            path = self.request.path
-# 825    0            casemodel = Case
-# 826    0            cohortmodel = Cohort
-# 827    0            create_user_form = CreateUserForm
-# 828    0            create_hierarchy_form = CreateHierarchyForm
-# 829    0            users = User.objects.all().order_by('username')
-# 830    0            hierarchies = Hierarchy.objects.all()
-# 831    0            cases = Case.objects.all()
-# 832    0            cohorts = Cohort.objects.all().order_by('name')
-# 833    0            context = dict(users=users,
-# 834                               path=path,
-# 835                               cases=cases,
-# 836                               cohorts=cohorts,
-# 837                               casemodel=casemodel,
-# 838                               cohortmodel=cohortmodel,
-# 839                               create_user_form=create_user_form,
-# 840                               create_hierarchy_form=create_hierarchy_form,
-# 841                               hierarchies=hierarchies,
-# 842                               )
-# 843    0            return context
+        self.assertTrue(response.context['casemodel'])
+        self.assertTrue(response.context['cohortmodel'])
+        self.assertTrue(response.context['create_user_form'])
+        self.assertTrue(response.context['create_hierarchy_form'])
+        self.assertTrue(response.context['users'])
+        self.assertTrue(response.context['hierarchies'])
+        self.assertTrue(response.context['cases'])
+        self.assertTrue(response.context['cohorts'])
