@@ -22,7 +22,9 @@ a.active{
     color: #000;
 }
 
-.jumbotron {background-image: url(../img/group.jpg); color: #fff;}
+.jumbotron {background-image: url(../img/group.jpg); color: #fff;
+background-position: -350px bottom; 
+}
 
 #content {
   min-height: 100%;
