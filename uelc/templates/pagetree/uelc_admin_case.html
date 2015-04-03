@@ -9,8 +9,10 @@ button.close{
 
   <div class="panel panel-default">
       <div class="panel-heading">
-        <p>Create and Edit Cases</p>
-        <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-case-form-modal" href="#add-case-form-modal">Add Case</button>
+      
+    <button class="demo btn btn-primary pull-right" data-toggle="modal"  data-target="#add-case-form-modal" href="#add-case-form-modal">Add Case</button>
+     <p class="lead">Add and Edit Cases</p>
+        <p>Cases are a collection of pages that include text, decision, and gate blocks.<br />Each case is a new decision experience for a cohort of users.</p>
         <div id="add-case-form-modal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -39,7 +41,7 @@ button.close{
                 <th>Case</th>
                 <th>Hierarchy</th>
                 <th>URL</th>
-                <th>Cohort/s</th>
+                <th colspan="2">Cohort/s</th>
               </tr>
             </thead>
             <tbody>
@@ -51,7 +53,7 @@ button.close{
                 <td class="td-cohorts">
                     {{ case.cohortnames }}
                 </td>
-                <td>
+                <td style="width: 140px;">
                   <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-case-form-modal-{{case.id}}" href="#edit-case-form-modal-{{case.id}}">Edit</button>
                   <div id="edit-case-form-modal-{{case.id}}" class="modal fade">
                     <div class="modal-dialog">
@@ -105,8 +107,9 @@ button.close{
 
   <div class="panel panel-default">
       <div class="panel-heading">
-        <p>Create and Edit Hierarchies</p>
-        <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-hierarchy-form-modal" href="#add-hierarchy-form-modal">Add Hierarchy Item</button>
+        <button class="demo btn btn-primary pull-right" data-toggle="modal"  data-target="#add-hierarchy-form-modal" href="#add-hierarchy-form-modal">Add Hierarchy Item</button>
+     <p class="lead">Add and Delete Case Hierarchies</p>
+        <p>A hierarchy is a unique location on the site where case content may be accessed to view or edit.<br />Add a hierarchy and then add a case to be accessed on that hierarchy.</p>
         <div id="add-hierarchy-form-modal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
