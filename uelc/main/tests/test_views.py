@@ -356,3 +356,61 @@ class TestAdminErrorHandlingInCaseViews(TestCase):
     def test_admin_create_case_no_emptyfields(self):
         '''This functionality doesn't actually work...'''
         pass
+
+
+class TestAdminCohortViews(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.h = get_hierarchy("main", "/pages/main/")
+        self.root = self.h.get_root()
+        self.root.add_child_section_from_dict(
+            {
+                'label': 'Section 1',
+                'slug': 'section-1',
+                'pageblocks': [],
+                'children': [],
+            })
+        self.case = CaseFactory()
+        self.profile = AdminUpFactory()
+        self.gu = GroupUpFactory()
+        self.cohort = CohortFactory()
+        self.client.login(username=self.profile.user.username, password='test')
+
+    def test_login_uelc_admin(self):
+        response = self.client.get("/uelcadmin/", follow=True)
+        self.assertEqual(response.status_code, 200)
+        #self.assertTemplateUsed(response,
+        #                        'pagetree/uelc_admin_cohort.html')
+
+    def test_uelc_admin_case_response_context(self):
+        response = self.client.get("/uelcadmin/cohort/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'pagetree/uelc_admin_cohort.html')
+        self.assertTrue(response.context['path'])
+
+
+
+   
+# 823    1        def get_context_data(self, *args, **kwargs):
+# 824    0            path = self.request.path
+# 825    0            casemodel = Case
+# 826    0            cohortmodel = Cohort
+# 827    0            create_user_form = CreateUserForm
+# 828    0            create_hierarchy_form = CreateHierarchyForm
+# 829    0            users = User.objects.all().order_by('username')
+# 830    0            hierarchies = Hierarchy.objects.all()
+# 831    0            cases = Case.objects.all()
+# 832    0            cohorts = Cohort.objects.all().order_by('name')
+# 833    0            context = dict(users=users,
+# 834                               path=path,
+# 835                               cases=cases,
+# 836                               cohorts=cohorts,
+# 837                               casemodel=casemodel,
+# 838                               cohortmodel=cohortmodel,
+# 839                               create_user_form=create_user_form,
+# 840                               create_hierarchy_form=create_hierarchy_form,
+# 841                               hierarchies=hierarchies,
+# 842                               )
+# 843    0            return context
