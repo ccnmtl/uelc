@@ -171,7 +171,8 @@ background-position: -350px bottom;
 }
 
 ul.side-nav {
-    margin-top: 20px;
+    margin: 20px 0 20px 20px;
+    float: right;
 }
 
 ul.side-nav li li {
@@ -319,3 +320,8 @@ ul.gate-section-list{
   background-color: #fc6;
   -webkit-box-shadow: none;
   box-shadow:  none;
+}
+
+.decision-block{
+    clear: right;
+}

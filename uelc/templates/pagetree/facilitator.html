@@ -29,7 +29,7 @@
             {% if sec.2 %}
               {% if sec.5 %}
                
-               <div class="gate-button unlocked {{sec.6.0|convert}}" data-part-decision="{{sec.6.1|convert_part2}}">
+               <div class="gate-button unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                     <form action="." method="post">{% csrf_token %}
                         <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
                         <button type="submit" class="btn btn-sm btn-success btn-block text-center" style="margin-top: 5px;">
@@ -38,7 +38,7 @@
                         <span class="badge  text-capitalize">{{sec.4}}</span>
                         </button>
                          <button type="submit" class="btn btn-xs btn-default btn-block text-center">
-                        <a data-user="{{u.0.id}}" target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</a>
+                        <a class="preview-link" data-user="{{u.0.id}}" target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</a>
                         </button>
                         </div>
                         <div class="clearfix visible-lg-block"></div>
@@ -56,7 +56,7 @@
             {% else %}
               {% if sec.5 %}
                 
-                <div class="gate-button locked {{sec.6.0|convert}}" data-part-decision="{{sec.6.1|convert_part2}}">
+                <div class="gate-button locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                     <form action ="." method="post">{% csrf_token %}
                         <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
                         <button type ="submit" class="btn btn-sm btn-{{sec.4}} btn-block text-center" style="margin-top: 5px;">
@@ -65,7 +65,7 @@
                         <span class="badge text-capitalize">{{sec.4}}</span>
                        </button>
                          <button type="submit" class="btn btn-xs btn-default btn-block text-center">
-                         <a data-user="{{u.0.id}}" target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</span></a>
+                         <a class="preview-link" data-user="{{u.0.id}}" target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</span></a>
                         </button>
                         </div>
                         <div class="clearfix visible-lg-block"></div>

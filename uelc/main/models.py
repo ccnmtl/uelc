@@ -394,8 +394,8 @@ class UELCHandler(Section):
         part = 1
         if len(vals) >= 2:
             part = float(2) + (vals[1] * .1)
-        if len(vals) >= 3:
-            part = part + float((vals[2] * .01))
+        if len(vals) >= 4:
+            part = part + float((vals[3] * .01))
         return part
 
     def get_p1c1(self, casemap_value):
