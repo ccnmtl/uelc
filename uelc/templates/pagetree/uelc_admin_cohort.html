@@ -9,9 +9,11 @@ button.close{
 
     <div class="panel panel-default">
       <div class="panel-heading">
+      
       <button class="btn btn-primary pull-right" data-toggle="modal"  data-target="#add-cohort-form-modal" href="#add-cohort-form-modal">Create Cohort</button>
       <p class="lead">Create and Edit Cohorts</p>
       <p>A cohort is a group of users connected around an assigned case experience.</p>
+      
       <div id="add-cohort-form-modal" class="modal fade">
           <div class="modal-dialog">
               <div class="modal-content">
@@ -58,7 +60,7 @@ button.close{
                 <td class="td-cohort-users">
                   {% if cohort.users %}
                     {% for user in cohort.users %}
-                      <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">{{user}}</button>
+                      <button style="margin: 3px;" class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">{{user}}</button>
                   <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
