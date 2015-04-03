@@ -23,7 +23,7 @@ a.active{
 }
 
 .jumbotron {background-image: url(../img/group.jpg); color: #fff;
-background-position: -350px center; 
+background-position: -350px bottom; 
 }
 
 #content {
