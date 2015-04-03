@@ -421,8 +421,8 @@ class TestAdminUserViewContext(TestCase):
     def test_login_uelc_admin(self):
         response = self.client.get("/uelcadmin/", follow=True)
         self.assertEqual(response.status_code, 200)
-        #self.assertTemplateUsed(response,
-        #                        'pagetree/uelc_admin_cohort.html')
+        self.assertTemplateUsed(response,
+                                'pagetree/uelc_admin.html')
 
     def test_uelc_admin_case_response_context(self):
         response = self.client.get("/uelcadmin/user/")
