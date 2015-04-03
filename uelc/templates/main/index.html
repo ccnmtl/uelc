@@ -15,7 +15,7 @@
     
     <div class="well">
         <h2>Group Leader Case List</h2>
-        <p>Select a case for your group to work on.</p>
+        <p>Select a case for your group to experience.</p>
         <ul class="case-index-list">
             {% for case in cases %}
                 <li><a href="{{ case.hierarchy.base_url }}">{{case.name}}</a> - {{case.description}}</li>
@@ -27,7 +27,7 @@
     
     <div class="admin-section well">
         <h2>Facilitator Case Control</h2>
-        <p>Select the case that the group you are coaching is working on.</p>
+        <p>Select a case to facilitate the experience for a group.</p>
         <ul>
             {% for case in cases %}
                 <li><a href="{{ case.hierarchy.base_url }}facilitator/">{{case.name}}</a> - {{case.description}}</li>
@@ -131,21 +131,21 @@
     <img class="img-responsive img-rounded" src="{{STATIC_URL}}img/smallgroup.jpg" />
     <h2>Engagement</h2>
     <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dui arcu, condimentum vitae feugiat eget, convallis non ipsum.
+    Each experience includes a multimedia narrative of an educational leader placed in a high stakes situation. Participants must take into account data regarding important stakeholders, respond to unexpected events and make the best decision given the circumstances.
     </p>
 </div>
 <div class="col-md-4 text-center">
     <img class="img-responsive img-rounded" src="{{STATIC_URL}}img/facilitator.jpg" />
     <h2>Leadership</h2>
     <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dui arcu, condimentum vitae feugiat eget, convallis non ipsum.
+    Each experience includes a compelling narrative written by the Urban Education Leadership Collaborative at Teachers College Columbia University and vetted by experienced education leaders from around the country.
     </p>
 </div>
 <div class="col-md-4 text-center">
     <img class="img-responsive img-rounded" src="{{STATIC_URL}}img/experts.jpg" />
     <h2>Discussion</h2>
     <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dui arcu, condimentum vitae feugiat eget, convallis non ipsum.
+    ELDEX content is responsive to decisions made by participants in small discussion groups. At key decision points in the narrative, participants discuss the status of situation and submit a choice. Contextual content is revealed in response to the choice made by the group.
     </p>
 </div>
 </div>
