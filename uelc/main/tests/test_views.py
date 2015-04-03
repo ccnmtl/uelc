@@ -377,12 +377,6 @@ class TestAdminCohortViewContext(TestCase):
         self.cohort = CohortFactory()
         self.client.login(username=self.profile.user.username, password='test')
 
-    def test_login_uelc_admin(self):
-        response = self.client.get("/uelcadmin/", follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-                                'pagetree/uelc_admin.html')
-
     def test_uelc_admin_case_response_context(self):
         response = self.client.get("/uelcadmin/cohort/")
         self.assertEqual(response.status_code, 200)
@@ -417,12 +411,6 @@ class TestAdminUserViewContext(TestCase):
         self.gu = GroupUpFactory()
         self.cohort = CohortFactory()
         self.client.login(username=self.profile.user.username, password='test')
-
-    def test_login_uelc_admin(self):
-        response = self.client.get("/uelcadmin/", follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,
-                                'pagetree/uelc_admin.html')
 
     def test_uelc_admin_case_response_context(self):
         response = self.client.get("/uelcadmin/user/")

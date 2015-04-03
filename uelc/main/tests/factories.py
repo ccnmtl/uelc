@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 from pagetree.models import Hierarchy
 from quizblock.tests.test_models import FakeReq
+from quizblock.models import Quiz, Question
 
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap, TextBlockDT, UELCHandler,
@@ -75,8 +76,16 @@ class CaseMapFactory(factory.DjangoModelFactory):
     user = factory.SubFactory(GroupUserFactory)
 
 
+class QuizFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = Quiz
+
+
 class CaseQuizFactory(factory.DjangoModelFactory):
     FACTORY_FOR = CaseQuiz
+
+
+class QuestionFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = Question
 
 
 class TextBlockDTFactory(factory.DjangoModelFactory):
