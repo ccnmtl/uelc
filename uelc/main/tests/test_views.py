@@ -356,3 +356,73 @@ class TestAdminErrorHandlingInCaseViews(TestCase):
     def test_admin_create_case_no_emptyfields(self):
         '''This functionality doesn't actually work...'''
         pass
+
+
+class TestAdminCohortViewContext(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.h = get_hierarchy("main", "/pages/main/")
+        self.root = self.h.get_root()
+        self.root.add_child_section_from_dict(
+            {
+                'label': 'Section 1',
+                'slug': 'section-1',
+                'pageblocks': [],
+                'children': [],
+            })
+        self.case = CaseFactory()
+        self.profile = AdminUpFactory()
+        self.gu = GroupUpFactory()
+        self.cohort = CohortFactory()
+        self.client.login(username=self.profile.user.username, password='test')
+
+    def test_uelc_admin_case_response_context(self):
+        response = self.client.get("/uelcadmin/cohort/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'pagetree/uelc_admin_cohort.html')
+        self.assertIn('path', response.context)
+        self.assertIn('casemodel', response.context)
+        self.assertIn('cohortmodel', response.context)
+        self.assertIn('create_user_form', response.context)
+        self.assertIn('create_hierarchy_form', response.context)
+        self.assertIn('users', response.context)
+        self.assertIn('hierarchies', response.context)
+        self.assertIn('cases', response.context)
+        self.assertIn('cohorts', response.context)
+
+
+class TestAdminUserViewContext(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.h = get_hierarchy("main", "/pages/main/")
+        self.root = self.h.get_root()
+        self.root.add_child_section_from_dict(
+            {
+                'label': 'Section 1',
+                'slug': 'section-1',
+                'pageblocks': [],
+                'children': [],
+            })
+        self.case = CaseFactory()
+        self.profile = AdminUpFactory()
+        self.gu = GroupUpFactory()
+        self.cohort = CohortFactory()
+        self.client.login(username=self.profile.user.username, password='test')
+
+    def test_uelc_admin_case_response_context(self):
+        response = self.client.get("/uelcadmin/user/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'pagetree/uelc_admin_user.html')
+        self.assertIn('path', response.context)
+        self.assertIn('casemodel', response.context)
+        self.assertIn('cohortmodel', response.context)
+        self.assertIn('create_user_form', response.context)
+        self.assertIn('create_hierarchy_form', response.context)
+        self.assertIn('users', response.context)
+        self.assertIn('hierarchies', response.context)
+        self.assertIn('cases', response.context)
+        self.assertIn('cohorts', response.context)
