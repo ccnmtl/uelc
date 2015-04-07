@@ -14,6 +14,7 @@
     <p></p>
     
     <div class="well">
+       {% if cases %}
         <h2>Group Leader Case List</h2>
         <p>Select a case for your group to experience.</p>
         <ul class="case-index-list">
@@ -21,10 +22,14 @@
                 <li><a href="{{ case.hierarchy.base_url }}">{{case.name}}</a> - {{case.description}}</li>
             {% endfor %}
         </ul>
+        {% else %}
+        <h2>Sorry.</h2>
+        <p>It looks like you have not been assigned to a cohort or case. Please let the administrator know.</p>
+        {% endif %}
     </div>
     
     {% ifnotequal request.user.profile.profile_type  'group_user'  %}
-    
+    {% if cases %}
     <div class="admin-section well">
         <h2>Facilitator Case Control</h2>
         <p>Select a case to facilitate the experience for a group.</p>
@@ -34,6 +39,7 @@
             {% endfor %}
         </ul>
     </div>
+    {% endif %}
     {% endifnotequal %}
     
 

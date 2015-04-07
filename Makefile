@@ -1,4 +1,4 @@
-MANAGE=./manage.py
+uelcMANAGE=./manage.py
 APP=uelc
 FLAKE8=./ve/bin/flake8
 
