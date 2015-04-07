@@ -75,7 +75,7 @@ def get_root_context(request):
                       case.hierarchy.name)
                      for case in cases]
         else:
-            roots = [('None','None')]
+            roots = [('None', 'None')]
         context = dict(roots=roots)
     except ObjectDoesNotExist:
         pass
