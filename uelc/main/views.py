@@ -2,7 +2,7 @@ from django.db import IntegrityError
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -464,7 +464,14 @@ class UELCAdminDeleteUserView(LoggedInMixinAdmin,
     def post(self, request):
         user_id = request.POST.get('user_id')
         user = User.objects.get(pk=user_id)
-        user.delete()
+        if not user.is_superuser:
+            user.delete()
+        else:
+            action_args = dict(
+                error="Sorry, you are not permitted to \
+                      delete superuser accounts.")
+            messages.error(request, action_args['error'],
+                           extra_tags='deleteSuperUser')
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
 
@@ -490,11 +497,21 @@ class UELCAdminEditUserView(LoggedInMixinAdmin,
             user.is_staff = True
         else:
             user.is_staff = False
+        self.set_image_upload_permissions(user)
         user.profile.save()
         user.username = username
         user.save()
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
+
+    def set_image_upload_permissions(self, user):
+        permission_set = Permission.objects.filter(
+            content_type__name="image upload item")
+        for perm in permission_set:
+            if user.is_staff:
+                user.user_permissions.add(perm.pk)
+            else:
+                user.user_permissions.remove(perm.pk)
 
 
 class UELCAdminEditUserPassView(LoggedInMixinAdmin,
