@@ -488,10 +488,9 @@ class UELCAdminEditUserView(LoggedInMixinAdmin,
         user.profile.profile_type = profile
         if not profile == "group_user":
             user.is_staff = True
-            self.set_image_upload_permissions(user)
         else:
             user.is_staff = False
-            self.set_image_upload_permissions(user)
+        self.set_image_upload_permissions(user)
         user.profile.save()
         user.username = username
         user.save()
@@ -506,7 +505,6 @@ class UELCAdminEditUserView(LoggedInMixinAdmin,
                 user.user_permissions.add(perm.pk)
             else:
                 user.user_permissions.remove(perm.pk)
-        user.save()
 
 
 class UELCAdminEditUserPassView(LoggedInMixinAdmin,
