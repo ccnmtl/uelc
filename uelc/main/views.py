@@ -468,7 +468,8 @@ class UELCAdminDeleteUserView(LoggedInMixinAdmin,
             user.delete()
         else:
             action_args = dict(
-                error="Sorry, you are not permitted to delete superuser accounts.")
+                error="Sorry, you are not permitted to \
+                      delete superuser accounts.")
             messages.error(request, action_args['error'],
                            extra_tags='deleteSuperUser')
         url = request.META['HTTP_REFERER']
