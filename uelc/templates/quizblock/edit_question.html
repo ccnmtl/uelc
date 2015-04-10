@@ -51,6 +51,17 @@
             
         });
         
+        $(document).on("submit", 
+          function (evt) {
+               if(jQuery("#id_text").val() === "")
+               {
+                evt.preventDefault();
+                jQuery("#id_text").closest("div").addClass('has-error');
+                jQuery("#id_text").closest("div").append('<span class="help-block ">This field is required.</span>');
+                jQuery('label[for=id_text').addClass('has-error');
+                jQuery('label[for=id_text').focus();
+               }
+          });
     </script>
 
 
