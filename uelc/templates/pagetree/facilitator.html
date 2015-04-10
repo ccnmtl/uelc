@@ -12,12 +12,12 @@
     <p>Facilitators can lock, inlock, manage, and preview content for their groups here.</p>
 
     {% for u in user_sections %}
-    {% if u.0.profile.profile_type == "group_user" %}
-    <div class="col-xs-3 text-center">
-    <!-- user (u.0), gateblocks (u.1) --> 
-    <div class="gate-section">
-    <h3 class="facilitator-usrnm">Group {{u.0}}<br /><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></h3>
-    <div class="gate-section-list">
+      {% if u.0.profile.profile_type == "group_user" %}
+      <div class="col-xs-3 text-center">
+      <!-- user (u.0), gateblocks (u.1) --> 
+      <div class="gate-section">
+        <h3 class="facilitator-usrnm">Group {{u.0}}<br /><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></h3>
+        <div class="gate-section-list">
         {% for sec in u.1 %}
             {% comment %}
             <!-- 

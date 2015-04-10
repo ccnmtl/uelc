@@ -53,29 +53,31 @@ button.close{
                 </td>
                 <td>
                   <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-case-form-modal-{{case.id}}" href="#edit-case-form-modal-{{case.id}}">Edit</button>
+
                   <div id="edit-case-form-modal-{{case.id}}" class="modal fade">
                     <div class="modal-dialog">
-                        <div class="modal-content">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <div class="modal-header panel-heading">Edit Case</div>
-                            <div class="modal-body">
-                              <div id="edit-case" class="panel panel-default">
-                                <div class="panel-heading">Edit Case</div>
-                                <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-case-form" action="/uelcadmin/editcase/" method="post">{% csrf_token %}
-                                    {{ case.edit_form|bootstrap }}
-                                    <input type="hidden" name="case_id" value="{{case.id}}">
-                                    <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                                    <input type="reset" class="reset-button hidden" value="Reset" />
-                                  </form>
-                                </div>
-                              </div><!--end #hierarchiess-->
-                              </div> <!--end modal-dialog-->
-                        </div><!-- end modal-content-->
-                    </div><!--end .model-body-->
+                      <div class="modal-content">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <div class="modal-header panel-heading">Edit Case</div>
+                        <div class="modal-body">
+                          <div id="edit-case" class="panel panel-default">
+                            <div class="panel-heading">Edit Case</div>
+                            <div class="panel-body">
+                              <form data-toggle="validator" id="edit-case-form" action="/uelcadmin/editcase/" method="post">{% csrf_token %}
+                                {{ case.edit_form|bootstrap }}
+                                <input type="hidden" name="case_id" value="{{case.id}}">
+                                <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                                <input type="reset" class="reset-button hidden" value="Reset" />
+                              </form>
+                            </div><!-- End Panel Body -->
+                          </div><!--end #edit-case-->
+                        </div> <!--end modal-body-->
+                      </div><!-- end modal-content-->
+                    </div><!--end .model-dialog-->
                   </div><!--end #edit-case-form-modal .modal-->
 
                   <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-case-form-modal-{{case.id}}" href="#delete-case-form-modal-{{case.id}}">Delete</button>
+
                   <div id="delete-case-form-modal-{{case.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -89,12 +91,13 @@ button.close{
                                     <input type="hidden" name="case_id" value="{{case.id}}">
                                     <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
                                   </form>
-                                </div>
-                              </div><!--end #hierarchiess-->
-                              </div> <!--end modal-dialog-->
+                                </div><!--end panel-body-->
+                              </div><!--end #delete-case-->
+                            </div> <!--end modal-body-->
                         </div><!-- end modal-content-->
-                    </div><!--end .model-body-->
-                  </div><!--end #add-hierarchy-form-modal .modal-->
+                    </div><!--end .modal-dialog-->
+                  </div><!--end #delete-case-form-modal .modal-->
+                  
                 </td>
               </tr>
               {% endfor %}

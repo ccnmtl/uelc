@@ -891,9 +891,9 @@ class AddCaseAnswerToQuestionView(View):
         multiple responses - it does not check to see if an answer is
         already associated with the question...'''
         question = get_object_or_404(Question, pk=pk)
-        value = request.POST.get('value')
-        title = request.POST.get('title')
-        description = request.POST.get('description')
+        value = request.POST.get('value', "")
+        title = request.POST.get('title', "")
+        description = request.POST.get('description', "")
         if value:
             inty = int(value)
         elif request.POST.get('answer-value'):
