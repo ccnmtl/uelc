@@ -5,11 +5,14 @@
 button.close{
   padding: 10px;
 }
+.panel-heading p:first-child {
+  font-weight: bold;
+}
 </style>
 
   <div class="panel panel-default">
       <div class="panel-heading">
-        <p>Create and Edit Cases</p>
+        <p>Add and Edit Cases</p> <p> Cases are a collection of pages that include text, decision, and gate blocks. Each case is a new decision experience for a cohort of users. </p>
         <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-case-form-modal" href="#add-case-form-modal">Add Case</button>
         <div id="add-case-form-modal" class="modal fade">
             <div class="modal-dialog">
@@ -37,7 +40,7 @@ button.close{
            <thead>
               <tr>
                 <th>Case</th>
-                <th>Hierarchy</th>
+                <th>Path</th>
                 <th>URL</th>
                 <th>Cohort/s</th>
               </tr>
@@ -108,16 +111,16 @@ button.close{
 
   <div class="panel panel-default">
       <div class="panel-heading">
-        <p>Create and Edit Hierarchies</p>
-        <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-hierarchy-form-modal" href="#add-hierarchy-form-modal">Add Hierarchy Item</button>
+        <p>Add and Delete Case Paths</p><p>A case path is a unique location on the site where case content may be accessed to view or edit. Add a path and then add a case to be accessed on that path.</p>
+        <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-hierarchy-form-modal" href="#add-hierarchy-form-modal">Add Case Path</button>
         <div id="add-hierarchy-form-modal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <div class="modal-header panel-heading">Add Hierarchy</div>
+                    <div class="modal-header panel-heading">Add Case Path</div>
                     <div class="modal-body">
                       <div id="hierarchies" class="panel panel-default">
-                        <div class="panel-heading">Hierarchies</div>
+                        <div class="panel-heading">Case Paths</div>
                         <div class="panel-body">
                           <form data-toggle="validator" id="add-hierarchy-form" action="/uelcadmin/createhierarchy/" method="post">{% csrf_token %}
                             {{create_hierarchy_form|bootstrap}}
@@ -135,9 +138,9 @@ button.close{
         <table id="case-list" class="table">
            <thead>
               <tr>
-                <th>Hierarchy Name</th>
-                <th>Hierarchy URL</th>
-                <th>Hierarchy Edit URL</th>
+                <th>Path</th>
+                <th>URL</th>
+                <th>Edit URL</th>
                 <th>Case</th>
               </tr>
             </thead>
