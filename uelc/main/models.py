@@ -619,9 +619,9 @@ class CaseAnswer(models.Model):
 
 
 class CaseAnswerForm(forms.Form):
-    value = forms.IntegerField()
-    title = forms.CharField(max_length=100)
-    description = forms.CharField(widget=forms.Textarea)
+    value = forms.IntegerField(required=True)
+    title = forms.CharField(max_length=100, required=True)
+    description = forms.CharField(widget=forms.Textarea, required=True)
 
 
 ReportableInterface.register(CaseQuiz)

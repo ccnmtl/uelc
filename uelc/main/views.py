@@ -893,6 +893,12 @@ class AddCaseAnswerToQuestionView(View):
         question = get_object_or_404(Question, pk=pk)
         value = request.POST.get('value', "")
         title = request.POST.get('title', "")
+        if title == "":
+            form = CaseAnswerForm(request.POST)
+            return render(
+                request,
+                self.template_name,
+                dict(question=question, case_answer_form=form))
         description = request.POST.get('description', "")
         if value:
             inty = int(value)
@@ -901,11 +907,11 @@ class AddCaseAnswerToQuestionView(View):
         else:
             inty = 0
         if not title:
-            title = request.POST.get('case-answer-title')
+            title = request.POST.get('case-answer-title', "")
             if not title:
                 title = '---'
         if not description:
-            description = request.POST.get('case-answer-description')
+            description = request.POST.get('case-answer-description', "")
             if not description:
                 description = '----'
         ans = Answer.objects.create(
