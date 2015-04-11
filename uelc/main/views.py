@@ -2,7 +2,7 @@ from django.db import IntegrityError
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -445,6 +445,7 @@ class UELCAdminCreateUserView(
             if not profile_type == "group_user":
                 user.is_staff = True
             user.save()
+            user.profile.set_image_upload_permissions(user)
 
         if len(user_exists) > 0:
             action_args = dict(
@@ -497,21 +498,12 @@ class UELCAdminEditUserView(LoggedInMixinAdmin,
             user.is_staff = True
         else:
             user.is_staff = False
-        self.set_image_upload_permissions(user)
         user.profile.save()
+        user.profile.set_image_upload_permissions(user)
         user.username = username
         user.save()
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
-
-    def set_image_upload_permissions(self, user):
-        permission_set = Permission.objects.filter(
-            content_type__name="image upload item")
-        for perm in permission_set:
-            if user.is_staff:
-                user.user_permissions.add(perm.pk)
-            else:
-                user.user_permissions.remove(perm.pk)
 
 
 class UELCAdminEditUserPassView(LoggedInMixinAdmin,
