@@ -330,16 +330,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         user = User.objects.get(id=request.POST.get('user_id'))
         action = request.POST.get('gate-action')
         section = Section.objects.get(id=request.POST.get('section'))
-        actual_location = UserPageVisit.objects.filter(
-            section=section, user=user)
-        '''If user has not actually gotten to this section disable unlock'''
-        if actual_location.count() == 0:
-            return
-        if actual_location.exists():
-            actual_location = UserPageVisit.objects.filter(
-                section=section, user=user)[0]
-        if actual_location.status == "complete":
-            return
         if action == 'submit':
             self.set_upv(user, section, "complete")
             admin_ajax_page_submit(section, user)
