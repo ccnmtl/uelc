@@ -12,9 +12,8 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
-    get_root_context, get_user_map,
-    has_responses, reset_page, page_submit, admin_ajax_page_submit,
-    admin_ajax_reset_page, visit_root)
+    get_root_context, get_user_map, visit_root,
+    has_responses, reset_page, page_submit, admin_ajax_page_submit)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
@@ -322,23 +321,28 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             li.update(doc=doc)
         if name:
             li.update(name=name)
-
         li[0].user.clear()
         for index in range(len(users)):
             user = User.objects.get(id=users[index])
             li[0].user.add(user)
 
     def post_gate_action(self, request):
-        # posted gate lock/unlock
         user = User.objects.get(id=request.POST.get('user_id'))
         action = request.POST.get('gate-action')
         section = Section.objects.get(id=request.POST.get('section'))
+        actual_location = UserPageVisit.objects.filter(
+            section=section, user=user)
+        '''If user has not actually gotten to this section disable unlock'''
+        if actual_location.count() == 0:
+            return
+        if actual_location.exists():
+            actual_location = UserPageVisit.objects.filter(
+                section=section, user=user)[0]
+        if actual_location.status == "complete":
+            return
         if action == 'submit':
             self.set_upv(user, section, "complete")
             admin_ajax_page_submit(section, user)
-        if action == 'reset':
-            self.set_upv(user, section, "incomplete")
-            admin_ajax_reset_page(section, user)
 
     def post(self, request, path):
         # posted library items
@@ -348,7 +352,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             self.post_library_item_delete(request)
         if request.POST.get('library-item-edit'):
             self.post_library_item_edit(request)
-
         if request.POST.get('gate-action'):
             self.post_gate_action(request)
         return HttpResponseRedirect(request.path)
