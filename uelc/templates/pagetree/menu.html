@@ -1,4 +1,4 @@
-{% if not request.user.profile.profile_type == "group_user" %}
+{% if not request.user.profile.is_group_user %}
 <ul class="side-nav well well-lg">
     {% for s in module.get_descendants %}
     {% ifequal s.id module.id %}
