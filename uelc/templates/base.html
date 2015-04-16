@@ -57,10 +57,10 @@
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 		  <ul class="nav navbar-nav navbar-right">
-		    <li><a href="/">Start</a></li>
+		    <!--<li><a href="/">Home</a></li>-->
             <li><a href="/about/">About ELDEx</a></li>
             <li><a href="/contact/">Contact Us</a></li>
-            <li><a href="/contact/">Help</a></li>
+            <li><a href="/help/">Help</a></li>
 			{% block topnavbarrightitems %}{% endblock %}
 			{% block usernav %}
             {% if request.user.is_anonymous %}
@@ -204,7 +204,7 @@
     <p>Greetings, {{ request.impersonator }}!<p>
     <p>You are impersonating the user, {{ request.user }}. Please be aware that you are temporarily logged in as {{ request.user }} and viewing the site just as that user sees the site.</p>
     <p>If you are done, please click the "Stop" link below.</p>
-	<a class="btn" href="{% url 'impersonate-stop' %}">Stop</a>
+	<a class="btn stop-impersonate" href="#">Stop</a>
 </div>
 {% endif %}
 
@@ -218,6 +218,17 @@ ga('create', '{{GA_CODE}}', 'columbia.edu');
 ga('send', 'pageview');
 </script>
 {% endif %}
+<script>
+jQuery(document).ready(function(){
+    jQuery('a.stop-impersonate').click(function(e){
+        e.preventDefault();
+        var stopUrl = '{% url "impersonate-stop" %}';
+        jQuery.get(stopUrl).done(function(){
+            window.close();
+        });
+    });
+});
+</script>
 
 </body>
 </html>

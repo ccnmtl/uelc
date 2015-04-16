@@ -9,8 +9,18 @@ button.close{
 
   <div class="panel panel-default">
       <div class="panel-heading">
-        <p>Users</p>
-        <button class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#add-user-form-modal" href="#add-user-form-modal" aria-hidden="true"></button>
+        
+        <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#add-user-form-modal" href="#add-user-form-modal" aria-hidden="true">Create User</button>
+        <p class="lead">Users</p>
+
+<p>Users have three profile types:</p>
+
+<ul>
+<li><strong>Administrators</strong> may access the ELDEx management panel, facilitate case control, edit pages, and preview content from the perspective of other profile types.</li>
+<li><strong>Assistants</strong> may facilitate case control, edit pages and preview content from the perspective of other profile types.</li>
+<li><strong>Group</strong> users are given to group leaders to register group decision-making in the system. Each group profile is given a decision path in the case control for the assistant and admin users to facilitate.</li>
+ </ul>
+ 
           <div id="add-user-form-modal" class="modal fade">
             <div class="modal-dialog">
               <div class="modal-content">
@@ -50,10 +60,11 @@ button.close{
                 <td class="td-cohorts">{{ user.profile.cohort}}</td>
                 <td>
                   <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">Edit</button>
+
                   <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
                     <div class="modal-dialog">
-                        <div class="modal-content">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <div class="modal-content">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <div class="modal-header panel-heading">Edit User</div>
                             <div class="modal-body">
                               <div id="edit-user" class="panel panel-default">

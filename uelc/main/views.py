@@ -12,9 +12,8 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
-    get_root_context, get_user_map,
-    has_responses, reset_page, page_submit, admin_ajax_page_submit,
-    admin_ajax_reset_page, visit_root)
+    get_root_context, get_user_map, visit_root,
+    has_responses, reset_page, page_submit, admin_ajax_page_submit)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
@@ -322,23 +321,18 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             li.update(doc=doc)
         if name:
             li.update(name=name)
-
         li[0].user.clear()
         for index in range(len(users)):
             user = User.objects.get(id=users[index])
             li[0].user.add(user)
 
     def post_gate_action(self, request):
-        # posted gate lock/unlock
         user = User.objects.get(id=request.POST.get('user_id'))
         action = request.POST.get('gate-action')
         section = Section.objects.get(id=request.POST.get('section'))
         if action == 'submit':
             self.set_upv(user, section, "complete")
             admin_ajax_page_submit(section, user)
-        if action == 'reset':
-            self.set_upv(user, section, "incomplete")
-            admin_ajax_reset_page(section, user)
 
     def post(self, request, path):
         # posted library items
@@ -348,7 +342,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             self.post_library_item_delete(request)
         if request.POST.get('library-item-edit'):
             self.post_library_item_edit(request)
-
         if request.POST.get('gate-action'):
             self.post_gate_action(request)
         return HttpResponseRedirect(request.path)
@@ -445,6 +438,7 @@ class UELCAdminCreateUserView(
             if not profile_type == "group_user":
                 user.is_staff = True
             user.save()
+            user.profile.set_image_upload_permissions(user)
 
         if len(user_exists) > 0:
             action_args = dict(
@@ -464,7 +458,14 @@ class UELCAdminDeleteUserView(LoggedInMixinAdmin,
     def post(self, request):
         user_id = request.POST.get('user_id')
         user = User.objects.get(pk=user_id)
-        user.delete()
+        if not user.is_superuser:
+            user.delete()
+        else:
+            action_args = dict(
+                error="Sorry, you are not permitted to \
+                      delete superuser accounts.")
+            messages.error(request, action_args['error'],
+                           extra_tags='deleteSuperUser')
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
 
@@ -491,6 +492,7 @@ class UELCAdminEditUserView(LoggedInMixinAdmin,
         else:
             user.is_staff = False
         user.profile.save()
+        user.profile.set_image_upload_permissions(user)
         user.username = username
         user.save()
         url = request.META['HTTP_REFERER']
@@ -891,9 +893,15 @@ class AddCaseAnswerToQuestionView(View):
         multiple responses - it does not check to see if an answer is
         already associated with the question...'''
         question = get_object_or_404(Question, pk=pk)
-        value = request.POST.get('value')
-        title = request.POST.get('title')
-        description = request.POST.get('description')
+        value = request.POST.get('value', "")
+        title = request.POST.get('title', "")
+        if title == "":
+            form = CaseAnswerForm(request.POST)
+            return render(
+                request,
+                self.template_name,
+                dict(question=question, case_answer_form=form))
+        description = request.POST.get('description', "")
         if value:
             inty = int(value)
         elif request.POST.get('answer-value'):
@@ -901,11 +909,11 @@ class AddCaseAnswerToQuestionView(View):
         else:
             inty = 0
         if not title:
-            title = request.POST.get('case-answer-title')
+            title = request.POST.get('case-answer-title', "")
             if not title:
                 title = '---'
         if not description:
-            description = request.POST.get('case-answer-description')
+            description = request.POST.get('case-answer-description', "")
             if not description:
                 description = '----'
         ans = Answer.objects.create(

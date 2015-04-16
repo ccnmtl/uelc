@@ -5,12 +5,18 @@
 button.close{
   padding: 10px;
 }
+.panel-heading p:first-child {
+  font-weight: bold;
+}
 </style>
 
   <div class="panel panel-default">
       <div class="panel-heading">
-        <p>Create and Edit Cases</p>
-        <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-case-form-modal" href="#add-case-form-modal">Add Case</button>
+      
+    <button class="demo btn btn-primary pull-right" data-toggle="modal"  data-target="#add-case-form-modal" href="#add-case-form-modal">Add Case</button>
+     <p class="lead">Add and Edit Cases</p>
+        <p>Cases are a collection of pages that include text, decision, and gate blocks.<br />Each case is a new decision experience for a cohort of users.</p>
+
         <div id="add-case-form-modal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -37,9 +43,9 @@ button.close{
            <thead>
               <tr>
                 <th>Case</th>
-                <th>Hierarchy</th>
+                <th>Path</th>
                 <th>URL</th>
-                <th>Cohort/s</th>
+                <th colspan="2">Cohort/s</th>
               </tr>
             </thead>
             <tbody>
@@ -51,31 +57,33 @@ button.close{
                 <td class="td-cohorts">
                     {{ case.cohortnames }}
                 </td>
-                <td>
+                <td style="width: 140px;">
                   <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-case-form-modal-{{case.id}}" href="#edit-case-form-modal-{{case.id}}">Edit</button>
+
                   <div id="edit-case-form-modal-{{case.id}}" class="modal fade">
                     <div class="modal-dialog">
-                        <div class="modal-content">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <div class="modal-header panel-heading">Edit Case</div>
-                            <div class="modal-body">
-                              <div id="edit-case" class="panel panel-default">
-                                <div class="panel-heading">Edit Case</div>
-                                <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-case-form" action="/uelcadmin/editcase/" method="post">{% csrf_token %}
-                                    {{ case.edit_form|bootstrap }}
-                                    <input type="hidden" name="case_id" value="{{case.id}}">
-                                    <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                                    <input type="reset" class="reset-button hidden" value="Reset" />
-                                  </form>
-                                </div>
-                              </div><!--end #hierarchiess-->
-                              </div> <!--end modal-dialog-->
-                        </div><!-- end modal-content-->
-                    </div><!--end .model-body-->
+                      <div class="modal-content">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <div class="modal-header panel-heading">Edit Case</div>
+                        <div class="modal-body">
+                          <div id="edit-case" class="panel panel-default">
+                            <div class="panel-heading">Edit Case</div>
+                            <div class="panel-body">
+                              <form data-toggle="validator" id="edit-case-form" action="/uelcadmin/editcase/" method="post">{% csrf_token %}
+                                {{ case.edit_form|bootstrap }}
+                                <input type="hidden" name="case_id" value="{{case.id}}">
+                                <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                                <input type="reset" class="reset-button hidden" value="Reset" />
+                              </form>
+                            </div><!-- End Panel Body -->
+                          </div><!--end #edit-case-->
+                        </div> <!--end modal-body-->
+                      </div><!-- end modal-content-->
+                    </div><!--end .model-dialog-->
                   </div><!--end #edit-case-form-modal .modal-->
 
                   <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-case-form-modal-{{case.id}}" href="#delete-case-form-modal-{{case.id}}">Delete</button>
+
                   <div id="delete-case-form-modal-{{case.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -89,12 +97,13 @@ button.close{
                                     <input type="hidden" name="case_id" value="{{case.id}}">
                                     <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
                                   </form>
-                                </div>
-                              </div><!--end #hierarchiess-->
-                              </div> <!--end modal-dialog-->
+                                </div><!--end panel-body-->
+                              </div><!--end #delete-case-->
+                            </div> <!--end modal-body-->
                         </div><!-- end modal-content-->
-                    </div><!--end .model-body-->
-                  </div><!--end #add-hierarchy-form-modal .modal-->
+                    </div><!--end .modal-dialog-->
+                  </div><!--end #delete-case-form-modal .modal-->
+                  
                 </td>
               </tr>
               {% endfor %}
@@ -104,17 +113,19 @@ button.close{
   </div><!--end panel-->
 
   <div class="panel panel-default">
-      <div class="panel-heading">
-        <p>Create and Edit Hierarchies</p>
-        <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#add-hierarchy-form-modal" href="#add-hierarchy-form-modal">Add Hierarchy Item</button>
+
+        <button class="demo btn btn-primary pull-right" data-toggle="modal"  data-target="#add-hierarchy-form-modal" href="#add-hierarchy-form-modal">Add Hierarchy Item</button>
+     <p class="lead">Add and Delete Case Hierarchies</p>
+        <p>A hierarchy is a unique location on the site where case content may be accessed to view or edit.<br />Add a hierarchy and then add a case to be accessed on that hierarchy.</p>
+
         <div id="add-hierarchy-form-modal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <div class="modal-header panel-heading">Add Hierarchy</div>
+                    <div class="modal-header panel-heading">Add Case Path</div>
                     <div class="modal-body">
                       <div id="hierarchies" class="panel panel-default">
-                        <div class="panel-heading">Hierarchies</div>
+                        <div class="panel-heading">Case Paths</div>
                         <div class="panel-body">
                           <form data-toggle="validator" id="add-hierarchy-form" action="/uelcadmin/createhierarchy/" method="post">{% csrf_token %}
                             {{create_hierarchy_form|bootstrap}}
@@ -132,9 +143,9 @@ button.close{
         <table id="case-list" class="table">
            <thead>
               <tr>
-                <th>Hierarchy Name</th>
-                <th>Hierarchy URL</th>
-                <th>Hierarchy Edit URL</th>
+                <th>Path</th>
+                <th>URL</th>
+                <th>Edit URL</th>
                 <th>Case</th>
               </tr>
             </thead>

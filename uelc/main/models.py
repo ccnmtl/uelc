@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import widgets
 from django.utils.safestring import mark_safe
@@ -108,6 +108,15 @@ class UserProfile(models.Model):
                     attrs={'class': 'cohort-select'}),
                 queryset=Cohort.objects.all().order_by('name'),)
         return EditForm()
+
+    def set_image_upload_permissions(self, user):
+        permission_set = Permission.objects.filter(
+            content_type__name="image upload item")
+        for perm in permission_set:
+            if user.is_staff:
+                user.user_permissions.add(perm.pk)
+            else:
+                user.user_permissions.remove(perm.pk)
 
     def __unicode__(self):
         return self.user.username
@@ -394,8 +403,8 @@ class UELCHandler(Section):
         part = 1
         if len(vals) >= 2:
             part = float(2) + (vals[1] * .1)
-        if len(vals) >= 3:
-            part = part + float((vals[2] * .01))
+        if len(vals) >= 4:
+            part = part + float((vals[3] * .01))
         return part
 
     def get_p1c1(self, casemap_value):
@@ -643,9 +652,9 @@ class CaseAnswer(models.Model):
         return self.description
 
 class CaseAnswerForm(forms.Form):
-    value = forms.IntegerField()
-    title = forms.CharField(max_length=100)
-    description = forms.CharField(widget=forms.Textarea)
+    value = forms.IntegerField(required=True)
+    title = forms.CharField(max_length=100, required=True)
+    description = forms.CharField(widget=forms.Textarea, required=True)
 
 
 ReportableInterface.register(CaseQuiz)

@@ -133,7 +133,7 @@ class TestFacilitatorLoggedInViews(TestCase):
         self.assertTemplateUsed(response, 'main/index.html')
 
 
-class TestAdminViews(TestCase):
+class TestAdminBasicViews(TestCase):
 
     def setUp(self):
         self.client = Client()
@@ -244,3 +244,185 @@ class TestAdminViews(TestCase):
             "/uelcadmin/deletehierarchy/", {'hierarchy_id': str(self.h.id)},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
         self.assertEqual(request.status_code, 302)
+
+
+class TestAdminErrorHandlingInCaseViews(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.h = get_hierarchy("main", "/pages/main/")
+        self.root = self.h.get_root()
+        self.root.add_child_section_from_dict(
+            {
+                'label': 'Section 1',
+                'slug': 'section-1',
+                'pageblocks': [],
+                'children': [],
+            })
+        self.case = CaseFactory()
+        self.profile = AdminUpFactory()
+        self.gu = GroupUpFactory()
+        self.cohort = CohortFactory()
+        self.client.login(username=self.profile.user.username, password='test')
+
+    def test_admin_create_case_no_duplicate_names(self):
+        response = self.client.post(
+            "/uelcadmin/createcase/",
+            {'name': 'NewCase', 'hierarchy': str(self.h.id),
+             'cohort': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/",
+            follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, '/uelcadmin/')
+        m = list(response.context['messages'])
+        self.assertEqual(len(m), 0)
+
+        '''Try to create a second Case with the same name.'''
+        response2 = self.client.post(
+            "/uelcadmin/createcase/",
+            {'name': 'NewCase', 'hierarchy': str(self.h.id),
+             'cohort': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/",
+            follow=True)
+        self.assertEqual(response2.status_code, 200)
+        self.assertRedirects(response2, '/uelcadmin/')
+        m = list(response2.context['messages'])
+        self.assertEqual(len(m), 1)
+        self.assertEqual(len(list(response2.context['messages'])), 1)
+        tmp_stg = 'Case with this name already exists!' + \
+            '                      Please use existing case or rename.'
+        er_msg = str(m[0]).strip()
+        self.assertEqual(tmp_stg.strip(), er_msg)
+
+    def test_admin_create_case_no_case_for_hierarchy(self):
+        '''Submit request to associate case with hierarchy'''
+        response = self.client.post(
+            "/uelcadmin/createcase/",
+            {'name': 'NewCase1', 'hierarchy': str(self.h.id),
+             'cohort': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/",
+            follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, '/uelcadmin/')
+        m = list(response.context['messages'])
+        self.assertEqual(len(m), 0)
+
+        '''Attempt to create second case for the hierarchy'''
+        response2 = self.client.post(
+            "/uelcadmin/createcase/",
+            {'name': 'NewCase2', 'hierarchy': str(self.h.id),
+             'cohort': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/",
+            follow=True)
+        self.assertEqual(response2.status_code, 200)
+        self.assertRedirects(response2, '/uelcadmin/')
+        m = list(response2.context['messages'])
+        self.assertEqual(len(m), 1)
+        tmp_stg = 'Case already exists! A case has already' + \
+            '                      been created that is attached to the' + \
+            '                      selected hierarchy. Do you need to create' + \
+            '                      another hierarchy or should you use' + \
+            '                      an existing case?'
+        er_msg = str(m[0])
+        self.assertEqual(tmp_stg.strip(), er_msg.strip())
+
+    def test_admin_edit_case_case_for_hierarchy_exists(self):
+        '''Submit request to associate case with hierarchy'''
+        ModuleFactory("newmain", "/pages/newmain/")
+        self.newhierarchy = get_hierarchy(name='newmain')
+        self.hierarchy_case = CaseFactory(name="HierarchyCase",
+                                          hierarchy=self.newhierarchy)
+        '''Attempt to create second case for the hierarchy'''
+        response = self.client.post(
+            "/uelcadmin/createcase/",
+            {'name': self.hierarchy_case.name,
+             'hierarchy': str(self.newhierarchy.id),
+             'cohort': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/",
+            follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, '/uelcadmin/')
+        m = list(response.context['messages'])
+        self.assertEqual(len(m), 1)
+        tmp_stg = 'Case with this name already exists!' + \
+            '                      Please use existing case or rename.'
+        er_msg = str(m[0])
+        self.assertEqual(tmp_stg.strip(), er_msg.strip())
+
+    def test_admin_edit_case_no_emptyfields(self):
+        '''This functionality doesn't actually work...'''
+        pass
+
+    def test_admin_create_case_no_emptyfields(self):
+        '''This functionality doesn't actually work...'''
+        pass
+
+
+class TestAdminCohortViewContext(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.h = get_hierarchy("main", "/pages/main/")
+        self.root = self.h.get_root()
+        self.root.add_child_section_from_dict(
+            {
+                'label': 'Section 1',
+                'slug': 'section-1',
+                'pageblocks': [],
+                'children': [],
+            })
+        self.case = CaseFactory()
+        self.profile = AdminUpFactory()
+        self.gu = GroupUpFactory()
+        self.cohort = CohortFactory()
+        self.client.login(username=self.profile.user.username, password='test')
+
+    def test_uelc_admin_case_response_context(self):
+        response = self.client.get("/uelcadmin/cohort/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'pagetree/uelc_admin_cohort.html')
+        self.assertIn('path', response.context)
+        self.assertIn('casemodel', response.context)
+        self.assertIn('cohortmodel', response.context)
+        self.assertIn('create_user_form', response.context)
+        self.assertIn('create_hierarchy_form', response.context)
+        self.assertIn('users', response.context)
+        self.assertIn('hierarchies', response.context)
+        self.assertIn('cases', response.context)
+        self.assertIn('cohorts', response.context)
+
+
+class TestAdminUserViewContext(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.h = get_hierarchy("main", "/pages/main/")
+        self.root = self.h.get_root()
+        self.root.add_child_section_from_dict(
+            {
+                'label': 'Section 1',
+                'slug': 'section-1',
+                'pageblocks': [],
+                'children': [],
+            })
+        self.case = CaseFactory()
+        self.profile = AdminUpFactory()
+        self.gu = GroupUpFactory()
+        self.cohort = CohortFactory()
+        self.client.login(username=self.profile.user.username, password='test')
+
+    def test_uelc_admin_case_response_context(self):
+        response = self.client.get("/uelcadmin/user/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'pagetree/uelc_admin_user.html')
+        self.assertIn('path', response.context)
+        self.assertIn('casemodel', response.context)
+        self.assertIn('cohortmodel', response.context)
+        self.assertIn('create_user_form', response.context)
+        self.assertIn('create_hierarchy_form', response.context)
+        self.assertIn('users', response.context)
+        self.assertIn('hierarchies', response.context)
+        self.assertIn('cases', response.context)
+        self.assertIn('cohorts', response.context)

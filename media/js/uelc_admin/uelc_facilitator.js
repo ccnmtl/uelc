@@ -63,6 +63,7 @@ UELCAdmin = {
                 var userId = jQuery(this).data('user');
                 var impersonateUrl = '/_impersonate/' + userId + '/';
                 $.get(impersonateUrl).complete(function() {
+                    //alert('fired');
                     window.open(destination, '_blank');
                 });
             });

@@ -15,7 +15,7 @@ def get_cases(request):
         cohort = user.profile.cohort
         case = cohort.case
         return case
-    except ObjectDoesNotExist:
+    except AttributeError:
         return
 
 
@@ -74,7 +74,9 @@ def get_root_context(request):
             roots = [(case.hierarchy.get_absolute_url(),
                       case.hierarchy.name)
                      for case in cases]
-            context = dict(roots=roots)
+        else:
+            roots = [('None', 'None')]
+        context = dict(roots=roots)
     except ObjectDoesNotExist:
         pass
     return context

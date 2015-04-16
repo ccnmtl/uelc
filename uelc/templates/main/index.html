@@ -14,26 +14,32 @@
     <p></p>
     
     <div class="well">
+       {% if cases %}
         <h2>Group Leader Case List</h2>
-        <p>Select a case for your group to work on.</p>
+        <p>Select a case for your group to experience.</p>
         <ul class="case-index-list">
             {% for case in cases %}
                 <li><a href="{{ case.hierarchy.base_url }}">{{case.name}}</a> - {{case.description}}</li>
             {% endfor %}
         </ul>
+        {% else %}
+        <h2>Sorry.</h2>
+        <p>It looks like you have not been assigned to a cohort or case. Please let the administrator know.</p>
+        {% endif %}
     </div>
     
     {% ifnotequal request.user.profile.profile_type  'group_user'  %}
-    
+    {% if cases %}
     <div class="admin-section well">
         <h2>Facilitator Case Control</h2>
-        <p>Select the case that the group you are coaching is working on.</p>
+        <p>Select a case to facilitate the experience for a group.</p>
         <ul>
             {% for case in cases %}
                 <li><a href="{{ case.hierarchy.base_url }}facilitator/">{{case.name}}</a> - {{case.description}}</li>
             {% endfor %}
         </ul>
     </div>
+    {% endif %}
     {% endifnotequal %}
     
 
@@ -100,7 +106,7 @@
     <div class="row well" style="color: black;">
     {% if login_form.errors %}
     <p class="alert alert-danger">
-    <strong>ERROR:</strong> Invalid username or password. Please try again. Note that both username and password are case-sensitive.
+    <strong>Oops!</strong> Invalid username or password (note that both username and password are case-sensitive). For additional help, please contact UELC.
     </p>
     {% endif %}
     
@@ -131,21 +137,21 @@
     <img class="img-responsive img-rounded" src="{{STATIC_URL}}img/smallgroup.jpg" />
     <h2>Engagement</h2>
     <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dui arcu, condimentum vitae feugiat eget, convallis non ipsum.
+    Each experience includes a multimedia narrative of an educational leader placed in a high stakes situation. Participants must take into account data regarding important stakeholders, respond to unexpected events and make the best decision given the circumstances.
     </p>
 </div>
 <div class="col-md-4 text-center">
     <img class="img-responsive img-rounded" src="{{STATIC_URL}}img/facilitator.jpg" />
     <h2>Leadership</h2>
     <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dui arcu, condimentum vitae feugiat eget, convallis non ipsum.
+    Each experience includes a compelling narrative written by the Urban Education Leadership Collaborative at Teachers College Columbia University and vetted by experienced education leaders from around the country.
     </p>
 </div>
 <div class="col-md-4 text-center">
     <img class="img-responsive img-rounded" src="{{STATIC_URL}}img/experts.jpg" />
     <h2>Discussion</h2>
     <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dui arcu, condimentum vitae feugiat eget, convallis non ipsum.
+    ELDEX content is responsive to decisions made by participants in small discussion groups. At key decision points in the narrative, participants discuss the status of situation and submit a choice. Contextual content is revealed in response to the choice made by the group.
     </p>
 </div>
 </div>
