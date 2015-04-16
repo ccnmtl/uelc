@@ -634,13 +634,11 @@ class CaseAnswer(models.Model):
         return self.answer.question.id
 
     answer = models.ForeignKey(Answer)
-    question = models.ForeignKey(
-        CaseQuestion,
-        default=default_question(self))
     title = models.TextField(blank=True)
     description = models.TextField(blank=True)
-
-    
+    question = models.ForeignKey(
+        CaseQuestion,
+        default=self.default_question())
 
     def display_answer(self):
         return self.answer
@@ -650,6 +648,7 @@ class CaseAnswer(models.Model):
 
     def display_description(self):
         return self.description
+
 
 class CaseAnswerForm(forms.Form):
     value = forms.IntegerField(required=True)
