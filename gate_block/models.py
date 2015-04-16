@@ -1,9 +1,9 @@
-from django.db import models
 from datetime import datetime
-from django.contrib.auth.models import User
-from pagetree.models import PageBlock, Section, UserLocation
-from django.contrib.contenttypes import generic
 from django import forms
+from django.db import models
+from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
+from pagetree.models import PageBlock, Section, UserLocation
 
 
 class GateBlock(models.Model):
