@@ -12,8 +12,8 @@ from uelc.main.views import (
     UELCAdminDeleteHierarchyView, UELCAdminUserView, UELCAdminCaseView,
     UELCAdminEditUserView, UELCAdminCreateUserView, UELCAdminEditUserPassView,
     UELCAdminEditCaseView, UELCAdminCreateCohortView, UELCAdminEditCohortView,
-    UELCAdminDeleteCohortView, UELCAdminDeleteCaseView,
-    UELCAdminCreateCaseView, UELCAdminDeleteUserView,
+    UELCAdminDeleteCohortView, UELCAdminDeleteCaseView, DashboardUpdate,
+    UELCAdminCreateCaseView, UELCAdminDeleteUserView, FacilitatorDasboardUpdate,
     AddCaseAnswerToQuestionView, EditCaseAnswerView, DeleteCaseAnswerView)
 import os.path
 admin.autodiscover()
@@ -114,6 +114,10 @@ urlpatterns = patterns(
      UELCEditView.as_view()),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/instructor/(?P<path>.*)$',
      'uelc.main.helper_functions.instructor_page'),
+    (r'^facilitator/update-dasboard$',
+     DashboardUpdate.as_view()),
+    (r'^pages/(?P<hierarchy_name>[-\w]+)/facilitator/(?P<path>.*)/update-dasboard$',
+     FacilitatorDasboardUpdate.as_view()),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/facilitator/(?P<path>.*)$',
      FacilitatorView.as_view()),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/(?P<path>.*)$',

@@ -35,6 +35,7 @@ django-ckeditor==4.4.7
 boto==2.36.0
 django-storages==1.1.8
 python-dateutil==2.4.0
+pyzmq==13.1.0
 
 djangowind==0.13.2
 sorl==3.1
