@@ -13,8 +13,8 @@ body > .container {
   background-color: #fff;
   min-height: 75%;
   padding-top: 75px;
-}
 
+}
 form.decision-block {margin-bottom: 20px;}
 footer {padding-top: 20px;}
 
@@ -305,14 +305,24 @@ ul.gate-section-list{
     background: #fff;
     color:#d9534f;
 }
-.btn-block.btn-waiting{
+.status-waiting{
     background: #fcf8e3;
     border-color: #faebcc;
     color: #8a6d3b;
 }
-.btn-block.btn-waiting .badge{
-    background: #fff;
-    color:#8a6d3b;
+.status-waiting:hover{
+    background: #fcf8e3 !important;
+    border-color: #faebcc !important;
+    color: #8a6d3b !important;
+}
+.status-waiting .badge{
+    background: #fcf8e3;
+    border-color: #faebcc;
+    color: #8a6d3b;
+}
+.status-completed:hover{
+    background-color: #5cb85c !important;
+    border-color: #4cae4c !important;
 }
 
 .progress {

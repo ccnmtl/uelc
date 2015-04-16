@@ -142,7 +142,7 @@
 
 <div class="container" id="outer-container">
 
-    {% if request.user.profile.is_admin %}
+    {% if not request.user.profile.is_group_user %}
     <div class="col-md-12">
     {% block topnavbarleftitems %}{% endblock %}
     {% block moduletabs %}
