@@ -636,9 +636,6 @@ class CaseAnswer(models.Model):
     answer = models.ForeignKey(Answer)
     title = models.TextField(blank=True)
     description = models.TextField(blank=True)
-    question = models.ForeignKey(
-        CaseQuestion,
-        default=self.default_question())
 
     def display_answer(self):
         return self.answer

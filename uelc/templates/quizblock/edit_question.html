@@ -73,7 +73,7 @@
 <li><a href="{% url 'edit-quiz' question.quiz.id %}">Edit Case Quiz</a></li>
 <li>Edit Question</li>
 </ul>
-
+{% comment %}
 <h2>Question {{question.display_number}}: {{ question.text }}</h2>
 
 <form action="{% url 'edit-question' question.id %}" method="post" class="well form-horizontal" >{% csrf_token %}
@@ -82,7 +82,7 @@
 </table>
 <input type="submit" value="save" class="btn btn-primary" />
 </form>
-
+{% endcomment %}
 {% if question.answer_set.count %}
   <h2>Answers</h2>
     <ul class="dragparent" id="answers">
@@ -129,7 +129,7 @@
 {% endif %}
 
 {% if question.answerable %}
-<h3>Add CaseAnswer</h3>
+<h3>Add Answer</h3>
     <form action="{% url 'add-case-answer-to-question' question.id %}" method="post" class="well form-horizontal">
     {% csrf_token %}
       <table width="100%">
