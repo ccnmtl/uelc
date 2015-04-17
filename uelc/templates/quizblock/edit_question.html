@@ -84,7 +84,7 @@
 </form>
 {% endcomment %}
 {% if question.answer_set.count %}
-  <h2>Answers</h2>
+  <h2>Decision Choices</h2>
     <ul class="dragparent" id="answers">
     {% for answer in question.answer_set.all %}
       <li class="draggable" id="answer-{{answer.id}}">
@@ -129,19 +129,19 @@
 {% endif %}
 
 {% if question.answerable %}
-<h3>Add Answer</h3>
+<h3>Add Decision Choice</h3>
     <form action="{% url 'add-case-answer-to-question' question.id %}" method="post" class="well form-horizontal">
     {% csrf_token %}
       <table width="100%">
         {% if case_answer_form %}
           {{ case_answer_form|bootstrap}}
         {% else %}
-          <tr>Answer Value: <br /> <input type="text" name="answer-value" value="" /></tr><br />
-          <tr>Case Answer Title: <br /> <input type="text" name="case-answer-title" value="" /></tr><br />
-          <tr>Case Answer Description: <br /><textarea name="case-answer-description" rows="10" cols="98"></textarea></tr>
+          <tr>Decision Value: <br /> <input type="text" name="answer-value" value="" /></tr><br />
+          <tr>Decision Title: <br /> <input type="text" name="case-answer-title" value="" /></tr><br />
+          <tr>Decision Description: <br /><textarea name="case-answer-description" rows="10" cols="98"></textarea></tr>
         {% endif %}
       </table>
-      <input type="submit" value="add case answer" class="btn btn-primary" />
+      <input type="submit" value="save decision choice" class="btn btn-primary" />
     </form>
 {% endif %}
 
