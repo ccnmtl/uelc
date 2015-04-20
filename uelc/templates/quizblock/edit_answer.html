@@ -1,21 +1,22 @@
 {% extends "base.html" %}
 {% load bootstrap %}
+{% load accessible %}
+
 {% block content %}
 
 <ul class="breadcrumb">
     <li>
-      <a href="{{case_answer.answer.question.casequiz.pageblock.section.get_edit_url}}">
-        {{case_answer.answer.question.casequiz.pageblock.section.label}}
-      </a>
+      {% get_quizblock_attr case_answer.answer.question.quiz.id as quizblock %}
+      <a href="{{quizblock.edit_url}}">Back to Page Edit</a>
     </li>
     <li>
       <a href="{% url 'edit-quiz' case_answer.answer.question.quiz.id %}">
-        Edit Quiz
+        Edit Decision
       </a>
     </li>
     <li>
-        <a href="{% url 'edit-question' case_answer.answer.question.id %}">Edit Question
-            {{case_answer.answer.question.display_number}}: {{ case_answer.answer.question.text }}
+        <a href="{% url 'edit-question' case_answer.answer.question.id %}">Edit Choices
+            <!--{{case_answer.answer.question.display_number}}: {{ case_answer.answer.question.text }}-->
         </a>
     </li>
 </ul>
