@@ -1,5 +1,5 @@
 {% load markup %}
-
+{% load bootstrap %}
     {% for answer in question.answer_set.all %}
 
     {% if block.rhetorical %}
@@ -41,14 +41,53 @@
           {% endifequal %}
         {% else %}
         {% comment %}Group has NOT made decision... present as radio buttons {% endcomment %}
-          <input name="pageblock-{{block.pageblock.id}}-question{{question.id}}" value="{{answer.value}}" type="radio" />
+        {% if not request.user.profile.is_group_user %}
+          
+            {{answer.label}}
+            {% if answer.caseanswer_set.count %}
+              {% for caseanswer in answer.caseanswer_set.all %}
+              <p><a data-toggle="modal" href="#edit-caseanswer-{{caseanswer.id}}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a></p>
+                <b> {{ caseanswer.title }} </b>
+                <p> {{ caseanswer.description }} </p>
+                  
+                  <div id="edit-caseanswer-{{caseanswer.id}}" class="modal fade">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <h4 class="modal-title">Edit caseanswer</h4>
+                        </div>
+                        <div class="modal-body">
+                          <form data-post-url="{% url 'edit-case-answer' caseanswer.id %}" action="." method="post" class="well form-horizontal" >{% csrf_token %}
+                            <table width="100%">
+                              {{ caseanswer.edit_form|bootstrap}}
+                            </table>
+                            <input type="button" value="save" class="btn btn-primary post-case-answer" />
+                          </form>
+                        </div>
+                        <div class="modal-footer">
+                        </div>
+                      </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                  </div><!-- /.modal -->
+
+              {% endfor %}
+               {% endif %}
+               {% else %}
+
+<input name="pageblock-{{block.pageblock.id}}-question{{question.id}}" value="{{answer.value}}" type="radio" />
             {{answer.label}}
             {% if answer.caseanswer_set.count %}
               {% for caseanswer in answer.caseanswer_set.all %}
                 <b> {{ caseanswer.title }} </b>
                 <p> {{ caseanswer.description }} </p>
-              {% endfor %}
+                {% endfor %}
+                {% endif %}
+
            {% endif %}
+
+
+
         {% endif %}
         </label>
    </div>
@@ -56,5 +95,17 @@
     {% endif %}
 
     {% endfor %}
+  <script>
+    jQuery(document).ready(function(){
+      jQuery('.post-case-answer').click(function(){
+        var postUrl = jQuery(this).parent().data('post-url');
+        var formData = jQuery(this).parent().serialize();
+        jQuery.post(postUrl, formData).success(function(){
+          window.location.reload();
+        }).error(function(){
+          alert('Sorry, there was an error. Please submit changes again.')
+        })
 
-    
+      })
+    })
+  </script>
