@@ -243,10 +243,6 @@ $(function() {
   </div>
   <div class="modal-body">
 
-{% if block.block.importable %}
-<a href="{% url 'import-pageblock-json' block.id %}">import json</a>
-{% endif %}
-
 <form action="{% url 'edit-pageblock' block.id %}" method="post"
 class=""
 {% if block.edit_form.is_multipart %}enctype="multipart/form-data"{% endif %}>{% csrf_token %}

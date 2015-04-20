@@ -68,8 +68,8 @@
 {% for question in quiz.question_set.all %}
   <h4> Decision text</h4>
   <p> {{question.text}} </p>
-  <p><a href="{% url 'add-case-answer-to-question' question.id %}"><button class="btn btn-sm">Add or Edit Choices to this Decision</button></a></p>
-  <p> <a href="{% url 'delete-question' question.id %}"><button class="btn btn-sm">Delete Decision</button></a></p>
+  <p><a href="{% url 'add-case-answer-to-question' question.id %}"><button class="btn btn-primary btn-sm">Add or Edit Choices for this Decision</button></a></p>
+  <p> <a href="{% url 'delete-question' question.id %}"><button class="btn btn-danger btn-sm">Delete Decision</button></a></p>
   
 {% endfor %}
 
