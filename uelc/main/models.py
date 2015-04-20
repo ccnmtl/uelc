@@ -535,7 +535,7 @@ class CaseQuiz(Quiz):
                 widget=forms.widgets.Textarea(),
                 initial=self.description)
             alt_text = ("<a href=\"" + reverse("edit-quiz", args=[self.id])
-                        + "\">manage questions/answers</a>")
+                        + "\">manage decision/choices</a>")
         return EditForm()
 
     def is_q_answered(self, data):

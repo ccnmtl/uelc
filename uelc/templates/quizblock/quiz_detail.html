@@ -57,7 +57,7 @@
 {% block content %}
 {% get_quizblock_attr quiz.id as quizblock %}
 <ul class="breadcrumb">
-	<li><a href="{{quizblock.edit_url}}">{{quizblock.label}}</a>
+	<li><a href="{{quizblock.edit_url}}"><!--{{quizblock.label}}-->Back to Page Edit</a>
 		
 	</li>
 	<li>Edit Quiz</li>
@@ -66,20 +66,20 @@
 
 <h2>{{quizblock.label}}</h2>
 {% for question in quiz.question_set.all %}
-  <h4> Question text</h4>
+  <h4> Decision text</h4>
   <p> {{question.text}} </p>
-  <p><a href="{% url 'add-case-answer-to-question' question.id %}"><button class="btn btn-sm">Add or Edit Answers to this Question</button></a></p>
-  <p> <a href="{% url 'delete-question' question.id %}"><button class="btn btn-sm">Delete Question</button></a></p>
+  <p><a href="{% url 'add-case-answer-to-question' question.id %}"><button class="btn btn-sm">Add or Edit Choices to this Decision</button></a></p>
+  <p> <a href="{% url 'delete-question' question.id %}"><button class="btn btn-sm">Delete Decision</button></a></p>
   
 {% endfor %}
 
 {% if quiz.question_set.all.count == 0 %}
 <form action="add_question/" method="post" class="well form-horizontal">{% csrf_token %}
-<h2>Add Question</h2>
+<h2>Add Decision</h2>
 <table width="100%">
 {{quiz.add_question_form|bootstrap}}
 </table>
-<input type="submit" value="add question" class="btn btn-primary" />
+<input type="submit" value="add decision" class="btn btn-primary" />
 </form>
 <script>
 jQuery(document).ready(function(){

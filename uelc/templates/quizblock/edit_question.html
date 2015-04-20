@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap %}
+{% load accessible %}
 
 {% block css %}
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/base/jquery-ui.css" type="text/css" media="all" />
@@ -69,9 +70,11 @@
 {% block content %}
 
 <ul class="breadcrumb">
-<li><a href="{{question.casequiz.pageblock.section.get_edit_url}}">{{question.casequiz.pageblock.section.label}}</a></li>
-<li><a href="{% url 'edit-quiz' question.quiz.id %}">Edit Case Quiz</a></li>
-<li>Edit Question</li>
+  {% get_quizblock_attr question.quiz.id as quizblock %}
+<a href="{{ quizblock.edit_url}}">Back to Page Edit</a>
+<li><a href="{{ question.casequiz.pageblock.section.get_edit_url }}">{{question.casequiz.pageblock.section.label}}</a></li>
+<li><a href="{% url 'edit-quiz' question.quiz.id %}">Edit Decision</a></li>
+<li>Edit Choices</li>
 </ul>
 {% comment %}
 <h2>Question {{question.display_number}}: {{ question.text }}</h2>
@@ -95,12 +98,13 @@
          
          {% if answer.caseanswer_set.count %}
              {% for caseanswer in answer.caseanswer_set.all %}
-                 <div class="case-answer-title">{{ caseanswer.title }}</div>
+                 <div class="case-answer-title">Choice Title: {{ caseanswer.title }}</div>
                  
-                 <div class="case-answer-description">{{ caseanswer.description }}</div>
-                 <div class"case-answer-edit-btn"><a href="{% url 'edit-case-answer' caseanswer.id %}">Edit</a></div>
-
-                 <a class="link" data-toggle="modal"  data-target="#delete-caseanswer-form-modal-{{caseanswer.id}}" href="#delete-caseanswer-form-modal-{{caseanswer.id}}">Delete</a>
+                 <div class="case-answer-description">Choice Description: {{ caseanswer.description }}</div>
+                 <div class="edit-delete-links">
+                    <div class"case-answer-edit-btn"><a href="{% url 'edit-case-answer' caseanswer.id %}">Edit</a></div>
+                    <a class="link" data-toggle="modal"  data-target="#delete-caseanswer-form-modal-{{caseanswer.id}}" href="#delete-caseanswer-form-modal-{{caseanswer.id}}">Delete</a>
+                  </div>
                   <div id="delete-caseanswer-form-modal-{{caseanswer.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
