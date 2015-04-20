@@ -2,13 +2,14 @@
 {% load getresponse %}
 {% getquestionresponse question as response %}
 <div class="cases">
+  <div class="question-intro-text">
   {{question.intro_text|markdown}}
-
-  <div class="casetitle"> Question {{question.display_number}}:</div>
-     
+  </div>
   <div class="casecontent">
     <div class="casequestion">
+      <div class="question-text">
       {{question.text|markdown}}
+    </div>
       {% if question.answerable %}
         {% if block.rhetorical %}<form id="form-{{question.id}}" method="post">{% csrf_token %}{% endif %}
 

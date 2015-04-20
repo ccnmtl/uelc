@@ -57,32 +57,47 @@
 {% block content %}
 {% get_quizblock_attr quiz.id as quizblock %}
 <ul class="breadcrumb">
-	<li><a href="{{quizblock.edit_url}}">{{quizblock.label}}</a>
-		<span class="divider">/</span>
+	<li><a href="{{quizblock.edit_url}}"><!--{{quizblock.label}}-->Back to Page Edit</a>
+		
 	</li>
-	<li>Edit Quiz</li>
+	<li>Edit Decision</li>
 </ul>
 
 
 <h2>{{quizblock.label}}</h2>
-
-<ul id="questions" class="dragparent">
 {% for question in quiz.question_set.all %}
-    <li class="draggable" id="question-{{casequestion.id}}">
-    <span title="drag to reorder pageblocks" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>[<a href="{% url 'delete-question' question.id %}">delete</a>] 
-    Question {{ question.display_number }}: 
-    <a href="{% url 'add-case-answer-to-question' question.id %}">{{question.text|truncatewords:5}}</a></li>
+  <h4> Decision text</h4>
+  <p> {{question.text}} </p>
+  <p><a href="{% url 'add-case-answer-to-question' question.id %}"><button class="btn btn-primary btn-sm">Add or Edit Choices for this Decision</button></a></p>
+  <p> <a href="{% url 'delete-question' question.id %}"><button class="btn btn-danger btn-sm">Delete Decision</button></a></p>
+  
 {% endfor %}
-</ul>
 
+{% if quiz.question_set.all.count == 0 %}
 <form action="add_question/" method="post" class="well form-horizontal">{% csrf_token %}
-<h2>Add Question</h2>
+<h2>Add Decision</h2>
 <table width="100%">
 {{quiz.add_question_form|bootstrap}}
 </table>
-<input type="submit" value="add question" class="btn btn-primary" />
+<input type="submit" value="add decision" class="btn btn-primary" />
 </form>
-
+<script>
+jQuery(document).ready(function(){
+  var questionType = jQuery('#id_question_type').parent().parent();
+  var introText = jQuery('#id_intro_text').parent().parent();
+  var explanation = jQuery('#id_explanation').parent().parent()
+  // select only Multiple choice: Single Answer
+  jQuery('#id_question_type>option:eq(2)').prop('selected', true);
+  questionType.hide();
+  introText.hide();
+  explanation.hide();
+})
+</script>
+{% else %}
+  {% for question in quiz.question_set.all %}
+    
+  {% endfor %}
+{% endif %}
 {% endblock %}
 
 {% block primarynavrightextra %}

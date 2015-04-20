@@ -243,15 +243,13 @@ $(function() {
   </div>
   <div class="modal-body">
 
-{% if block.block.importable %}
-<a href="{% url 'import-pageblock-json' block.id %}">import json</a>
-{% endif %}
-
 <form action="{% url 'edit-pageblock' block.id %}" method="post"
 class=""
 {% if block.edit_form.is_multipart %}enctype="multipart/form-data"{% endif %}>{% csrf_token %}
-
-{{ block.default_edit_form|bootstrap }}
+  {% if block.block.display_name == "Decision Block" %}
+  {% else %}
+    {{ block.default_edit_form|bootstrap }}
+  {% endif %}
 {% with block.edit_form as ef %}
 {{ ef|bootstrap }}
 {% if ef.alt_text %}
@@ -348,10 +346,15 @@ method="post">{% csrf_token %}
   <div class="modal-body">
 <fieldset>
 <input type="hidden" name="blocktype" value="{{blocktype.display_name}}"/>
-
-{{section.add_pageblock_form|bootstrap}}
-{{blocktype.add_form|bootstrap}}
-
+<div id="block-form-{{ forloop.counter }}">
+  {% if blocktype.display_name == "Decision Block" %}
+    {{blocktype.add_form|bootstrap}}
+  {% else %}
+    {{section.add_pageblock_form|bootstrap}}
+    {{blocktype.add_form|bootstrap}}
+  {% endif %}
+</div>
+  
 </fieldset>
 
 

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap %}
+{% load accessible %}
 
 {% block css %}
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/base/jquery-ui.css" type="text/css" media="all" />
@@ -69,11 +70,13 @@
 {% block content %}
 
 <ul class="breadcrumb">
-<li><a href="{{question.casequiz.pageblock.section.get_edit_url}}">{{question.casequiz.pageblock.section.label}}</a></li>
-<li><a href="{% url 'edit-quiz' question.quiz.id %}">Edit Case Quiz</a></li>
-<li>Edit Question</li>
+  {% get_quizblock_attr question.quiz.id as quizblock %}
+<a href="{{ quizblock.edit_url}}">Back to Page Edit</a>
+<li><a href="{{ question.casequiz.pageblock.section.get_edit_url }}">{{question.casequiz.pageblock.section.label}}</a></li>
+<li><a href="{% url 'edit-quiz' question.quiz.id %}">Edit Decision</a></li>
+<li>Edit Choices</li>
 </ul>
-
+{% comment %}
 <h2>Question {{question.display_number}}: {{ question.text }}</h2>
 
 <form action="{% url 'edit-question' question.id %}" method="post" class="well form-horizontal" >{% csrf_token %}
@@ -82,9 +85,9 @@
 </table>
 <input type="submit" value="save" class="btn btn-primary" />
 </form>
-
+{% endcomment %}
 {% if question.answer_set.count %}
-  <h2>Answers</h2>
+  <h2>Decision Choices</h2>
     <ul class="dragparent" id="answers">
     {% for answer in question.answer_set.all %}
       <li class="draggable" id="answer-{{answer.id}}">
@@ -95,12 +98,13 @@
          
          {% if answer.caseanswer_set.count %}
              {% for caseanswer in answer.caseanswer_set.all %}
-                 <div class="case-answer-title">{{ caseanswer.title }}</div>
+                 <div class="case-answer-title">Choice Title: {{ caseanswer.title }}</div>
                  
-                 <div class="case-answer-description">{{ caseanswer.description }}</div>
-                 <div class"case-answer-edit-btn"><a href="{% url 'edit-case-answer' caseanswer.id %}">Edit</a></div>
-
-                 <a class="link" data-toggle="modal"  data-target="#delete-caseanswer-form-modal-{{caseanswer.id}}" href="#delete-caseanswer-form-modal-{{caseanswer.id}}">Delete</a>
+                 <div class="case-answer-description">Choice Description: {{ caseanswer.description }}</div>
+                 <div class="edit-delete-links">
+                    <div class"case-answer-edit-btn"><a href="{% url 'edit-case-answer' caseanswer.id %}">Edit</a></div>
+                    <a class="link" data-toggle="modal"  data-target="#delete-caseanswer-form-modal-{{caseanswer.id}}" href="#delete-caseanswer-form-modal-{{caseanswer.id}}">Delete</a>
+                  </div>
                   <div id="delete-caseanswer-form-modal-{{caseanswer.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -129,19 +133,19 @@
 {% endif %}
 
 {% if question.answerable %}
-<h3>Add CaseAnswer</h3>
+<h3>Add Decision Choice</h3>
     <form action="{% url 'add-case-answer-to-question' question.id %}" method="post" class="well form-horizontal">
     {% csrf_token %}
       <table width="100%">
         {% if case_answer_form %}
           {{ case_answer_form|bootstrap}}
         {% else %}
-          <tr>Answer Value: <br /> <input type="text" name="answer-value" value="" /></tr><br />
-          <tr>Case Answer Title: <br /> <input type="text" name="case-answer-title" value="" /></tr><br />
-          <tr>Case Answer Description: <br /><textarea name="case-answer-description" rows="10" cols="98"></textarea></tr>
+          <tr>Decision Value: <br /> <input type="text" name="answer-value" value="" /></tr><br />
+          <tr>Decision Title: <br /> <input type="text" name="case-answer-title" value="" /></tr><br />
+          <tr>Decision Description: <br /><textarea name="case-answer-description" rows="10" cols="98"></textarea></tr>
         {% endif %}
       </table>
-      <input type="submit" value="add case answer" class="btn btn-primary" />
+      <input type="submit" value="save decision choice" class="btn btn-primary" />
     </form>
 {% endif %}
 
