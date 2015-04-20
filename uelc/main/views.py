@@ -1,3 +1,4 @@
+import json
 import zmq
 from datetime import datetime
 import time
@@ -5,6 +6,8 @@ from random import randint
 import hmac
 import hashlib
 
+from django.http import HttpResponse
+from django.conf import settings
 from django.db import IntegrityError
 from django.db.models import Q
 from django.contrib import messages
@@ -24,7 +27,7 @@ from uelc.main.helper_functions import (
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
-    RestrictedModuleMixin)
+    RestrictedModuleMixin, JSONResponseMixin)
 from uelc.main.models import (
     Cohort, UserProfile, CreateUserForm, Case,
     EditUserPassForm, CreateHierarchyForm,
@@ -35,9 +38,13 @@ from uelc.main.models import (
 zmq_context = zmq.Context()
 
 
-def gen_token(request, room_id):
+def gen_token(request):
+    print "Inside gen_token"
     username = request.user.username
-    sub_prefix = "%s.room_%d" % (settings.ZMQ_APPNAME, room_id)
+    user_id = request.user.pk
+    print "user_id"
+    print user_id
+    sub_prefix = "%s.profile_%d" % (settings.ZMQ_APPNAME, user_id)
     pub_prefix = sub_prefix + "." + username
     now = int(time.mktime(datetime.now().timetuple()))
     salt = randint(0, 2 ** 20)
@@ -50,6 +57,9 @@ def gen_token(request, room_id):
                                           ip_address),
                    hashlib.sha1
                    ).hexdigest()
+    print '%s:%s:%s:%d:%d:%s:%s' % (username, sub_prefix,
+                                     pub_prefix, now, salt,
+                                     ip_address, hmc)
     return '%s:%s:%s:%d:%d:%s:%s' % (username, sub_prefix,
                                      pub_prefix, now, salt,
                                      ip_address, hmc)
@@ -442,13 +452,16 @@ class FacilitatorView(LoggedInFacilitatorMixin,
 
 
 class DashboardUpdate(LoggedInFacilitatorMixin,
-                      TemplateView):
-    template_name = "pagetree/facilitator.html"
-    extra_context = dict()
+                      View):
 
     def get(self, request):
         print "get received"
-        return {'message': 'message here', 'page_status': 'page status update'}
+        print request
+        # return self.render_to_json_response({'message': 'message here', 'page_status': 'page status update'})
+        # return dict(token=gen_token(request), websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)
+        return HttpResponse(
+            json.dumps(dict(token=gen_token(request))),
+            content_type="application/json")
 
 
 class FacilitatorDasboardUpdate(LoggedInFacilitatorMixin,

@@ -145,7 +145,7 @@ var connectSocket = function() {
 	//console.log();
     conn = new WebSocket("ws://" + window.location.hostname + ":8000/facilitator/update-dasboard");//":8000" + window.location.pathname);
     console.log(conn);
-	console.log(conn);
+	//console.log(conn);
     //window.websockets_base + "?token=" + window.token);
     //conn.onclose = requestFailed;
     //conn.onmessage = onMessage;
