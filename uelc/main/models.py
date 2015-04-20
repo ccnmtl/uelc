@@ -5,7 +5,7 @@ from django.contrib.auth.models import User, Permission
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import widgets
 from django.utils.safestring import mark_safe
-
+from django.core.urlresolvers import reverse
 from ckeditor.widgets import CKEditorWidget
 from pageblocks.models import TextBlock
 from pagetree.models import Hierarchy, Section, ReportableInterface
@@ -527,10 +527,16 @@ class CaseQuiz(Quiz):
     def add_form(cls):
         class AddForm(forms.Form):
             description = forms.CharField(widget=forms.widgets.Textarea())
-            rhetorical = forms.BooleanField()
-            allow_redo = forms.BooleanField()
-            show_submit_state = forms.BooleanField(initial=True)
         return AddForm()
+
+    def edit_form(self):
+        class EditForm(forms.Form):
+            description = forms.CharField(
+                widget=forms.widgets.Textarea(),
+                initial=self.description)
+            alt_text = ("<a href=\"" + reverse("edit-quiz", args=[self.id])
+                        + "\">manage decision/choices</a>")
+        return EditForm()
 
     def is_q_answered(self, data):
         for k in data.keys():
@@ -612,7 +618,21 @@ class CaseQuiz(Quiz):
         return unlocked
 
 
+class CaseQuestion(models.Model):
+    quiz = models.ForeignKey(Quiz)
+    question_type = models.CharField(
+        max_length=256,
+        choices=(
+            ("single choice", "Multiple Choice: Single answer"),
+        ))
+    explanation = models.TextField(blank=True)
+    intro_text = models.TextField(blank=True)
+
+
 class CaseAnswer(models.Model):
+    def default_question(self):
+        return self.answer.question.id
+
     answer = models.ForeignKey(Answer)
     title = models.TextField(blank=True)
     description = models.TextField(blank=True)
@@ -628,7 +648,7 @@ class CaseAnswer(models.Model):
 
 
 class CaseAnswerForm(forms.Form):
-    value = forms.IntegerField(required=True)
+    value = forms.IntegerField(required=True, min_value=1)
     title = forms.CharField(max_length=100, required=True)
     description = forms.CharField(widget=forms.Textarea, required=True)
 
