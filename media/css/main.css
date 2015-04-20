@@ -223,6 +223,12 @@ ul.side-nav li li {
     border-radius:6px 0 6px 6px;
 }
 
+/* Add Pageblock  */
+#add-pageblock-tab ul {
+	list-style-type: none;
+}
+
+
 /* Overrides  */
 .col-md-2{
     width: 36.666667%;
