@@ -1,4 +1,3 @@
-
 var conn;
 var currentRefresh = 1000;
 var defaultRefresh = 1000;
@@ -11,9 +10,11 @@ var updateToken = function() {
         dateType: 'json',
         error: function(evt) {
             setTimeout(updateToken, currentRefresh);
+            console.log("UpdateToken Error");
         },
         success: function(d) {
             window.token = d.token;
+            console.log("UpdateToken Success!");
         }
     });
 };
@@ -48,7 +49,7 @@ var connectSocket = function() {
 	//console.log(window.token);
 	//console.log();
 	//console.log();
-    conn = new WebSocket("ws://" + window.location.hostname + ":8000/facilitator/update-dasboard");//":8000" + window.location.pathname);
+    conn = new WebSocket("ws://" + window.location.hostname + ":5555/facilitator/update-dasboard");//":8000" + window.location.pathname);
     console.log(conn);
 	//console.log(conn);
     //window.websockets_base + "?token=" + window.token);
