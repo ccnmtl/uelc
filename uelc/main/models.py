@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from ckeditor.widgets import CKEditorWidget
 from pageblocks.models import TextBlock
 from pagetree.models import Hierarchy, Section, ReportableInterface
-from quizblock.models import Quiz, Question, Submission, Response, Answer, AnswerForm
+from quizblock.models import Quiz, Question, Submission, Response, Answer
 from gate_block.models import GateSubmission
 
 
