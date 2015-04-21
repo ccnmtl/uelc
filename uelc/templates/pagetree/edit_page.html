@@ -305,12 +305,25 @@ class=""
 
 <div id="add-pageblock-tab" class="tab-pane">
 
-<ul>
-{% for blocktype in available_pageblocks %}
-<li><a data-toggle="modal"
-       href="#add-block-{{forloop.counter}}">Add {{blocktype.display_name}}</a></li>
-{% endfor %}
-</ul>
+  <ul>
+  {% for blocktype in available_pageblocks %}
+    <li><a data-toggle="modal"
+         href="#add-block-{{forloop.counter}}">Add {{blocktype.display_name}}</a>
+    {% if blocktype.display_name == "Text Block" %}
+      <span class="pull-right block_description">Add a section of text to your case page. May be used more than once per page.</span>
+    {% endif %}
+    {% if blocktype.display_name == "Image Block" %}
+      <span class="pull-right block_description">Add an image with caption to your case page. May be used more than once per page.</span>
+    {% endif %}
+    {% if blocktype.display_name == "Decision Block" %}
+      <span class="pull-right block_description">Add a decision point to your case page. Use once per page.</span>
+    {% endif %}
+    {% if blocktype.display_name == "Gate Block" %}
+      <span class="pull-right block_description">Gate content for release by case assistants. Use once per page.</span>
+    {% endif %}
+    </li>
+  {% endfor %}
+  </ul>
 
 {% for blocktype in available_pageblocks %}
 {% if blocktype %}
