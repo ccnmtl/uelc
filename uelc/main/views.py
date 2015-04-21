@@ -256,17 +256,20 @@ class UELCPageView(LoggedInMixin,
     def notify_fascilitators(self, request, path):
         print "notify_fascilitators"
         print request.POST
+        print path
+        for each in request.POST:
+            print each
         user = get_object_or_404(User, pk=request.user.pk)
         path = request.POST.get('path', '')
-        upv = self.upv.visit
+        # upv = self.upv.visit
         if path:
             # publish it via the zmq broker
             socket = zmq_context.socket(zmq.REQ)
             socket.connect(settings.WINDSOCK_BROKER_URL)
             # the message we are broadcasting
             msg = dict(user_id=user.id,
-                       path_id=path.id,
-                       upv=upv)
+                       path_id=path.id) #,
+            #           upv=upv)
             # an envelope that contains that message serialized
             # and the address that we are publishing to
             #pages/case-one/facilitator/
