@@ -1,20 +1,18 @@
-import json
-import zmq
-from datetime import datetime
-import time
-from random import randint
 import hmac
 import hashlib
-
-from django.http import HttpResponse
+import json
+import time
+import zmq
+from datetime import datetime
+from random import randint
 from django.conf import settings
-from django.db import IntegrityError
-from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.db import IntegrityError
+from django.db.models import Q
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
 from pagetree.generic.views import PageView, EditView, UserPageVisitor
@@ -295,6 +293,8 @@ class UELCPageView(LoggedInMixin,
             if request.POST.get('action', '') == 'reset':
                 self.upv.visit(status="incomplete")
                 return reset_page(self.section, request)
+            # When quiz is submitted successfully, we
+            # want the facilitator's dashboard to be updated
             return page_submit(self.section, request)
         else:
             action_args = dict(error='error')
