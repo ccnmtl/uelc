@@ -282,7 +282,7 @@ class UELCPageView(LoggedInMixin,
         #pages/case-one/facilitator/  
         # e = dict(address="%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME, self.section.hierarchy.name),
         #    content=json.dumps(msg))
-        e = dict(address="http://kodos.ccnmtl.columbia.edu:9001/pages/%s/facilitator/" % (self.section.hierarchy.name),
+        e = dict(address="tcp://kodos.ccnmtl.columbia.edu:9001/pages/%s/facilitator/" % (self.section.hierarchy.name),
             content=json.dumps(msg))
         print "e"
         print e["address"]
