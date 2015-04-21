@@ -7,6 +7,12 @@
     <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
     <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
 {% endcomment %}
+<script>
+	window.username = '{{request.user.username}}';
+	window.fresh_token_url = '/facilitator/update-dasboard';
+	window.token = '{{token}}';
+	window.websockets_base = '{{websockets_base}}';
+</script>
 <script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/web_socks.js"></script>
 <div id="content" class="container-fluid">
     <h1>Case Control for {{case.name}}</h1>
