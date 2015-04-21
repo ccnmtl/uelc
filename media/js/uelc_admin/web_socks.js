@@ -45,6 +45,7 @@ $(function() {
 
 
     var onMessage = function (evt) {
+    	console.log("onMessage");
         var envelope = JSON.parse(evt.data);
         var data = JSON.parse(envelope.content);
         

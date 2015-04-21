@@ -256,8 +256,6 @@ class UELCPageView(LoggedInMixin,
     def notify_fascilitators(self, request, path):
         print "notify_fascilitators"
         user = get_object_or_404(User, pk=request.user.pk)
-        # path = request.POST.get('path', '')
-        # upv = self.upv.visit
         # publish it via the zmq broker
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
