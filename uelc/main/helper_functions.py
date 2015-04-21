@@ -1,7 +1,14 @@
+import hmac
+import hashlib
+import json
+import time
+from datetime import datetime
+from random import randint
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
 
@@ -127,3 +134,37 @@ def visit_root(section, fallback_url):
     # no sections available so
     # send them to the fallback
     return HttpResponseRedirect(fallback_url)
+
+
+@login_required
+def fresh_token(request):
+    return HttpResponse(
+        json.dumps(dict(token=gen_token(request))),
+        content_type="application/json")
+#return dict(room=room, token=gen_token(request, room.id),
+#                websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)
+def gen_token(request):
+    print "Inside gen_token"
+    username = request.user.username
+    user_id = request.user.pk
+    print "user_id"
+    print user_id
+    sub_prefix = "%s.profile_%d" % (settings.ZMQ_APPNAME, user_id)
+    pub_prefix = sub_prefix + "." + username
+    now = int(time.mktime(datetime.now().timetuple()))
+    salt = randint(0, 2 ** 20)
+    ip_address = (request.META.get("HTTP_X_FORWARDED_FOR", "")
+                  or request.META.get("REMOTE_ADDR", ""))
+
+    hmc = hmac.new(settings.WINDSOCK_SECRET,
+                   '%s:%s:%s:%d:%d:%s' % (username, sub_prefix,
+                                          pub_prefix, now, salt,
+                                          ip_address),
+                   hashlib.sha1
+                   ).hexdigest()
+    print '%s:%s:%s:%d:%d:%s:%s' % (username, sub_prefix,
+                                     pub_prefix, now, salt,
+                                     ip_address, hmc)
+    return '%s:%s:%s:%d:%d:%s:%s' % (username, sub_prefix,
+                                     pub_prefix, now, salt,
+                                     ip_address, hmc)

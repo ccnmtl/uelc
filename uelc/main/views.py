@@ -1,10 +1,5 @@
-import hmac
-import hashlib
 import json
-import time
 import zmq
-from datetime import datetime
-from random import randint
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
@@ -20,8 +15,9 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
-    get_root_context, get_user_map, visit_root,
-    has_responses, reset_page, page_submit, admin_ajax_page_submit)
+    get_root_context, get_user_map, visit_root, fresh_token,
+    has_responses, reset_page, page_submit, admin_ajax_page_submit,
+    gen_token)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
@@ -33,34 +29,8 @@ from uelc.main.models import (
     LibraryItem,
     )
 
+
 zmq_context = zmq.Context()
-
-
-def gen_token(request):
-    print "Inside gen_token"
-    username = request.user.username
-    user_id = request.user.pk
-    print "user_id"
-    print user_id
-    sub_prefix = "%s.profile_%d" % (settings.ZMQ_APPNAME, user_id)
-    pub_prefix = sub_prefix + "." + username
-    now = int(time.mktime(datetime.now().timetuple()))
-    salt = randint(0, 2 ** 20)
-    ip_address = (request.META.get("HTTP_X_FORWARDED_FOR", "")
-                  or request.META.get("REMOTE_ADDR", ""))
-
-    hmc = hmac.new(settings.WINDSOCK_SECRET,
-                   '%s:%s:%s:%d:%d:%s' % (username, sub_prefix,
-                                          pub_prefix, now, salt,
-                                          ip_address),
-                   hashlib.sha1
-                   ).hexdigest()
-    print '%s:%s:%s:%d:%d:%s:%s' % (username, sub_prefix,
-                                     pub_prefix, now, salt,
-                                     ip_address, hmc)
-    return '%s:%s:%s:%d:%d:%s:%s' % (username, sub_prefix,
-                                     pub_prefix, now, salt,
-                                     ip_address, hmc)
 
 
 class IndexView(TemplateView):
@@ -369,6 +339,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         user = User.objects.get(id=request.POST.get('user_id'))
         action = request.POST.get('gate-action')
         section = Section.objects.get(id=request.POST.get('section'))
+        # this is second part - where we want to notify
+        # the student they can proceed
         if action == 'submit':
             self.set_upv(user, section, "complete")
             admin_ajax_page_submit(section, user)
@@ -446,6 +418,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                        # library_item=library_item,
                        # library_items=library_items,
                        case=case,
+                       websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
+                       token=gen_token(request),
                        roots=roots['roots']
                        )
         return render(request, self.template_name, context)
