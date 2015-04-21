@@ -12,10 +12,9 @@ from uelc.main.views import (
     UELCAdminDeleteHierarchyView, UELCAdminUserView, UELCAdminCaseView,
     UELCAdminEditUserView, UELCAdminCreateUserView, UELCAdminEditUserPassView,
     UELCAdminEditCaseView, UELCAdminCreateCohortView, UELCAdminEditCohortView,
-    UELCAdminDeleteCohortView, UELCAdminDeleteCaseView, DashboardUpdate,
-    UELCAdminCreateCaseView, UELCAdminDeleteUserView, FacilitatorDasboardUpdate,
+    UELCAdminDeleteCohortView, UELCAdminDeleteCaseView,
+    UELCAdminCreateCaseView, UELCAdminDeleteUserView,
     AddCaseAnswerToQuestionView, EditCaseAnswerView, DeleteCaseAnswerView)
-from uelc.main.helper_functions import fresh_token
 import os.path
 admin.autodiscover()
 
@@ -117,8 +116,6 @@ urlpatterns = patterns(
      'uelc.main.helper_functions.instructor_page'),
     (r'^facilitator/fresh_token/$',
      'uelc.main.helper_functions.fresh_token'),
-    (r'^pages/(?P<hierarchy_name>[-\w]+)/facilitator/(?P<path>.*)/update-dasboard$',
-     FacilitatorDasboardUpdate.as_view()),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/facilitator/(?P<path>.*)$',
      FacilitatorView.as_view()),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/(?P<path>.*)$',

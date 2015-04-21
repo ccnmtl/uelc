@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Q
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
 from pagetree.generic.views import PageView, EditView, UserPageVisitor
@@ -15,13 +15,13 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
-    get_root_context, get_user_map, visit_root, fresh_token,
+    get_root_context, get_user_map, visit_root,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
     gen_token)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
-    RestrictedModuleMixin, JSONResponseMixin)
+    RestrictedModuleMixin)
 from uelc.main.models import (
     Cohort, UserProfile, CreateUserForm, Case,
     EditUserPassForm, CreateHierarchyForm,
@@ -253,6 +253,31 @@ class UELCPageView(LoggedInMixin,
                 status = 'incomplete'
         return {'menu': menu, 'page_status': status}
 
+    def notify_fascilitators(self, request, path):
+        print "notify_fascilitators"
+        print request.POST
+        user = get_object_or_404(User, pk=request.user.pk)
+        path = request.POST.get('path', '')
+        upv = self.upv.visit
+        if path:
+            # publish it via the zmq broker
+            socket = zmq_context.socket(zmq.REQ)
+            socket.connect(settings.WINDSOCK_BROKER_URL)
+            # the message we are broadcasting
+            msg = dict(user_id=user.id,
+                       path_id=path.id,
+                       upv=upv)
+            # an envelope that contains that message serialized
+            # and the address that we are publishing to
+            #pages/case-one/facilitator/
+            e = dict(address="%s.room_%d" % (settings.ZMQ_APPNAME),
+                 content=json.dumps(msg))
+            # send it off to the broker
+            socket.send(json.dumps(e))
+            # wait for a response from the broker to be sure it was sent
+            socket.recv()
+
+
     def post(self, request, path):
         # user has submitted a form. deal with it
         # make sure that they have not submitted
@@ -424,89 +449,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                        )
         return render(request, self.template_name, context)
 
-
-class DashboardUpdate(LoggedInFacilitatorMixin,
-                      View):
-
-    def get(self, request):
-        print "get received"
-        print request
-        # return self.render_to_json_response({'message': 'message here', 'page_status': 'page status update'})
-        # return dict(token=gen_token(request), websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)
-        return HttpResponse(
-            json.dumps(dict(token=gen_token(request))),
-            content_type="application/json")
-
-
-class FacilitatorDasboardUpdate(LoggedInFacilitatorMixin,
-                                DynamicHierarchyMixin,
-                                TemplateView,
-                                SectionMixin):
-
-    def get(self, request, path):
-        pass
-#         '''
-#         * get the section of each gateblock
-#         * determine number of levels in tree
-#         * determine the level and place of the section in the tree
-#         '''
-#         user = self.request.user
-#         section = self.get_section(path)
-#         root = section.hierarchy.get_root()
-#         roots = get_root_context(self.request)
-#         hierarchy = section.hierarchy
-#         case = Case.objects.get(hierarchy=hierarchy)
-#         socket = zmq_context.socket(zmq.REQ)
-#         socket.connect(settings.WINDSOCK_BROKER_URL)
-#         # the message we are broadcasting
-#         md = dict(room_id=room.id,
-#                   username=m.user.username,
-#                   message_text=m.text)
-#         # library_item = LibraryItem
-#         # library_items = LibraryItem.objects.all()
-#         # is there really only going to be one cohort per case?
-#         cohort = case.cohort.get(user_profile_cohort__user=user)
-#         cohort_user_profiles = cohort.user_profile_cohort.filter(
-#             profile_type="group_user").order_by('user__username')
-#         cohort_users = [profile.user for profile in cohort_user_profiles]
-#         gateblocks = GateBlock.objects.filter(
-#             pageblocks__section__hierarchy=hierarchy)
-#         hand = UELCHandler.objects.get_or_create(
-#             hierarchy=hierarchy,
-#             depth=0,
-#             path=hierarchy.base_url)[0]
-#         user_sections = []
-#         for user in cohort_users:
-#             um = get_user_map(hierarchy, user)
-#             part_usermap = hand.get_partchoice_by_usermap(um)
-#             gate_section = [[g.pageblock().section,
-#                              g,
-#                              g.unlocked(user, section),
-#                              self.get_tree_depth(g.pageblock().section),
-#                              g.status(user, hierarchy),
-#                              hand.can_show_gateblock(g.pageblock().section,
-#                                                      part_usermap),
-#                              (hand.get_part_by_section(g.pageblock().section),
-#                               part_usermap)]
-#                             for g in gateblocks]
-#             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
-#             user_sections.append([user, gate_section])
-# 
-#         quizzes = [p.block() for p in section.pageblock_set.all()
-#                    if hasattr(p.block(), 'needs_submit')
-#                    and p.block().needs_submit()]
-#         context = dict(section=section,
-#                        quizzes=quizzes,
-#                        user_sections=user_sections,
-#                        module=section.get_module(),
-#                        modules=root.get_children(),
-#                        root=section.hierarchy.get_root(),
-#                        # library_item=library_item,
-#                        # library_items=library_items,
-#                        case=case,
-#                        roots=roots['roots']
-#                        )
-#         return render(request, self.template_name, context)
 
 class UELCAdminCreateUserView(
         LoggedInMixinAdmin,

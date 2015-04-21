@@ -1,4 +1,6 @@
 $(function() {
+	
+	// Taken from Tala
 	var conn;
 	var currentRefresh = 1000;
 	var defaultRefresh = 1000;
@@ -20,6 +22,16 @@ $(function() {
 	    });
 	};
 	
+	var requestFailed = function(evt) {
+        // circuit breaker pattern for failed requests
+        // to ease up on the server when it's having trouble
+        updateToken();
+        currentRefresh = 2 * currentRefresh; // double the refresh time
+        if (currentRefresh > maxRefresh) {
+            currentRefresh = maxRefresh;
+        }
+        setTimeout(connectSocket,currentRefresh);
+    };
 	
 	var connectSocket = function() {
         conn = new WebSocket(window.websockets_base + "?token=" + window.token);
@@ -28,19 +40,37 @@ $(function() {
         conn.onopen = function (evt) {
             currentRefresh = defaultRefresh;
             alert("connectSocket() connected!");
-            //appendLog($("<div class='alert alert-info'><b>Connected to server.</b></div>"));
         };
     };
 
 
-	console.log("window.websockets_base");
-	console.log(window.websockets_base);
-	console.log("window.token");
-	console.log(window.token);
-	console.log("window.username");
-	console.log(window.username);
-	console.log("window.fresh_token_url");
-	console.log(window.fresh_token_url);
+    var onMessage = function (evt) {
+        var envelope = JSON.parse(evt.data);
+        var data = JSON.parse(envelope.content);
+        
+        console.log("envelope");
+    	console.log(envelope);
+    	console.log("data");
+    	console.log(data);
+
+
+    	
+
+//        var entry = $("<div/>");
+//        entry.addClass("row");
+//        var d = new Date();
+//        var hours = d.getHours();
+//        var minutes = d.getMinutes();
+//
+//        if (minutes < 10) {
+//            minutes = "0" + minutes;
+//        }
+//        entry.append("<div class='span1 timestamp'>" + hours + ":" + minutes + "</div>");
+//        entry.append("<div class='span2 nick'>&lt;" + data.username + "&gt;</div>");
+//        entry.append("<div class='span5 ircmessage'>" + data.message_text + "</div>");
+//        appendLog(entry);
+//        MathJax.Hub.Queue(["Typeset",MathJax.Hub, entry[0]]);
+    };
 	
 	
     if (window.WebSocket) {
