@@ -279,8 +279,10 @@ class UELCPageView(LoggedInMixin,
         #           upv=upv)
         # an envelope that contains that message serialized
         # and the address that we are publishing to
-        #pages/case-one/facilitator/
-        e = dict(address="%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME, self.section.hierarchy.name),
+        #pages/case-one/facilitator/  
+        # e = dict(address="%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME, self.section.hierarchy.name),
+        #    content=json.dumps(msg))
+        e = dict(address="http://kodos.ccnmtl.columbia.edu:9001/pages/%s/facilitator/" % (self.section.hierarchy.name),
             content=json.dumps(msg))
         print "e"
         print e["address"]
