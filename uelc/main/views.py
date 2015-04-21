@@ -255,14 +255,6 @@ class UELCPageView(LoggedInMixin,
 
     def notify_fascilitators(self, request, path):
         print "notify_fascilitators"
-        print request.POST
-        print path
-        for each in request.POST:
-            print each
-        print self.section
-        print self.section.pk
-        print self.section.slug
-        print self.section.hierarchy.name
         user = get_object_or_404(User, pk=request.user.pk)
         # path = request.POST.get('path', '')
         # upv = self.upv.visit
@@ -273,19 +265,12 @@ class UELCPageView(LoggedInMixin,
         msg = dict(user_id=user.id,
                    path=path,
                    section_pk=self.section.pk)
-        print msg
-        print settings.ZMQ_APPNAME
-        #,
-        #           upv=upv)
         # an envelope that contains that message serialized
         # and the address that we are publishing to
         #pages/case-one/facilitator/  
-        e = dict(address="%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME, self.section.hierarchy.name),
+        e = dict(address="%s.pages/%s/facilitator/" % 
+                 (settings.ZMQ_APPNAME, self.section.hierarchy.name),
            content=json.dumps(msg))
-        #e = dict(address="tcp://kodos.ccnmtl.columbia.edu:9001/pages/%s/facilitator/" % (self.section.hierarchy.name),
-        #    content=json.dumps(msg))
-        print "e"
-        print e["address"]
         # send it off to the broker
         socket.send(json.dumps(e))
         # wait for a response from the broker to be sure it was sent

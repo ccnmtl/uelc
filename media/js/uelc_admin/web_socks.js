@@ -35,8 +35,8 @@ $(function() {
 	
 	var connectSocket = function() {
         conn = new WebSocket(window.websockets_base + "?token=" + window.token);
-        //conn.onclose = requestFailed;
-        //conn.onmessage = onMessage;
+        conn.onclose = requestFailed;
+        conn.onmessage = onMessage;
         conn.onopen = function (evt) {
             currentRefresh = defaultRefresh;
             alert("connectSocket() connected!");
