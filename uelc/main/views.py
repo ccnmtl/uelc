@@ -274,6 +274,7 @@ class UELCPageView(LoggedInMixin,
                    path=path,
                    section_pk=self.section.pk)
         print msg
+        print settings.ZMQ_APPNAME
         #,
         #           upv=upv)
         # an envelope that contains that message serialized
@@ -281,6 +282,8 @@ class UELCPageView(LoggedInMixin,
         #pages/case-one/facilitator/
         e = dict(address="%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME, self.section.hierarchy.name),
             content=json.dumps(msg))
+        print "e"
+        print e["address"]
         # send it off to the broker
         socket.send(json.dumps(e))
         # wait for a response from the broker to be sure it was sent
