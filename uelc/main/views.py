@@ -260,25 +260,26 @@ class UELCPageView(LoggedInMixin,
         for each in request.POST:
             print each
         user = get_object_or_404(User, pk=request.user.pk)
-        path = request.POST.get('path', '')
+        # path = request.POST.get('path', '')
         # upv = self.upv.visit
-        if path:
-            # publish it via the zmq broker
-            socket = zmq_context.socket(zmq.REQ)
-            socket.connect(settings.WINDSOCK_BROKER_URL)
-            # the message we are broadcasting
-            msg = dict(user_id=user.id,
-                       path_id=path.id) #,
-            #           upv=upv)
-            # an envelope that contains that message serialized
-            # and the address that we are publishing to
-            #pages/case-one/facilitator/
-            e = dict(address="%s.room_%d" % (settings.ZMQ_APPNAME),
-                 content=json.dumps(msg))
-            # send it off to the broker
-            socket.send(json.dumps(e))
-            # wait for a response from the broker to be sure it was sent
-            socket.recv()
+        # publish it via the zmq broker
+        socket = zmq_context.socket(zmq.REQ)
+        socket.connect(settings.WINDSOCK_BROKER_URL)
+        # the message we are broadcasting
+        msg = dict(user_id=user.id,
+                   path=path)
+        print msg
+        #,
+        #           upv=upv)
+        # an envelope that contains that message serialized
+        # and the address that we are publishing to
+        #pages/case-one/facilitator/
+        e = dict(address="%s.room_%d" % (settings.ZMQ_APPNAME),
+             content=json.dumps(msg))
+        # send it off to the broker
+        socket.send(json.dumps(e))
+        # wait for a response from the broker to be sure it was sent
+        socket.recv()
 
 
     def post(self, request, path):
