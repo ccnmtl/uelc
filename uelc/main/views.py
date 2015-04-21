@@ -260,6 +260,8 @@ class UELCPageView(LoggedInMixin,
         for each in request.POST:
             print each
         print self.section
+        print self.section.pk
+        print self.section.slug
         user = get_object_or_404(User, pk=request.user.pk)
         # path = request.POST.get('path', '')
         # upv = self.upv.visit
@@ -268,14 +270,15 @@ class UELCPageView(LoggedInMixin,
         socket.connect(settings.WINDSOCK_BROKER_URL)
         # the message we are broadcasting
         msg = dict(user_id=user.id,
-                   path=path)
+                   path=path,
+                   section_pk=self.section.pk)
         print msg
         #,
         #           upv=upv)
         # an envelope that contains that message serialized
         # and the address that we are publishing to
         #pages/case-one/facilitator/
-        e = dict(address="%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME),
+        e = dict(address="%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME, self.section.slug),
              content=json.dumps(msg))
         # send it off to the broker
         socket.send(json.dumps(e))
