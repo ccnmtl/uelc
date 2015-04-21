@@ -63,8 +63,17 @@ var connectSocket = function() {
 };
 
 jQuery(document).ready(function() {
-    window.UA = new UELCAdmin.Admin();
-    
+
+	console.log("window.websockets_base");
+	console.log(window.websockets_base);
+	console.log("window.token");
+	console.log(window.token);
+	console.log("window.username");
+	console.log(window.username);
+	console.log("window.fresh_token_url");
+	console.log(window.fresh_token_url);
+	
+	
     if (window.WebSocket) {
         connectSocket();
     } else {
