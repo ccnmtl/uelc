@@ -49,7 +49,7 @@ var connectSocket = function() {
 	//console.log(window.token);
 	//console.log();
 	//console.log();
-    conn = new WebSocket("wss://" + window.location.hostname + ":5555/facilitator/update-dasboard");//":8000" + window.location.pathname);
+    conn = new WebSocket("wss://" + window.location.hostname + ":5555/facilitator/fresh_token/");//":8000" + window.location.pathname);
     console.log(conn);
 	//console.log(conn);
     //window.websockets_base + "?token=" + window.token);
