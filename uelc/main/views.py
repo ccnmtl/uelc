@@ -290,7 +290,7 @@ class UELCPageView(LoggedInMixin,
                 return reset_page(self.section, request)
             # When quiz is submitted successfully, we
             # want the facilitator's dashboard to be updated
-            self.notify_fascilitators(self, request, path)
+            self.notify_fascilitators(request, path)
             return page_submit(self.section, request)
         else:
             action_args = dict(error='error')
