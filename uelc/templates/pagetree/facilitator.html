@@ -9,7 +9,7 @@
 {% endcomment %}
 <script>
 	window.username = '{{request.user.username}}';
-	window.fresh_token_url = '/facilitator/update-dasboard';
+	window.fresh_token_url = '/facilitator/fresh_token/';
 	window.token = '{{token}}';
 	window.websockets_base = '{{websockets_base}}';
 </script>
