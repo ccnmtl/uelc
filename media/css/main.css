@@ -16,6 +16,12 @@ body > .container {
 
 }
 form.decision-block {margin-bottom: 20px;}
+.delete-decision{
+    margin: 20px 0;
+}
+.casequestion{
+    clear:both;
+}
 footer {padding-top: 20px;}
 
 a.active{
