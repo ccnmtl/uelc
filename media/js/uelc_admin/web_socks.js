@@ -59,8 +59,8 @@ $(function() {
     	var section_id = data["section_pk"];
     	//console.log("section_id");
     	//console.log(section_id);
-    	var group_column = '[data-group-id="' + String(group_id) + '"]';
-    	var section_row = '[data-section-id="' + String(section_id) + '"]';
+    	var group_column = "[data-group-id='" + String(group_id) + "']";
+    	var section_row = "[data-section-id='" + String(section_id) + "']";
     	console.log("group_column");
     	console.log(group_column);
     	console.log("section_row");
