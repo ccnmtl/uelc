@@ -267,8 +267,11 @@ class UELCPageView(LoggedInMixin,
         # and the address that we are publishing to
         #pages/case-one/facilitator/  
         e = dict(address="%s.pages/%s/facilitator/" % 
-                 (settings.ZMQ_APPNAME, self.section.hierarchy.name),
-           content=json.dumps(msg))
+                (settings.ZMQ_APPNAME, self.section.hierarchy.name),
+                content=json.dumps(msg))
+        # e = dict(address="%s.pages/%s/facilitator/" % 
+        #         (settings.ZMQ_APPNAME, self.section.hierarchy.name),
+        #   content=json.dumps(msg))
         # send it off to the broker
         socket.send(json.dumps(e))
         # wait for a response from the broker to be sure it was sent
@@ -393,6 +396,11 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         * determine number of levels in tree
         * determine the level and place of the section in the tree
         '''
+        '''Going to test initiating a connection here...'''
+        context = zmq.Context()
+        socket = context.socket(zmq.REQ)
+        socket.connect(settings.WINDSOCK_WEBSOCKETS_BASE)
+        socket.recv()
         user = self.request.user
         section = self.get_section(path)
         root = section.hierarchy.get_root()

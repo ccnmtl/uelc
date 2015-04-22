@@ -39,7 +39,7 @@ $(function() {
         conn.onmessage = onMessage;
         conn.onopen = function (evt) {
             currentRefresh = defaultRefresh;
-            alert("connectSocket() connected!");
+            console.log("connectSocket() connected!");
         };
     };
 
