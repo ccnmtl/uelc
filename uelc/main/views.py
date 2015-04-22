@@ -397,10 +397,15 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         * determine the level and place of the section in the tree
         '''
         '''Going to test initiating a connection here...'''
-        context = zmq.Context()
-        socket = context.socket(zmq.REQ)
+        newcontext = zmq.Context()
+        socket = newcontext.socket(zmq.REQ)
+        # socket.connect(settings.WINDSOCK_BROKER_URL)
         socket.connect(settings.WINDSOCK_BROKER_URL)
-        socket.recv()
+        socket.setsockopt(zmq.SUBSCRIBE, "")
+        while True:
+            [address, message] = socket.recv_multipart()
+            print address, message
+        #socket.recv()
         user = self.request.user
         section = self.get_section(path)
         root = section.hierarchy.get_root()
