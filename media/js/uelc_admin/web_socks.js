@@ -59,7 +59,8 @@ $(function() {
     	var section_id = data["section_pk"];
     	console.log("section_pk");
     	console.log(section_pk);
-    	jQuery('div').data('section-id', section_id);
+    	var group_column = jQuery('div').data('group-id', group-id);
+    	var section_row = jQuery('div').data('section-id', section_id);
     	//var div_btn_area = jQuery([data-slide="0"])
     		//jQuery('div').data('user');
 
