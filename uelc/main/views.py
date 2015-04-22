@@ -443,7 +443,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                        # library_items=library_items,
                        case=case,
                        websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
-                       token=gen_token(request),
+                       token=gen_token(request, section.hierarchy.name),
                        roots=roots['roots']
                        )
         return render(request, self.template_name, context)

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
 {% endcomment %}
 <script>
-    window.hierarchy_name = '{{section.hierarchy.hierarchy_name}}';
+    window.hierarchy_name = '{{section.hierarchy.name}}';
 	window.username = '{{request.user.username}}';
 	window.fresh_token_url = '/facilitator/fresh_token/';
 	window.token = '{{token}}';
