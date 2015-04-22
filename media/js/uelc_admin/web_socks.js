@@ -54,13 +54,26 @@ $(function() {
     	console.log("data");
     	console.log(data);
     	var group_id = data["user_id"];
-    	console.log("group_id");
-    	console.log(group_id);
+    	//console.log("group_id");
+    	//console.log(group_id);
     	var section_id = data["section_pk"];
-    	console.log("section_id");
-    	console.log(section_id);
-    	var group_column = jQuery('[data-group-id="' + String(group_id) + '"]');
-    	var section_row = jQuery('[data-section-id="' + String(section_id) + '"]');
+    	//console.log("section_id");
+    	//console.log(section_id);
+    	var group_column = '[data-group-id="' + String(group_id) + '"]';
+    	var section_row = '[data-section-id="' + String(section_id) + '"]';
+    	console.log("group_column");
+    	console.log(group_column);
+    	console.log("section_row");
+    	console.log(section_row);
+    	
+    	var get_the_btn = jQuery(group_column + section_row));
+
+        console.log("get_the_btn");
+        console.log(get_the_btn);
+    	
+
+    	if(get_the_btn.find('.gate-button')).hasClass('locked')
+    	{ console.log("This button is locked"); }
     	
     	
     	
