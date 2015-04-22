@@ -27,6 +27,7 @@
         <h3 class="facilitator-usrnm">Group {{u.0}}<br /><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></h3>
         <div class="gate-section-list">
         {% for sec in u.1 %}
+          <div data-section-id="{{sec.id}}" data-group-id="{{u.0.id}}">
             {% comment %}
             <!-- 
                 section (sec.0), gateblock (sec.1), unlocked (sec.2), 
@@ -34,7 +35,7 @@
                 (sec.6) section part 
             -->
             {% endcomment %}
-              {% if sec.2 %}
+            {% if sec.2 %}
                 {% if sec.5 %}
                   <div class="gate-button unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                       <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
@@ -75,6 +76,7 @@
                 </div>
                 {% endif %}
             {% endif %}
+            </div>
         {% endfor %}
     </div>
     </div><!--end gate-section-->
