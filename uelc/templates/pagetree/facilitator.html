@@ -7,6 +7,7 @@
     <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
     <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
 {% endcomment %}
+
 <script>
     window.hierarchy_name = '{{section.hierarchy.name}}';
 	window.username = '{{request.user.username}}';
@@ -54,7 +55,7 @@
             {% else %}
               {% if sec.5 %}
                 <div class="gate-button locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
-                    <form action ="." method="post">{% csrf_token %}
+                    
                         <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
                         <button type ="submit" class="btn btn-sm btn-{{sec.4}} btn-block text-center" style="margin-top: 5px;">
                         <span><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> {{ sec.1.pageblock.label }}</span>
@@ -66,6 +67,7 @@
                         </button>
                         </div>
                         <div class="clearfix visible-lg-block"></div>
+                        <form action ="." method="post">{% csrf_token %}
                         <input type="hidden" name="gate-action" value="submit" />
                         <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
                         <input type="hidden" name="user_id" value="{{u.0.id}}" />
