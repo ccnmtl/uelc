@@ -72,7 +72,7 @@ $(function() {
         console.log(get_the_btn);
     	
 
-    	if(get_the_btn.find('.gate-button')).hasClass('locked')
+    	if(get_the_btn.find('.gate-button')).hasClass('locked');
     	{ console.log("This button is locked"); }
     	
     	
