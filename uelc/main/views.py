@@ -398,7 +398,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         '''
         '''Going to test initiating a connection here...'''
         newcontext = zmq.Context()
-        socket = newcontext.socket(zmq.REQ)
+        socket = newcontext.socket(zmq.SUB)
         # socket.connect(settings.WINDSOCK_BROKER_URL)
         socket.connect(settings.WINDSOCK_BROKER_URL)
         socket.setsockopt(zmq.SUBSCRIBE, "")
