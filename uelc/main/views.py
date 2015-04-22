@@ -31,7 +31,7 @@ from uelc.main.models import (
 
 
 zmq_context = zmq.Context()
-
+other_zmq_context = zmq.Context()
 
 class IndexView(TemplateView):
     template_name = "main/index.html"
@@ -390,10 +390,10 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         * determine the level and place of the section in the tree
         '''
         '''Going to test initiating a connection here...'''
-        # context = zmq.Context()
-        #socket = zmq_context.socket(zmq.REQ)
-        #socket.connect(settings.WINDSOCK_BROKER_URL)
-        #socket.recv()
+        # other_zmqcontext = zmq.Context()
+        socket = other_zmq_context.socket(zmq.REQ)
+        socket.connect(settings.WINDSOCK_BROKER_URL)
+        socket.recv()
         user = self.request.user
         section = self.get_section(path)
         root = section.hierarchy.get_root()
