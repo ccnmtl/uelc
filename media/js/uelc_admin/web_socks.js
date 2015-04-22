@@ -75,8 +75,7 @@ $(function() {
 
     	if(gate_btn.hasClass('locked'))
     	{ console.log("This button is locked"); 
-    	  gate_btn.removeClass('locked');
-    	  gate_btn.addClass('locked');
+    	  gate_btn.removeClass('locked').addClass('unlocked');
     	}
     	
     	
