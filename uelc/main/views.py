@@ -400,6 +400,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
+        socket.recv()
         user = self.request.user
         section = self.get_section(path)
         root = section.hierarchy.get_root()
