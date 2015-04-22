@@ -629,6 +629,12 @@ class CaseQuestion(models.Model):
     intro_text = models.TextField(blank=True)
 
 
+class CaseAnswerForm(forms.Form):
+    value = forms.IntegerField(required=True, min_value=1)
+    title = forms.CharField(max_length=100, required=True)
+    description = forms.CharField(widget=forms.Textarea, required=True)
+
+
 class CaseAnswer(models.Model):
     def default_question(self):
         return self.answer.question.id
@@ -646,11 +652,14 @@ class CaseAnswer(models.Model):
     def display_description(self):
         return self.description
 
-
-class CaseAnswerForm(forms.Form):
-    value = forms.IntegerField(required=True, min_value=1)
-    title = forms.CharField(max_length=100, required=True)
-    description = forms.CharField(widget=forms.Textarea, required=True)
+    def edit_form(self, request=None):
+        class CaseAnswerForm(forms.Form):
+            value = forms.IntegerField(initial=self.answer.value)
+            title = forms.CharField(initial=self.title)
+            description = forms.CharField(
+                widget=forms.Textarea,
+                initial=self.description)
+        return CaseAnswerForm()
 
 
 ReportableInterface.register(CaseQuiz)
