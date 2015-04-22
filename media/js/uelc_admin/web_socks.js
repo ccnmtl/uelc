@@ -49,10 +49,19 @@ $(function() {
         var envelope = JSON.parse(evt.data);
         var data = JSON.parse(envelope.content);
         
-        console.log("envelope");
-    	console.log(envelope);
+        //console.log("envelope");
+    	//console.log(envelope);
     	console.log("data");
     	console.log(data);
+    	var group_id = data["user_id"];
+    	console.log("group_id");
+    	console.log(group_id);
+    	var section_id = data["section_pk"];
+    	console.log("section_pk");
+    	console.log(section_pk);
+    	jQuery('div').data('section-id', section_id);
+    	//var div_btn_area = jQuery([data-slide="0"])
+    		//jQuery('div').data('user');
 
 //        var entry = $("<div/>");
 //        entry.addClass("row");
