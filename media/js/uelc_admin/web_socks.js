@@ -57,8 +57,8 @@ $(function() {
     	console.log("group_id");
     	console.log(group_id);
     	var section_id = data["section_pk"];
-    	console.log("section_pk");
-    	console.log(section_pk);
+    	console.log("section_id");
+    	console.log(section_id);
     	var group_column = jQuery('[data-group-id="' + String(group_id) + '"]');
     	var section_row = jQuery('[data-section-id="' + String(section_id) + '"]');
     	
