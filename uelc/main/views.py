@@ -256,25 +256,18 @@ class UELCPageView(LoggedInMixin,
     def notify_fascilitators(self, request, path):
         print "notify_fascilitators"
         user = get_object_or_404(User, pk=request.user.pk)
-        # publish it via the zmq broker
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
-        # the message we are broadcasting
         msg = dict(user_id=user.id,
                    path=path,
                    section_pk=self.section.pk)
-        # an envelope that contains that message serialized
-        # and the address that we are publishing to
-        #pages/case-one/facilitator/  
         e = dict(address="%s.pages/%s/facilitator/" % 
                 (settings.ZMQ_APPNAME, self.section.hierarchy.name),
                 content=json.dumps(msg))
         # e = dict(address="%s.pages/%s/facilitator/" % 
         #         (settings.ZMQ_APPNAME, self.section.hierarchy.name),
         #   content=json.dumps(msg))
-        # send it off to the broker
         socket.send(json.dumps(e))
-        # wait for a response from the broker to be sure it was sent
         socket.recv()
 
 

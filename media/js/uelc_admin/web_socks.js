@@ -54,9 +54,6 @@ $(function() {
     	console.log("data");
     	console.log(data);
 
-
-    	
-
 //        var entry = $("<div/>");
 //        entry.addClass("row");
 //        var d = new Date();
