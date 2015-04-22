@@ -391,9 +391,9 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         '''
         '''Going to test initiating a connection here...'''
         # context = zmq.Context()
-        socket = zmq_context.socket(zmq.REQ)
-        socket.connect(settings.WINDSOCK_BROKER_URL)
-        socket.recv()
+        #socket = zmq_context.socket(zmq.REQ)
+        #socket.connect(settings.WINDSOCK_BROKER_URL)
+        #socket.recv()
         user = self.request.user
         section = self.get_section(path)
         root = section.hierarchy.get_root()
