@@ -146,7 +146,6 @@ def fresh_token(request, hierarchy_name):
 
 
 def gen_token(request, hierarchy_name):
-    print "Inside gen_token"
     username = request.user.username
     sub_prefix = "%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME, hierarchy_name)
     pub_prefix = sub_prefix + "." + username
@@ -154,7 +153,6 @@ def gen_token(request, hierarchy_name):
     salt = randint(0, 2 ** 20)
     ip_address = (request.META.get("HTTP_X_FORWARDED_FOR", "")
                   or request.META.get("REMOTE_ADDR", ""))
-    print "After IP"
     hmc = hmac.new(settings.WINDSOCK_SECRET,
                    '%s:%s:%s:%d:%d:%s' % (username, sub_prefix,
                                           pub_prefix, now, salt,

@@ -254,7 +254,6 @@ class UELCPageView(LoggedInMixin,
         return {'menu': menu, 'page_status': status}
 
     def notify_fascilitators(self, request, path):
-        print "notify_fascilitators"
         user = get_object_or_404(User, pk=request.user.pk)
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
@@ -264,9 +263,6 @@ class UELCPageView(LoggedInMixin,
         e = dict(address="%s.pages/%s/facilitator/" % 
                 (settings.ZMQ_APPNAME, self.section.hierarchy.name),
                 content=json.dumps(msg))
-        # e = dict(address="%s.pages/%s/facilitator/" % 
-        #         (settings.ZMQ_APPNAME, self.section.hierarchy.name),
-        #   content=json.dumps(msg))
         socket.send(json.dumps(e))
         socket.recv()
 
@@ -389,11 +385,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         * determine number of levels in tree
         * determine the level and place of the section in the tree
         '''
-        '''Going to test initiating a connection here...'''
-        # other_zmqcontext = zmq.Context()
-        # socket = other_zmq_context.socket(zmq.REQ)
-        # socket.connect(settings.WINDSOCK_BROKER_URL)
-        # socket.recv()
         user = self.request.user
         section = self.get_section(path)
         root = section.hierarchy.get_root()
