@@ -165,6 +165,8 @@ def gen_token(request, hierarchy_name):
 
 @login_required
 def fresh_grp_token(request, section_id):
+    print "fresh_grp_token"
+    print fresh_grp_token
     section = get_object_or_404(Section, pk=section_id)
     print "fresh_grp_token"
     print fresh_grp_token
