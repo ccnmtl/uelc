@@ -76,6 +76,8 @@ $(function() {
     	if(gate_btn.hasClass('locked'))
     	{ console.log("This button is locked"); 
     	  gate_btn.removeClass('locked').addClass('unlocked');
+    	  gate_btn.find('.btn-group-vertical > button.btn-sm').addClass('btn-success');
+    	  //need to remove input elements... maybe move form tag and remove that
     	}
     	
     	
