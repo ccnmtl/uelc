@@ -33,10 +33,17 @@
 
 {% block sidenav %}
         <!-- ###### Secondary Navigation ###### -->
-        
 {% endblock %}
 
 {% block content %}
+<script>
+    window.section_url = '{{section.get_absolute_url}}';
+	window.username = '{{request.user.username}}';
+	window.fresh_token_url = '/group_user/fresh_token/';
+	window.token = '{{token}}';
+	window.websockets_base = '{{websockets_base}}';
+</script>
+<script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/group_js.js"></script>
 <div id="content">
   <div id="side-navigation">
     {% if module.get_children %}

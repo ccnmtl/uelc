@@ -359,19 +359,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             li[0].user.add(user)
 
     def notify_group_user(self, section, user, notification):
-        print "notify group user"
-        print "user"
-        print user
-        print type(user)
-        print "section"
-        print section
-        print type(section)
-        print "section.get_absolute_url()"
-        print section.get_absolute_url()
-        print type(section.get_absolute_url())
-        print "section.hierarchy.name"
-        print section.hierarchy.name
-        print type(section.hierarchy.name)
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
         msg = dict(user_id=user.id,
