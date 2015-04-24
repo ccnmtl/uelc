@@ -17,7 +17,7 @@ from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
     get_root_context, get_user_map, visit_root,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
-    gen_token)
+    gen_token, gen_group_token)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
@@ -244,7 +244,7 @@ class UELCPageView(LoggedInMixin,
             # library_items=self.get_library_items(case),
             part=part,
             websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
-            token=gen_token(request, str(self.section.get_absolute_url())),
+            token=gen_group_token(request, str(self.section.get_absolute_url())),
             roots=roots['roots']
         )
         context.update(self.get_extra_context())
