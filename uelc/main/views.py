@@ -206,19 +206,18 @@ class UELCPageView(LoggedInMixin,
             if display_name == 'Decision Block':
                 # is the quiz really submitted?
                 # if so add yes/no to dict
+                '''TODO: notify facilitator that student has landed on Decision Block'''
                 quiz = block.block()
                 completed = quiz.is_submitted(quiz, request.user)
-                if not completed:
+                if not completed and request.user.profile.is_group_user():
+                    '''TODO: notify facilitator that student has landed on Decision Block - not done yet'''
                     pass
-                '''TODO: notify facilitator that student has landed
-                on Decision Block if not completed'''
                 case_quizblocks.append(dict(id=block.id,
                                             completed=completed))
             if display_name == 'Gate Block':
                 '''TODO: notify facilitator that student has landed
                 on Decision Block if not completed'''
                 print "GroupUser at a GateBlock"
-
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
