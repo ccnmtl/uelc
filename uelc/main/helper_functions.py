@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
-from pagetree.models import Hierarchy
+from pagetree.models import Hierarchy, Section
 
 from gate_block.models import GateSubmission
 from uelc.main.models import CaseMap, Case
@@ -162,9 +162,17 @@ def gen_token(request, hierarchy_name):
                                      pub_prefix, now, salt,
                                      ip_address, hmc)
 
-def gen_group_token(request, section_url):
+
+@login_required
+def fresh_grp_token(request, section_id):
+    section = get_object_or_404(Section, pk=section_id)
+    return dict(section=section, token=gen_group_token(request, section.id),
+                websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)
+
+
+def gen_group_token(request, section_id):
     username = request.user.username
-    sub_prefix = "%s.%s" % (settings.ZMQ_APPNAME, section_url)
+    sub_prefix = "%s.%s" % (settings.ZMQ_APPNAME, section_id)
     pub_prefix = sub_prefix + "." + username
     now = int(time.mktime(datetime.now().timetuple()))
     salt = randint(0, 2 ** 20)
