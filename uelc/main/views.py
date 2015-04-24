@@ -362,8 +362,16 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         print "notify group user"
         print "user"
         print user
+        print type(user)
         print "section"
         print section
+        print type(section)
+        print "section.get_absolute_url()"
+        print section.get_absolute_url()
+        print type(section.get_absolute_url())
+        print "section.hierarchy.name"
+        print section.hierarchy.name
+        print type(section.hierarchy.name)
         user = get_object_or_404(User, pk=user.pk)
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
