@@ -55,9 +55,9 @@
             {% else %}
               {% if sec.5 %}
                 <div class="gate-button locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
-                    <form action ="." method="post">{% csrf_token %}
-                        <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
-                        <button type ="submit" class="btn btn-sm btn-{{sec.4}} btn-block text-center" style="margin-top: 5px;">
+                  <form action ="." method="post">{% csrf_token %}
+                    <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
+                      <button type ="submit" class="btn btn-sm btn-{{sec.4}} btn-block text-center" style="margin-top: 5px;">
                         <span><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> {{ sec.1.pageblock.label }}</span>
                         <br />
                         <span class="badge text-capitalize">{{sec.4}}</span>

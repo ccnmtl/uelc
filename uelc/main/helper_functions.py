@@ -1,6 +1,5 @@
 import hmac
 import hashlib
-import json
 import time
 from datetime import datetime
 from random import randint
@@ -8,11 +7,11 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
-from pagetree.models import UserPageVisit, Hierarchy
+from pagetree.models import Hierarchy
 
 from gate_block.models import GateSubmission
 from uelc.main.models import CaseMap, Case
@@ -146,6 +145,24 @@ def fresh_token(request, hierarchy_name):
 
 
 def gen_token(request, hierarchy_name):
+    username = request.user.username
+    sub_prefix = "%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME, hierarchy_name)
+    pub_prefix = sub_prefix + "." + username
+    now = int(time.mktime(datetime.now().timetuple()))
+    salt = randint(0, 2 ** 20)
+    ip_address = (request.META.get("HTTP_X_FORWARDED_FOR", "")
+                  or request.META.get("REMOTE_ADDR", ""))
+    hmc = hmac.new(settings.WINDSOCK_SECRET,
+                   '%s:%s:%s:%d:%d:%s' % (username, sub_prefix,
+                                          pub_prefix, now, salt,
+                                          ip_address),
+                   hashlib.sha1
+                   ).hexdigest()
+    return '%s:%s:%s:%d:%d:%s:%s' % (username, sub_prefix,
+                                     pub_prefix, now, salt,
+                                     ip_address, hmc)
+
+def gen_group_token(request, hierarchy_name):
     username = request.user.username
     sub_prefix = "%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME, hierarchy_name)
     pub_prefix = sub_prefix + "." + username

@@ -109,6 +109,7 @@ class UELCPageView(LoggedInMixin,
             display_name = block.block().display_name
             if (hasattr(block.block(), 'needs_submit') and
                     display_name == 'Gate Block'):
+                print "Viewer has encountered a GateBlock"
                 return block.block()
         return False
 
@@ -152,6 +153,19 @@ class UELCPageView(LoggedInMixin,
         user = self.request.user
         library_items = LibraryItem.objects.filter(case=case, user=user)
         return library_items
+
+    def notify_fascilitators(self, request, path):
+        user = get_object_or_404(User, pk=request.user.pk)
+        socket = zmq_context.socket(zmq.REQ)
+        socket.connect(settings.WINDSOCK_BROKER_URL)
+        msg = dict(user_id=user.id,
+                   path=path,
+                   section_pk=self.section.pk)
+        e = dict(address="%s.pages/%s/facilitator/" % 
+                (settings.ZMQ_APPNAME, self.section.hierarchy.name),
+                content=json.dumps(msg))
+        socket.send(json.dumps(e))
+        socket.recv()
 
     def get(self, request, path):
         # skip the first child of part if not admin
@@ -205,6 +219,14 @@ class UELCPageView(LoggedInMixin,
         self.run_section_gatecheck(request.user, path)
         uloc[0].path = path
         uloc[0].save()
+        
+        if request.user.user_profile.is_group_user():
+            print "group user notify facilitators"
+            print "path"
+            print path
+            print "uloc"
+            print uloc[0]
+            self.notify_fascilitators(request, path)
 
         context = dict(
             section=self.section,
@@ -252,20 +274,6 @@ class UELCPageView(LoggedInMixin,
             except AttributeError:
                 status = 'incomplete'
         return {'menu': menu, 'page_status': status}
-
-    def notify_fascilitators(self, request, path):
-        user = get_object_or_404(User, pk=request.user.pk)
-        socket = zmq_context.socket(zmq.REQ)
-        socket.connect(settings.WINDSOCK_BROKER_URL)
-        msg = dict(user_id=user.id,
-                   path=path,
-                   section_pk=self.section.pk)
-        e = dict(address="%s.pages/%s/facilitator/" % 
-                (settings.ZMQ_APPNAME, self.section.hierarchy.name),
-                content=json.dumps(msg))
-        socket.send(json.dumps(e))
-        socket.recv()
-
 
     def post(self, request, path):
         # user has submitted a form. deal with it
@@ -350,6 +358,20 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             user = User.objects.get(id=users[index])
             li[0].user.add(user)
 
+#     def notify_group_user(self, section, user):
+#         '''For now when facilitator opens a gateblock'''
+#         socket = zmq_context.socket(zmq.REQ)
+#         socket.connect(settings.WINDSOCK_BROKER_URL)
+#         hierarchy = section.hierarchy.name
+#         msg = dict(user_id=user.id,
+#                    section_pk=section.pk)
+#         # pages/(?P<hierarchy_name>[-\w]+)/(?P<path>.*)
+#         e = dict(address="%s.pages/%s/facilitator/" % 
+#                 (settings.ZMQ_APPNAME, self.section.hierarchy.name),
+#                 content=json.dumps(msg))
+#         socket.send(json.dumps(e))
+#         socket.recv()
+
     def post_gate_action(self, request):
         user = User.objects.get(id=request.POST.get('user_id'))
         action = request.POST.get('gate-action')
@@ -358,6 +380,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         # the student they can proceed
         if action == 'submit':
             self.set_upv(user, section, "complete")
+            self.notify_group_user(section, user)
             admin_ajax_page_submit(section, user)
 
     def post(self, request, path):
