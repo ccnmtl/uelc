@@ -37,6 +37,7 @@
 
 {% block content %}
 <script>
+    window.hierarchy_name = '{{section.hierarchy.name}}';
     window.section_url = '{{section.get_absolute_url}}';
 	window.username = '{{request.user.username}}';
 	window.fresh_token_url = '/group_user/fresh_token/';
