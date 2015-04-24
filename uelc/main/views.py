@@ -227,7 +227,9 @@ class UELCPageView(LoggedInMixin,
         self.run_section_gatecheck(request.user, path)
         uloc[0].path = path
         uloc[0].save()
-        
+        token=gen_group_token(request, self.section.pk)
+        print "token"
+        print token
         context = dict(
             section=self.section,
             module=self.module,
