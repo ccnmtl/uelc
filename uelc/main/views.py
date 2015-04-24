@@ -358,6 +358,20 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             user = User.objects.get(id=users[index])
             li[0].user.add(user)
 
+    def notify_group_user(self, section, user, notification):
+        user = get_object_or_404(User, pk=user.pk)
+        socket = zmq_context.socket(zmq.REQ)
+        socket.connect(settings.WINDSOCK_BROKER_URL)
+        msg = dict(user_id=user.id,
+                   hierarchy=section.hierarchy.name,
+                   section=section.get_absolute_url(),
+                   notification=notification)
+        e = dict(address="%s.pages/%s/" % 
+                (settings.ZMQ_APPNAME, section.hierarchy.name, section.get_absolute_url()),
+                content=json.dumps(msg))
+        socket.send(json.dumps(e))
+        socket.recv()
+
     def post_gate_action(self, request):
         user = User.objects.get(id=request.POST.get('user_id'))
         action = request.POST.get('gate-action')
@@ -366,7 +380,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         # the student they can proceed
         if action == 'submit':
             self.set_upv(user, section, "complete")
-            self.notify_group_user(section, user)
+            self.notify_group_user(section, user, "Open Gate")
             admin_ajax_page_submit(section, user)
 
     def post(self, request, path):
