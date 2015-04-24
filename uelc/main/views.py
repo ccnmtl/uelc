@@ -109,7 +109,6 @@ class UELCPageView(LoggedInMixin,
             display_name = block.block().display_name
             if (hasattr(block.block(), 'needs_submit') and
                     display_name == 'Gate Block'):
-                print "Viewer has encountered a GateBlock"
                 return block.block()
         return False
 
@@ -133,6 +132,9 @@ class UELCPageView(LoggedInMixin,
                 block_unlocked = gate_section_gateblock[0].unlocked(
                     self.request.user, gate_section_gateblock[1])
                 if not block_unlocked:
+                    '''TODO: notify facilitator that student has landed
+                    on Decision Block if not completed'''
+                    print "GroupUser at a GateBlock"
                     back_url = self.section.get_previous().get_absolute_url()
                     return HttpResponseRedirect(back_url)
 
@@ -209,6 +211,10 @@ class UELCPageView(LoggedInMixin,
                 # if so add yes/no to dict
                 quiz = block.block()
                 completed = quiz.is_submitted(quiz, request.user)
+                if not completed:
+                    pass
+                '''TODO: notify facilitator that student has landed
+                on Decision Block if not completed'''
                 case_quizblocks.append(dict(id=block.id,
                                             completed=completed))
 
