@@ -220,7 +220,7 @@ class UELCPageView(LoggedInMixin,
         uloc[0].path = path
         uloc[0].save()
         
-        if request.user.userprofile.is_group_user():
+        if request.user.profile.is_group_user():
             print "group user notify facilitators"
             print "path"
             print path
