@@ -207,11 +207,10 @@ class UELCPageView(LoggedInMixin,
             if display_name == 'Decision Block':
                 # is the quiz really submitted?
                 # if so add yes/no to dict
-                '''TODO: notify facilitator that student has landed on Decision Block'''
                 quiz = block.block()
                 completed = quiz.is_submitted(quiz, request.user)
                 if not completed and request.user.profile.is_group_user():
-                    '''TODO: notify facilitator that student has landed on Decision Block - not done yet'''
+                    '''TODO: notify facilitator that student has landed on Decision Block'''
                     print "GroupUser at a Decision Block"
                     self.notify_fascilitators(request, path, 'Decision Block')
                 case_quizblocks.append(dict(id=block.id,
