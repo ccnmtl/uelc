@@ -187,6 +187,8 @@ class UELCPageView(LoggedInMixin,
         roots = get_root_context(self.request)
         print "Tree Path"
         print tree_path
+        print "tree_path[0]"
+        print tree_path[0]
 
         if tree_path[0]:
             return HttpResponseRedirect(tree_path[1])
@@ -216,6 +218,10 @@ class UELCPageView(LoggedInMixin,
                 on Decision Block if not completed'''
                 case_quizblocks.append(dict(id=block.id,
                                             completed=completed))
+            if display_name == 'Gate Block':
+                '''TODO: notify facilitator that student has landed
+                on Decision Block if not completed'''
+                print "GroupUser at a GateBlock"
 
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
