@@ -172,7 +172,7 @@ def fresh_grp_token(request, section_id):
 
 def gen_group_token(request, section_id):
     username = request.user.username
-    sub_prefix = "%s.%s" % (settings.ZMQ_APPNAME, section_id)
+    sub_prefix = "%s.%d" % (settings.ZMQ_APPNAME, section_id)
     pub_prefix = sub_prefix + "." + username
     now = int(time.mktime(datetime.now().timetuple()))
     salt = randint(0, 2 ** 20)
