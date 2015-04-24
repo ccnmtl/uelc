@@ -372,15 +372,14 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         print "section.hierarchy.name"
         print section.hierarchy.name
         print type(section.hierarchy.name)
-        user = get_object_or_404(User, pk=user.pk)
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
         msg = dict(user_id=user.id,
                    hierarchy=section.hierarchy.name,
-                   section=section.get_absolute_url(),
+                   section=str(section.get_absolute_url()),
                    notification=notification)
-        e = dict(address="%s.pages/%s/" % 
-                (settings.ZMQ_APPNAME, section.hierarchy.name, section.get_absolute_url()),
+        e = dict(address="%s" % 
+                (settings.ZMQ_APPNAME, str(section.get_absolute_url())),
                 content=json.dumps(msg))
         socket.send(json.dumps(e))
         socket.recv()
