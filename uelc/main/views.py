@@ -226,6 +226,8 @@ class UELCPageView(LoggedInMixin,
             print path
             print "uloc"
             print uloc[0]
+            for each in uloc[0]:
+                print each
             self.notify_fascilitators(request, path)
 
         context = dict(
