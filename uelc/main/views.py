@@ -378,7 +378,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                    hierarchy=section.hierarchy.name,
                    section=str(section.get_absolute_url()),
                    notification=notification)
-        e = dict(address="%s" % 
+        e = dict(address="%s.%s" % 
                 (settings.ZMQ_APPNAME, str(section.get_absolute_url())),
                 content=json.dumps(msg))
         socket.send(json.dumps(e))
