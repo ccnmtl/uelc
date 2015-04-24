@@ -14,6 +14,8 @@ $(function() {
 	        error: function(evt) {
 	            setTimeout(updateToken, currentRefresh);
 	            console.log("UpdateToken Error");
+	            console.log("evt");
+	            console.log(evt);
 	        },
 	        success: function(d) {
 	            window.token = d.token;
@@ -51,25 +53,7 @@ $(function() {
         
     	console.log("data");
     	console.log(data);
-    	var group_id = data["user_id"];
-    	var section_id = data["section_pk"];
-    	var notification_type = data["notification"];
-   		console.log("notification_type");
-   	    console.log(notification_type);
-    	var group_column = "[data-group-id='" + String(group_id) + "']";
-    	var section_row = "[data-section-id='" + String(section_id) + "']";
-    	
-    	var get_the_btn = jQuery(group_column + section_row);
-    	
-        var gate_btn = get_the_btn.find('.gate-button');
 
-    	if(gate_btn.hasClass('locked'))
-    	{ //console.log("This button is locked"); 
-    	  gate_btn.removeClass('locked').addClass('unlocked');
-    	  gate_btn.find('.btn-group-vertical > button.btn-sm').removeClass('btn-incomplete').addClass('btn-waiting');
-    	  //need to remove input elements... maybe move form tag and remove that
-    	}
-    	//need to change button to success when user clicks to unlock the gate
     };
 	
 	
