@@ -216,7 +216,7 @@ class UELCPageView(LoggedInMixin,
                     self.notify_fascilitators(request, path, 'Decision Block')
                 case_quizblocks.append(dict(id=block.id,
                                             completed=completed))
-            if completed and display_name == 'Gate Block' and request.user.profile.is_group_user():
+            if display_name == 'Gate Block' and request.user.profile.is_group_user():
                 '''TODO: notify facilitator that student has landed
                 on Decision Block if not completed'''
                 print "GroupUser at a GateBlock"
