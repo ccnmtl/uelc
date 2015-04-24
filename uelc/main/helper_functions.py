@@ -179,8 +179,8 @@ def gen_group_token(request, section_pk):
     print gen_group_token
     username = request.user.username
     sub_prefix = "%s.%d" % (settings.ZMQ_APPNAME, section_pk)
-    print "sub_prefix"
-    print sub_prefix
+    # print "sub_prefix"
+    # print sub_prefix
     pub_prefix = sub_prefix + "." + username
     now = int(time.mktime(datetime.now().timetuple()))
     salt = randint(0, 2 ** 20)
