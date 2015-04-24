@@ -166,13 +166,13 @@ def gen_token(request, hierarchy_name):
 @login_required
 def fresh_grp_token(request, section_id):
     section = get_object_or_404(Section, pk=section_id)
-    return dict(section=section, token=gen_group_token(request, section.id),
+    return dict(section=section, token=gen_group_token(request, section.pk),
                 websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)
 
 
-def gen_group_token(request, section_id):
+def gen_group_token(request, section_pk):
     username = request.user.username
-    sub_prefix = "%s.%d" % (settings.ZMQ_APPNAME, section_id)
+    sub_prefix = "%s.%d" % (settings.ZMQ_APPNAME, section_pk)
     pub_prefix = sub_prefix + "." + username
     now = int(time.mktime(datetime.now().timetuple()))
     salt = randint(0, 2 ** 20)
