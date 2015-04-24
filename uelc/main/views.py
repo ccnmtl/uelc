@@ -185,10 +185,6 @@ class UELCPageView(LoggedInMixin,
         part = hand.get_part_by_section(self.section)
         tree_path = self.check_part_path(casemap, hand, part)
         roots = get_root_context(self.request)
-        print "Tree Path"
-        print tree_path
-        print "tree_path[0]"
-        print tree_path[0]
 
         if tree_path[0]:
             return HttpResponseRedirect(tree_path[1])
