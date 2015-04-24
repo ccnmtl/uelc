@@ -132,9 +132,6 @@ class UELCPageView(LoggedInMixin,
                 block_unlocked = gate_section_gateblock[0].unlocked(
                     self.request.user, gate_section_gateblock[1])
                 if not block_unlocked:
-                    '''TODO: notify facilitator that student has landed
-                    on Decision Block if not completed'''
-                    print "GroupUser at a GateBlock"
                     back_url = self.section.get_previous().get_absolute_url()
                     return HttpResponseRedirect(back_url)
 
@@ -188,6 +185,8 @@ class UELCPageView(LoggedInMixin,
         part = hand.get_part_by_section(self.section)
         tree_path = self.check_part_path(casemap, hand, part)
         roots = get_root_context(self.request)
+        print "Tree Path"
+        print tree_path
 
         if tree_path[0]:
             return HttpResponseRedirect(tree_path[1])
