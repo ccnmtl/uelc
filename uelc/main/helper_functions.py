@@ -166,6 +166,8 @@ def gen_token(request, hierarchy_name):
 @login_required
 def fresh_grp_token(request, section_id):
     section = get_object_or_404(Section, pk=section_id)
+    print "fresh_grp_token"
+    print fresh_grp_token
     return dict(section=section, token=gen_group_token(request, section.pk),
                 websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)
 
@@ -188,6 +190,7 @@ def gen_group_token(request, section_pk):
                                           ip_address),
                    hashlib.sha1
                    ).hexdigest()
+    print "before return"
     return '%s:%s:%s:%d:%d:%s:%s' % (username, sub_prefix,
                                      pub_prefix, now, salt,
                                      ip_address, hmc)
