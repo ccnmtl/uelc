@@ -243,6 +243,8 @@ class UELCPageView(LoggedInMixin,
             casemap=casemap,
             # library_items=self.get_library_items(case),
             part=part,
+            websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
+            token=gen_token(request, str(self.section.get_absolute_url())),
             roots=roots['roots']
         )
         context.update(self.get_extra_context())

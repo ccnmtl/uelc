@@ -162,9 +162,9 @@ def gen_token(request, hierarchy_name):
                                      pub_prefix, now, salt,
                                      ip_address, hmc)
 
-def gen_group_token(request, hierarchy_name):
+def gen_group_token(request, section_url):
     username = request.user.username
-    sub_prefix = "%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME, hierarchy_name)
+    sub_prefix = "%s.%s" % (settings.ZMQ_APPNAME, section_url)
     pub_prefix = sub_prefix + "." + username
     now = int(time.mktime(datetime.now().timetuple()))
     salt = randint(0, 2 ** 20)
