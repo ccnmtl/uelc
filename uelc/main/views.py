@@ -243,7 +243,7 @@ class UELCPageView(LoggedInMixin,
             # library_items=self.get_library_items(case),
             part=part,
             websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
-            token=gen_group_token(request, section.pk),
+            token=gen_group_token(request, self.section.pk),
             roots=roots['roots']
         )
         context.update(self.get_extra_context())
