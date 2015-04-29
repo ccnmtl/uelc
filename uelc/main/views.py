@@ -216,10 +216,10 @@ class UELCPageView(LoggedInMixin,
                     self.notify_fascilitators(request, path, 'Decision Block')
                 case_quizblocks.append(dict(id=block.id,
                                             completed=completed))
-                if display_name == 'Gate Block' and request.user.profile.is_group_user():
-                    '''TODO: notify facilitator that student has landed
-                    on Decision Block if not completed'''
-                    self.notify_fascilitators(request, path, 'At Gate Block')
+            if display_name == 'Gate Block' and request.user.profile.is_group_user():
+                '''TODO: notify facilitator that student has landed
+                on Decision Block if not completed'''
+                self.notify_fascilitators(request, path, 'At Gate Block')
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
@@ -365,13 +365,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         print "Inside notify_group_user"
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
-#         msg = dict(user_id=user.id,
-#                    hierarchy=section.hierarchy.name,
-#                    section=str(section.get_absolute_url()),
-#                    notification=notification)
-#         e = dict(address="%s.%s" %
-#                  (settings.ZMQ_APPNAME, str(section.get_absolute_url())),
-#                  content=json.dumps(msg))
         msg = dict(user_id=user.id,
                    hierarchy=section.hierarchy.name,
                    section=section.pk,
