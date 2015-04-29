@@ -17,7 +17,7 @@ from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
     get_root_context, get_user_map, visit_root,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
-    gen_token, gen_group_token)
+    gen_token)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
@@ -31,7 +31,7 @@ from uelc.main.models import (
 
 
 zmq_context = zmq.Context()
-other_zmq_context = zmq.Context()
+
 
 class IndexView(TemplateView):
     template_name = "main/index.html"
@@ -161,9 +161,9 @@ class UELCPageView(LoggedInMixin,
                    path=path,
                    section_pk=self.section.pk,
                    notification=notification)
-        e = dict(address="%s.pages/%s/facilitator/" % 
-                (settings.ZMQ_APPNAME, self.section.hierarchy.name),
-                content=json.dumps(msg))
+        e = dict(address="%s.pages/%s/facilitator/" %
+                 (settings.ZMQ_APPNAME, self.section.hierarchy.name),
+                 content=json.dumps(msg))
         socket.send(json.dumps(e))
         socket.recv()
 
@@ -210,16 +210,11 @@ class UELCPageView(LoggedInMixin,
                 quiz = block.block()
                 completed = quiz.is_submitted(quiz, request.user)
                 if not completed and request.user.profile.is_group_user():
-                    '''TODO: notify facilitator that student has landed on Decision Block'''
-                    print "GroupUser at a Decision Block"
+                    '''TODO: notify facilitator that student
+                    has landed on Decision Block'''
                     self.notify_fascilitators(request, path, 'Decision Block')
                 case_quizblocks.append(dict(id=block.id,
                                             completed=completed))
-            if display_name == 'Gate Block' and request.user.profile.is_group_user():
-                '''TODO: notify facilitator that student has landed
-                on Decision Block if not completed'''
-                print "GroupUser at a GateBlock"
-                self.notify_fascilitators(request, path, 'At Gate Block')
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
@@ -227,9 +222,6 @@ class UELCPageView(LoggedInMixin,
         self.run_section_gatecheck(request.user, path)
         uloc[0].path = path
         uloc[0].save()
-        token=gen_group_token(request, self.section.pk)
-        print "token"
-        print token
         context = dict(
             section=self.section,
             module=self.module,
@@ -246,7 +238,6 @@ class UELCPageView(LoggedInMixin,
             # library_items=self.get_library_items(case),
             part=part,
             websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
-            token=gen_group_token(request, self.section.pk),
             roots=roots['roots']
         )
         context.update(self.get_extra_context())
@@ -369,9 +360,9 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                    hierarchy=section.hierarchy.name,
                    section=str(section.get_absolute_url()),
                    notification=notification)
-        e = dict(address="%s.%s" % 
-                (settings.ZMQ_APPNAME, str(section.get_absolute_url())),
-                content=json.dumps(msg))
+        e = dict(address="%s.%s" %
+                 (settings.ZMQ_APPNAME, str(section.get_absolute_url())),
+                 content=json.dumps(msg))
         socket.send(json.dumps(e))
         socket.recv()
 
