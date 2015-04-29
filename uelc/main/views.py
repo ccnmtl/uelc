@@ -372,6 +372,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         e = dict(address="%s.%s" %
                  (settings.ZMQ_APPNAME, str(section.get_absolute_url())),
                  content=json.dumps(msg))
+        print "e"
+        print e
         socket.send(json.dumps(e))
         socket.recv()
 
