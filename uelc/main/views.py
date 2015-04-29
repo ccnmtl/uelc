@@ -168,6 +168,7 @@ class UELCPageView(LoggedInMixin,
         socket.recv()
 
     def get(self, request, path):
+        print "inside get"
         # skip the first child of part if not admin
         if not request.user.is_superuser and self.section.get_depth() == 2:
             skip_url = self.section.get_next().get_absolute_url()
@@ -249,6 +250,7 @@ class UELCPageView(LoggedInMixin,
         return render(request, self.template_name, context)
 
     def get_extra_context(self, **kwargs):
+        print "inside get_extra_context"
         menu = []
         visits = UserPageVisit.objects.filter(user=self.request.user,
                                               status='complete')
