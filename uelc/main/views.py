@@ -365,12 +365,19 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         print "Inside notify_group_user"
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
+#         msg = dict(user_id=user.id,
+#                    hierarchy=section.hierarchy.name,
+#                    section=str(section.get_absolute_url()),
+#                    notification=notification)
+#         e = dict(address="%s.%s" %
+#                  (settings.ZMQ_APPNAME, str(section.get_absolute_url())),
+#                  content=json.dumps(msg))
         msg = dict(user_id=user.id,
                    hierarchy=section.hierarchy.name,
-                   section=str(section.get_absolute_url()),
+                   section=section.pk,
                    notification=notification)
-        e = dict(address="%s.%s" %
-                 (settings.ZMQ_APPNAME, str(section.get_absolute_url())),
+        e = dict(address="%s.%d" %
+                 (settings.ZMQ_APPNAME, section.pk),
                  content=json.dumps(msg))
         print "e"
         print e
