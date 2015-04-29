@@ -114,6 +114,8 @@ urlpatterns = patterns(
      UELCEditView.as_view()),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/instructor/(?P<path>.*)$',
      'uelc.main.helper_functions.instructor_page'),
+    (r'^facilitator/fresh_token/$',
+     'uelc.main.helper_functions.fresh_token'),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/facilitator/(?P<path>.*)$',
      FacilitatorView.as_view()),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/(?P<path>.*)$',

@@ -1,9 +1,12 @@
-from django.db import IntegrityError
-from django.db.models import Q
+import json
+import zmq
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.db import IntegrityError
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
@@ -13,7 +16,8 @@ from quizblock.models import Question, Answer
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
     get_root_context, get_user_map, visit_root,
-    has_responses, reset_page, page_submit, admin_ajax_page_submit)
+    has_responses, reset_page, page_submit, admin_ajax_page_submit,
+    gen_token)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
@@ -24,6 +28,9 @@ from uelc.main.models import (
     CaseAnswerForm, CaseAnswer, UELCHandler,
     LibraryItem,
     )
+
+
+zmq_context = zmq.Context()
 
 
 class IndexView(TemplateView):
@@ -146,6 +153,20 @@ class UELCPageView(LoggedInMixin,
         library_items = LibraryItem.objects.filter(case=case, user=user)
         return library_items
 
+    def notify_fascilitators(self, request, path, notification):
+        user = get_object_or_404(User, pk=request.user.pk)
+        socket = zmq_context.socket(zmq.REQ)
+        socket.connect(settings.WINDSOCK_BROKER_URL)
+        msg = dict(user_id=user.id,
+                   path=path,
+                   section_pk=self.section.pk,
+                   notification=notification)
+        e = dict(address="%s.pages/%s/facilitator/" %
+                 (settings.ZMQ_APPNAME, self.section.hierarchy.name),
+                 content=json.dumps(msg))
+        socket.send(json.dumps(e))
+        socket.recv()
+
     def get(self, request, path):
         # skip the first child of part if not admin
         if not request.user.is_superuser and self.section.get_depth() == 2:
@@ -188,9 +209,16 @@ class UELCPageView(LoggedInMixin,
                 # if so add yes/no to dict
                 quiz = block.block()
                 completed = quiz.is_submitted(quiz, request.user)
+                if not completed and request.user.profile.is_group_user():
+                    '''TODO: notify facilitator that student
+                    has landed on Decision Block'''
+                    self.notify_fascilitators(request, path, 'Decision Block')
                 case_quizblocks.append(dict(id=block.id,
                                             completed=completed))
-
+                if display_name == 'Gate Block' and request.user.profile.is_group_user():
+                    '''TODO: notify facilitator that student has landed
+                    on Decision Block if not completed'''
+                    self.notify_fascilitators(request, path, 'At Gate Block')
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
@@ -198,7 +226,6 @@ class UELCPageView(LoggedInMixin,
         self.run_section_gatecheck(request.user, path)
         uloc[0].path = path
         uloc[0].save()
-
         context = dict(
             section=self.section,
             module=self.module,
@@ -214,6 +241,7 @@ class UELCPageView(LoggedInMixin,
             casemap=casemap,
             # library_items=self.get_library_items(case),
             part=part,
+            websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
             roots=roots['roots']
         )
         context.update(self.get_extra_context())
@@ -256,6 +284,9 @@ class UELCPageView(LoggedInMixin,
             if request.POST.get('action', '') == 'reset':
                 self.upv.visit(status="incomplete")
                 return reset_page(self.section, request)
+            # When quiz is submitted successfully, we
+            # want the facilitator's dashboard to be updated
+            self.notify_fascilitators(request, path, 'Decision Submitted')
             return page_submit(self.section, request)
         else:
             action_args = dict(error='error')
@@ -326,12 +357,28 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             user = User.objects.get(id=users[index])
             li[0].user.add(user)
 
+    def notify_group_user(self, section, user, notification):
+        socket = zmq_context.socket(zmq.REQ)
+        socket.connect(settings.WINDSOCK_BROKER_URL)
+        msg = dict(user_id=user.id,
+                   hierarchy=section.hierarchy.name,
+                   section=str(section.get_absolute_url()),
+                   notification=notification)
+        e = dict(address="%s.%s" %
+                 (settings.ZMQ_APPNAME, str(section.get_absolute_url())),
+                 content=json.dumps(msg))
+        socket.send(json.dumps(e))
+        socket.recv()
+
     def post_gate_action(self, request):
         user = User.objects.get(id=request.POST.get('user_id'))
         action = request.POST.get('gate-action')
         section = Section.objects.get(id=request.POST.get('section'))
+        # this is second part - where we want to notify
+        # the student they can proceed
         if action == 'submit':
             self.set_upv(user, section, "complete")
+            self.notify_group_user(section, user, "Open Gate")
             admin_ajax_page_submit(section, user)
 
     def post(self, request, path):
@@ -407,6 +454,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                        # library_item=library_item,
                        # library_items=library_items,
                        case=case,
+                       websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
+                       token=gen_token(request, section.hierarchy.name),
                        roots=roots['roots']
                        )
         return render(request, self.template_name, context)
