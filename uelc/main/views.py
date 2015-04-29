@@ -362,6 +362,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             li[0].user.add(user)
 
     def notify_group_user(self, section, user, notification):
+        print "Inside notify_group_user"
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
         msg = dict(user_id=user.id,
