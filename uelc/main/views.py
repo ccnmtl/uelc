@@ -245,6 +245,7 @@ class UELCPageView(LoggedInMixin,
             roots=roots['roots']
         )
         context.update(self.get_extra_context())
+        print context
         return render(request, self.template_name, context)
 
     def get_extra_context(self, **kwargs):
