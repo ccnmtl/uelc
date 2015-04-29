@@ -13,13 +13,13 @@ $(function() {
 	        dateType: 'json',
 	        error: function(evt) {
 	            setTimeout(updateToken, currentRefresh);
-	            console.log("UpdateToken Error");
-	            console.log("evt");
-	            console.log(evt);
+	            //console.log("UpdateToken Error");
+	            //console.log("evt");
+	            //console.log(evt);
 	        },
 	        success: function(d) {
 	            window.token = d.token;
-	            console.log("UpdateToken Success!");
+	            //console.log("UpdateToken Success!");
 	        }
 	    });
 	};
@@ -41,7 +41,7 @@ $(function() {
         conn.onmessage = onMessage;
         conn.onopen = function (evt) {
             currentRefresh = defaultRefresh;
-            console.log("connectSocket() connected!");
+            //console.log("connectSocket() connected!");
         };
     };
 
@@ -51,8 +51,8 @@ $(function() {
         var envelope = JSON.parse(evt.data);
         var data = JSON.parse(envelope.content);
         
-    	console.log("data");
-    	console.log(data);
+    	//console.log("data");
+    	//console.log(data);
 
     };
 	
