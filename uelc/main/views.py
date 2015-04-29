@@ -215,6 +215,10 @@ class UELCPageView(LoggedInMixin,
                     self.notify_fascilitators(request, path, 'Decision Block')
                 case_quizblocks.append(dict(id=block.id,
                                             completed=completed))
+                if display_name == 'Gate Block' and request.user.profile.is_group_user():
+                    '''TODO: notify facilitator that student has landed
+                    on Decision Block if not completed'''
+                    self.notify_fascilitators(request, path, 'At Gate Block')
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
