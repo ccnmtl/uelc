@@ -153,7 +153,7 @@ class UELCPageView(LoggedInMixin,
         library_items = LibraryItem.objects.filter(case=case, user=user)
         return library_items
 
-    def notify_fascilitators(self, request, path, notification):
+    def notify_facilitators(self, request, path, notification):
         user = get_object_or_404(User, pk=request.user.pk)
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
@@ -201,6 +201,7 @@ class UELCPageView(LoggedInMixin,
 
         for block in self.section.pageblock_set.all():
             display_name = block.block().display_name
+            grp_usr = request.user.profile.is_group_user()
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
             # Section.submit() in Pageblock library
@@ -209,16 +210,12 @@ class UELCPageView(LoggedInMixin,
                 # if so add yes/no to dict
                 quiz = block.block()
                 completed = quiz.is_submitted(quiz, request.user)
-                if not completed and request.user.profile.is_group_user():
-                    '''TODO: notify facilitator that student
-                    has landed on Decision Block'''
-                    self.notify_fascilitators(request, path, 'Decision Block')
+                if not completed and grp_usr:
+                    self.notify_facilitators(request, path, 'Decision Block')
                 case_quizblocks.append(dict(id=block.id,
                                             completed=completed))
-                if display_name == 'Gate Block' and request.user.profile.is_group_user():
-                    '''TODO: notify facilitator that student has landed
-                    on Decision Block if not completed'''
-                    self.notify_fascilitators(request, path, 'At Gate Block')
+            if display_name == 'Gate Block' and grp_usr:
+                    self.notify_facilitators(request, path, 'At Gate Block')
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
@@ -286,7 +283,7 @@ class UELCPageView(LoggedInMixin,
                 return reset_page(self.section, request)
             # When quiz is submitted successfully, we
             # want the facilitator's dashboard to be updated
-            self.notify_fascilitators(request, path, 'Decision Submitted')
+            self.notify_facilitators(request, path, 'Decision Submitted')
             return page_submit(self.section, request)
         else:
             action_args = dict(error='error')
