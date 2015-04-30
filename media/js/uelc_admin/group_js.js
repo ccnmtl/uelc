@@ -46,6 +46,10 @@ $(function() {
         
     	console.log("data");
     	console.log(data);
+    	console.log("data.section");
+    	console.log(data.section);
+    	console.log("window.section_id");
+    	console.log(window.section_id);
 
     	// { hierarchy: "case-one", notification: "Open Gate", section: 69, user_id: 52 }
     	if (data.section === window.section_id)
