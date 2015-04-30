@@ -167,11 +167,14 @@ class UELCPageView(LoggedInMixin,
         socket.send(json.dumps(e))
         socket.recv()
 
-    def get(self, request, path):
-        # skip the first child of part if not admin
+    def check_user(self, request, path):
         if not request.user.is_superuser and self.section.get_depth() == 2:
             skip_url = self.section.get_next().get_absolute_url()
             return HttpResponseRedirect(skip_url)
+
+    def get(self, request, path):
+        self.check_user(request, path)
+        # skip the first child of part if not admin
         hierarchy = self.module.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
         uloc = UserLocation.objects.get_or_create(
