@@ -48,11 +48,11 @@ $(function() {
     	console.log(data);
 
     	// { hierarchy: "case-one", notification: "Open Gate", section: 69, user_id: 52 }
-    	if (data['section'] === window.section_id)
+    	if (data.section === window.section_id)
     	{
     		console.log("data section id matches current section id");
     	}
-    	if (data['username'] === window.user_id)
+    	if (data.username === window.user_id)
     	{
     		console.log("data user id matches current user id");
     	}
