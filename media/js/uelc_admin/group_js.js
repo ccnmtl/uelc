@@ -44,22 +44,11 @@ $(function() {
         var envelope = JSON.parse(evt.data);
         var data = JSON.parse(envelope.content);
         
-    	console.log("data");
-    	console.log(data);
-    	console.log("data.section");
-    	console.log(data.section);
-    	console.log("window.section_id");
-    	console.log(window.section_id);
-
-    	// { hierarchy: "case-one", notification: "Open Gate", section: 69, user_id: 52 }
     	if ((data.section === parseInt(window.section_id)) && (data.username === window.username))
     	{
-    		console.log("data section id matches current section id");
     		jQuery('ul.pager li.next a').removeClass('disabled');
     		jQuery('ul.pager li.next a').css('color', '#337ab7');
     		jQuery('ul.pager li.next a').attr('href', data.next_url);
-    		//cursor: not-allowed;
-    	    
     	}
     	
     };

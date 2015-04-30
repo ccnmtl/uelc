@@ -13,11 +13,9 @@ $(function() {
 	        dateType: 'json',
 	        error: function(evt) {
 	            setTimeout(updateToken, currentRefresh);
-	            //console.log("UpdateToken Error");
 	        },
 	        success: function(d) {
 	            window.token = d.token;
-	            //console.log("UpdateToken Success!");
 	        }
 	    });
 	};
@@ -39,7 +37,6 @@ $(function() {
         conn.onmessage = onMessage;
         conn.onopen = function (evt) {
             currentRefresh = defaultRefresh;
-            //console.log("connectSocket() connected!");
         };
     };
 
