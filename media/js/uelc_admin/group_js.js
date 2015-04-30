@@ -57,6 +57,7 @@ $(function() {
     		console.log("data section id matches current section id");
     		jQuery('ul.pager li.next a').removeClass('disabled');
     		jQuery('ul.pager li.next a').css('color', '#337ab7');
+    		jQuery('ul.pager li.next a').attr('href', data.next_url);
     		//cursor: not-allowed;
     	    
     	}
