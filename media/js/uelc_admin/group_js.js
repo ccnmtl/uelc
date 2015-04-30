@@ -52,13 +52,16 @@ $(function() {
     	console.log(window.section_id);
 
     	// { hierarchy: "case-one", notification: "Open Gate", section: 69, user_id: 52 }
-    	if (data.section === parseInt(window.section_id))
+    	if ((data.section === parseInt(window.section_id)) && (data.username === window.username))
     	{
     		console.log("data section id matches current section id");
+    		jQuery('ul.pager li.next a').removeClass('disabled');
+    		jQuery('ul.pager li.next a').css('color', '#337ab7');
+    		//cursor: not-allowed;
+    	    
     	}
-    	if (data.username === window.username)
-    	{
-    		console.log("data user id matches current user id");
+    	
+
     	}
     	
     };
