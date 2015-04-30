@@ -93,9 +93,11 @@
 
 {% elif block.block.display_name == "Decision Block" %}
 {% for quiz in case_quizblocks %}
-            {% if quiz.id == block.id %}
-                {% if quiz.completed != True%}
-                <form class="decision-block" id="pageblock-{{block.id}}-quiz" action="." method="post">{% csrf_token %}
+    {% if quiz.id == block.id %}
+        {% if quiz.completed != True%}
+          {% if request.user.profile.is_group_user %}
+        <form class="decision-block" id="pageblock-{{block.id}}-quiz" action="." method="post">{% csrf_token %}
+           {% endif %}
         {% endif %}
     {% endif %}
 {% endfor %}
@@ -110,9 +112,10 @@
             {% if quiz.id == block.id %}
                 {% if quiz.completed != True %}
                 <input type="hidden" name="pageblock-{{block.id}}-case" value="{{case.id}}" />
-                <input id="pageblock-{{block.id}}-submit" type="submit" value="Submit Decision" class="btn btn-primary" />
-                 </form>
-                
+                {% if request.user.profile.is_group_user %}
+                  <input id="pageblock-{{block.id}}-submit" type="submit" value="Submit Decision" class="btn btn-primary" />
+                  </form>
+                {% endif %}
         {% endif %}
     {% endif %}
 {% endfor %}
@@ -144,7 +147,7 @@
 {% endblock %}
 
 {% block content-nav %}
-  {% if request.user.is_superuser %}
+  {% if not request.user.profile.is_group_user%}
   {% else %}
   {% get_next_hierarchy_section request section as next_hier_sec %}
     {% if next_hier_sec %}
