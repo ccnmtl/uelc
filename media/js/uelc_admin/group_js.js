@@ -56,7 +56,7 @@ $(function() {
     	{
     		console.log("data section id matches current section id");
     	}
-    	if (data.username === parseInt(window.user_id))
+    	if (data.username === window.username)
     	{
     		console.log("data user id matches current user id");
     	}
