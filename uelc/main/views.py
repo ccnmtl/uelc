@@ -366,6 +366,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
         msg = dict(user_id=user.id,
+                   username=user.username,
                    hierarchy=section.hierarchy.name,
                    section=section.pk,
                    notification=notification)
