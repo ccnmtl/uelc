@@ -116,6 +116,8 @@ urlpatterns = patterns(
      'uelc.main.helper_functions.instructor_page'),
     (r'^facilitator/fresh_token/$',
      'uelc.main.helper_functions.fresh_token'),
+    (r'^group_user/fresh_token/$',
+     'uelc.main.helper_functions.fresh_grp_token'),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/facilitator/(?P<path>.*)$',
      FacilitatorView.as_view()),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/(?P<path>.*)$',

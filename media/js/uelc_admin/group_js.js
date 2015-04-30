@@ -13,13 +13,9 @@ $(function() {
 	        dateType: 'json',
 	        error: function(evt) {
 	            setTimeout(updateToken, currentRefresh);
-	            //console.log("UpdateToken Error");
-	            //console.log("evt");
-	            //console.log(evt);
 	        },
 	        success: function(d) {
 	            window.token = d.token;
-	            //console.log("UpdateToken Success!");
 	        }
 	    });
 	};
@@ -41,19 +37,20 @@ $(function() {
         conn.onmessage = onMessage;
         conn.onopen = function (evt) {
             currentRefresh = defaultRefresh;
-            //console.log("connectSocket() connected!");
         };
     };
 
-
     var onMessage = function (evt) {
-    	//console.log("onMessage");
         var envelope = JSON.parse(evt.data);
         var data = JSON.parse(envelope.content);
         
-    	//console.log("data");
-    	//console.log(data);
-
+    	if ((data.section === parseInt(window.section_id)) && (data.username === window.username))
+    	{
+    		jQuery('ul.pager li.next a').removeClass('disabled');
+    		jQuery('ul.pager li.next a').css('color', '#337ab7');
+    		jQuery('ul.pager li.next a').attr('href', data.next_url);
+    	}
+    	
     };
 	
 	

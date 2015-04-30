@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
-from pagetree.models import Hierarchy
+from pagetree.models import Hierarchy, Section
 
 from gate_block.models import GateSubmission
 from uelc.main.models import CaseMap, Case
@@ -148,6 +148,32 @@ def gen_token(request, hierarchy_name):
     username = request.user.username
     sub_prefix = "%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME,
                                                hierarchy_name)
+    pub_prefix = sub_prefix + "." + username
+    now = int(time.mktime(datetime.now().timetuple()))
+    salt = randint(0, 2 ** 20)
+    ip_address = (request.META.get("HTTP_X_FORWARDED_FOR", "")
+                  or request.META.get("REMOTE_ADDR", ""))
+    hmc = hmac.new(settings.WINDSOCK_SECRET,
+                   '%s:%s:%s:%d:%d:%s' % (username, sub_prefix,
+                                          pub_prefix, now, salt,
+                                          ip_address),
+                   hashlib.sha1
+                   ).hexdigest()
+    return '%s:%s:%s:%d:%d:%s:%s' % (username, sub_prefix,
+                                     pub_prefix, now, salt,
+                                     ip_address, hmc)
+
+
+@login_required
+def fresh_grp_token(request, section_id):
+    section = get_object_or_404(Section, pk=section_id)
+    return dict(section=section, token=gen_group_token(request, section.pk),
+                websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)
+
+
+def gen_group_token(request, section_pk):
+    username = request.user.username
+    sub_prefix = "%s.%d" % (settings.ZMQ_APPNAME, section_pk)
     pub_prefix = sub_prefix + "." + username
     now = int(time.mktime(datetime.now().timetuple()))
     salt = randint(0, 2 ** 20)

@@ -15,7 +15,7 @@ from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
-    get_root_context, get_user_map, visit_root,
+    get_root_context, get_user_map, visit_root, gen_group_token,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
     gen_token)
 from uelc.mixins import (
@@ -239,6 +239,7 @@ class UELCPageView(LoggedInMixin,
             # library_items=self.get_library_items(case),
             part=part,
             websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
+            token=gen_group_token(request, self.section.pk),
             roots=roots['roots']
         )
         context.update(self.get_extra_context())
@@ -358,11 +359,13 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
         msg = dict(user_id=user.id,
+                   username=user.username,
                    hierarchy=section.hierarchy.name,
-                   section=str(section.get_absolute_url()),
+                   next_url=section.get_next().get_absolute_url(),
+                   section=section.pk,
                    notification=notification)
-        e = dict(address="%s.%s" %
-                 (settings.ZMQ_APPNAME, str(section.get_absolute_url())),
+        e = dict(address="%s.%d" %
+                 (settings.ZMQ_APPNAME, section.pk),
                  content=json.dumps(msg))
         socket.send(json.dumps(e))
         socket.recv()
