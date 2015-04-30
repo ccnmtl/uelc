@@ -46,13 +46,13 @@ $(function() {
         var envelope = JSON.parse(evt.data);
         var data = JSON.parse(envelope.content);
         
-    	console.log("data");
-    	console.log(data);
+    	//console.log("data");
+    	//console.log(data);
     	var group_id = data["user_id"];
     	var section_id = data["section_pk"];
     	var notification_type = data["notification"];
-   		console.log("notification_type");
-   	    console.log(notification_type);
+   		//console.log("notification_type");
+   	    //console.log(notification_type);
     	var group_column = "[data-group-id='" + String(group_id) + "']";
     	var section_row = "[data-section-id='" + String(section_id) + "']";
     	
