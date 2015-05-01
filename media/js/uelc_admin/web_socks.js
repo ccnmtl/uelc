@@ -48,9 +48,9 @@ $(function() {
         
     	//console.log("data");
     	//console.log(data);
-    	var group_id = data["user_id"];
-    	var section_id = data["section_pk"];
-    	var notification_type = data["notification"];
+    	var group_id = data.user_id; //data["user_id"];
+    	var section_id = data.section_pk; //["section_pk"];
+    	var notification_type = data.notification; //["notification"];
    		//console.log("notification_type");
    	    //console.log(notification_type);
     	var group_column = "[data-group-id='" + String(group_id) + "']";
