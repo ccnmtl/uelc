@@ -6,10 +6,28 @@ from django.contrib.contenttypes import generic
 from pagetree.models import PageBlock, Section, UserLocation
 
 
+class Curveball(models.Model):
+    title = models.TextField(blank=True)
+    explanation = models.TextField(max_length=255, null=True, blank=True)
+
+    def __unicode__(self):
+        return unicode(self.scenario_type)
+
+
 class CurveballBlock(models.Model):
     pageblocks = generic.GenericRelation(PageBlock)
     template_file = "curveball/curveballblock.html"
     display_name = "Curveball Block"
+    description = models.TextField(blank=True)
+    exportable = False
+    importable = False
+    curveball_one = models.ForeignKey(Curveball, null=True, blank=True,
+                                          related_name='curveball_one')
+    curveball_two = models.ForeignKey(Curveball, null=True, blank=True,
+                                         related_name='curveball_two')
+    curveball_three = models.ForeignKey(Curveball, null=True, blank=True,
+                                         related_name='curveball_three')
+
 
     def __unicode__(self):
         return unicode(self.pageblock())
@@ -18,8 +36,8 @@ class CurveballBlock(models.Model):
         return True
 
     def clear_user_submissions(self, user):
-        CurveballSubmission.objects.filter(curveball_id=self.id,
-                                           curveball_user_id=user.id).delete()
+        CurveballSubmission.objects.filter(curveballblock_id=self.id,
+                                           curveballblock_user_id=user.id).delete()
 
     def pageblock(self):
         return self.pageblocks.all()[0]
@@ -32,8 +50,8 @@ class CurveballBlock(models.Model):
 
     def unlocked(self, user, section):
         return CurveballSubmission.objects.filter(
-            gateblock_id=self.id,
-            gate_user_id=user.id).count() > 0
+            curveballblock_id=self.id,
+            curveballblock_user_id=user.id).count() > 0
 
     def status(self, user, hierarchy):
         curveball_section = self.pageblock().section
@@ -83,7 +101,7 @@ class CurveballBlock(models.Model):
     def submit(self, user, data):
         if len(data.keys()) > 0:
             CurveballSubmission.objects.create(curveballblock_id=self.id,
-                                               curveball_user_id=user.id)
+                                               curveballblock_user_id=user.id)
 
 
 class CurveballSubmission(models.Model):
