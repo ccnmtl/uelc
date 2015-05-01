@@ -157,9 +157,9 @@ class UELCPageView(LoggedInMixin,
         user = get_object_or_404(User, pk=request.user.pk)
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
-        msg = dict(user_id=user.id,
+        msg = dict(userId=user.id,
                    path=path,
-                   section_pk=self.section.pk,
+                   sectionPk=self.section.pk,
                    notification=notification)
         e = dict(address="%s.pages/%s/facilitator/" %
                  (settings.ZMQ_APPNAME, self.section.hierarchy.name),
