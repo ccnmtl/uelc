@@ -33,10 +33,17 @@
 
 {% block sidenav %}
         <!-- ###### Secondary Navigation ###### -->
-        
 {% endblock %}
 
 {% block content %}
+<script>
+    window.sectionId = '{{section.pk}}';
+	window.username = '{{request.user.username}}';
+	window.freshTokenUrl = '/group_user/fresh_token/';
+	window.token = '{{token}}';
+	window.websocketsBase = '{{websockets_base}}';
+</script>
+<script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/group_js.js"></script>
 <div id="content">
   <div id="side-navigation">
     {% if module.get_children %}

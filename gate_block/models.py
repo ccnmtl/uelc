@@ -36,7 +36,6 @@ class GateBlock(models.Model):
             gate_user_id=user.id).count() > 0
 
     def status(self, user, hierarchy):
-
         gate_section = self.pageblock().section
         h_url = hierarchy.get_absolute_url()
         gs_url = gate_section.get_absolute_url()

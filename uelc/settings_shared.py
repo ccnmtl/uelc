@@ -217,3 +217,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ]
 }
+
+WINDSOCK_BROKER_URL = "tcp://localhost:5555"
+ZMQ_APPNAME = "uelc"
+WINDSOCK_SECRET = "6f1d916c-7761-4874-8d5b-8f8f93d20bf2"
+WINDSOCK_WEBSOCKETS_BASE = "ws://localhost:5050/socket/"
