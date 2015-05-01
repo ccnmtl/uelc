@@ -361,10 +361,10 @@ class FacilitatorView(LoggedInFacilitatorMixin,
     def notify_group_user(self, section, user, notification):
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
-        msg = dict(user_id=user.id,
+        msg = dict(userId=user.id,
                    username=user.username,
                    hierarchy=section.hierarchy.name,
-                   next_url=section.get_next().get_absolute_url(),
+                   nextUrl=section.get_next().get_absolute_url(),
                    section=section.pk,
                    notification=notification)
         e = dict(address="%s.%d" %
