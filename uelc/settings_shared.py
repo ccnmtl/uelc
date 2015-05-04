@@ -134,6 +134,7 @@ INSTALLED_APPS = [
     'gunicorn',
     'uelc.main',
     'gate_block',
+    'curveball',
     'ckeditor',
 
 ]
@@ -142,6 +143,7 @@ PAGEBLOCKS = [
     'gate_block.GateBlock',
     'main.TextBlockDT',
     'main.CaseQuiz',
+    'curveball.CurveballBlock',
 ]
 
 
