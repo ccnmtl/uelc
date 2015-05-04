@@ -70,9 +70,6 @@ class CurveballBlock(models.Model):
             if uloc_path == cb_url:
                 status = "waiting"
                 return status
-            # if for some reason the user is re-doing their entry.
-            # if so, the admin would have reset the gates so they
-            # can redo their decision
             if not unlocked and page_status == "incomplete":
                 status = "in progress"
                 return status
@@ -111,6 +108,6 @@ class CurveballSubmission(models.Model):
     submitted = models.DateTimeField(default=datetime.now)
 
     def __unicode__(self):
-        return "gate %d submission by %s at %s" % (self.curveballblock.id,
+        return "cureveball %d submission by %s at %s" % (self.curveballblock.id,
                                                    unicode(self.curveball_user),
                                                    self.submitted)
