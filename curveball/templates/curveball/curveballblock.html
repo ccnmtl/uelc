@@ -1,0 +1,19 @@
+{% load markup %}
+{{block.body|markdown}}
+
+{% comment %}
+{% extends "base.html" %}
+{% load bootstrap %}
+{% load accessible %}
+
+{% block content %}
+
+  {% if block.curveballsubmission_set.count > 0 %}
+    {% for curveball in block.curveballsubmission_set.all %}
+       {{curveball.title}}
+       {{curveball.explanation}}
+    {% endfor %}
+  {% endif %}
+
+{% endblock %}
+{% endcomment %}

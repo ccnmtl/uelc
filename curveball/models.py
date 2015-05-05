@@ -22,12 +22,11 @@ class CurveballBlock(models.Model):
     exportable = False
     importable = False
     curveball_one = models.ForeignKey(Curveball, null=True, blank=True,
-                                          related_name='curveball_one')
+                                      related_name='curveball_one')
     curveball_two = models.ForeignKey(Curveball, null=True, blank=True,
-                                         related_name='curveball_two')
+                                      related_name='curveball_two')
     curveball_three = models.ForeignKey(Curveball, null=True, blank=True,
-                                         related_name='curveball_three')
-
+                                        related_name='curveball_three')
 
     def __unicode__(self):
         return unicode(self.pageblock())
@@ -36,8 +35,9 @@ class CurveballBlock(models.Model):
         return True
 
     def clear_user_submissions(self, user):
-        CurveballSubmission.objects.filter(curveballblock_id=self.id,
-                                           curveballblock_user_id=user.id).delete()
+        CurveballSubmission.objects.filter(
+            curveballblock_id=self.id,
+            curveballblock_user_id=user.id).delete()
 
     def pageblock(self):
         return self.pageblocks.all()[0]
@@ -80,24 +80,74 @@ class CurveballBlock(models.Model):
     @classmethod
     def add_form(self):
         class AddForm(forms.Form):
-            hidden = forms.HiddenInput()
+            choice_one_title = forms.CharField(label="Choice One Label")
+            choice_one_explanation = forms.CharField(
+                label="Choice One Content", widget=forms.widgets.Textarea())
+            choice_two_title = forms.CharField(label="Choice Two Label")
+            choice_two_explanation = forms.CharField(
+                label="Choice Two Content", widget=forms.widgets.Textarea())
+            choice_three_title = forms.CharField(label="Choice Three Label")
+            choice_three_explanation = forms.CharField(
+                label="Choice Three Content", widget=forms.widgets.Textarea())
         return AddForm()
 
     @classmethod
-    def create(self, request):
-        return CurveballBlock.objects.create()
+    def create(cls, request):
+        return CurveballBlock.objects.create(
+            curveball_one=Curveball.objects.create(
+                title=request.POST.get('choice_one_title', ''),
+                explanation=request.POST.get('choice_one_explanation', '')
+            ),
+            curveball_two=Curveball.objects.create(
+                title=request.POST.get('choice_two_title', ''),
+                explanation=request.POST.get('choice_two_explanation', '')
+            ),
+            curveball_three=Curveball.objects.create(
+                title=request.POST.get('choice_three_title', ''),
+                explanation=request.POST.get('choice_three_explanation', '')
+            )
+            )
 
     def edit_form(self):
         class EditForm(forms.Form):
-            hidden = forms.HiddenInput()
+            choice_one_title = forms.CharField(
+                label="Choice One Label", initial=self.curveball_one.title)
+            choice_one_explanation = forms.CharField(
+                label="Choice One Content",
+                initial=self.curveball_one.explanation,
+                widget=forms.widgets.Textarea())
+            choice_two_title = forms.CharField(
+                label="Choice Two Label", initial=self.curveball_two.title)
+            choice_two_explanation = forms.CharField(
+                label="Choice Two Content",
+                initial=self.curveball_two.explanation,
+                widget=forms.widgets.Textarea())
+            choice_three_title = forms.CharField(
+                label="Choice Three Label", initial=self.curveball_three.title)
+            choice_three_explanation = forms.CharField(
+                label="Choice Three Content",
+                initial=self.curveball_three.explanation,
+                widget=forms.widgets.Textarea())
         return EditForm()
 
     def edit(self, vals, files):
+        '''Do I need this? The only other
+        item that has it is the decision tree'''
+        self.curveball_one.title = vals.get('choice_one_title', '')
+        self.curveball_one.explanation = vals.get(
+            'choice_one_explanation', '')
+        self.curveball_two.title = vals.get('choice_two_title', '')
+        self.curveball_two.explanation = vals.get(
+            'choice_two_explanation', '')
+        self.curveball_three.title = vals.get('choice_three_title', '')
+        self.curveball_three.explanation = vals.get(
+            'choice_three_explanation', '')
         self.save()
 
     def submit(self, user, data):
         if len(data.keys()) > 0:
             CurveballSubmission.objects.create(curveballblock_id=self.id,
+                                               section_id=self.section.id,
                                                curveballblock_user_id=user.id)
 
 
@@ -108,6 +158,6 @@ class CurveballSubmission(models.Model):
     submitted = models.DateTimeField(default=datetime.now)
 
     def __unicode__(self):
-        return "cureveball %d submission by %s at %s" % (self.curveballblock.id,
-                                                   unicode(self.curveball_user),
-                                                   self.submitted)
+        return "cureveball %d submission by %s at %s" % (
+            self.curveballblock.id, unicode(self.curveball_user),
+            self.submitted)

@@ -46,6 +46,7 @@ JENKINS_TASKS = (
 PROJECT_APPS = [
     'uelc.main',
     'gate_block',
+    'curveball',
 ]
 
 ALLOWED_HOSTS = ['localhost', '.ccnmtl.columbia.edu', 'eldex.org']
