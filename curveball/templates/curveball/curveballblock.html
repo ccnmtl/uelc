@@ -1,19 +1,24 @@
 {% load markup %}
-{{block.body|markdown}}
 
-{% comment %}
-{% extends "base.html" %}
-{% load bootstrap %}
-{% load accessible %}
-
-{% block content %}
-
-  {% if block.curveballsubmission_set.count > 0 %}
-    {% for curveball in block.curveballsubmission_set.all %}
-       {{curveball.title}}
-       {{curveball.explanation}}
-    {% endfor %}
+  {% if block.curveball_one %}
+    {% if block.curveball_one.title %}
+      <b>{{block.curveball_one.title|markdown}}</b>
+    {% endif %}
+    {% if block.curveball_one.explanation %}
+      <p>{{block.curveball_one.explanation|markdown}}</p>
+    {% endif %}
+  {% elif block.curveball_two %}
+    {% if block.curveball_two.title %}
+      <b>{{block.curveball_two.title|markdown}}</b>
+    {% endif %}
+    {% if block.curveball_two.explanation %}
+      <p>{{block.curveball_two.explanation|markdown}}</p>
+    {% endif %}
+  {% elif block.curveball_three %}
+    {% if block.curveball_three.title %}
+      <b>{{block.curveball_three.title|markdown}}</b>
+    {% endif %}
+    {% if block.curveball_three.explanation %}
+      <p>{{block.curveball_three.explanation|markdown}}</p>
+    {% endif %}
   {% endif %}
-
-{% endblock %}
-{% endcomment %}
