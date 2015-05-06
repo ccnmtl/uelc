@@ -1,14 +1,15 @@
 from django import forms
 from django.db import models
+from django.forms import widgets
 from django.contrib.auth.models import User, Permission
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 from ckeditor.widgets import CKEditorWidget
 from gate_block.models import GateSubmission
 from pageblocks.models import TextBlock
 from pagetree.models import Hierarchy, Section, ReportableInterface
 from quizblock.models import Quiz, Question, Submission, Response, Answer
-from uelc.main.forms import CustomSelectWidgetAC
 
 
 class Cohort(models.Model):
@@ -208,6 +209,16 @@ class Case(models.Model):
                 queryset=Cohort.objects.all().order_by('name'),)
 
         return EditForm()
+
+
+class CustomSelectWidgetAC(widgets.Select):
+    def render(self, name, value, attrs=None):
+        return mark_safe(
+            u'''<span class="after-choice">After Choice - \
+                <span class="small">the content that will \
+                show for the decision made. This is \
+                cohort-wide.</span></span>%s''' %
+            (super(CustomSelectWidgetAC, self).render(name, value, attrs)))
 
 
 class CaseMap(models.Model):
