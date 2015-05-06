@@ -131,17 +131,18 @@ class CurveballBlock(models.Model):
         return EditForm()
 
     def edit(self, vals, files):
-        '''Do I need this? The only other
-        item that has it is the decision tree'''
         self.curveball_one.title = vals.get('choice_one_title', '')
         self.curveball_one.explanation = vals.get(
             'choice_one_explanation', '')
+        self.curveball_one.save()
         self.curveball_two.title = vals.get('choice_two_title', '')
         self.curveball_two.explanation = vals.get(
             'choice_two_explanation', '')
+        self.curveball_two.save()
         self.curveball_three.title = vals.get('choice_three_title', '')
         self.curveball_three.explanation = vals.get(
             'choice_three_explanation', '')
+        self.curveball_three.save()
         self.save()
 
     def submit(self, user, data):
