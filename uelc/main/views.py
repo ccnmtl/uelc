@@ -23,11 +23,13 @@ from uelc.mixins import (
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
     RestrictedModuleMixin)
 from uelc.main.models import (
-    Cohort, UserProfile, CreateUserForm, Case,
-    EditUserPassForm, CreateHierarchyForm,
-    CaseAnswerForm, CaseAnswer, UELCHandler,
+    Cohort, UserProfile, Case,
+    CaseAnswer, UELCHandler,
     LibraryItem,
     )
+from uelc.main.forms import (
+    CreateUserForm, CreateHierarchyForm,
+    EditUserPassForm, CaseAnswerForm)
 
 
 zmq_context = zmq.Context()
@@ -287,6 +289,8 @@ class UELCPageView(LoggedInMixin,
                 return reset_page(self.section, request)
             # When quiz is submitted successfully, we
             # want the facilitator's dashboard to be updated
+            '''Will need to get the correct curveball choices to send
+            facilitator'''
             self.notify_facilitators(request, path, 'Decision Submitted')
             return page_submit(self.section, request)
         else:
