@@ -1,27 +1,25 @@
 {% load markup %}
 
-
-{% if request.user.profile.is_admin %}
-  {% if block.curveball_one %}
-    {% if block.curveball_one.title %}
-      {{block.curveball_one.title|markdown}}
+  {% if block.block.curveball_one %}
+    {% if block.block.curveball_one.title %}
+      {{block.block.curveball_one.title|markdown}}
     {% endif %}
-    {% if block.curveball_one.explanation %}
-      {{block.curveball_one.explanation|markdown}}
+    {% if block.block.curveball_one.explanation %}
+      {{block.block.curveball_one.explanation|markdown}}
     {% endif %}
-  {% elif block.curveball_two %}
-    {% if block.curveball_two.title %}
-      {{block.curveball_two.title|markdown}}
+  {% elif block.block.curveball_two %}
+    {% if block.block.curveball_two.title %}
+      {{block.block.curveball_two.title|markdown}}
     {% endif %}
-    {% if block.curveball_two.explanation %}
-      {{block.curveball_two.explanation|markdown}}
+    {% if block.block.curveball_two.explanation %}
+      {{block.block.curveball_two.explanation|markdown}}
     {% endif %}
-  {% elif block.curveball_three %}
-    {% if block.curveball_three.title %}
-      {{block.curveball_three.title|markdown}}
+  {% elif block.block.curveball_three %}
+    {% if block.block.curveball_three.title %}
+      {{block.block.curveball_three.title|markdown}}
     {% endif %}
-    {% if block.curveball_three.explanation %}
-      {{block.curveball_three.explanation|markdown}}
+    {% if block.block.curveball_three.explanation %}
+      {{block.block.curveball_three.explanation|markdown}}
     {% endif %}
   {% endif %}
-{% endif %}
+

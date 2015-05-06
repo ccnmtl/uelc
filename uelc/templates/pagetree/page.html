@@ -113,17 +113,39 @@
                   </form>
                 {% endif %}
         {% endif %}
-    {% endif %}
-{% endfor %}
+      {% endif %}
+      {% endfor %}
 
     {% elif block.block.display_name == "Curveball Block" %}
       <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-     
         {% if block.label %}
           <h3>{{block.label}}</h3>
         {% endif %}
+        {% if block.block.curveball_one %}
+          {% if block.block.curveball_one.title %}
+            <b>{{block.block.curveball_one.title}}</b>
+          {% endif %}
+          {% if block.block.curveball_one.explanation %}
+            <p>{{block.block.curveball_one.explanation}}</p>
+          {% endif %}
+          {% elif block.block.curveball_two %}
+            {% if block.block.curveball_two.title %}
+              <b>{{block.block.curveball_two.title}}</b>
+            {% endif %}
+            {% if block.block.curveball_two.explanation %}
+              <p>{{block.block.curveball_two.explanation}}</p>
+            {% endif %}
+          {% elif block.block.curveball_three %}
+            {% if block.block.curveball_three.title %}
+              <b>{{block.block.curveball_three.title}}</b>
+            {% endif %}
+            {% if block.block.curveball_three.explanation %}
+              <p>{{block.block.curveball_three.explanation}}</p>
+            {% endif %}
+          {% endif %}
+        
+        
         {% render block %}
-    
       </div>
     {% elif block.block.display_name == "Text Block" %}
       {% is_block_on_user_path request section block casemap.value as user_path %}
