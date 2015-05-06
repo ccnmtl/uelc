@@ -158,6 +158,6 @@ class CurveballSubmission(models.Model):
     submitted = models.DateTimeField(default=datetime.now)
 
     def __unicode__(self):
-        return "cureveball %d submission by %s at %s" % (
+        return "curveball %d submission by %s at %s" % (
             self.curveballblock.id, unicode(self.curveball_user),
             self.submitted)
