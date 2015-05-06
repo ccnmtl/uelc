@@ -349,6 +349,8 @@ method="post">{% csrf_token %}
 <div id="block-form-{{ forloop.counter }}">
   {% if blocktype.display_name == "Decision Block" %}
     {{blocktype.add_form|bootstrap}}
+  {% elif blocktype.display_name == "Curveball Block"%}
+      {{blocktype.add_form|bootstrap}}
   {% else %}
     {{section.add_pageblock_form|bootstrap}}
     {{blocktype.add_form|bootstrap}}
