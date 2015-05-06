@@ -83,32 +83,28 @@
 {% endif %}
 {% endif %}
 
-{% for block in section.pageblock_set.all %}
-
-{% if block.block.display_name == "Gate Block" %}
-
-<div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-{% render block %}
-</div>
-
-{% elif block.block.display_name == "Decision Block" %}
-{% for quiz in case_quizblocks %}
-    {% if quiz.id == block.id %}
-        {% if quiz.completed != True%}
-          {% if request.user.profile.is_group_user %}
-        <form class="decision-block" id="pageblock-{{block.id}}-quiz" action="." method="post">{% csrf_token %}
-           {% endif %}
+  {% for block in section.pageblock_set.all %}
+    {% if block.block.display_name == "Gate Block" %}
+      <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+        {% render block %}
+      </div>
+    {% elif block.block.display_name == "Decision Block" %}
+      {% for quiz in case_quizblocks %}
+        {% if quiz.id == block.id %}
+          {% if quiz.completed != True%}
+            {% if request.user.profile.is_group_user %}
+              <form class="decision-block" id="pageblock-{{block.id}}-quiz" action="." method="post">{% csrf_token %}
+            {% endif %}
+          {% endif %}
         {% endif %}
-    {% endif %}
-{% endfor %}
-<div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-    {% if block.label %}
-        
+      {% endfor %}
+      <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+      {% if block.label %}  
         <h3>{{block.label}}</h3>
-    {% endif %}
-{% render block %}
-</div>
-{% for quiz in case_quizblocks %}
+      {% endif %}
+      {% render block %}
+      </div>
+      {% for quiz in case_quizblocks %}
             {% if quiz.id == block.id %}
                 {% if quiz.completed != True %}
                 <input type="hidden" name="pageblock-{{block.id}}-case" value="{{case.id}}" />
@@ -119,16 +115,25 @@
         {% endif %}
     {% endif %}
 {% endfor %}
-{% elif block.block.display_name == "Text Block" %}
-{% is_block_on_user_path request section block casemap.value as user_path %}
-  {% if user_path %}
-    <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-  
-    {% if block.label %}<h3>{{block.label}}</h3>{% endif %}
-    {% render block %}
-    </div>
-  {%endif%}
-{% else %}
+
+    {% elif block.block.display_name == "Curveball Block" %}
+      <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+     
+        {% if block.label %}
+          <h3>{{block.label}}</h3>
+        {% endif %}
+        {% render block %}
+    
+      </div>
+    {% elif block.block.display_name == "Text Block" %}
+      {% is_block_on_user_path request section block casemap.value as user_path %}
+      {% if user_path %}
+        <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+        {% if block.label %}<h3>{{block.label}}</h3>{% endif %}
+        {% render block %}
+        </div>
+      {%endif%}
+    {% else %}
 
     <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
 

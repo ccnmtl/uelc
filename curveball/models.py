@@ -11,7 +11,7 @@ class Curveball(models.Model):
     explanation = models.TextField(max_length=255, null=True, blank=True)
 
     def __unicode__(self):
-        return unicode(self.scenario_type)
+        return unicode(self.title)
 
 
 class CurveballBlock(models.Model):
