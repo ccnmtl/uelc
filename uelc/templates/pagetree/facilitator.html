@@ -62,8 +62,8 @@
                 {% endif %}
             {% else %}
               {% if sec.5 %} <!-- can show gateblock -->
-                {% if sec.7 %}
-                    curveball
+                {% if sec.7.0 %}
+                    {{sec.7.1.edit_form|bootstrap}}
                 {% endif %}
                 <div class="gate-button locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                   <form action ="." method="post">{% csrf_token %}

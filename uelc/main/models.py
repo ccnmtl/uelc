@@ -394,8 +394,8 @@ class UELCHandler(Section):
             block = pb.block()
             if (hasattr(block, 'display_name')
                and block.display_name == "Curveball Block"):
-                return True
-        return False
+                return (True, block)
+        return (False, block)
 
 
 class LibraryItem(models.Model):
