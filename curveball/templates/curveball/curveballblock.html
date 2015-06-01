@@ -1,5 +1,10 @@
 {% load markup %}
 
+{% comment %}
+  Display all potential options to the administrator or facilitator
+{% endcomment %}
+
+{% if not request.user.profile.is_group_user %}
   {% if block.curveball_one %}
     {% if block.curveball_one.title %}
       <b>{{block.curveball_one.title|markdown}}</b>
@@ -7,14 +12,16 @@
     {% if block.curveball_one.explanation %}
       <p>{{block.curveball_one.explanation|markdown}}</p>
     {% endif %}
-  {% elif block.curveball_two %}
+  {% endif %}
+  {% if block.curveball_two %}
     {% if block.curveball_two.title %}
       <b>{{block.curveball_two.title|markdown}}</b>
     {% endif %}
     {% if block.curveball_two.explanation %}
       <p>{{block.curveball_two.explanation|markdown}}</p>
     {% endif %}
-  {% elif block.curveball_three %}
+  {% endif %}
+  {% if block.curveball_three %}
     {% if block.curveball_three.title %}
       <b>{{block.curveball_three.title|markdown}}</b>
     {% endif %}
@@ -22,3 +29,15 @@
       <p>{{block.curveball_three.explanation|markdown}}</p>
     {% endif %}
   {% endif %}
+{% endif %}
+
+{% if request.user.profile.is_group_user %}
+  {% if block.curveballsubmission_set.count %}
+    {% for cb in block.curveballsubmission_set.all %}
+      {% if cb.group_curveball == request.user %}
+        <b>{{cb.curveball.title}}</b>
+        <p>{{cb.curveball.explanation}}</p>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endif %}

@@ -32,7 +32,7 @@ class CurveballBlock(models.Model):
         return unicode(self.pageblock())
 
     def redirect_to_self_on_submit(self):
-        return True
+        return False
 
     def clear_user_submissions(self, user):
         CurveballSubmission.objects.filter(
@@ -154,11 +154,16 @@ class CurveballBlock(models.Model):
 
 class CurveballSubmission(models.Model):
     curveballblock = models.ForeignKey(CurveballBlock)
-    curveball_user = models.ForeignKey(User, related_name='curveball_user')
+    '''associate the group with the curveball so we know
+    what content to show'''
+    group_curveball = models.ForeignKey(User, related_name='curveball_user')
+    '''group user has been shown curveball and has read it'''
+    group_confirmation = models.BooleanField(default=False)
+    curveball = models.ForeignKey(Curveball, null=True, blank=True)
     section = models.ForeignKey(Section)
     submitted = models.DateTimeField(default=datetime.now)
 
     def __unicode__(self):
-        return "curveball %d submission by %s at %s" % (
-            self.curveballblock.id, unicode(self.curveball_user),
-            self.submitted)
+        return "curveball %d submission by %s at %s for choice %s" % (
+            self.curveballblock.id, unicode(self.group_curveball),
+            self.submitted, unicode(self.curveball))

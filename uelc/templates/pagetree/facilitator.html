@@ -10,12 +10,13 @@
 
 <script>
     window.hierarchy_name = '{{section.hierarchy.name}}';
-	window.username = '{{request.user.username}}';
-	window.freshTokenUrl = '/facilitator/fresh_token/';
-	window.token = '{{token}}';
-	window.websocketsBase = '{{websockets_base}}';
+    window.username = '{{request.user.username}}';
+    window.freshTokenUrl = '/facilitator/fresh_token/';
+    window.token = '{{token}}';
+    window.websocketsBase = '{{websockets_base}}';
 </script>
 <script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/web_socks.js"></script>
+
 <div id="content" class="container-fluid">
     <h1>Case Control for {{case.name}}</h1>
     <p>Use the control panel to check group progress as well as lock, unlock, and preview content.</p>
@@ -36,20 +37,22 @@
                 (sec.6) section part 
             -->
             {% endcomment %}
+
             {% if sec.2 %}
+              {% comment %}<!--We are displaying content seperately from gateblocks  -->{% endcomment %}
                 {% if sec.5 %}
                   <div class="gate-button unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
-                      <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
-                        <div type="submit" class="btn-sm btn-success text-center status-{{sec.4}}" style="margin-top: 5px;">
-                          <span><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {{ sec.1.pageblock.label }} </span>
-                          <br />
-                          <span class="badge badge-{{sec.4}} text-capitalize">{{sec.4}}</span>
-                        </div>
-                        <button class="btn btn-xs btn-default btn-block text-center">
-                          <a class="preview-link" data-user="{{u.0.id}}" target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</a>
-                        </button>
+                    <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
+                      <div type="submit" class="btn-sm btn-success text-center status-{{sec.4}}" style="margin-top: 5px;">
+                        <span><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {{ sec.1.pageblock.label }} </span>
+                        <br />
+                        <span class="badge badge-{{sec.4}} text-capitalize">{{sec.4}}</span>
                       </div>
-                      <div class="clearfix visible-lg-block"></div>
+                      <button class="btn btn-xs btn-default btn-block text-center">
+                        <a class="preview-link" data-user="{{u.0.id}}" target="_blank" href="{{ sec.1.pageblock.section.get_absolute_url }}">Preview</a>
+                      </button>
+                   </div>
+                   <div class="clearfix visible-lg-block"></div>
                   </div>
                 {% endif %}
             {% else %}
@@ -212,4 +215,3 @@
 </div><!--end .content -->
 <script src="{{STATIC_URL}}js/uelc_admin/uelc_facilitator.js"></script>
 {% endblock %}
-
