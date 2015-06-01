@@ -34,7 +34,7 @@
             <!-- 
                 section (sec.0), gateblock (sec.1), unlocked (sec.2), 
                 user (sec.3), status (sec.4), can_show_gateblock (sec.5),
-                (sec.6) section part 
+                (sec.6) section part, (sec.7) is_curveball 
             -->
             {% endcomment %}
 
@@ -43,6 +43,9 @@
                 <!-- We are displaying content seperately from gateblocks -->
               {% endcomment %}
                 {% if sec.5 %}
+                    {% if sec.7 %}
+                        curveball
+                    {% endif %}
                   <div class="gate-button unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                     <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
                       <div type="submit" class="btn-sm btn-success text-center status-{{sec.4}}" style="margin-top: 5px;">
@@ -58,7 +61,10 @@
                   </div>
                 {% endif %}
             {% else %}
-              {% if sec.5 %}
+              {% if sec.5 %} <!-- can show gateblock -->
+                {% if sec.7 %}
+                    curveball
+                {% endif %}
                 <div class="gate-button locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                   <form action ="." method="post">{% csrf_token %}
                     <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
