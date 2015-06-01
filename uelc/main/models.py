@@ -393,9 +393,10 @@ class UELCHandler(Section):
         for pb in current_section.pageblock_set.all():
             block = pb.block()
             if (hasattr(block, 'display_name')
-            and block.display_name == "Curveball Block"):
-                    return True
+               and block.display_name == "Curveball Block"):
+                return True
         return False
+
 
 class LibraryItem(models.Model):
     name = models.TextField(blank=False)
