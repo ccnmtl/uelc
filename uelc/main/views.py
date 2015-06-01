@@ -164,7 +164,8 @@ class UELCPageView(LoggedInMixin,
         msg = dict()
         if(notification == 'Decision Submitted'):
             cb = self.section.get_next()
-            if (cb.display_name == "Curveball Block"):
+            if (hasattr(cb, 'display_name') 
+                and cb.display_name == "Curveball Block"):
                 """We must ask the facilitator
                 to select a curveball for the group"""
                 try:
