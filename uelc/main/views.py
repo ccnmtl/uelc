@@ -420,7 +420,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
 
         '''Now we decide which curveball is visible when the gate unlocks'''
         cb_block.create_submission(group_user, cb)
-        latest_curveball_sub = cb_block.get_latest_curveball_submission(group_user)
 
     def post_gate_action(self, request):
         user = User.objects.get(id=request.POST.get('user_id'))

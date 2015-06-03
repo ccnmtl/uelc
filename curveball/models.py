@@ -11,7 +11,7 @@ class Curveball(models.Model):
     explanation = models.TextField(max_length=255, null=True, blank=True)
     ''' create a flag to know whether the curveball has been selected
     by the facilitator to appear for the group or not '''
-    
+
     def __unicode__(self):
         return unicode(self.title)
 
@@ -30,23 +30,21 @@ class CurveballBlock(models.Model):
     curveball_three = models.ForeignKey(Curveball, null=True, blank=True,
                                         related_name='curveball_three')
 
-
     def _get_section(self):
         return self.pageblock().section
 
     section = property(_get_section)
-    
 
     def __unicode__(self):
         return unicode(self.pageblock())
 
     def get_curveballs(self):
-        return [self.curveball_one,self.curveball_two, self.curveball_three]
+        return [self.curveball_one, self.curveball_two, self.curveball_three]
 
     def get_latest_curveball_submission(self, group_user):
         selected_curveballs = []
         cbs = self.get_curveballs()
-        
+
         for cb in cbs:
             try:
                 cb_sub = cb.curveballsubmission_set.filter(
@@ -55,7 +53,7 @@ class CurveballBlock(models.Model):
                     selected_curveballs.append(cb_sub)
             except:
                 pass
-        selected_curveballs.sort(key = lambda x: x.submitted)
+        selected_curveballs.sort(key=lambda x: x.submitted)
         if selected_curveballs:
             latest_curveball_submission = selected_curveballs.pop()
             return latest_curveball_submission
@@ -200,7 +198,6 @@ class CurveballBlock(models.Model):
             curveball=curveball,
             curveballblock=self,
             group_curveball=group_user)
-        
 
 
 class CurveballSubmission(models.Model):
