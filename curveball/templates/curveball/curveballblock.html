@@ -1,4 +1,5 @@
 {% load markup %}
+{% load get_selected_curveball %}
 
 {% comment %}
   Display all potential options to the administrator or facilitator
@@ -33,10 +34,13 @@
 
 {% if request.user.profile.is_group_user %}
   {% if block.curveballsubmission_set.count %}
+
+  {% get_selected_curveball request.user block as selected_curveball %}
+                selected curveball - {{ selected_curveball.curveball.title }}
+  
     {% for cb in block.curveballsubmission_set.all %}
       {% if cb.group_curveball == request.user %}
-        <b>{{cb.curveball.title}}</b>
-        <p>{{cb.curveball.explanation}}</p>
+        {{ block.get_selected_curveball }}
       {% endif %}
     {% endfor %}
   {% endif %}

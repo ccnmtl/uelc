@@ -31,6 +31,7 @@ from uelc.main.forms import (
     CreateUserForm, CreateHierarchyForm,
     EditUserPassForm, CaseAnswerForm)
 
+from curveball.models import Curveball, CurveballBlock
 
 zmq_context = zmq.Context()
 
@@ -410,14 +411,16 @@ class FacilitatorView(LoggedInFacilitatorMixin,
     def post_curveball_select(self, request):
         '''Show the facilitator their choices for the curveball,
         facilitator selects what curveball the group will see'''
-        user = User.objects.get(id=request.POST.get('user_id'))
-        action = request.POST.get('curveball-select')
-        section = Section.objects.get(id=request.POST.get('section'))
+        group_user = User.objects.get(id=request.POST.get('user_id'))
+        cb_id = request.POST.get('curveball')
+        cb = Curveball.objects.get(id=cb_id)
+
+        cb_block_id = request.POST.get('curveball-block-id')
+        cb_block = CurveballBlock.objects.get(id=cb_block_id)
+
         '''Now we decide which curveball is visible when the gate unlocks'''
-        if action == 'submit':
-            self.set_upv(user, section, "complete")
-            self.notify_group_user(section, user, "Open Gate")
-            admin_ajax_page_submit(section, user)
+        cb_block.create_submission(group_user, cb)
+        latest_curveball_sub = cb_block.get_latest_curveball_submission(group_user)
 
     def post_gate_action(self, request):
         user = User.objects.get(id=request.POST.get('user_id'))

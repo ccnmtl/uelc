@@ -9,7 +9,9 @@ from pagetree.models import PageBlock, Section, UserLocation
 class Curveball(models.Model):
     title = models.TextField(blank=True)
     explanation = models.TextField(max_length=255, null=True, blank=True)
-
+    ''' create a flag to know whether the curveball has been selected
+    by the facilitator to appear for the group or not '''
+    
     def __unicode__(self):
         return unicode(self.title)
 
@@ -28,8 +30,37 @@ class CurveballBlock(models.Model):
     curveball_three = models.ForeignKey(Curveball, null=True, blank=True,
                                         related_name='curveball_three')
 
+
+    def _get_section(self):
+        return self.pageblock().section
+
+    section = property(_get_section)
+    
+
     def __unicode__(self):
         return unicode(self.pageblock())
+
+    def get_curveballs(self):
+        return [self.curveball_one,self.curveball_two, self.curveball_three]
+
+    def get_latest_curveball_submission(self, group_user):
+        selected_curveballs = []
+        cbs = self.get_curveballs()
+        
+        for cb in cbs:
+            try:
+                cb_sub = cb.curveballsubmission_set.filter(
+                    group_curveball=group_user).latest('submitted')
+                if cb_sub:
+                    selected_curveballs.append(cb_sub)
+            except:
+                pass
+        selected_curveballs.sort(key = lambda x: x.submitted)
+        if selected_curveballs:
+            latest_curveball_submission = selected_curveballs.pop()
+            return latest_curveball_submission
+
+        return None
 
     def redirect_to_self_on_submit(self):
         return False
@@ -130,6 +161,24 @@ class CurveballBlock(models.Model):
                 widget=forms.widgets.Textarea())
         return EditForm()
 
+    ''' a form so the facilitator can choose which curball to throw to
+    the group user '''
+    def curveball_select_form(self):
+        class CurveballSelectForm(forms.Form):
+            CURVEBALL_CHOICES = (
+                (self.curveball_one.id, self.curveball_one),
+                (self.curveball_two.id, self.curveball_two),
+                (self.curveball_three.id, self.curveball_three),
+            )
+            curveball = forms.ChoiceField(
+                required=True,
+                widget=forms.Select(
+                    attrs={'class': 'curveball-select', 'required': True}),
+                choices=CURVEBALL_CHOICES,
+                initial='1')
+
+        return CurveballSelectForm()
+
     def edit(self, vals, files):
         self.curveball_one.title = vals.get('choice_one_title', '')
         self.curveball_one.explanation = vals.get(
@@ -145,22 +194,24 @@ class CurveballBlock(models.Model):
         self.curveball_three.save()
         self.save()
 
-    def submit(self, user, data):
-        if len(data.keys()) > 0:
-            CurveballSubmission.objects.create(curveballblock_id=self.id,
-                                               section_id=self.section.id,
-                                               curveballblock_user_id=user.id)
+    def create_submission(self, group_user, curveball):
+        CurveballSubmission.objects.create(
+            section=self.section,
+            curveball=curveball,
+            curveballblock=self,
+            group_curveball=group_user)
+        
 
 
 class CurveballSubmission(models.Model):
+    section = models.ForeignKey(Section)
+    curveball = models.ForeignKey(Curveball, null=True, blank=True)
     curveballblock = models.ForeignKey(CurveballBlock)
     '''associate the group with the curveball so we know
-    what content to show'''
+    what group this curveball belongs to'''
     group_curveball = models.ForeignKey(User, related_name='curveball_user')
     '''group user has been shown curveball and has read it'''
     group_confirmation = models.BooleanField(default=False)
-    curveball = models.ForeignKey(Curveball, null=True, blank=True)
-    section = models.ForeignKey(Section)
     submitted = models.DateTimeField(default=datetime.now)
 
     def __unicode__(self):
