@@ -105,45 +105,144 @@ class LibraryItemFactory(factory.DjangoModelFactory):
 
 
 class UELCModuleFactory(object):
-    '''Stealing module factory from pagetree factories to adapt for
-    casequiz tests'''
-    def __init__(self, hname='main', base_url='/pages/'):
-        hierarchy = HierarchyFactory(name=hname, base_url=base_url)
-        root = hierarchy.get_root()
-        r = FakeReq()
-        r.POST = {
-            'description': 'description',
-            'rhetorical': False,
-            'allow_redo': True,
-            'show_submit_state': False,
-        }
-        casequiz = CaseQuiz.create(r)
-        root.add_child_section_from_dict(casequiz.as_dict())
-        self.root = root
-
-
-class UELCCaseQuizModuleFactory(object):
-    '''Stealing module factory from pagetree factories to adapt for
-    casequiz tests'''
+    """
+    A factory for creating a production-like tree of Sections/Pageblocks
+    for testing UELC.
+    """
     def __init__(self, hname='main', base_url='/pages/'):
         hierarchy = HierarchyFactory(name=hname, base_url=base_url)
         root = hierarchy.get_root()
         root.add_child_section_from_dict({
-            'label': "One", 'slug': "one",
+            'label': 'Part 1',
+            'slug': 'part-1',
             'children': [
-                {'label': "Three", 'slug': "introduction"}
+                {
+                    'label': 'Home',
+                    'slug': 'home',
+                    'pageblocks': [],
+                },
+                {
+                    'label': 'Intro',
+                    'slug': 'intro',
+                    'pageblocks': [],
+                },
+                {
+                    'label': 'Challenges',
+                    'slug': 'challenges',
+                    'pageblocks': [],
+                },
+                {
+                    'label': 'The Superintendent',
+                    'slug': 'the-superintendent',
+                    'pageblocks': [],
+                },
+                {
+                    'label': 'Political Dynamics',
+                    'slug': 'political-dynamics',
+                    'pageblocks': [],
+                },
+                {
+                    'label': 'Testing in Applegate',
+                    'slug': 'testing-in-applegate',
+                    'pageblocks': [],
+                },
+                {
+                    'label': 'Recent Incidences',
+                    'slug': 'recent-incidences',
+                    'pageblocks': [],
+                },
+                {
+                    'label': 'Your First Decision',
+                    'slug': 'your-first-decision',
+                    'pageblocks': [
+                        {'block_type': 'Text Block'},
+                        # {
+                        #     'block_type': 'Decision Block',
+                        # },
+                        {
+                            'block_type': 'Gate Block',
+                            'label': 'First Decision Point',
+                        },
+                        {'block_type': 'Text Block'},
+                    ],
+                    'children': [{
+                        'label': 'Curve Ball',
+                        'slug': 'curve-ball',
+
+                    }]
+                },
             ]
         })
-        root.add_child_section_from_dict({'label': "Two", 'slug': "two"})
+        root.add_child_section_from_dict({
+            'label': 'Part 2 Choice 1',
+            'slug': 'part-2-choice-1',
+            'pageblocks': [{
+                'css_extra': 'alert alert-warning',
+            }],
+            'children': [{
+                'label': 'Your Second Decision',
+                'slug': 'your-second-decision',
+                'pageblocks': [],
+                'children': [{
+                    'label': 'Curve Ball',
+                    'slug': 'curve-ball',
+                    'pageblocks': [],
+                    'children': [{
+                        'label': 'Confirm Second Decision',
+                        'slug': 'confirm-second-decision',
+                        'pageblocks': [],
+                        'children': [{
+                            'label': 'Discussion of Impact',
+                            'slug': 'discussion-of-impact',
+                            'pageblocks': [],
+                            'children': [{
+                                'label': 'Results',
+                                'slug': 'results',
+                                'pageblocks': [],
+                                'children': [{
+                                    'label': 'End of Experience',
+                                    'slug': 'end-of-experience',
+                                    'pageblocks': [],
+                                    'children': [{
+                                    }]
+                                }]
+                            }]
+                        }]
+                    }]
+                }]
+            }]
+        })
+        self.root = root
+
+
+class UELCCaseQuizModuleFactory(object):
+    """
+    Stealing module factory from pagetree factories to adapt for
+    casequiz tests.
+    """
+    def __init__(self, hname='main', base_url='/pages/'):
+        hierarchy = HierarchyFactory(name=hname, base_url=base_url)
+        root = hierarchy.get_root()
+        root.add_child_section_from_dict({
+            'label': "One",
+            'slug': "one",
+            'children': [
+                {'label': "Three",
+                 'slug': "introduction"}
+            ]
+        })
+        root.add_child_section_from_dict({'label': "Two",
+                                          'slug': "two"})
         r = FakeReq()
         r.POST = {
             'description': 'description',
             'rhetorical': 'rhetorical',
-            'allow_redo': True, 'show_submit_state': False,
+            'allow_redo': True,
+            'show_submit_state': False,
         }
         casequiz = CaseQuiz.create(r)
         blocks = [{
-            'label': 'Welcome to your new Forest Site',
+            'label': 'Welcome to UELC',
             'css_extra': '',
             'block_type': 'Test Block',
             'body': 'You should now use the edit link to add content',
