@@ -131,7 +131,7 @@ INSTALLED_APPS = [
     'gate_block',
     'curveball',
     'ckeditor',
-
+    'behave_django',
 ]
 
 PAGEBLOCKS = [
