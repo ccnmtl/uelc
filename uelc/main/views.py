@@ -491,6 +491,10 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             path=hierarchy.base_url)[0]
         user_sections = []
         for user in cohort_users:
+            user_last_path = user.userlocation_set.all()[0].path
+            user_last_location = self.get_section(user_last_path)
+
+            print user_last_location
             um = get_user_map(hierarchy, user)
             part_usermap = hand.get_partchoice_by_usermap(um)
             gate_section = [[g.pageblock().section,
@@ -505,7 +509,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                              hand.is_curveball(g.pageblock().section)]
                             for g in gateblocks]
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
-            user_sections.append([user, gate_section])
+            user_sections.append([user, gate_section, user_last_location])
 
         quizzes = [p.block() for p in section.pageblock_set.all()
                    if hasattr(p.block(), 'needs_submit')

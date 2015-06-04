@@ -45,19 +45,19 @@ $(function() {
         var groupId = data.userId; //data["user_id"];
         var sectionId = data.sectionPk; //["section_pk"];
         var notificationType = data.notification; //["notification"];
-        var groupColumn = jQuery('#group-user-section-' + groupId)
-        //var sectionRow = '[data-section-id="' + String(sectionId) + '"]';
-        //var getTheBtn = jQuery(groupColumn + sectionRow);
+        var groupColumnSelector = '#group-user-section-' + groupId;
+        window.sectionRowSelector = '[data-section-id="' + String(sectionId) + '"]';
+        window.sectionBlock = jQuery(groupColumnSelector + ' ' + sectionRowSelector);
         //var gateBtn = getTheBtn.find('.gate-button');
 
         if(data.notification == "At Gate Block"){
-            var msg = 'we just landed on a page with a gateblock!'
-            set_group_message(groupColumn, msg);
-            //groupColumn.prepend('we just landed on a page with a gateblock!');
+            var msg = 'we just landed on a page with a gateblock!';
+            set_group_location(groupColumnSelector, sectionBlock)
+            set_group_message(jQuery(groupColumnSelector), msg);
         }
         if(data.notification == "Decision Submitted"){
             var msg = 'we just made a decision';
-            set_group_message(groupColumn, msg);   
+            set_group_message(jQuery(groupColumnSelector), msg);   
         }
 
         
@@ -79,13 +79,17 @@ $(function() {
         alert($('Your browser does not support WebSockets. ' +
                 'You will have to refresh your browser to view updates.'));
     }
+    var set_group_location = function(groupColumnSelector, sectionBlock){
+        var groupIcon = jQuery('<span class="glyphicon glyphicon-user" aria-hidden="true"></span>');
+        jQuery(groupColumnSelector).find('.glyphicon-user').remove();
+        sectionBlock.prepend(groupIcon);
+    }
 
     var set_group_message = function(groupColumn, msg){
         msgHtml = jQuery('<div class="group-message alert alert-warning alert-dismissable">' +
                          '<button type="button" class="close" data-dismiss="alert"' + 
                          'aria-hidden="true">×</button></div>');
         msgHtml.append(msg);
-        groupColumn.find('.group-message').remove();
         groupColumn.prepend(msgHtml);
     }
 });
