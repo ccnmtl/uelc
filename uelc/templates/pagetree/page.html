@@ -87,6 +87,7 @@
     {% if block.block.display_name == "Gate Block" %}
       <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
         {% render block %}
+        <p class="unlock-msg" style="display:none">You may proceed to the next section</p>
       </div>
     {% elif block.block.display_name == "Decision Block" %}
       {% for quiz in case_quizblocks %}

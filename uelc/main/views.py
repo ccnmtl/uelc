@@ -31,6 +31,7 @@ from uelc.main.forms import (
     CreateUserForm, CreateHierarchyForm,
     EditUserPassForm, CaseAnswerForm)
 
+from curveball.models import Curveball, CurveballBlock
 
 zmq_context = zmq.Context()
 
@@ -159,10 +160,29 @@ class UELCPageView(LoggedInMixin,
         user = get_object_or_404(User, pk=request.user.pk)
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
-        msg = dict(userId=user.id,
-                   path=path,
-                   sectionPk=self.section.pk,
-                   notification=notification)
+        msg = dict()
+        if(notification == 'Decision Submitted'):
+            cb = self.section.get_next()
+            if (hasattr(cb, 'display_name')
+               and cb.display_name == "Curveball Block"):
+                """We must ask the facilitator
+                to select a curveball for the group"""
+                facil_msg = "please select a curvball"
+            else:
+                facil_msg = "the group has made a decision"
+            msg = dict(
+                userId=user.id,
+                path=path,
+                sectionPk=self.section.pk,
+                notification=notification,
+                facil_msg=facil_msg)
+
+        elif(notification == 'At Gate Block'):
+            msg = dict(
+                userId=user.id,
+                path=path,
+                sectionPk=self.section.pk,
+                notification=notification)
         e = dict(address="%s.pages/%s/facilitator/" %
                  (settings.ZMQ_APPNAME, self.section.hierarchy.name),
                  content=json.dumps(msg))
@@ -377,6 +397,19 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         socket.send(json.dumps(e))
         socket.recv()
 
+    def post_curveball_select(self, request):
+        '''Show the facilitator their choices for the curveball,
+        facilitator selects what curveball the group will see'''
+        group_user = User.objects.get(id=request.POST.get('user_id'))
+        cb_id = request.POST.get('curveball')
+        cb = Curveball.objects.get(id=cb_id)
+
+        cb_block_id = request.POST.get('curveball-block-id')
+        cb_block = CurveballBlock.objects.get(id=cb_block_id)
+
+        '''Now we decide which curveball is visible when the gate unlocks'''
+        cb_block.create_submission(group_user, cb)
+
     def post_gate_action(self, request):
         user = User.objects.get(id=request.POST.get('user_id'))
         action = request.POST.get('gate-action')
@@ -398,6 +431,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             self.post_library_item_edit(request)
         if request.POST.get('gate-action'):
             self.post_gate_action(request)
+        if request.POST.get('curveball-select'):
+            self.post_curveball_select(request)
         return HttpResponseRedirect(request.path)
 
     def dispatch(self, request, *args, **kwargs):
@@ -444,7 +479,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                              hand.can_show_gateblock(g.pageblock().section,
                                                      part_usermap),
                              (hand.get_part_by_section(g.pageblock().section),
-                              part_usermap)]
+                              part_usermap),
+                             hand.is_curveball(g.pageblock().section)]
                             for g in gateblocks]
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section])
@@ -452,6 +488,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         quizzes = [p.block() for p in section.pageblock_set.all()
                    if hasattr(p.block(), 'needs_submit')
                    and p.block().needs_submit()]
+        # curveballs = p.block()
         context = dict(section=section,
                        quizzes=quizzes,
                        user_sections=user_sections,

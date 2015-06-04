@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from uelc.main.models import (
     UserProfile, Case, Cohort, CaseMap, CaseQuiz,
     CaseAnswer, TextBlockDT, LibraryItem, ImageUploadItem)
+from curveball.models import CurveballBlock
 from pagetree.models import Hierarchy
 from pageblocks.models import TextBlock, ImageBlock
 from gate_block.models import GateBlock
@@ -53,3 +54,4 @@ admin.site.register(ImageUploadItem)
 admin.site.register(GateBlock)
 admin.site.unregister(FlatPage)
 admin.site.register(FlatPage, FlatPageCustom)
+admin.site.register(CurveballBlock)
