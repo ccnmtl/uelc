@@ -321,8 +321,6 @@ class UELCPageView(LoggedInMixin,
             '''Will need to get the correct curveball choices to send
             facilitator'''
             self.notify_facilitators(request, path, 'Decision Submitted')
-            import pdb
-            pdb.set_trace()
             return page_submit(self.section, request)
         else:
             action_args = dict(error='error')

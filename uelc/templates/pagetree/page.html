@@ -87,7 +87,7 @@
     {% if block.block.display_name == "Gate Block" %}
       <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
         {% render block %}
-        <p class="unlock-msg" style="display:none">You may proceed to the next section</p>
+        <p class="unlock-msg alert alert-success" style="display:none">You may proceed to the next section</p>
       </div>
     {% elif block.block.display_name == "Decision Block" %}
       {% for quiz in case_quizblocks %}
@@ -113,6 +113,8 @@
                   <input id="pageblock-{{block.id}}-submit" type="submit" value="Submit Decision" class="btn btn-primary" />
                   </form>
                 {% endif %}
+                {% else %}
+            <p class="wait-msg alert alert-danger">Please wait for the facilitator to allow you to proceed.</p>
         {% endif %}
       {% endif %}
       {% endfor %}
