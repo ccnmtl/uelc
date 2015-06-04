@@ -56,7 +56,8 @@ $(function() {
             //groupColumn.prepend('we just landed on a page with a gateblock!');
         }
         if(data.notification == "Decision Submitted"){
-            groupColumn.prepend('we just made a decision');
+            var msg = 'we just made a decision';
+            set_group_message(groupColumn, msg);   
         }
 
         

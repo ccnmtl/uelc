@@ -44,16 +44,19 @@ $(function() {
     var onMessage = function(evt) {
         var envelope = JSON.parse(evt.data);
         var data = JSON.parse(envelope.content);
-
-        if ((data.section === parseInt(window.sectionId)) &&
+        console.log(data.notification);
+        if(data.notification == "Open Gate"){
+            if ((data.section === parseInt(window.sectionId)) &&
             (data.username === window.username)) {
-            jQuery('ul.pager li.next a').removeClass('disabled');
-            jQuery('ul.pager li.next a').css('color', '#337ab7');
-            jQuery('ul.pager li.next a').attr('href', data.nextUrl);
-            jQuery('.unlock-msg').show();
-            jQuery('.unlock-msg').addClass('alert alert-success');
-        }
+                jQuery('ul.pager li.next a').removeClass('disabled');
+                jQuery('ul.pager li.next a').css('color', '#337ab7');
+                jQuery('ul.pager li.next a').attr('href', data.nextUrl);
+                jQuery('.wait-msg').hide();
+                jQuery('.unlock-msg').show();
 
+            }
+        }
+        
     };
 
     if (window.WebSocket) {
