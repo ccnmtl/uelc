@@ -160,8 +160,6 @@ class UELCPageView(LoggedInMixin,
         user = get_object_or_404(User, pk=request.user.pk)
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
-        '''if the notification is a quiz/decision submission
-        we need to get and return the curveball block'''
         msg = dict()
         if(notification == 'Decision Submitted'):
             cb = self.section.get_next()
@@ -169,25 +167,16 @@ class UELCPageView(LoggedInMixin,
                and cb.display_name == "Curveball Block"):
                 """We must ask the facilitator
                 to select a curveball for the group"""
-                try:
-                    msg = dict(
-                        userId=user.id,
-                        path=path,
-                        sectionPk=self.section.pk,
-                        notification=notification,
-                        cb_title=cb.curveball_one.title,
-                        cb_one_explanation=cb.curveball_one.explanation,
-                        cb_two_title=cb.curveball_two.title,
-                        cb_two_explanation=cb.curveball_two.explanation,
-                        cb_three_title=cb.curveball_three.title,
-                        cb_three_explanation=cb.curveball_three.explanation)
-                except:
-                    pass
+                facil_msg = "please select a curvball"
+            else:
+                facil_msg = "the group has made a decision"
             msg = dict(
                 userId=user.id,
                 path=path,
                 sectionPk=self.section.pk,
-                notification=notification)
+                notification=notification,
+                facil_msg=facil_msg)
+
         elif(notification == 'At Gate Block'):
             msg = dict(
                 userId=user.id,

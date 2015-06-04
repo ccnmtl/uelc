@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from pagetree.models import PageBlock, Section, UserLocation
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class Curveball(models.Model):
@@ -51,7 +52,7 @@ class CurveballBlock(models.Model):
                     group_curveball=group_user).latest('submitted')
                 if cb_sub:
                     selected_curveballs.append(cb_sub)
-            except:
+            except ObjectDoesNotExist:
                 pass
         selected_curveballs.sort(key=lambda x: x.submitted)
         if selected_curveballs:
