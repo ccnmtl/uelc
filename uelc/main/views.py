@@ -174,6 +174,7 @@ class UELCPageView(LoggedInMixin,
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
         msg = dict()
+
         if(notification == 'Decision Submitted'):
             cb = self.section.get_next()
             if (hasattr(cb, 'display_name')
@@ -196,9 +197,17 @@ class UELCPageView(LoggedInMixin,
                 path=path,
                 sectionPk=self.section.pk,
                 notification=notification)
+
+        elif(notification == 'Decision Block'):
+            msg = dict(
+                userId=user.id,
+                path=path,
+                sectionPk=self.section.pk,
+                notification=notification)
         e = dict(address="%s.pages/%s/facilitator/" %
                  (settings.ZMQ_APPNAME, self.section.hierarchy.name),
                  content=json.dumps(msg))
+
         socket.send(json.dumps(e))
         socket.recv()
 
@@ -253,7 +262,7 @@ class UELCPageView(LoggedInMixin,
                 case_quizblocks.append(dict(id=block.id,
                                             completed=completed))
             if display_name == 'Gate Block' and grp_usr:
-                    self.notify_facilitators(request, path, 'At Gate Block')
+                self.notify_facilitators(request, path, 'At Gate Block')
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
@@ -325,6 +334,8 @@ class UELCPageView(LoggedInMixin,
             '''Will need to get the correct curveball choices to send
             facilitator'''
             self.notify_facilitators(request, path, 'Decision Submitted')
+            import pdb
+            pdb.set_trace()
             return page_submit(self.section, request)
         else:
             action_args = dict(error='error')

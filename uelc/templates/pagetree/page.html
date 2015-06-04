@@ -37,7 +37,7 @@
 
 {% block content %}
 <script>
-    window.sectionId = '{{section.pk}}';
+  window.sectionId = '{{section.pk}}';
 	window.username = '{{request.user.username}}';
 	window.freshTokenUrl = '/group_user/fresh_token/';
 	window.token = '{{token}}';
