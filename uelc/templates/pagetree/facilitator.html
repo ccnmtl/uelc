@@ -25,12 +25,15 @@
     {% for u in user_sections %}
       {% if u.0.profile.profile_type == "group_user" %}
       <div class="col-xs-3 text-center">
-      <!-- user (u.0), gateblocks (u.1) --> 
+      <!-- user (u.0), gateblocks (u.1), (u.2) user_last_location --> 
       <div class="gate-section" id="group-user-section-{{u.0.id}}">
         <h3 class="facilitator-usrnm">Group {{u.0}}<br /><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></h3>
         <div class="gate-section-list">
         {% for sec in u.1 %}
-          <div class="group-btn-list" data-section-id="{{sec.0.pk}}" data-group-id="{{u.0.id}}">
+            {% if sec.0.pk == u.2.id %}
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+            {% endif %}
+          <div class="group-btn-list" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
             {% comment %}
             <!-- 
                 section (sec.0), gateblock (sec.1), unlocked (sec.2), 
