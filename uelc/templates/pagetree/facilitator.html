@@ -26,7 +26,7 @@
       {% if u.0.profile.profile_type == "group_user" %}
       <div class="col-xs-3 text-center">
       <!-- user (u.0), gateblocks (u.1) --> 
-      <div class="gate-section">
+      <div class="gate-section" id="group-user-section-{{u.0.id}}">
         <h3 class="facilitator-usrnm">Group {{u.0}}<br /><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></h3>
         <div class="gate-section-list">
         {% for sec in u.1 %}
@@ -47,7 +47,12 @@
                 {% if sec.5 %}
                     {% if sec.7.0 %}
                         {% get_selected_curveball u.0 sec.7.1 as selected_curveball %}
-                        selected curveball - {{ selected_curveball.curveball.title }}
+                        {% if selected_curveball %}
+                            selected curveball - {{ selected_curveball.curveball.title }}
+                        {% else %}
+                            No selected curveball 
+                        {% endif %}
+                        
                     {% endif %}
                   <div class="gate-button unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                     <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
@@ -67,8 +72,12 @@
               {% if sec.5 %} <!-- can show gateblock -->
                 {% if sec.7.0 %}
                 {% get_selected_curveball u.0 sec.7.1 as selected_curveball %}
-                selected curveball - {{ selected_curveball.curveball.title }}
-                <form action="." method="post">{% csrf_token %}
+                        {% if selected_curveball %}
+                            selected curveball - {{ selected_curveball.curveball.title }}
+                        {% else %}
+                            No selected curveball 
+                        {% endif %}
+                    <form action="." method="post">{% csrf_token %}
                     {{sec.7.1.curveball_select_form|bootstrap}}
                     <input type="submit" value="Submit" class="btn btn-primary">
                     <input type="hidden" name="curveball-block-id" value="{{ sec.7.1.id }}" />
