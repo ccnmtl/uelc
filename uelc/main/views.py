@@ -1,5 +1,6 @@
 import json
 import zmq
+import urlparse
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
@@ -106,7 +107,10 @@ class UELCPageView(LoggedInMixin,
         if self.section == self.module and pt == "group_user":
             '''forward them to the home page of the part'''
 
-            ns_path = hierarchy.base_url + self.section.get_next().get_path()
+            ns_path = urlparse.urljoin(
+                hierarchy.base_url,
+                self.section.get_next().get_path())
+
             return HttpResponseRedirect(ns_path)
 
         r = self.gate_check(request.user)
