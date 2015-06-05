@@ -1,5 +1,6 @@
 import json
 import zmq
+import urlparse
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
@@ -78,6 +79,7 @@ class UELCPageView(LoggedInMixin,
         base_url = self.section.hierarchy.base_url
         if self.section.is_root():
             if not ns or not(ns_hierarchy == hierarchy):
+
                 if not pt == "group_user":
                     # then root has no children yet
                     action_args = dict(
@@ -99,7 +101,18 @@ class UELCPageView(LoggedInMixin,
                                    extra_tags='rootUrlError')
                     request.path = '/'
                     return HttpResponseRedirect(request.path)
+
             return visit_root(self.section, self.no_root_fallback_url)
+
+        if self.section == self.module and pt == "group_user":
+            '''forward them to the home page of the part'''
+
+            ns_path = urlparse.urljoin(
+                hierarchy.base_url,
+                self.section.get_next().get_path())
+
+            return HttpResponseRedirect(ns_path)
+
         r = self.gate_check(request.user)
         if r is not None:
             return r
