@@ -107,8 +107,6 @@ class UELCPageView(LoggedInMixin,
             '''forward them to the home page of the part'''
 
             ns_path = hierarchy.base_url + self.section.get_next().get_path()
-            import pdb
-            pdb.set_trace()
             return HttpResponseRedirect(ns_path)
 
         r = self.gate_check(request.user)
