@@ -156,9 +156,38 @@ class UELCModuleFactory(object):
                     'slug': 'your-first-decision',
                     'pageblocks': [
                         {'block_type': 'Text Block'},
-                        # {
-                        #     'block_type': 'Decision Block',
-                        # },
+                        {
+                            'block_type': 'Decision Block',
+                            'questions': [{
+                                'text': 'Select One',
+                                'question_type': 'single choice',
+                                'answers': [
+                                    {
+                                        'value': '1',
+                                        'title': 'Choice 1: Full Disclosure',
+                                        'description': 'You have chosen to ' +
+                                        'address the allegations publicly ' +
+                                        'and commence to investigate the ' +
+                                        'allegations.',
+                                    },
+                                    {
+                                        'value': '2',
+                                        'title': 'Choice 2: Initiate an ' +
+                                        'Unofficial Investigation',
+                                        'description': 'You decide to ' +
+                                        'discreetly conduct your own ' +
+                                        'investigation and wait to see'
+                                    },
+                                    {
+                                        'value': '3',
+                                        'title': 'Choice 3: Initiate an ' +
+                                        'Unofficial Investigation',
+                                        'description': 'Manage Quietly ' +
+                                        'Behind Closed Doors.'
+                                    },
+                                ]
+                            }],
+                        },
                         {
                             'block_type': 'Gate Block',
                             'label': 'First Decision Point',
@@ -168,7 +197,6 @@ class UELCModuleFactory(object):
                     'children': [{
                         'label': 'Curve Ball',
                         'slug': 'curve-ball',
-
                     }]
                 },
             ]

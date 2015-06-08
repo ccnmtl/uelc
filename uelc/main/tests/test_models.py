@@ -3,7 +3,9 @@ from uelc.main.tests.factories import (
     AdminUserFactory, AdminUpFactory, FacilitatorUpFactory,
     GroupUpFactory, CaseFactory, GroupUserFactory,
     CohortFactory, LibraryItemFactory, CaseMapFactory,
-    TextBlockDTFactory, UELCHandlerFactory, CaseQuizFactory)
+    TextBlockDTFactory, UELCHandlerFactory, CaseQuizFactory,
+    UELCModuleFactory
+)
 from uelc.main.models import TextBlockDT, LibraryItem, CaseQuiz
 from quizblock.tests.test_models import FakeReq
 from quizblock.models import Submission
@@ -246,3 +248,8 @@ class CaseQuizTest(TestCase):
         sub = Submission.objects.create(quiz=cq, user=user)
         self.assertTrue(cq.is_submitted(cq, user))
         self.assertTrue(sub in cq.submission_set.filter(user=user))
+
+
+class UELCModuleFactoryTest(TestCase):
+    def test_is_valid_from_factory(self):
+        UELCModuleFactory()

@@ -22,7 +22,7 @@ class GateBlock(models.Model):
                                       gate_user_id=user.id).delete()
 
     def pageblock(self):
-        return self.pageblocks.all()[0]
+        return self.pageblocks.first()
 
     def needs_submit(self):
         return True

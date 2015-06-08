@@ -108,7 +108,7 @@ class CurveballBlock(models.Model):
         return status
 
     @classmethod
-    def add_form(self):
+    def add_form(cls):
         class AddForm(forms.Form):
             choice_one_title = forms.CharField(label="Choice One Label")
             choice_one_explanation = forms.CharField(
