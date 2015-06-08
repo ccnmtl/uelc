@@ -2,7 +2,6 @@ from django import forms
 from django.db import models
 from django.forms import widgets
 from django.contrib.auth.models import User, Permission
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from ckeditor.widgets import CKEditorWidget
@@ -238,7 +237,7 @@ class CaseMap(models.Model):
         self.save()
 
     def save_value(self, section, data):
-        case_depth = len(section.get_tree())
+        case_depth = section.get_tree().count()
         count = 0
         section_depth = 0
         for sec in section.get_tree():
@@ -341,7 +340,7 @@ class UELCHandler(Section):
         modules = section.get_root().get_children()
         sec_module = section.get_module()
         part = 0
-        for index in range(len(modules)):
+        for index in range(modules.count()):
             if modules[index] == sec_module:
                 part = index
         if part == 0:
@@ -518,8 +517,7 @@ class CaseQuiz(Quiz):
                     casemap = CaseMap.objects.get(
                         user=user,
                         case_id=case_id)
-
-                except ObjectDoesNotExist:
+                except CaseMap.DoesNotExist:
                     casemap = CaseMap.objects.create(
                         user=user,
                         case_id=case_id,
@@ -554,7 +552,7 @@ class CaseQuiz(Quiz):
         # not that they can access this one. careful.
         unlocked = False
         submissions = GateSubmission.objects.filter(gate_user_id=user.id)
-        if len(submissions) > 0:
+        if submissions.count() > 0:
             for sub in submissions:
                 section_id = sub.gateblock.pageblock().section_id
                 section = Section.objects.get(id=section_id)

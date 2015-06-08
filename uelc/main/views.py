@@ -259,8 +259,8 @@ class UELCPageView(LoggedInMixin,
         # be "gated" because we will be skipping around depending on
         # user decisions.
         self.run_section_gatecheck(request.user, path)
-        uloc[0].path = path
-        uloc[0].save()
+        uloc.first().path = path
+        uloc.first().save()
         context = dict(
             section=self.section,
             module=self.module,
@@ -355,11 +355,11 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                 return tree_depth
 
     def set_upv(self, user, section, status):
+        upv = UserPageVisit.objects.filter(section=section, user=user).first()
         try:
-            upv = UserPageVisit.objects.filter(section=section, user=user)[0]
             upv.status = status
             upv.save()
-        except IndexError:
+        except AttributeError:
             pass
         return
 
@@ -390,10 +390,10 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             li.update(doc=doc)
         if name:
             li.update(name=name)
-        li[0].user.clear()
+        li.first().user.clear()
         for index in range(len(users)):
             user = User.objects.get(id=users[index])
-            li[0].user.add(user)
+            li.first().user.add(user)
 
     def notify_group_user(self, section, user, notification):
         socket = zmq_context.socket(zmq.REQ)
@@ -534,8 +534,8 @@ class UELCAdminCreateUserView(
             cohort = Cohort.objects.get(id=cohort_id)
         else:
             cohort = None
-        user_exists = User.objects.filter(Q(username=username))
-        if len(user_exists) == 0 and not profile_type == "":
+        user_filter = User.objects.filter(Q(username=username))
+        if user_filter.exists() and not profile_type == "":
             user = User.objects.create(username=username, password=password)
             UserProfile.objects.create(
                 user=user,
@@ -546,7 +546,7 @@ class UELCAdminCreateUserView(
             user.save()
             user.profile.set_image_upload_permissions(user)
 
-        if len(user_exists) > 0:
+        if user_filter.exists():
             action_args = dict(
                 error="That username already exists! Please enter a new one.")
             messages.error(request, action_args['error'],
@@ -640,7 +640,7 @@ class UELCAdminCreateHierarchyView(LoggedInMixinAdmin,
             url = '/pages/' + name + '/'
             hier = Hierarchy.objects.filter(Q(base_url=url) | Q(name=name))
 
-            if len(hier) > 0:
+            if hier.exists():
                 action_args = dict(
                     error="Hierarchy exists! Please use the exisiting one,\
                           or create one with a different name and url.")
@@ -786,7 +786,7 @@ class UELCAdminCreateCaseView(LoggedInMixinAdmin,
         description = request.POST.get('description', '')
         case_exists_name = Case.objects.filter(Q(name=name))
         case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
-        if len(case_exists_name):
+        if case_exists_name.exists():
             action_args = dict(
                 error="Case with this name already exists!\
                       Please use existing case or rename.")
@@ -794,7 +794,7 @@ class UELCAdminCreateCaseView(LoggedInMixinAdmin,
                            extra_tags='createCaseViewError')
             url = request.META['HTTP_REFERER']
             return HttpResponseRedirect(url)
-        if len(case_exists_hier):
+        if case_exists_hier.exists():
             action_args = dict(
                 error="Case already exists! A case has already\
                       been created that is attached to the\
@@ -850,7 +850,7 @@ class UELCAdminEditCaseView(LoggedInMixinAdmin,
         case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
         case_id = request.POST.get('case_id', '')
 
-        if len(case_exists_name) > 1:
+        if case_exists_name.count() > 1:
             action_args = dict(
                 error="Case with this name already exists!\
                       Please use existing case or rename.")
@@ -858,7 +858,7 @@ class UELCAdminEditCaseView(LoggedInMixinAdmin,
                            extra_tags='createCaseViewError')
             url = request.META['HTTP_REFERER']
             return HttpResponseRedirect(url)
-        if len(case_exists_hier) > 1:
+        if case_exists_hier.count() > 1:
             action_args = dict(
                 error="Case already exists! A case has already\
                       been created that is attached to the\
