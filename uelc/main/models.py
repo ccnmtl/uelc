@@ -8,7 +8,8 @@ from django.utils.safestring import mark_safe
 from ckeditor.widgets import CKEditorWidget
 from gate_block.models import GateSubmission
 from pageblocks.models import TextBlock
-from pagetree.models import Hierarchy, Section, ReportableInterface
+from pagetree.models import Hierarchy, Section
+from pagetree.reports import ReportableInterface
 from quizblock.models import Quiz, Question, Submission, Response, Answer
 
 
