@@ -51,7 +51,11 @@ class DynamicHierarchyMixin(object):
             return HttpResponseNotFound(msg)
         else:
             self.hierarchy_name = name
-            self.hierarchy_base = Hierarchy.objects.get(name=name).base_url
+            try:
+                self.hierarchy_base = Hierarchy.objects.get(name=name).base_url
+            except Hierarchy.DoesNotExist:
+                msg = "No hierarchy named %s found" % name
+                return HttpResponseNotFound(msg)
         return super(DynamicHierarchyMixin, self).dispatch(*args, **kwargs)
 
 

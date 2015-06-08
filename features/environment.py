@@ -1,4 +1,5 @@
 from behave_django import environment
+from django.conf import settings
 from splinter import Browser
 
 from uelc.main.tests.factories import UELCModuleFactory
@@ -8,6 +9,7 @@ BEHAVE_DEBUG_ON_ERROR = False
 
 
 def before_all(context):
+    settings.DEBUG = True
     context.browser = Browser('firefox')
     UELCModuleFactory()
 
