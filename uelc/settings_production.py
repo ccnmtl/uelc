@@ -37,7 +37,6 @@ MEDIA_URL = S3_URL + 'media/'
 COMPRESS_STORAGE = 'uelc.s3utils.CompressorS3BotoStorage'
 AWS_QUERYSTRING_AUTH = False
 
-DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 STATSD_PREFIX = 'uelc-prod'
