@@ -259,8 +259,8 @@ class UELCPageView(LoggedInMixin,
         # be "gated" because we will be skipping around depending on
         # user decisions.
         self.run_section_gatecheck(request.user, path)
-        uloc.first().path = path
-        uloc.first().save()
+        uloc[0].path = path
+        uloc[0].save()
         context = dict(
             section=self.section,
             module=self.module,
