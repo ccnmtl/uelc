@@ -18,13 +18,17 @@ from uelc.main.models import CaseMap, Case
 
 
 def get_cases(request):
+    """
+    Returns the cases for the current user if available. Otherwise,
+    returns None.
+    """
     try:
         user = User.objects.get(id=request.user.id)
         cohort = user.profile.cohort
-        case = cohort.case
-        return case
+        cases = cohort.case
+        return cases
     except AttributeError:
-        return
+        return None
 
 
 def admin_ajax_page_submit(section, user):

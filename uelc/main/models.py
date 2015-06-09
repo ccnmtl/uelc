@@ -25,10 +25,8 @@ class Cohort(models.Model):
         return '%s' % (self.name)
 
     def _get_case(self):
-        case = Case.objects.filter(cohort=self.id)
-        if not case:
-            return None
-        return case
+        """Returns all the cases for this Cohort as a queryset."""
+        return Case.objects.filter(cohort=self.id)
 
     def casename(self):
         casenames = [case.name.encode(
