@@ -2,7 +2,6 @@ import factory
 from django.contrib.auth.models import User
 
 from pagetree.models import Hierarchy
-from quizblock.tests.test_models import FakeReq
 from quizblock.models import Quiz, Question
 
 from uelc.main.models import (
