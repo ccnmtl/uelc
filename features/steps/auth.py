@@ -1,13 +1,20 @@
 import urlparse
 from behave import given
-from uelc.main.tests.factories import AdminUserFactory, GroupUserFactory
+from uelc.main.models import Case
+from uelc.main.tests.factories import AdminUpFactory, GroupUpFactory
 
 
 def sign_in_as(context, usertype='group user'):
     if usertype == 'admin':
-        user = AdminUserFactory()
+        up = AdminUpFactory()
+        user = up.user
     else:
-        user = GroupUserFactory()
+        up = GroupUpFactory()
+        user = up.user
+
+    # Add the user's cohort to the case
+    case = Case.objects.first()
+    case.cohort.add(up.cohort)
 
     password = 'test_pass1'
     user.set_password(password)

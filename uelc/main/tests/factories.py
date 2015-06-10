@@ -59,8 +59,8 @@ class GroupUpFactory(factory.DjangoModelFactory):
 
 class HierarchyFactory(factory.DjangoModelFactory):
     FACTORY_FOR = Hierarchy
-    base_url = "/"
-    name = "main"
+    base_url = "/pages/case-one/"
+    name = "case-one"
 
 
 class CaseFactory(factory.DjangoModelFactory):
@@ -108,12 +108,22 @@ class UELCModuleFactory(object):
     A factory for creating a production-like tree of Sections/Pageblocks
     for testing UELC.
     """
-    def __init__(self, hname='main', base_url='/pages/'):
-        hierarchy = HierarchyFactory(name=hname, base_url=base_url)
+    def __init__(self):
+        HierarchyFactory(name='main', base_url='/')
+        # hierarchy: case-one at /pages/case-one/
+        case1 = CaseFactory()
+        hierarchy = case1.hierarchy
+
         root = hierarchy.get_root()
         root.add_child_section_from_dict({
             'label': 'Part 1',
             'slug': 'part-1',
+            'pageblocks': [{
+                # The 'Text Block' in UELC is custom.
+                'block_type': 'Text Block',
+                'label': 'Test Edit Facilitator Scratchpad',
+                'body': 'These elements use Bootstrap for styling.',
+            }],
             'children': [
                 {
                     'label': 'Home',

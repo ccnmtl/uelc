@@ -11,11 +11,11 @@ BEHAVE_DEBUG_ON_ERROR = False
 def before_all(context):
     settings.DEBUG = True
     context.browser = Browser('firefox')
-    UELCModuleFactory()
 
 
 def before_scenario(context, scenario):
     environment.before_scenario(context, scenario)
+    UELCModuleFactory()
 
 
 def after_scenario(context, scenario):
