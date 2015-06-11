@@ -51,10 +51,11 @@ $(function() {
         //var gateBtn = getTheBtn.find('.gate-button');
 
         if(data.notification == "At Gate Block"){
-            updateGateSectionStatus(groupColumnSelector, sectionBlock)
             var msg = 'we just landed on a page with a gateblock!';
+            updateGateSectionStatus(groupColumnSelector, sectionBlock)
             setGroupLocation(groupColumnSelector, sectionBlock)
-            setGroupMessage(jQuery(groupColumnSelector), msg);
+            //highlightActiveGate(groupColumnSelector, sectionBlock)
+            //setGroupMessage(jQuery(groupColumnSelector), msg);
         }
         if(data.notification == "Decision Submitted"){
             var msg = 'we just made a decision';
@@ -83,11 +84,23 @@ $(function() {
     var setGroupLocation = function(groupColumnSelector, sectionBlock){
         var groupIcon = jQuery('<span class="glyphicon glyphicon-user" aria-hidden="true"></span>');
         jQuery(groupColumnSelector).find('.glyphicon-user').remove();
-        sectionBlock.prepend(groupIcon);
+        sectionBlock.find('.gate-button').prepend(groupIcon);
     }
 
     var updateGateSectionStatus = function(groupColumnSelector, sectionBlock){
-        sectionBlock.find('.badge').text('reviewing');
+        var badge = sectionBlock.find('.badge');
+        if(badge.text() == 'reviewed'){
+            return
+        }else{
+            badge.text('reviewing')
+        }
+    }
+
+    var highlightActiveGate = function(groupColumnSelector, sectionBlock){
+        jQuery(groupColumnSelector).find('.gate-block').each(function(){
+            jQuery(this).removeClass('active');
+        });
+        sectionBlock.addClass('active');
     }
 
     var setGroupMessage = function(groupColumn, msg){
