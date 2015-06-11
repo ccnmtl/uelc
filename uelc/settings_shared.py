@@ -144,13 +144,13 @@ PAGEBLOCKS = [
 
 INTERNAL_IPS = ('127.0.0.1', )
 DEBUG_TOOLBAR_PANELS = (
-    'debug_toolbar.panels.version.VersionDebugPanel',
-    'debug_toolbar.panels.timer.TimerDebugPanel',
-    'debug_toolbar.panels.headers.HeaderDebugPanel',
-    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-    'debug_toolbar.panels.template.TemplateDebugPanel',
-    'debug_toolbar.panels.sql.SQLDebugPanel',
-    'debug_toolbar.panels.signals.SignalDebugPanel',
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
 )
 IMPERSONATE_REQUIRE_SUPERUSER = False
 
@@ -219,3 +219,5 @@ WINDSOCK_BROKER_URL = "tcp://localhost:5555"
 ZMQ_APPNAME = "uelc"
 WINDSOCK_SECRET = "6f1d916c-7761-4874-8d5b-8f8f93d20bf2"
 WINDSOCK_WEBSOCKETS_BASE = "ws://localhost:5050/socket/"
+
+BEHAVE_DEBUG_ON_ERROR = False

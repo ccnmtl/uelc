@@ -7,6 +7,11 @@ def i_click_the_case_button(context):
     context.browser.find_by_css('.case-index-list li>a').first.click()
 
 
+@when(u'I click the button "{text}"')
+def i_click_the_button(context, text):
+    context.browser.find_by_text(text).first.click()
+
+
 @when(u'I click the link "{text}"')
 def i_click_the_link(context, text):
     context.browser.find_link_by_partial_text(text).first.click()

@@ -5,9 +5,6 @@ from splinter import Browser
 from uelc.main.tests.factories import UELCModuleFactory
 
 
-BEHAVE_DEBUG_ON_ERROR = False
-
-
 def before_all(context):
     settings.DEBUG = True
     context.browser = Browser('firefox')
@@ -28,6 +25,6 @@ def after_all(context):
 
 
 def after_step(context, step):
-    if BEHAVE_DEBUG_ON_ERROR and step.status == "failed":
+    if settings.BEHAVE_DEBUG_ON_ERROR and step.status == "failed":
         import ipdb
         ipdb.post_mortem(step.exc_traceback)
