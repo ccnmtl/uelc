@@ -51,13 +51,14 @@ $(function() {
         //var gateBtn = getTheBtn.find('.gate-button');
 
         if(data.notification == "At Gate Block"){
+            updateGateSectionStatus(groupColumnSelector, sectionBlock)
             var msg = 'we just landed on a page with a gateblock!';
-            set_group_location(groupColumnSelector, sectionBlock)
-            set_group_message(jQuery(groupColumnSelector), msg);
+            setGroupLocation(groupColumnSelector, sectionBlock)
+            setGroupMessage(jQuery(groupColumnSelector), msg);
         }
         if(data.notification == "Decision Submitted"){
             var msg = 'we just made a decision';
-            set_group_message(jQuery(groupColumnSelector), msg);   
+            setGroupMessage(jQuery(groupColumnSelector), msg);   
         }
 
         
@@ -79,13 +80,17 @@ $(function() {
         alert($('Your browser does not support WebSockets. ' +
                 'You will have to refresh your browser to view updates.'));
     }
-    var set_group_location = function(groupColumnSelector, sectionBlock){
+    var setGroupLocation = function(groupColumnSelector, sectionBlock){
         var groupIcon = jQuery('<span class="glyphicon glyphicon-user" aria-hidden="true"></span>');
         jQuery(groupColumnSelector).find('.glyphicon-user').remove();
         sectionBlock.prepend(groupIcon);
     }
 
-    var set_group_message = function(groupColumn, msg){
+    var updateGateSectionStatus = function(groupColumnSelector, sectionBlock){
+        sectionBlock.find('.badge').text('reviewing');
+    }
+
+    var setGroupMessage = function(groupColumn, msg){
         msgHtml = jQuery('<div class="group-message alert alert-warning alert-dismissable">' +
                          '<button type="button" class="close" data-dismiss="alert"' + 
                          'aria-hidden="true">×</button></div>');
