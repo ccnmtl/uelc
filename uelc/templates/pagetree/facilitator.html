@@ -30,10 +30,7 @@
         <h3 class="facilitator-usrnm">Group {{u.0}}<br /><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></h3>
         <div class="gate-section-list">
         {% for sec in u.1 %}
-            {% if sec.0.pk == u.2.id %}
-                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-            {% endif %}
-          <div class="group-btn-list" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
+          <div class="group-btn-list gate-block {% if sec.4 == 'reviewing' %}active{% endif%}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
             {% comment %}
             <!-- 
                 section (sec.0), gateblock (sec.1), unlocked (sec.2), 
@@ -44,18 +41,21 @@
             {% endcomment %}
 
             {% if sec.2 %}
-              {% comment %}
-                <!-- We are displaying content seperately from gateblocks -->
-              {% endcomment %}
+
                 {% if sec.5 %}
                     {% if sec.7.0 %}
-                        {% get_selected_curveball u.0 sec.7.1 as selected_curveball %}
-                        {% if selected_curveball %}
-                            selected curveball - {{ selected_curveball.curveball.title }}
-                        {% else %}
-                            No selected curveball 
-                        {% endif %}
-                        
+                        <div class="gated-curveball">
+                            {% get_selected_curveball u.0 sec.7.1 as selected_curveball %}
+                            {% if selected_curveball %}
+                                selected curveball - {{ selected_curveball.curveball.title }}
+                            {% else %}
+                                No selected curveball 
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if sec.0.pk == u.2.id %}
+                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                     {% endif %}
                   <div class="gate-button unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                     <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
@@ -74,21 +74,26 @@
             {% else %}
               {% if sec.5 %} <!-- can show gateblock -->
                 {% if sec.7.0 %}
-                {% get_selected_curveball u.0 sec.7.1 as selected_curveball %}
+                <div class="gated-curveball">
+                    {% get_selected_curveball u.0 sec.7.1 as selected_curveball %}
                         {% if selected_curveball %}
                             selected curveball - {{ selected_curveball.curveball.title }}
                         {% else %}
                             No selected curveball 
                         {% endif %}
-                    <form action="." method="post">{% csrf_token %}
-                    {{sec.7.1.curveball_select_form|bootstrap}}
-                    <input type="submit" value="Submit" class="btn btn-primary">
-                    <input type="hidden" name="curveball-block-id" value="{{ sec.7.1.id }}" />
-                    <input type="hidden" name="user_id" value="{{u.0.id}}" />
-                    <input type="hidden" name="curveball-select" value="submit" />
+                        <form action="." method="post">{% csrf_token %}
+                        {{sec.7.1.curveball_select_form|bootstrap}}
+                        <input type="submit" value="Submit" class="btn btn-primary">
+                        <input type="hidden" name="curveball-block-id" value="{{ sec.7.1.id }}" />
+                        <input type="hidden" name="user_id" value="{{u.0.id}}" />
+                        <input type="hidden" name="curveball-select" value="submit" />
 
-                    
-                    </form>
+                        
+                        </form>
+                    </div>
+                {% endif %}
+                {% if sec.0.pk == u.2.id %}
+                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                 {% endif %}
                 <div class="gate-button locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                   <form action ="." method="post">{% csrf_token %}
