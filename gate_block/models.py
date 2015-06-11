@@ -42,6 +42,7 @@ class GateBlock(models.Model):
         status = 'None'
         unlocked = self.unlocked(user, gate_section)
         if unlocked:
+
             status = 'reviewed'
             return status
         
@@ -49,8 +50,7 @@ class GateBlock(models.Model):
             user=user,
             hierarchy=hierarchy)
         uloc_path = h_url + uloc[0].path
-        #import pdb
-        #pdb.set_trace()
+        
         uv = self.pageblock().section.get_uservisit(user)
 
         if uv:
