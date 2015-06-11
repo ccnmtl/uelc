@@ -107,16 +107,15 @@
       </div>
       {% for quiz in case_quizblocks %}
             {% if quiz.id == block.id %}
-                {% if quiz.completed != True %}
+              {% if quiz.completed != True %}
                 <input type="hidden" name="pageblock-{{block.id}}-case" value="{{case.id}}" />
                 {% if request.user.profile.is_group_user %}
                   <input id="pageblock-{{block.id}}-submit" type="submit" value="Submit Decision" class="btn btn-primary" />
                   </form>
                 {% endif %}
-                {% else %}
-            <p class="wait-msg alert alert-danger">Please wait for the facilitator to allow you to proceed.</p>
-        {% endif %}
-      {% endif %}
+                <p class="wait-msg alert alert-danger">Please wait for the facilitator to allow you to proceed.</p>
+              {% endif %}
+          {% endif %}
       {% endfor %}
 
     {% elif block.block.display_name == "Curveball Block" %}

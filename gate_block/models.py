@@ -42,24 +42,33 @@ class GateBlock(models.Model):
         status = 'None'
         unlocked = self.unlocked(user, gate_section)
         if unlocked:
-            status = 'completed'
-        try:
-            uloc = UserLocation.objects.get_or_create(
-                user=user,
-                hierarchy=hierarchy)
-            uloc_path = h_url + uloc[0].path
-            page_status = self.pageblock().section.get_uservisit(user).status
-            if uloc_path == gs_url:
-                status = "waiting"
-                return status
-            # if for some reason the user is re-doing their entry.
-            # if so, the admin would have reset the gates so they
-            # can redo their decision
-            if not unlocked and page_status == "incomplete":
-                status = "in progress"
-                return status
-        except:
-            status = "incomplete"
+            status = 'reviewed'
+            return status
+        
+        uloc = UserLocation.objects.get_or_create(
+            user=user,
+            hierarchy=hierarchy)
+        uloc_path = h_url + uloc[0].path
+        #import pdb
+        #pdb.set_trace()
+        uv = self.pageblock().section.get_uservisit(user)
+
+        if uv:
+            status = "reviewing"
+            return status
+
+        if uloc_path == gs_url:
+            status = "reviewing"
+            return status
+        # if for some reason the user is re-doing their entry.
+        # if so, the admin would have reset the gates so they
+        # can redo their decision
+        #
+        #if not unlocked and page_status == "to be reviewed":
+        #    status = "in progress"
+        #    return status
+    
+        status = "to be reviewed"
         return status
 
     @classmethod
