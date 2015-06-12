@@ -539,6 +539,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                 user_last_location = self.get_section(user_last_path)
             except IndexError:
                 user_last_location = None
+
             um = get_user_map(hierarchy, user)
             part_usermap = hand.get_partchoice_by_usermap(um)
             gate_section = [[g.pageblock().section,
