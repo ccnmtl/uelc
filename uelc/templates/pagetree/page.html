@@ -62,7 +62,7 @@
                 <div id="edit-user" class="panel panel-default">
                   <div class="panel-heading">Choice submission error.</div>
                   <div class="panel-body">
-                        It seems you forgot so select one of the choices! Please click on on of the choices and resubmit. Thanks!
+                        It seems you forgot to select one of the choices! Please click on on of the choices and resubmit. Thanks!
                   </div>
                 </div><!--end #hierarchiess-->
                 </div> <!--end modal-dialog-->
@@ -90,7 +90,7 @@
         <p class="unlock-msg alert alert-success" style="display:none">You may proceed to the next section</p>
       </div>
     {% elif block.block.display_name == "Decision Block" %}
-      {% for quiz in case_quizblocks %}
+      {% for quiz in decision_blocks %}
         {% if quiz.id == block.id %}
           {% if quiz.completed != True%}
             {% if request.user.profile.is_group_user %}
@@ -105,7 +105,7 @@
       {% endif %}
       {% render block %}
       </div>
-      {% for quiz in case_quizblocks %}
+      {% for quiz in decision_blocks %}
             {% if quiz.id == block.id %}
             {% is_section_unlocked request section as unlocked %}
               {% if not unlocked and quiz.completed %}
@@ -117,11 +117,10 @@
                   <input id="pageblock-{{block.id}}-submit" type="submit" value="Submit Decision" class="btn btn-primary" />
                   </form>
                 {% endif %}
-                {% else %}
-            
-        {% endif %}
+                {% else %}   
       {% endif %}
-      {% endfor %}
+    {% endif %}
+  {% endfor %}
 
     {% elif block.block.display_name == "Curveball Block" %}
       <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
@@ -148,11 +147,21 @@
 
 {% endif %}
 {% endfor %}
+{% is_section_unlocked request section as unlocked %}
 
+{% if gate_blocks|length == 1 and decision_blocks|length == 0 %}
+  {% if not section_submission %}
+    <form class="decision-block" id="pageblock-{{block.id}}-quiz" action="/submit_section/" method="post">{% csrf_token %}
+      <input type="hidden" name="section" value="{{section.id}}" />
+      <input type="submit" value="Confirm" class="btn btn-primary confirm" />
+    </form>
+  {% else %}
+    <input class="button-confirmed" type="submit" value="Confirm" style="cursor: not-allowed"/>
+  {% endif %}
+{% endif %}
 {% include "pagetree/toc.html" %}
 
 </div>
-
 
 {% endblock %}
 

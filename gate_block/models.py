@@ -41,8 +41,17 @@ class GateBlock(models.Model):
         gs_url = gate_section.get_absolute_url()
         status = 'None'
         unlocked = self.unlocked(user, gate_section)
-        if unlocked:
+        
 
+
+        for block in gate_section.pageblock_set.all():
+            bk = block.block()
+            if bk.display_name == "Decision Block":
+                if bk.is_submitted(bk, user):
+                    status = 'reviewed'
+                    return status
+
+        if unlocked:
             status = 'reviewed'
             return status
         

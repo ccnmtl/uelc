@@ -26,7 +26,7 @@ from uelc.mixins import (
 from uelc.main.models import (
     Cohort, UserProfile, Case,
     CaseAnswer, UELCHandler,
-    LibraryItem,
+    LibraryItem, SectionSubmission
     )
 from uelc.main.forms import (
     CreateUserForm, CreateHierarchyForm,
@@ -224,6 +224,13 @@ class UELCPageView(LoggedInMixin,
         uloc = UserLocation.objects.get_or_create(
             user=request.user,
             hierarchy=hierarchy)
+        try:
+            section_submission = SectionSubmission.objects.get(
+                section=self.section,
+                user=request.user)
+        except SectionSubmission.DoesNotExist:
+            section_submission = None
+
         # handler stuff
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
@@ -244,7 +251,8 @@ class UELCPageView(LoggedInMixin,
         if not request.user.is_impersonate:
             self.upv.visit()
         instructor_link = has_responses(self.section)
-        case_quizblocks = []
+        decision_blocks = []
+        gate_blocks = []
 
         for block in self.section.pageblock_set.all():
             display_name = block.block().display_name
@@ -259,9 +267,10 @@ class UELCPageView(LoggedInMixin,
                 completed = quiz.is_submitted(quiz, request.user)
                 if not completed and grp_usr:
                     self.notify_facilitators(request, path, 'Decision Block')
-                case_quizblocks.append(dict(id=block.id,
+                decision_blocks.append(dict(id=block.id,
                                             completed=completed))
             if display_name == 'Gate Block' and grp_usr:
+                gate_blocks.append(dict(id=block.id))
                 self.notify_facilitators(request, path, 'At Gate Block')
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
@@ -281,7 +290,9 @@ class UELCPageView(LoggedInMixin,
             instructor_link=instructor_link,
             is_view=True,
             case=case,
-            case_quizblocks=case_quizblocks,
+            decision_blocks=decision_blocks,
+            gate_blocks=gate_blocks,
+            section_submission=section_submission,
             casemap=casemap,
             # library_items=self.get_library_items(case),
             part=part,
@@ -340,6 +351,38 @@ class UELCPageView(LoggedInMixin,
             messages.error(request, action_args['error'],
                            extra_tags='quizSubmissionError')
             return HttpResponseRedirect(request.path)
+
+
+class SubmitSectionView(LoggedInMixin,
+                        TemplateView):
+    extra_context = dict()
+
+    def notify_facilitators(self, request, section, notification):
+        user = get_object_or_404(User, pk=request.user.pk)
+        socket = zmq_context.socket(zmq.REQ)
+        socket.connect(settings.WINDSOCK_BROKER_URL)
+
+        msg = dict(
+            userId=request.user.id,
+            sectionPk=section.pk,
+            notification=notification)
+
+        e = dict(address="%s.pages/%s/facilitator/" %
+                 (settings.ZMQ_APPNAME, section.hierarchy.name),
+                 content=json.dumps(msg))
+
+        socket.send(json.dumps(e))
+        socket.recv()
+
+    def post(self, request):
+        user = request.user
+        section_id = request.POST.get('section', '')
+        section = Section.objects.get(id=section_id)
+        ss = SectionSubmission.get_or_create(section=section, user=user)
+        notification = "Section Submitted"
+        self.notify_facilitators(request, section, notification)
+        url = request.META['HTTP_REFERER']
+        return HttpResponseRedirect(url)
 
 
 class UELCEditView(LoggedInFacilitatorMixin,
@@ -491,10 +534,11 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             path=hierarchy.base_url)[0]
         user_sections = []
         for user in cohort_users:
-            user_last_path = user.userlocation_set.all()[0].path
-            user_last_location = self.get_section(user_last_path)
-
-            print user_last_location
+            try:
+                user_last_path = user.userlocation_set.all()[0].path
+                user_last_location = self.get_section(user_last_path)
+            except IndexError:
+                user_last_location = None
             um = get_user_map(hierarchy, user)
             part_usermap = hand.get_partchoice_by_usermap(um)
             gate_section = [[g.pageblock().section,
@@ -548,7 +592,13 @@ class UELCAdminCreateUserView(
         else:
             cohort = None
         user_filter = User.objects.filter(Q(username=username))
-        if user_filter.exists() and not profile_type == "":
+        if user_filter.exists():
+            action_args = dict(
+                error="That username already exists! Please enter a new one.")
+            messages.error(request, action_args['error'],
+                           extra_tags='createUserViewError')
+
+        if not user_filter.exists() and not profile_type == "":
             user = User.objects.create(username=username, password=password)
             UserProfile.objects.create(
                 user=user,
@@ -558,12 +608,6 @@ class UELCAdminCreateUserView(
                 user.is_staff = True
             user.save()
             user.profile.set_image_upload_permissions(user)
-
-        if user_filter.exists():
-            action_args = dict(
-                error="That username already exists! Please enter a new one.")
-            messages.error(request, action_args['error'],
-                           extra_tags='createUserViewError')
 
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)

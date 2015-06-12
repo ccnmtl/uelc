@@ -2,9 +2,9 @@ var UELCAdmin;
 UELCAdmin = {
     Admin: function() {
         this.init = function() {
-            this.setPartsOnGateblocks();
-            this.setChoicesOnSecondParts();
-            this.impersonate();
+            //this.setPartsOnGateblocks();
+            //this.setChoicesOnSecondParts();
+            //this.impersonate();
             /*
              jQuery('.library-item-user-select').multiselect();
              jQuery('[data-toggle="tooltip"]').tooltip({

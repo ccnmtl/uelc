@@ -52,14 +52,26 @@ $(function() {
 
         if(data.notification == "At Gate Block"){
             var msg = 'we just landed on a page with a gateblock!';
-            updateGateSectionStatus(groupColumnSelector, sectionBlock)
             setGroupLocation(groupColumnSelector, sectionBlock)
             //highlightActiveGate(groupColumnSelector, sectionBlock)
             //setGroupMessage(jQuery(groupColumnSelector), msg);
         }
+        if(data.notification == "Section Submitted"){
+            var msg = 'we just confirmed a page';
+            updateGateSectionStatus(groupColumnSelector, sectionBlock)
+            setGroupLocation(groupColumnSelector, sectionBlock)
+            highlightActiveGate(groupColumnSelector, sectionBlock)
+            setGroupMessage(jQuery(groupColumnSelector), msg);
+        }
         if(data.notification == "Decision Submitted"){
             var msg = 'we just made a decision';
-            setGroupMessage(jQuery(groupColumnSelector), msg);   
+            setGroupMessage(jQuery(groupColumnSelector), msg);
+            updateGateSectionStatus(groupColumnSelector, sectionBlock)   
+        }
+        if(data.notification == "Decision Block"){
+            var msg = 'we just landed on a Decision Block';
+            setGroupMessage(jQuery(groupColumnSelector), msg);
+            highlightActiveGate(groupColumnSelector, sectionBlock)
         }
 
         

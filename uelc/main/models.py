@@ -10,6 +10,7 @@ from pageblocks.models import TextBlock
 from pagetree.models import Hierarchy, Section
 from pagetree.reports import ReportableInterface
 from quizblock.models import Quiz, Question, Submission, Response, Answer
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class Cohort(models.Model):
@@ -610,5 +611,27 @@ class CaseAnswer(models.Model):
                 initial=self.description)
         return CaseAnswerForm()
 
+
+class SectionSubmission(models.Model):
+    section = models.ForeignKey(Section)
+    user = models.ForeignKey(User)
+    submitted = models.DateTimeField(auto_now_add=True, editable=False)
+
+    @classmethod
+    def get_or_create(cls, section, user):
+        try:
+            ss = SectionSubmission.objects.get(
+                section=section,
+                user=user)
+        except ObjectDoesNotExist:
+            ss = SectionSubmission.objects.create(
+                section=section,
+                user=user) 
+        return ss
+
+    def __unicode__(self):
+        return "section %d submission by %s at %s" % (self.section.id,
+                                                   unicode(self.user),
+                                                   self.submitted)
 
 ReportableInterface.register(CaseQuiz)
