@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from pagetree.models import PageBlock, Section, UserLocation
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class GateBlock(models.Model):
@@ -41,11 +42,14 @@ class GateBlock(models.Model):
         gs_url = gate_section.get_absolute_url()
         status = 'None'
         unlocked = self.unlocked(user, gate_section)
-        
-
+        ss = SectionSubmission.objects.filter(user=user, section=gate_section) 
 
         for block in gate_section.pageblock_set.all():
-            bk = block.block()
+            if ss and block.section == gate_section:
+                status = 'reviewed'
+                return status
+
+            bk = block.block()    
             if bk.display_name == "Decision Block":
                 if bk.is_submitted(bk, user):
                     status = 'reviewed'
@@ -113,4 +117,27 @@ class GateSubmission(models.Model):
     def __unicode__(self):
         return "gate %d submission by %s at %s" % (self.gateblock.id,
                                                    unicode(self.gate_user),
+                                                   self.submitted)
+
+
+class SectionSubmission(models.Model):
+    section = models.ForeignKey(Section, related_name='section_submited')
+    user = models.ForeignKey(User, related_name='section_user')
+    submitted = models.DateTimeField(auto_now_add=True, editable=False)
+
+    @classmethod
+    def get_or_create(cls, section, user):
+        try:
+            ss = SectionSubmission.objects.get(
+                section=section,
+                user=user)
+        except ObjectDoesNotExist:
+            ss = SectionSubmission.objects.create(
+                section=section,
+                user=user) 
+        return ss
+
+    def __unicode__(self):
+        return "section %d submission by %s at %s" % (self.section.id,
+                                                   unicode(self.user),
                                                    self.submitted)

@@ -148,18 +148,32 @@
 {% endif %}
 {% endfor %}
 {% is_section_unlocked request section as unlocked %}
-
 {% if gate_blocks|length == 1 and decision_blocks|length == 0 %}
   {% if not section_submission %}
-    <form class="decision-block" id="pageblock-{{block.id}}-quiz" action="/submit_section/" method="post">{% csrf_token %}
+    <form class="decision-block" id="confirm" data-action="/submit_section/" >{% csrf_token %}
       <input type="hidden" name="section" value="{{section.id}}" />
-      <input type="submit" value="Confirm" class="btn btn-primary confirm" />
+      <input type="button" value="Confirm" class="btn btn-primary confirm" />
     </form>
   {% else %}
     <input class="button-confirmed" type="submit" value="Confirm" style="cursor: not-allowed"/>
   {% endif %}
 {% endif %}
 {% include "pagetree/toc.html" %}
+
+<script>
+  jQuery('.confirm').click(function(){
+    var form = jQuery('#confirm');
+    window.action = form.data('action');
+    window.formData = form.serialize();
+    jQuery.post(action, formData).success(function(){
+      var btnConfirmed = '<input class="button-confirmed"' +
+      'type="submit" value="Confirm" style="cursor: not-allowed"/>';
+      jQuery('#confirm').before(btnConfirmed);
+      jQuery('#confirm').remove();
+    })   
+  })
+  
+</script>
 
 </div>
 

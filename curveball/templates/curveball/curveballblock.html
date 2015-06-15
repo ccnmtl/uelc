@@ -34,10 +34,10 @@
 
 {% if request.user.profile.is_group_user %}
   {% if block.curveballsubmission_set.count %}
-
   {% get_selected_curveball request.user block as selected_curveball %}
-                selected curveball - {{ selected_curveball.curveball.title }}
-  
+                <p>selected curveball - {{ selected_curveball.curveball.title }}</p>
+                <p>{{ selected_curveball.curveball.explanation|markdown }}</p>
+            
     {% for cb in block.curveballsubmission_set.all %}
       {% if cb.group_curveball == request.user %}
         {{ block.get_selected_curveball }}

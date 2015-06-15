@@ -52,22 +52,27 @@ $(function() {
 
         if(data.notification == "At Gate Block"){
             var msg = 'we just landed on a page with a gateblock!';
+            var action = 'gateblock';
             setGroupLocation(groupColumnSelector, sectionBlock)
+            updateGateSectionStatus(groupColumnSelector, sectionBlock, action)
             //highlightActiveGate(groupColumnSelector, sectionBlock)
             //setGroupMessage(jQuery(groupColumnSelector), msg);
         }
         if(data.notification == "Section Submitted"){
             var msg = 'we just confirmed a page';
-            updateGateSectionStatus(groupColumnSelector, sectionBlock)
+            var action = 'section submitted'
+            updateGateSectionStatus(groupColumnSelector, sectionBlock, action)
             setGroupLocation(groupColumnSelector, sectionBlock)
             highlightActiveGate(groupColumnSelector, sectionBlock)
             setGroupMessage(jQuery(groupColumnSelector), msg);
         }
         if(data.notification == "Decision Submitted"){
             var msg = 'we just made a decision';
+            var action = false;
             setGroupMessage(jQuery(groupColumnSelector), msg);
-            updateGateSectionStatus(groupColumnSelector, sectionBlock)   
+            updateGateSectionStatus(groupColumnSelector, sectionBlock, action)   
         }
+
         if(data.notification == "Decision Block"){
             var msg = 'we just landed on a Decision Block';
             setGroupMessage(jQuery(groupColumnSelector), msg);
@@ -99,13 +104,22 @@ $(function() {
         sectionBlock.find('.gate-button').prepend(groupIcon);
     }
 
-    var updateGateSectionStatus = function(groupColumnSelector, sectionBlock){
-        var badge = sectionBlock.find('.badge');
-        if(badge.text() == 'reviewed'){
-            return
-        }else{
-            badge.text('reviewing')
+    var updateGateSectionStatus = function(groupColumnSelector, sectionBlock, action){
+        window.gcs = groupColumnSelector;
+        window.sectionBlock = sectionBlock;
+        window.badge = sectionBlock.find('.badge');
+        window.action = action;
+        if (action == "section submitted"){
+            badge.text('reviewed');
+            return;
         }
+        if(badge.text() == 'reviewed'){
+            return;
+        }else{
+            badge.text('reviewing');
+        }
+
+
     }
 
     var highlightActiveGate = function(groupColumnSelector, sectionBlock){

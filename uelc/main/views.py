@@ -8,13 +8,13 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
 from pagetree.generic.views import PageView, EditView, UserPageVisitor
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
-from gate_block.models import GateBlock
+from gate_block.models import GateBlock, GateSubmission, SectionSubmission
 from uelc.main.helper_functions import (
     get_root_context, get_user_map, visit_root, gen_group_token,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
@@ -26,8 +26,7 @@ from uelc.mixins import (
 from uelc.main.models import (
     Cohort, UserProfile, Case,
     CaseAnswer, UELCHandler,
-    LibraryItem, SectionSubmission
-    )
+    LibraryItem)
 from uelc.main.forms import (
     CreateUserForm, CreateHierarchyForm,
     EditUserPassForm, CaseAnswerForm)
@@ -356,6 +355,7 @@ class UELCPageView(LoggedInMixin,
 class SubmitSectionView(LoggedInMixin,
                         TemplateView):
     extra_context = dict()
+    template_name = 'pagetree/page.html'
 
     def notify_facilitators(self, request, section, notification):
         user = get_object_or_404(User, pk=request.user.pk)
@@ -379,10 +379,12 @@ class SubmitSectionView(LoggedInMixin,
         section_id = request.POST.get('section', '')
         section = Section.objects.get(id=section_id)
         ss = SectionSubmission.get_or_create(section=section, user=user)
+
         notification = "Section Submitted"
         self.notify_facilitators(request, section, notification)
         url = request.META['HTTP_REFERER']
-        return HttpResponseRedirect(url)
+        return HttpResponse('Success')
+        #return HttpResponseRedirect(url)
 
 
 class UELCEditView(LoggedInFacilitatorMixin,
