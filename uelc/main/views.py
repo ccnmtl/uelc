@@ -382,9 +382,8 @@ class SubmitSectionView(LoggedInMixin,
 
         notification = "Section Submitted"
         self.notify_facilitators(request, section, notification)
-        url = request.META['HTTP_REFERER']
         return HttpResponse('Success')
-        #return HttpResponseRedirect(url)
+
 
 
 class UELCEditView(LoggedInFacilitatorMixin,

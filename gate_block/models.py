@@ -45,11 +45,12 @@ class GateBlock(models.Model):
         ss = SectionSubmission.objects.filter(user=user, section=gate_section) 
 
         for block in gate_section.pageblock_set.all():
+            bk = block.block()
+
             if ss and block.section == gate_section:
                 status = 'reviewed'
                 return status
 
-            bk = block.block()    
             if bk.display_name == "Decision Block":
                 if bk.is_submitted(bk, user):
                     status = 'reviewed'
@@ -73,13 +74,6 @@ class GateBlock(models.Model):
         if uloc_path == gs_url:
             status = "reviewing"
             return status
-        # if for some reason the user is re-doing their entry.
-        # if so, the admin would have reset the gates so they
-        # can redo their decision
-        #
-        #if not unlocked and page_status == "to be reviewed":
-        #    status = "in progress"
-        #    return status
     
         status = "to be reviewed"
         return status

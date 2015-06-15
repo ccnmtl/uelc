@@ -68,7 +68,7 @@ $(function() {
         }
         if(data.notification == "Decision Submitted"){
             var msg = 'we just made a decision';
-            var action = false;
+            var action = 'made decision';
             setGroupMessage(jQuery(groupColumnSelector), msg);
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action)   
         }
@@ -105,11 +105,11 @@ $(function() {
     }
 
     var updateGateSectionStatus = function(groupColumnSelector, sectionBlock, action){
-        window.gcs = groupColumnSelector;
-        window.sectionBlock = sectionBlock;
-        window.badge = sectionBlock.find('.badge');
-        window.action = action;
-        if (action == "section submitted"){
+        var gcs = groupColumnSelector;
+        var sectionBlock = sectionBlock;
+        var badge = sectionBlock.find('.badge');
+        var action = action;
+        if (action == "section submitted" || action == "made decision"){
             badge.text('reviewed');
             return;
         }
