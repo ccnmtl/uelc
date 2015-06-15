@@ -45,7 +45,7 @@ $(function() {
         var envelope = JSON.parse(evt.data);
         var data = JSON.parse(envelope.content);
         console.log(data.notification);
-        if(data.notification == "Open Gate"){
+        if (data.notification == 'Open Gate') {
             if ((data.section === parseInt(window.sectionId)) &&
             (data.username === window.username)) {
                 jQuery('ul.pager li.next a').removeClass('disabled');
@@ -53,10 +53,8 @@ $(function() {
                 jQuery('ul.pager li.next a').attr('href', data.nextUrl);
                 jQuery('.wait-msg').hide();
                 jQuery('.unlock-msg').show();
-
             }
         }
-        
     };
 
     if (window.WebSocket) {
