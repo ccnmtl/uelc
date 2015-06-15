@@ -14,7 +14,7 @@ from django.views.generic.base import TemplateView, View
 from pagetree.generic.views import PageView, EditView, UserPageVisitor
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
-from gate_block.models import GateBlock, GateSubmission, SectionSubmission
+from gate_block.models import GateBlock, SectionSubmission
 from uelc.main.helper_functions import (
     get_root_context, get_user_map, visit_root, gen_group_token,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
@@ -215,6 +215,10 @@ class UELCPageView(LoggedInMixin,
             skip_url = self.section.get_next().get_absolute_url()
             return HttpResponseRedirect(skip_url)
 
+    def go_tree_path(self, tree_path):
+        if tree_path[0]:
+            return HttpResponseRedirect(tree_path[1])
+
     def get(self, request, path):
         self.check_user(request, path)
         # skip the first child of part if not admin
@@ -240,8 +244,7 @@ class UELCPageView(LoggedInMixin,
         tree_path = self.check_part_path(casemap, hand, part)
         roots = get_root_context(self.request)
 
-        if tree_path[0]:
-            return HttpResponseRedirect(tree_path[1])
+        self.go_tree_path(tree_path)
 
         allow_redo = False
         needs_submit = self.section.needs_submit()
@@ -358,7 +361,6 @@ class SubmitSectionView(LoggedInMixin,
     template_name = 'pagetree/page.html'
 
     def notify_facilitators(self, request, section, notification):
-        user = get_object_or_404(User, pk=request.user.pk)
         socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
 
@@ -378,12 +380,11 @@ class SubmitSectionView(LoggedInMixin,
         user = request.user
         section_id = request.POST.get('section', '')
         section = Section.objects.get(id=section_id)
-        ss = SectionSubmission.get_or_create(section=section, user=user)
+        SectionSubmission.get_or_create(section=section, user=user)
 
         notification = "Section Submitted"
         self.notify_facilitators(request, section, notification)
         return HttpResponse('Success')
-
 
 
 class UELCEditView(LoggedInFacilitatorMixin,

@@ -42,7 +42,7 @@ class GateBlock(models.Model):
         gs_url = gate_section.get_absolute_url()
         status = 'None'
         unlocked = self.unlocked(user, gate_section)
-        ss = SectionSubmission.objects.filter(user=user, section=gate_section) 
+        ss = SectionSubmission.objects.filter(user=user, section=gate_section)
 
         for block in gate_section.pageblock_set.all():
             bk = block.block()
@@ -59,12 +59,11 @@ class GateBlock(models.Model):
         if unlocked:
             status = 'reviewed'
             return status
-        
+
         uloc = UserLocation.objects.get_or_create(
             user=user,
             hierarchy=hierarchy)
         uloc_path = h_url + uloc[0].path
-        
         uv = self.pageblock().section.get_uservisit(user)
 
         if uv:
@@ -74,7 +73,7 @@ class GateBlock(models.Model):
         if uloc_path == gs_url:
             status = "reviewing"
             return status
-    
+
         status = "to be reviewed"
         return status
 
@@ -128,10 +127,11 @@ class SectionSubmission(models.Model):
         except ObjectDoesNotExist:
             ss = SectionSubmission.objects.create(
                 section=section,
-                user=user) 
+                user=user)
         return ss
 
     def __unicode__(self):
-        return "section %d submission by %s at %s" % (self.section.id,
-                                                   unicode(self.user),
-                                                   self.submitted)
+        return "section %d submission by %s at %s" % (
+            self.section.id,
+            unicode(self.user),
+            self.submitted)

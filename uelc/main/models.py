@@ -626,12 +626,13 @@ class SectionSubmission(models.Model):
         except ObjectDoesNotExist:
             ss = SectionSubmission.objects.create(
                 section=section,
-                user=user) 
+                user=user)
         return ss
 
     def __unicode__(self):
-        return "section %d submission by %s at %s" % (self.section.id,
-                                                   unicode(self.user),
-                                                   self.submitted)
+        return "section %d submission by %s at %s" % (
+            self.section.id,
+            unicode(self.user),
+            self.submitted)
 
 ReportableInterface.register(CaseQuiz)
