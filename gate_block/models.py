@@ -118,18 +118,6 @@ class SectionSubmission(models.Model):
     user = models.ForeignKey(User, related_name='section_user')
     submitted = models.DateTimeField(auto_now_add=True, editable=False)
 
-    @classmethod
-    def get_or_create(cls, section, user):
-        try:
-            ss = SectionSubmission.objects.get(
-                section=section,
-                user=user)
-        except ObjectDoesNotExist:
-            ss = SectionSubmission.objects.create(
-                section=section,
-                user=user)
-        return ss
-
     def __unicode__(self):
         return "section %d submission by %s at %s" % (
             self.section.id,

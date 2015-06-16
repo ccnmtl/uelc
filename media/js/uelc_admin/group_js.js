@@ -44,8 +44,7 @@ $(function() {
     var onMessage = function(evt) {
         var envelope = JSON.parse(evt.data);
         var data = JSON.parse(envelope.content);
-        console.log(data.notification);
-        if(data.notification == "Open Gate"){
+        if(data.notification === "Open Gate"){
             if ((data.section === parseInt(window.sectionId)) &&
             (data.username === window.username)) {
                 jQuery('ul.pager li.next a').removeClass('disabled');

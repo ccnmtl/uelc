@@ -380,7 +380,7 @@ class SubmitSectionView(LoggedInMixin,
         user = request.user
         section_id = request.POST.get('section', '')
         section = Section.objects.get(id=section_id)
-        SectionSubmission.get_or_create(section=section, user=user)
+        SectionSubmission.objects.get_or_create(section=section, user=user)
 
         notification = "Section Submitted"
         self.notify_facilitators(request, section, notification)
