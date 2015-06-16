@@ -53,13 +53,13 @@ $(function() {
         window.sectionBlock = jQuery(groupColumnSelector + ' ' +
             sectionRowSelector);
 
-        if (data.notification == 'At Gate Block') {
+        if (data.notification === 'At Gate Block') {
             msg = 'we just landed on a page with a gateblock!';
             action = 'gateblock';
             setGroupLocation(groupColumnSelector, sectionBlock);
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
         }
-        if (data.notification == 'Section Submitted') {
+        if (data.notification === 'Section Submitted') {
             msg = 'we just confirmed a page';
             action = 'section submitted';
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
@@ -67,14 +67,14 @@ $(function() {
             highlightActiveGate(groupColumnSelector, sectionBlock);
             setGroupMessage(jQuery(groupColumnSelector), msg);
         }
-        if (data.notification == 'Decision Submitted') {
+        if (data.notification === 'Decision Submitted') {
             msg = 'we just made a decision';
             action = 'made decision';
             setGroupMessage(jQuery(groupColumnSelector), msg);
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
         }
 
-        if (data.notification == 'Decision Block') {
+        if (data.notification === 'Decision Block') {
             msg = 'we just landed on a Decision Block';
             setGroupMessage(jQuery(groupColumnSelector), msg);
             highlightActiveGate(groupColumnSelector, sectionBlock);
@@ -96,11 +96,11 @@ $(function() {
 
     var updateGateSectionStatus = function(gcs, sectionBlock, action) {
         var badge = sectionBlock.find('.badge');
-        if (action == 'section submitted' || action == 'made decision') {
+        if (action === 'section submitted' || action === 'made decision') {
             badge.text('reviewed');
             return;
         }
-        if (badge.text() == 'reviewed') {
+        if (badge.text() === 'reviewed') {
             return;
         }else {
             badge.text('reviewing');
