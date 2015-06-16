@@ -4,7 +4,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from pagetree.models import PageBlock, Section, UserLocation
-from django.core.exceptions import ObjectDoesNotExist
 
 
 class GateBlock(models.Model):

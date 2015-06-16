@@ -10,7 +10,6 @@ from pageblocks.models import TextBlock
 from pagetree.models import Hierarchy, Section
 from pagetree.reports import ReportableInterface
 from quizblock.models import Quiz, Question, Submission, Response, Answer
-from django.core.exceptions import ObjectDoesNotExist
 
 
 class Cohort(models.Model):
