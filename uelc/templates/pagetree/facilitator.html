@@ -3,7 +3,7 @@
 {% block title %} | Facilitation{% endblock %}
 {% block content %}
 {% load part_string %}
-{% load get_selected_curveball %}
+
 {% comment %}
     <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
     <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
@@ -36,28 +36,23 @@
                 section (sec.0), gateblock (sec.1), unlocked (sec.2), 
                 user (sec.3), status (sec.4), can_show_gateblock (sec.5),
                 (sec.6) section part, (sec.7.0) is_curveball, 
-                (sec.7.1) curveball block 
+                (sec.7.1) curveball block, (sec.8.0) is_decision_block, 
+                (sec.8.1) decision block 
             -->
             {% endcomment %}
 
-            {% if sec.2 %}
-
-                {% if sec.5 %}
-                    {% if sec.7.0 %}
-                        <div class="gated-curveball">
-                            {% get_selected_curveball u.0 sec.7.1 as selected_curveball %}
-                            {% if selected_curveball %}
-                                selected curveball - {{ selected_curveball.curveball.title }}
-                            {% else %}
-                                No selected curveball 
-                            {% endif %}
-                        </div>
+            {% if sec.2 %}<!-- if unlocked -->
+                {% if sec.5 %}<!-- can show gateblock -->
+                    
+                    {% if sec.7.0 %}<!-- if curveball -->
+                        {% include "pagetree/curveball.html" %}
                     {% endif %}
 
                     {% if sec.0.pk == u.2.id %}
                         <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                     {% endif %}
-                  <div class="gate-button unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
+
+                  <div class="gate-block unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                     <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
                       <div type="submit" class="btn-sm btn-success text-center status-{{sec.4}}" style="margin-top: 5px;">
                         <span><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {{ sec.1.pageblock.label }} </span>
@@ -65,30 +60,20 @@
                         <span class="badge badge-{{sec.4}} text-capitalize">{{sec.4}}</span>
                       </div>
                    </div>
+                   {% if sec.8.0 and sec.8.2 %} <!-- if decision block -->
+                    {{ sec.8.2.title }}
+                    {% endif %}
                    <div class="clearfix visible-lg-block"></div>
                   </div>
                 {% endif %}
-            {% else %}
+            
+            {% else %}<!-- gateblock not unlocked-->
+            
               {% if sec.5 %} <!-- can show gateblock -->
-                {% if sec.7.0 %}
-                <div class="gated-curveball">
-                    {% get_selected_curveball u.0 sec.7.1 as selected_curveball %}
-                        {% if selected_curveball %}
-                            selected curveball - {{ selected_curveball.curveball.title }}
-                        {% else %}
-                            No selected curveball 
-                        {% endif %}
-                        <form action="." method="post">{% csrf_token %}
-                        {{sec.7.1.curveball_select_form|bootstrap}}
-                        <input type="submit" value="Submit" class="btn btn-primary">
-                        <input type="hidden" name="curveball-block-id" value="{{ sec.7.1.id }}" />
-                        <input type="hidden" name="user_id" value="{{u.0.id}}" />
-                        <input type="hidden" name="curveball-select" value="submit" />
-
-                        
-                        </form>
-                    </div>
+                {% if sec.7.0 %}<!-- if curveball -->
+                    {% include "pagetree/curveball.html" %}
                 {% endif %}
+
                 {% if sec.0.pk == u.2.id %}
                     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                 {% endif %}
@@ -111,13 +96,17 @@
                         <input type="hidden" class="post" value="{{sec.0.get_absolute_url}}"> 
                     </form>
                 </div>
+                
+                {% if sec.8.0 and sec.8.2 %} <!-- if decision block -->
+                    {{ sec.8.2.title }}
                 {% endif %}
+            {% endif %}
             {% endif %}
             </div>
         {% endfor %}
     </div>
-    </div><!--end gate-section-->
-   </div>
+    </div><!--end gate-section -->
+   </div><!-- end .col-xs-3 -->
    {% endif %}
     {% endfor %}
 <br style="clear:both;"/>

@@ -553,7 +553,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                                                      part_usermap),
                              (hand.get_part_by_section(g.pageblock().section),
                               part_usermap),
-                             hand.is_curveball(g.pageblock().section)]
+                             hand.is_curveball(g.pageblock().section),
+                             hand.is_decision_block(g.pageblock().section, user)]
                             for g in gateblocks]
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section, user_last_location])

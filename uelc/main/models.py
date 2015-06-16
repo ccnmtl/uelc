@@ -395,6 +395,19 @@ class UELCHandler(Section):
                 return (True, block)
         return (False, block)
 
+    def is_decision_block(self, current_section, user):
+        for pb in current_section.pageblock_set.all():
+            block = pb.block()
+            ca = None
+            if (hasattr(block, 'display_name')
+               and block.display_name == "Decision Block"):
+                ss = block.submission_set.filter(user=user).last()
+                if ss:
+                    response = ss.response_set.filter(
+                        submission_id=ss.id).last()
+                    ca = CaseAnswer.objects.get(answer=response.answer())
+                return (True, block, ca)
+        return (False, block, ca)
 
 class LibraryItem(models.Model):
     name = models.TextField(blank=False)
