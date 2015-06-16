@@ -610,5 +610,4 @@ class CaseAnswer(models.Model):
                 initial=self.description)
         return CaseAnswerForm()
 
-
 ReportableInterface.register(CaseQuiz)

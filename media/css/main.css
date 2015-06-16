@@ -242,7 +242,14 @@ ul.side-nav li li {
 .col-md-10 {
     width: 53.333333%;
 }
-
+.button-confirmed{
+    color: #999;
+    display: inline-block;
+  padding: 5px 14px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+}
 ul.pager li.next a.disabled {
         color: #999;
         cursor: not-allowed;
@@ -262,6 +269,11 @@ ul.pager li.next a.disabled:active {
 }
 
 /* Facilitator page */
+.gate-block.active{
+    border: 3px solid #FFA771;
+    border-radius: 6px;
+}
+
 .library-item-name{
     width: 250px;
     height: 75px;   

@@ -41,25 +41,39 @@ class GateBlock(models.Model):
         gs_url = gate_section.get_absolute_url()
         status = 'None'
         unlocked = self.unlocked(user, gate_section)
+        ss = SectionSubmission.objects.filter(user=user, section=gate_section)
+
+        for block in gate_section.pageblock_set.all():
+            bk = block.block()
+
+            if ss and block.section == gate_section:
+                status = 'reviewed'
+                return status
+
+            if bk.display_name == "Decision Block":
+                if bk.is_submitted(bk, user):
+                    status = 'reviewed'
+                    return status
+
         if unlocked:
-            status = 'completed'
-        try:
-            uloc = UserLocation.objects.get_or_create(
-                user=user,
-                hierarchy=hierarchy)
-            uloc_path = h_url + uloc[0].path
-            page_status = self.pageblock().section.get_uservisit(user).status
-            if uloc_path == gs_url:
-                status = "waiting"
-                return status
-            # if for some reason the user is re-doing their entry.
-            # if so, the admin would have reset the gates so they
-            # can redo their decision
-            if not unlocked and page_status == "incomplete":
-                status = "in progress"
-                return status
-        except:
-            status = "incomplete"
+            status = 'reviewed'
+            return status
+
+        uloc = UserLocation.objects.get_or_create(
+            user=user,
+            hierarchy=hierarchy)
+        uloc_path = h_url + uloc[0].path
+        uv = self.pageblock().section.get_uservisit(user)
+
+        if uv:
+            status = "reviewing"
+            return status
+
+        if uloc_path == gs_url:
+            status = "reviewing"
+            return status
+
+        status = "to be reviewed"
         return status
 
     @classmethod
@@ -96,3 +110,15 @@ class GateSubmission(models.Model):
         return "gate %d submission by %s at %s" % (self.gateblock.id,
                                                    unicode(self.gate_user),
                                                    self.submitted)
+
+
+class SectionSubmission(models.Model):
+    section = models.ForeignKey(Section, related_name='section_submited')
+    user = models.ForeignKey(User, related_name='section_user')
+    submitted = models.DateTimeField(auto_now_add=True, editable=False)
+
+    def __unicode__(self):
+        return "section %d submission by %s at %s" % (
+            self.section.id,
+            unicode(self.user),
+            self.submitted)

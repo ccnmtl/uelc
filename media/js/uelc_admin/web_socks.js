@@ -1,5 +1,4 @@
 $(function() {
-
     // Taken from Tala
     var conn;
     var currentRefresh = 1000;
@@ -41,38 +40,86 @@ $(function() {
     };
 
     var onMessage = function(evt) {
-        //console.log("onMessage");
+        var msg;
+        var action;
         var envelope = JSON.parse(evt.data);
         var data = JSON.parse(envelope.content);
-
-        //console.log("data");
-        //console.log(data);
         var groupId = data.userId; //data["user_id"];
         var sectionId = data.sectionPk; //["section_pk"];
         var notificationType = data.notification; //["notification"];
-        //console.log("notification_type");
-        //console.log(notification_type);
-        var groupColumn = '[data-group-id="' + String(groupId) + '"]';
-        var sectionRow = '[data-section-id="' + String(sectionId) + '"]';
+        var groupColumnSelector = '#group-user-section-' + groupId;
+        var sectionRowSelector = '[data-section-id="' +
+            String(sectionId) + '"]';
+        window.sectionBlock = jQuery(groupColumnSelector + ' ' +
+            sectionRowSelector);
 
-        var getTheBtn = jQuery(groupColumn + sectionRow);
-
-        var gateBtn = getTheBtn.find('.gate-button');
-
-        if (gateBtn.hasClass('locked')) { //console.log("This button is locked");
-            gateBtn.removeClass('locked').addClass('unlocked');
-            gateBtn.find('.btn-group-vertical > button.btn-sm')
-            .removeClass('btn-incomplete')
-            .addClass('btn-waiting');
-            //need to remove input elements... maybe move form tag and remove that
+        if (data.notification === 'At Gate Block') {
+            msg = 'we just landed on a page with a gateblock!';
+            action = 'gateblock';
+            setGroupLocation(groupColumnSelector, sectionBlock);
+            updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
         }
-        //need to change button to success when user clicks to unlock the gate
+        if (data.notification === 'Section Submitted') {
+            msg = 'we just confirmed a page';
+            action = 'section submitted';
+            updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
+            setGroupLocation(groupColumnSelector, sectionBlock);
+            highlightActiveGate(groupColumnSelector, sectionBlock);
+            setGroupMessage(jQuery(groupColumnSelector), msg);
+        }
+        if (data.notification === 'Decision Submitted') {
+            msg = 'we just made a decision';
+            action = 'made decision';
+            setGroupMessage(jQuery(groupColumnSelector), msg);
+            updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
+        }
+
+        if (data.notification === 'Decision Block') {
+            msg = 'we just landed on a Decision Block';
+            setGroupMessage(jQuery(groupColumnSelector), msg);
+            highlightActiveGate(groupColumnSelector, sectionBlock);
+        }
     };
 
     if (window.WebSocket) {
         connectSocket();
-    } else {
+    }else {
         alert($('Your browser does not support WebSockets. ' +
                 'You will have to refresh your browser to view updates.'));
     }
+    var setGroupLocation = function(gcs, sectionBlock) {
+        var groupIcon = jQuery('<span class="glyphicon glyphicon-user" ' +
+            'aria-hidden="true"></span>');
+        jQuery(gcs).find('.glyphicon-user').remove();
+        sectionBlock.find('.gate-button').prepend(groupIcon);
+    };
+
+    var updateGateSectionStatus = function(gcs, sectionBlock, action) {
+        var badge = sectionBlock.find('.badge');
+        if (action === 'section submitted' || action === 'made decision') {
+            badge.text('reviewed');
+            return;
+        }
+        if (badge.text() === 'reviewed') {
+            return;
+        }else {
+            badge.text('reviewing');
+        }
+    };
+
+    var highlightActiveGate = function(groupColumnSelector, sectionBlock) {
+        jQuery(groupColumnSelector).find('.gate-block').each(function() {
+            jQuery(this).removeClass('active');
+        });
+        sectionBlock.addClass('active');
+    };
+
+    var setGroupMessage = function(groupColumn, msg) {
+        msgHtml = jQuery('<div class="group-message alert alert-warning ' +
+            'alert-dismissable">' +
+            '<button type="button" class="close" data-dismiss="alert"' +
+            'aria-hidden="true">×</button></div>');
+        msgHtml.append(msg);
+        groupColumn.prepend(msgHtml);
+    };
 });

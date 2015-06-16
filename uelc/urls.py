@@ -14,7 +14,8 @@ from uelc.main.views import (
     UELCAdminEditCaseView, UELCAdminCreateCohortView, UELCAdminEditCohortView,
     UELCAdminDeleteCohortView, UELCAdminDeleteCaseView,
     UELCAdminCreateCaseView, UELCAdminDeleteUserView,
-    AddCaseAnswerToQuestionView, EditCaseAnswerView, DeleteCaseAnswerView)
+    AddCaseAnswerToQuestionView, EditCaseAnswerView, DeleteCaseAnswerView,
+    SubmitSectionView)
 import os.path
 admin.autodiscover()
 
@@ -112,6 +113,7 @@ urlpatterns = patterns(
         'uelc.main.helper_functions.pages_save_edit'),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/edit/(?P<path>.*)$',
      UELCEditView.as_view()),
+    (r'^submit_section/', SubmitSectionView.as_view()),
     (r'^pages/(?P<hierarchy_name>[-\w]+)/instructor/(?P<path>.*)$',
      'uelc.main.helper_functions.instructor_page'),
     (r'^facilitator/fresh_token/$',

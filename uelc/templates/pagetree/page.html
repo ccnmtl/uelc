@@ -37,7 +37,7 @@
 
 {% block content %}
 <script>
-    window.sectionId = '{{section.pk}}';
+  window.sectionId = '{{section.pk}}';
 	window.username = '{{request.user.username}}';
 	window.freshTokenUrl = '/group_user/fresh_token/';
 	window.token = '{{token}}';
@@ -62,7 +62,7 @@
                 <div id="edit-user" class="panel panel-default">
                   <div class="panel-heading">Choice submission error.</div>
                   <div class="panel-body">
-                        It seems you forgot so select one of the choices! Please click on on of the choices and resubmit. Thanks!
+                        It seems you forgot to select one of the choices! Please click on on of the choices and resubmit. Thanks!
                   </div>
                 </div><!--end #hierarchiess-->
                 </div> <!--end modal-dialog-->
@@ -87,10 +87,10 @@
     {% if block.block.display_name == "Gate Block" %}
       <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
         {% render block %}
-        <p class="unlock-msg" style="display:none">You may proceed to the next section</p>
+        <p class="unlock-msg alert alert-success" style="display:none">You may proceed to the next section</p>
       </div>
     {% elif block.block.display_name == "Decision Block" %}
-      {% for quiz in case_quizblocks %}
+      {% for quiz in decision_blocks %}
         {% if quiz.id == block.id %}
           {% if quiz.completed != True%}
             {% if request.user.profile.is_group_user %}
@@ -105,17 +105,22 @@
       {% endif %}
       {% render block %}
       </div>
-      {% for quiz in case_quizblocks %}
+      {% for quiz in decision_blocks %}
             {% if quiz.id == block.id %}
+            {% is_section_unlocked request section as unlocked %}
+              {% if not unlocked and quiz.completed %}
+                <p class="wait-msg alert alert-danger">Please wait for the facilitator to allow you to proceed.</p>
+              {% endif %}
                 {% if quiz.completed != True %}
                 <input type="hidden" name="pageblock-{{block.id}}-case" value="{{case.id}}" />
                 {% if request.user.profile.is_group_user %}
                   <input id="pageblock-{{block.id}}-submit" type="submit" value="Submit Decision" class="btn btn-primary" />
                   </form>
                 {% endif %}
-        {% endif %}
+                {% else %}   
       {% endif %}
-      {% endfor %}
+    {% endif %}
+  {% endfor %}
 
     {% elif block.block.display_name == "Curveball Block" %}
       <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
@@ -142,11 +147,35 @@
 
 {% endif %}
 {% endfor %}
-
+{% is_section_unlocked request section as unlocked %}
+{% if gate_blocks|length == 1 and decision_blocks|length == 0 %}
+  {% if not section_submission %}
+    <form class="decision-block" id="confirm" data-action="/submit_section/" >{% csrf_token %}
+      <input type="hidden" name="section" value="{{section.id}}" />
+      <input type="button" value="Confirm" class="btn btn-primary confirm" />
+    </form>
+  {% else %}
+    <input class="button-confirmed" type="submit" value="Confirm" style="cursor: not-allowed"/>
+  {% endif %}
+{% endif %}
 {% include "pagetree/toc.html" %}
 
-</div>
+<script>
+  jQuery('.confirm').click(function(){
+    var form = jQuery('#confirm');
+    window.action = form.data('action');
+    window.formData = form.serialize();
+    jQuery.post(action, formData).success(function(){
+      var btnConfirmed = '<input class="button-confirmed"' +
+      'type="submit" value="Confirm" style="cursor: not-allowed"/>';
+      jQuery('#confirm').before(btnConfirmed);
+      jQuery('#confirm').remove();
+    })   
+  })
+  
+</script>
 
+</div>
 
 {% endblock %}
 
