@@ -52,10 +52,8 @@ $(function() {
                 jQuery('ul.pager li.next a').attr('href', data.nextUrl);
                 jQuery('.wait-msg').hide();
                 jQuery('.unlock-msg').show();
-
             }
         }
-        
     };
 
     if (window.WebSocket) {
