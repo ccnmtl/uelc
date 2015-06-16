@@ -4,7 +4,7 @@ from behave import then, when
 
 @when(u'I click the case button')
 def i_click_the_case_button(context):
-    context.browser.find_by_css('.case-index-list li>a').first.click()
+    context.browser.find_by_css('.group-user li>a').first.click()
 
 
 @when(u'I click the button "{text}"')
@@ -32,6 +32,6 @@ def i_see_the_text(context, text):
     assert context.browser.is_text_present(text)
 
 
-@then(u'My URL ends with "{url}"')
+@then(u'my URL ends with "{url}"')
 def my_url_ends_with(context, url):
     assert context.browser.url.endswith(url)

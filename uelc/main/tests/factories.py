@@ -5,8 +5,11 @@ from pagetree.models import Hierarchy
 from quizblock.models import Quiz, Question
 
 from uelc.main.models import (
-    Cohort, UserProfile, Case, CaseMap, TextBlockDT, UELCHandler,
-    LibraryItem, CaseQuiz)
+    Cohort, UserProfile, Case, CaseMap,
+    CaseAnswer,
+    TextBlockDT, UELCHandler,
+    LibraryItem, CaseQuiz
+)
 
 
 class CohortFactory(factory.DjangoModelFactory):
@@ -16,7 +19,7 @@ class CohortFactory(factory.DjangoModelFactory):
 
 class AdminUserFactory(factory.DjangoModelFactory):
     FACTORY_FOR = User
-    username = factory.Sequence(lambda n: "user%03d" % n)
+    username = factory.Sequence(lambda n: "admin%03d" % n)
     is_superuser = True
     first_name = 'admin user'
     password = factory.PostGenerationMethodCall('set_password', 'test')
@@ -109,10 +112,11 @@ class UELCModuleFactory(object):
     for testing UELC.
     """
     def __init__(self):
-        HierarchyFactory(name='main', base_url='/')
-        # hierarchy: case-one at /pages/case-one/
-        case1 = CaseFactory()
-        hierarchy = case1.hierarchy
+        hierarchy = HierarchyFactory(name='case-test',
+                                     base_url='/pages/case-test/')
+        # hierarchy: case-test at /pages/case-test/
+        case = CaseFactory(name='case-test', hierarchy=hierarchy)
+        hierarchy = case.hierarchy
 
         root = hierarchy.get_root()
         root.add_child_section_from_dict({
@@ -167,6 +171,8 @@ class UELCModuleFactory(object):
                         {'block_type': 'Text Block'},
                         {
                             'block_type': 'Decision Block',
+                            'allow_redo': False,
+                            'show_submit_state': False,
                             'questions': [{
                                 'text': 'Select One',
                                 'question_type': 'single choice',
@@ -206,10 +212,48 @@ class UELCModuleFactory(object):
                     'children': [{
                         'label': 'Curve Ball',
                         'slug': 'curve-ball',
+                        'pageblocks': [{
+                            'block_type': 'Gate Block',
+                            'label': 'Curveball',
+                        }],
+                        'children': [{
+                            'label': 'Confirm First Decision',
+                            'slug': 'confirm-first-decision',
+                            'pageblocks': [{
+                                'block_type': 'Gate Block',
+                                'label': 'Confirm First Decision',
+                            }],
+                            'children': [{
+                                'label': 'Discussion of Impact',
+                                'slug': 'discussion-of-impact',
+                                'pageblocks': [{
+                                    'block_type': 'Gate Block',
+                                    'label': 'Discussion of Impact',
+                                }],
+                                'children': [{
+                                    'label': 'Results',
+                                    'slug': 'results',
+                                    'pageblocks': [{
+                                        'block_type': 'Gate Block',
+                                        'label': 'Results of First Decision',
+                                    }],
+                                }]
+                            }]
+                        }]
+
                     }]
                 },
             ]
         })
+
+        # Assert that the Quiz imported correctly.
+        question = Question.objects.filter(text='Select One').last()
+        answers = question.answer_set.all()
+        assert answers.count() == 3
+        answer = answers.get(value='1')
+        ca = CaseAnswer.objects.get(answer=answer)
+        assert ca.title == 'Choice 1: Full Disclosure'
+
         root.add_child_section_from_dict({
             'label': 'Part 2 Choice 1',
             'slug': 'part-2-choice-1',

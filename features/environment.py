@@ -2,7 +2,7 @@ from behave_django import environment
 from django.conf import settings
 from splinter import Browser
 
-from uelc.main.tests.factories import UELCModuleFactory
+from uelc.main.tests.factories import AdminUpFactory, UELCModuleFactory
 
 
 def before_all(context):
@@ -12,6 +12,7 @@ def before_all(context):
 
 def before_scenario(context, scenario):
     environment.before_scenario(context, scenario)
+    AdminUpFactory()
     UELCModuleFactory()
 
 

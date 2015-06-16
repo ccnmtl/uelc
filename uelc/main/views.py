@@ -119,7 +119,7 @@ class UELCPageView(LoggedInMixin,
             self.upv = UserPageVisitor(self.section, request.user)
         return None
 
-    def itterate_blocks(self, section):
+    def iterate_blocks(self, section):
         for block in section.pageblock_set.all():
             display_name = block.block().display_name
             if (hasattr(block.block(), 'needs_submit') and
@@ -128,11 +128,11 @@ class UELCPageView(LoggedInMixin,
         return False
 
     def get_next_gate(self, section):
-        block = self.itterate_blocks(section)
+        block = self.iterate_blocks(section)
         last_sibling = self.section.get_last_sibling()
         if block:
             return (block, section)
-        block = self.itterate_blocks(last_sibling)
+        block = self.iterate_blocks(last_sibling)
         if block:
             return (block, last_sibling)
         return False
@@ -208,7 +208,10 @@ class UELCPageView(LoggedInMixin,
                  content=json.dumps(msg))
 
         socket.send(json.dumps(e))
-        socket.recv()
+        try:
+            socket.recv(zmq.NOBLOCK)
+        except zmq.ZMQError:
+            pass
 
     def check_user(self, request, path):
         if not request.user.is_superuser and self.section.get_depth() == 2:
