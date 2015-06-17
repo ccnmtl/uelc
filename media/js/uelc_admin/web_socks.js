@@ -72,12 +72,12 @@ $(function() {
             action = 'made decision';
             setGroupMessage(jQuery(groupColumnSelector), msg);
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
+            highlightActiveGate(groupColumnSelector, sectionBlock);
         }
 
         if (data.notification === 'Decision Block') {
             msg = 'we just landed on a Decision Block';
             setGroupMessage(jQuery(groupColumnSelector), msg);
-            highlightActiveGate(groupColumnSelector, sectionBlock);
         }
     };
 
@@ -98,12 +98,15 @@ $(function() {
         var badge = sectionBlock.find('.badge');
         if (action === 'section submitted' || action === 'made decision') {
             badge.text('reviewed');
+            badge.removeClass('reviewing').addClass('reviewed')
             return;
         }
         if (badge.text() === 'reviewed') {
             return;
         }else {
             badge.text('reviewing');
+            badge.removeClass('to').removeClass('be').removeClass('reviewed');
+            badge.addClass('reviewing')
         }
     };
 

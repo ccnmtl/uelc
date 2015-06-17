@@ -43,7 +43,7 @@
 
             {% if sec.2 %}<!-- if unlocked -->
                 {% if sec.5 %}<!-- can show gateblock -->
-                <div class="group-btn-list gate-block {% if sec.4 == 'reviewing' %}active{% endif%}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
+                <div class="group-btn-list gate-block" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
                     {{ sec.9.0 }}
                     {% if sec.7.0 %}<!-- if curveball -->
                         {% include "pagetree/curveball.html" %}
@@ -78,7 +78,7 @@
             {% else %}<!-- gateblock not unlocked-->
             
               {% if sec.5 %} <!-- can show gateblock -->
-              <div class="group-btn-list gate-block {% if sec.4 == 'reviewing' %}active{% endif%}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
+              <div class="group-btn-list gate-block {% if sec.4 == 'reviewing' or sec.4 == 'reviewed' %}active{% endif%}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
               {{ sec.9.0 }}
                 {% if sec.7.0 %}<!-- if curveball -->
                     {% include "pagetree/curveball.html" %}
@@ -88,9 +88,9 @@
                 <div class="gate-button locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                   <form action ="." method="post">{% csrf_token %}
                     <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
-                      <button type ="submit" class="btn btn-sm btn-danger btn-block text-center" style="margin-top: 5px;">
+                      <div display="none" type="none" class="btn btn-sm btn-danger btn-block text-center" style="margin-top: 5px;">
                         <span><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> {{ sec.1.pageblock.label }}</span>
-                       </button>
+                       </div>
                          
                         </div>
                         <div class="clearfix visible-lg-block"></div>
@@ -103,7 +103,7 @@
                     </form>
                 </div><!-- end .gate-button-->
 
-                <div class="gate-section">{{sec.0.pk}}, {{ u.2.id }}
+                <div class="gate-section">
                     {% if sec.0.pk == u.2.id %}
                         <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                     {% endif %}

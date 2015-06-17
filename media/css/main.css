@@ -280,6 +280,9 @@ ul.pager li.next a.disabled:active {
     border: 3px solid #FFA771;
     border-radius: 6px;
 }
+.gate-block .gate-button form .btn{
+    cursor: not-allowed;
+}
 .gate-button, .gated-curveball, .gate-section{
     margin: 8px 0;
     border: 2px solid #333;
