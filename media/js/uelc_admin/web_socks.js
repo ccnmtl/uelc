@@ -66,7 +66,7 @@ $(function() {
             setGroupLocation(groupColumnSelector, sectionBlock);
             highlightActiveGate(groupColumnSelector, sectionBlock);
             setGroupMessage(jQuery(groupColumnSelector), msg);
-            UA.set_form_click_handler();
+            UA.setFormClickHandler();
         }
         if (data.notification === 'Decision Submitted') {
             msg = 'we just made a decision';
@@ -74,7 +74,7 @@ $(function() {
             setGroupMessage(jQuery(groupColumnSelector), msg);
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
             highlightActiveGate(groupColumnSelector, sectionBlock);
-            UA.set_form_click_handler();
+            UA.setFormClickHandler();
         }
 
         if (data.notification === 'Decision Block') {
@@ -100,7 +100,7 @@ $(function() {
         var badge = sectionBlock.find('.badge');
         if (action === 'section submitted' || action === 'made decision') {
             badge.text('reviewed');
-            badge.removeClass('reviewing').addClass('reviewed')
+            badge.removeClass('reviewing').addClass('reviewed');
             return;
         }
         if (badge.text() === 'reviewed') {
@@ -108,7 +108,7 @@ $(function() {
         }else {
             badge.text('reviewing');
             badge.removeClass('to').removeClass('be').removeClass('reviewed');
-            badge.addClass('reviewing')
+            badge.addClass('reviewing');
         }
     };
 

@@ -2,7 +2,7 @@ var UELCAdmin;
 UELCAdmin = {
     Admin: function() {
         this.init = function() {
-            this.set_form_click_handler();
+            this.setFormClickHandler();
             //this.setPartsOnGateblocks();
             //this.setChoicesOnSecondParts();
             //this.impersonate();
@@ -14,14 +14,13 @@ UELCAdmin = {
             this.deleteLibraryItem();
             */
         };
-        this.set_form_click_handler = function() {
+        this.setFormClickHandler = function() {
             var btn = jQuery('.gate-block.active .gate-button form .btn');
             btn.css('cursor', 'pointer');
-
-            btn.click(function(){
+            btn.click(function() {
                 jQuery(this).parent().parent('form').submit();
-            })
-        }
+            });
+        };
         this.setPartsOnGateblocks = function() {
             var partOneElms = jQuery('.part1:first-child');
             var gsl = jQuery('.gate-section-list').length;
