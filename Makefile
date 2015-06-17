@@ -12,7 +12,7 @@ test: ./ve/bin/python
 	$(MANAGE) jenkins --pep8-exclude=migrations --enable-coverage --coverage-rcfile=.coveragerc
 
 behave: ./ve/bin/python
-	$(MANAGE) behave
+	$(MANAGE) behave features/
 
 flake8: ./ve/bin/python
 	$(FLAKE8) $(APP) gate_block curveball features --max-complexity=10 --exclude=migrations

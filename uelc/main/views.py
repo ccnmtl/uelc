@@ -171,6 +171,7 @@ class UELCPageView(LoggedInMixin,
     def notify_facilitators(self, request, path, notification):
         user = get_object_or_404(User, pk=request.user.pk)
         socket = zmq_context.socket(zmq.REQ)
+        socket.linger = 0
         socket.connect(settings.WINDSOCK_BROKER_URL)
         msg = dict()
 
