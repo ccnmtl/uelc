@@ -37,13 +37,13 @@
                 user (sec.3), status (sec.4), can_show_gateblock (sec.5),
                 (sec.6) section part, (sec.7.0) is_curveball, 
                 (sec.7.1) curveball block, (sec.8.0) is_decision_block, 
-                (sec.8.1) decision block 
+                (sec.8.1) decision block, (sec.9) is_next_curvball
             -->
             {% endcomment %}
 
             {% if sec.2 %}<!-- if unlocked -->
                 {% if sec.5 %}<!-- can show gateblock -->
-                    
+                    {{ sec.9.0 }}
                     {% if sec.7.0 %}<!-- if curveball -->
                         {% include "pagetree/curveball.html" %}
                     {% endif %}
@@ -52,7 +52,7 @@
                         <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                     {% endif %}
 
-                  <div class="gate-block unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
+                  <div class="gate-button unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                     <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
                       <div type="submit" class="btn-sm btn-success text-center status-{{sec.4}}" style="margin-top: 5px;">
                         <span><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {{ sec.1.pageblock.label }} </span>
@@ -70,6 +70,7 @@
             {% else %}<!-- gateblock not unlocked-->
             
               {% if sec.5 %} <!-- can show gateblock -->
+              {{ sec.9.0 }}
                 {% if sec.7.0 %}<!-- if curveball -->
                     {% include "pagetree/curveball.html" %}
                 {% endif %}

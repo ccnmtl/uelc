@@ -273,7 +273,10 @@ ul.pager li.next a.disabled:active {
     border: 3px solid #FFA771;
     border-radius: 6px;
 }
-
+.gate-button, .gated-curveball{
+    margin: 8px 0;
+    border: 2px solid #333;
+}
 .library-item-name{
     width: 250px;
     height: 75px;   

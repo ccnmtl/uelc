@@ -388,6 +388,7 @@ class UELCHandler(Section):
         return p1pre
 
     def is_curveball(self, current_section):
+        block = None
         for pb in current_section.pageblock_set.all():
             block = pb.block()
             if (hasattr(block, 'display_name')
@@ -408,6 +409,12 @@ class UELCHandler(Section):
                     ca = CaseAnswer.objects.get(answer=response.answer())
                 return (True, block, ca)
         return (False, block, ca)
+
+    def is_next_curvball(self, section):
+        next = section.get_next()
+        is_cb = self.is_curveball(next)
+        if is_cb[0]:
+            return is_cb
 
 class LibraryItem(models.Model):
     name = models.TextField(blank=False)
