@@ -15,5 +15,8 @@ Feature: Simulation
     Then my URL ends with "/testing-in-applegate/"
 
     When I click the link "Your First Decision"
-    Then my URL ends with "/your-first-decision/"
+    Then my URL ends with "/part-1/your-first-decision/"
     Then I see the text "Choice 1: Full Disclosure"
+    When I select the first radio option
+    When I click the button "Submit Decision"
+    Then my URL ends with "/part-1/your-first-decision/curve-ball/"

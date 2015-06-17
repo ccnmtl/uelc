@@ -7,6 +7,11 @@ def i_click_the_case_button(context):
     context.browser.find_by_css('.group-user li>a').first.click()
 
 
+@when(u'I select the first radio option')
+def i_select_first_radio_option(context):
+    context.browser.find_by_css('input[type="radio"]').first.click()
+
+
 @when(u'I click the button "{text}"')
 def i_click_the_button(context, text):
     context.browser.find_by_text(text).first.click()
@@ -30,6 +35,11 @@ def i_get_a_http_response(context, status_code):
 @then(u'I see the text "{text}"')
 def i_see_the_text(context, text):
     assert context.browser.is_text_present(text)
+
+
+@then(u'I don\'t see the text "{text}"')
+def i_dont_see_the_text(context, text):
+    assert context.browser.is_text_not_present(text)
 
 
 @then(u'my URL ends with "{url}"')

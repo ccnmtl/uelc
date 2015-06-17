@@ -114,7 +114,9 @@
                 {% if quiz.completed != True %}
                 <input type="hidden" name="pageblock-{{block.id}}-case" value="{{case.id}}" />
                 {% if request.user.profile.is_group_user %}
-                  <input id="pageblock-{{block.id}}-submit" type="submit" value="Submit Decision" class="btn btn-primary" />
+                <button id="pageblock-{{block.id}}-submit" type="submit"
+                        class="btn btn-primary"
+                        >Submit Decision</button>
                   </form>
                 {% endif %}
                 {% else %}   
