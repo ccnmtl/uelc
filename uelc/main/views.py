@@ -215,10 +215,6 @@ class UELCPageView(LoggedInMixin,
             skip_url = self.section.get_next().get_absolute_url()
             return HttpResponseRedirect(skip_url)
 
-    def go_tree_path(self, tree_path):
-        if tree_path[0]:
-            return HttpResponseRedirect(tree_path[1])
-
     def get(self, request, path):
         self.check_user(request, path)
         # skip the first child of part if not admin
