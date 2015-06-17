@@ -66,6 +66,7 @@ $(function() {
             setGroupLocation(groupColumnSelector, sectionBlock);
             highlightActiveGate(groupColumnSelector, sectionBlock);
             setGroupMessage(jQuery(groupColumnSelector), msg);
+            UA.set_form_click_handler();
         }
         if (data.notification === 'Decision Submitted') {
             msg = 'we just made a decision';
@@ -73,6 +74,7 @@ $(function() {
             setGroupMessage(jQuery(groupColumnSelector), msg);
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
             highlightActiveGate(groupColumnSelector, sectionBlock);
+            UA.set_form_click_handler();
         }
 
         if (data.notification === 'Decision Block') {
