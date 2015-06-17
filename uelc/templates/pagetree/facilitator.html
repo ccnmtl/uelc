@@ -26,11 +26,11 @@
       {% if u.0.profile.profile_type == "group_user" %}
       <div class="col-xs-3 text-center">
       <!-- user (u.0), gateblocks (u.1), (u.2) user_last_location --> 
-      <div class="gate-section" id="group-user-section-{{u.0.id}}">
+      <div class="gate-sections" id="group-user-section-{{u.0.id}}">
         <h3 class="facilitator-usrnm">Group {{u.0}}<br /><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></h3>
         <div class="gate-section-list">
         {% for sec in u.1 %}
-          <div class="group-btn-list gate-block {% if sec.4 == 'reviewing' %}active{% endif%}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
+          
             {% comment %}
             <!-- 
                 section (sec.0), gateblock (sec.1), unlocked (sec.2), 
@@ -43,48 +43,53 @@
 
             {% if sec.2 %}<!-- if unlocked -->
                 {% if sec.5 %}<!-- can show gateblock -->
+                <div class="group-btn-list gate-block {% if sec.4 == 'reviewing' %}active{% endif%}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
                     {{ sec.9.0 }}
                     {% if sec.7.0 %}<!-- if curveball -->
                         {% include "pagetree/curveball.html" %}
                     {% endif %}
 
-                    {% if sec.0.pk == u.2.id %}
-                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                    {% endif %}
+                    
 
                   <div class="gate-button unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                     <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
                       <div type="submit" class="btn-sm btn-success text-center status-{{sec.4}}" style="margin-top: 5px;">
                         <span><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {{ sec.1.pageblock.label }} </span>
-                        <br />
-                        <span class="badge badge-{{sec.4}} text-capitalize">{{sec.4}}</span>
                       </div>
                    </div>
-                   {% if sec.8.0 and sec.8.2 %} <!-- if decision block -->
-                    {{ sec.8.2.title }}
-                    {% endif %}
                    <div class="clearfix visible-lg-block"></div>
-                  </div>
+                  </div><!-- end .gate-button-->
+                  <div class="gate-section">
+                    {% if sec.0.pk == u.2.id %}
+                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                    {% endif %}
+
+                    <span> {{ sec.1.pageblock.label }}</span>
+                    <br />
+                    <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
+
+                    {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
+                        <div class="response">{{ sec.8.2.title }}</div>
+                    {% endif %}
+                </div><!--end .gate-section-->
+                </div><!-- end .gate-block-->
                 {% endif %}
             
             {% else %}<!-- gateblock not unlocked-->
             
               {% if sec.5 %} <!-- can show gateblock -->
+              <div class="group-btn-list gate-block {% if sec.4 == 'reviewing' %}active{% endif%}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
               {{ sec.9.0 }}
                 {% if sec.7.0 %}<!-- if curveball -->
                     {% include "pagetree/curveball.html" %}
                 {% endif %}
 
-                {% if sec.0.pk == u.2.id %}
-                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                {% endif %}
+                
                 <div class="gate-button locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                   <form action ="." method="post">{% csrf_token %}
                     <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
-                      <button type ="submit" class="btn btn-sm btn-{{sec.4}} btn-block text-center" style="margin-top: 5px;">
+                      <button type ="submit" class="btn btn-sm btn-danger btn-block text-center" style="margin-top: 5px;">
                         <span><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> {{ sec.1.pageblock.label }}</span>
-                        <br />
-                        <span class="badge text-capitalize">{{sec.4}}</span>
                        </button>
                          
                         </div>
@@ -96,14 +101,24 @@
                         <input type="hidden" name="block" value="{{sec.1.id}}" />
                         <input type="hidden" class="post" value="{{sec.0.get_absolute_url}}"> 
                     </form>
-                </div>
-                
-                {% if sec.8.0 and sec.8.2 %} <!-- if decision block -->
-                    {{ sec.8.2.title }}
-                {% endif %}
+                </div><!-- end .gate-button-->
+
+                <div class="gate-section">{{sec.0.pk}}, {{ u.2.id }}
+                    {% if sec.0.pk == u.2.id %}
+                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                    {% endif %}
+                    <span> {{ sec.1.pageblock.label }}</span>
+                    <br />
+                    <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
+                    
+                    {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
+                        <div class="response">{{ sec.8.2.title }}</div>
+                    {% endif %}
+                </div><!--end .gate-section-->
+            </div><!-- end .gate-block -->
+                {% endif %} 
             {% endif %}
-            {% endif %}
-            </div>
+        
         {% endfor %}
     </div>
     </div><!--end gate-section -->

@@ -91,7 +91,7 @@ $(function() {
         var groupIcon = jQuery('<span class="glyphicon glyphicon-user" ' +
             'aria-hidden="true"></span>');
         jQuery(gcs).find('.glyphicon-user').remove();
-        sectionBlock.find('.gate-button').prepend(groupIcon);
+        sectionBlock.find('.gate-section').append(groupIcon);
     };
 
     var updateGateSectionStatus = function(gcs, sectionBlock, action) {

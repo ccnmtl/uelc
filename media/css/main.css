@@ -269,11 +269,18 @@ ul.pager li.next a.disabled:active {
 }
 
 /* Facilitator page */
+.gate-section{
+    float: left;
+    width: 100%;
+}
+.gate-block{
+    clear: both;
+}
 .gate-block.active{
     border: 3px solid #FFA771;
     border-radius: 6px;
 }
-.gate-button, .gated-curveball{
+.gate-button, .gated-curveball, .gate-section{
     margin: 8px 0;
     border: 2px solid #333;
 }
@@ -293,13 +300,6 @@ input.library-item-submit{
 ul.gate-section-list{
     list-style: none;
 }
-.gate-section{
-    float: left
-}
-
-.gate-button {}
-.gate-button form{}
-.preview-page{}
 
 .glyphicon-trash, .glyphicon-edit{
     cursor: pointer;
@@ -332,6 +332,15 @@ ul.gate-section-list{
 .btn-block.btn-incomplete{
     background: #d9534f;
     color: #fff;
+}
+.badge.status.reviewed{
+    background: green !important;
+}
+.badge.status.reviewing{
+    background: yellow !important;
+}
+.badge.status.to.be.reviewed{
+    background: red !important;
 }
 .btn-block.btn-incomplete .badge{
     background: #fff;
