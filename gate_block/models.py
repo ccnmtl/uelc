@@ -48,7 +48,7 @@ class GateBlock(models.Model):
             hierarchy=hierarchy)
         uloc_path = h_url + uloc[0].path
         uv = self.pageblock().section.get_uservisit(user)
-        
+
         for block in gate_section.pageblock_set.all():
             bk = block.block()
 

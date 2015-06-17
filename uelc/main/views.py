@@ -247,8 +247,8 @@ class UELCPageView(LoggedInMixin,
         needs_submit = self.section.needs_submit()
         if needs_submit:
             allow_redo = self.section.allow_redo()
-        if not request.user.is_impersonate:
-            self.upv.visit()
+
+        self.upv.visit()
         instructor_link = has_responses(self.section)
         decision_blocks = []
         gate_blocks = []
@@ -551,7 +551,9 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                              (hand.get_part_by_section(g.pageblock().section),
                               part_usermap),
                              hand.is_curveball(g.pageblock().section),
-                             hand.is_decision_block(g.pageblock().section, user),
+                             hand.is_decision_block(
+                             g.pageblock().section,
+                             user),
                              hand.is_next_curvball(g.pageblock().section)]
                             for g in gateblocks]
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))

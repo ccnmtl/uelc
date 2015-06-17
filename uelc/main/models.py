@@ -416,6 +416,7 @@ class UELCHandler(Section):
         if is_cb[0]:
             return is_cb
 
+
 class LibraryItem(models.Model):
     name = models.TextField(blank=False)
     doc = models.FileField(upload_to='documents/%Y/%m/%d')
