@@ -470,7 +470,7 @@ class CaseQuiz(Quiz):
 
     @classmethod
     def create_from_dict(cls, d):
-        q = CaseQuiz.objects.create(
+        q = cls.objects.create(
             description=d.get('description', ''),
             rhetorical=d.get('rhetorical', False),
             allow_redo=d.get('allow_redo', True),
@@ -478,6 +478,38 @@ class CaseQuiz(Quiz):
         )
         q.import_from_dict(d)
         return q
+
+    def import_from_dict(self, d):
+        self.description = d.get('description', '')
+        self.rhetorical = d.get('rhetorical', False)
+        self.allow_redo = d.get('allow_redo', True)
+        self.show_submit_state = d.get('show_submit_state', True)
+        self.save()
+        self.submission_set.all().delete()
+        self.question_set.all().delete()
+        for q in d.get('questions', []):
+            question = Question.objects.create(
+                quiz=self,
+                text=q.get('text', ''),
+                question_type=q.get('question_type', None),
+                explanation=q.get('explanation', ''),
+                intro_text=q.get('intro_text', ''),
+                css_extra=q.get('css_extra', ''))
+            for a in q.get('answers', []):
+                x = Answer.objects.create(
+                    question=question,
+                    value=a.get('value', None),
+                    label=a.get('label', ''),
+                    correct=a.get('correct', False),
+                    css_extra=a.get('css_extra', ''))
+                CaseAnswer.objects.create(
+                    answer=x,
+                    title=a.get('title', ''),
+                    description=a.get('description', ''),
+                )
+                if 'explanation' in a:
+                    x.explanation = a.get('explanation', '')
+                    x.save()
 
     @classmethod
     def add_form(cls):

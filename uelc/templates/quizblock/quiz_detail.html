@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 {% load bootstrap %}
+{% load static from staticfiles %}
 {% load accessible %}
+
 {% block css %}
-    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/base/jquery-ui.css" type="text/css" media="all" />
+<link rel="stylesheet"
+      href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
 
     <style type="text/css">
         .draghandle {float: left;}
@@ -17,39 +20,26 @@
 {% endblock %}
 
 {% block js %}
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js" type="text/javascript"></script>
-
-    <script type="text/javascript">
-        var saveOrder = function() {
-            var url = "{% url 'reorder-questions' quiz.id %}?";
-            var worktodo = 0;
-            jQuery("#questions li").each(function(index,element) {
-               worktodo = 1;
-               var id = jQuery(element).attr('id').split("-")[1];
-               url += "question_" + index + "=" + id + ";";
+    {% include "quizblock/include_jquery.html" %}
+    <script src="{% static 'quizblock/js/quizblock-admin.js' %}"></script>
+    <script>
+        (function($) {
+        var url = "{% url 'reorder-questions' quiz.id %}";
+        $(document).ready(function() {
+            $("#questions").sortable({
+                containment : 'parent',
+                axis : 'y',
+                tolerance: 'pointer',
+                activeClass: 'dragging',
+                handle: '.draghandle',
+                stop: function(event, ui) {
+                    quizblock.saveOrder($('#questions li'), url, 'question_');
+                }
             });
-            if (worktodo == 1) {
-                var req = new XMLHttpRequest();
-                req.open("POST",url,true);
-                req.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
-                req.send(null);
-            }
-        };
-        
-        jQuery(document).ready(function() {
-            jQuery("#questions").sortable({
-              containment : 'parent'
-              ,axis : 'y'
-              ,tolerance: 'pointer'
-              ,activeClass: 'dragging'
-              ,handle: '.draghandle'
-              ,stop: function (event,ui) { saveOrder();}
-            });
-            jQuery("#questions").disableSelection();
-          });
-
+            $("#questions").disableSelection();
+        });
+        })(quizblock.$);
     </script>
-
 {% endblock %}
 
 {% block content %}

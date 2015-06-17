@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 {% load bootstrap %}
+{% load static from staticfiles %}
 {% load accessible %}
 
 {% block css %}
-    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/base/jquery-ui.css" type="text/css" media="all" />
+<link rel="stylesheet"
+      href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
 
     <style type="text/css">
         .draghandle {float: left;}
@@ -19,53 +21,26 @@
 {% endblock %}
 
 {% block js %}
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript" ></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js" type="text/javascript"></script>
-
-    <script type="text/javascript">
-        var saveOrder = function() {
-            var url = "{% url 'reorder-answer' question.id %}?";
-            var worktodo = 0;
-            jQuery("#answers li").each(function(index,element) {
-               worktodo = 1;
-               var id = jQuery(element).attr('id').split("-")[1];
-               url += "answer_" + index + "=" + id + ";";
+    {% include "quizblock/include_jquery.html" %}
+    <script src="{% static 'quizblock/js/quizblock-admin.js' %}"></script>
+    <script>
+        (function($) {
+        var url = "{% url 'reorder-answer' question.id %}";
+        $(document).ready(function() {
+            $("#answers").sortable({
+                containment : 'parent',
+                axis : 'y',
+                tolerance: 'pointer',
+                activeClass: 'dragging',
+                handle: '.draghandle',
+                stop: function(event, ui) {
+                    quizblock.saveOrder($('#answers li'), url, 'answer_');
+                }
             });
-            if (worktodo == 1) {
-                var req = new XMLHttpRequest();
-                req.open("POST",url,true);
-                req.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
-                req.send(null);
-            }
-        };
-        
-        jQuery(document).ready(function () {
-            jQuery("#answers").sortable({
-                containment : 'parent'
-                ,axis : 'y'
-                ,tolerance: 'pointer'
-                ,activeClass: 'dragging'
-                ,handle: '.draghandle'
-                ,stop: function (event,ui) { saveOrder();}
-            });
-            jQuery("#answers").disableSelection();
-            
+            $("#answers").disableSelection();
         });
-        
-        $(document).on("submit", 
-          function (evt) {
-               if(jQuery("#id_text").val() === "")
-               {
-                evt.preventDefault();
-                jQuery("#id_text").closest("div").addClass('has-error');
-                jQuery("#id_text").closest("div").append('<span class="help-block ">This field is required.</span>');
-                jQuery('label[for=id_text').addClass('has-error');
-                jQuery('label[for=id_text').focus();
-               }
-          });
+        })(quizblock.$);
     </script>
-
-
 {% endblock %}
 {% block content %}
 
