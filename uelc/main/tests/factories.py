@@ -10,7 +10,8 @@ from uelc.main.models import (
     TextBlockDT, UELCHandler,
     LibraryItem, CaseQuiz
 )
-from curveball.tests.factories import CurveballBlockFactory
+from curveball.models import CurveballBlock
+from curveball.tests.factories import CurveballFactory
 
 
 class CohortFactory(factory.DjangoModelFactory):
@@ -141,8 +142,6 @@ class UELCModuleFactory(object):
     for testing UELC.
     """
     def __init__(self):
-        curveballblock = CurveballBlockFactory()
-
         hierarchy = HierarchyFactory(name='case-test',
                                      base_url='/pages/case-test/')
         # hierarchy: case-test at /pages/case-test/
@@ -243,17 +242,19 @@ class UELCModuleFactory(object):
                     'children': [{
                         'label': 'Curve Ball',
                         'slug': 'curve-ball',
-                        'pageblocks': [{
-                            'block_type': 'Gate Block',
-                            'label': 'Curveball',
-                            'pageblocks': [
-                                {
-                                    'block_type': 'Gate Block',
-                                    'label': 'Curveball',
-                                },
-                                curveballblock,
-                            ],
-                        }],
+                        'pageblocks': [
+                            {
+                                'block_type': 'Gate Block',
+                                'label': 'Curveball',
+                            },
+                            {
+                                'block_type': 'Curveball Block',
+                                'description': 'Curveball description',
+                                'curveball_one': CurveballFactory(),
+                                'curveball_two': CurveballFactory(),
+                                'curveball_three': CurveballFactory(),
+                            },
+                        ],
                         'children': [{
                             'label': 'Confirm First Decision',
                             'slug': 'confirm-first-decision',
@@ -292,6 +293,11 @@ class UELCModuleFactory(object):
         ca = CaseAnswer.objects.get(answer=answer)
         assert ca.title == 'Choice 1: Full Disclosure'
 
+        # Assert that the Quiz imported correctly.
+        assert CurveballBlock.objects.count() == 1
+        cb = CurveballBlock.objects.first()
+        assert cb.description == 'Curveball description'
+
         root.add_child_section_from_dict({
             'label': 'Part 2 Choice 1',
             'slug': 'part-2-choice-1',
@@ -305,7 +311,14 @@ class UELCModuleFactory(object):
                 'children': [{
                     'label': 'Curve Ball',
                     'slug': 'curve-ball',
-                    'pageblocks': [],
+                    'pageblocks': [{
+                        'block_type': 'Curveball Block',
+                        'label': 'Curveball Block',
+                        'description': 'Curveball description',
+                        'curveball_one': CurveballFactory(),
+                        'curveball_two': CurveballFactory(),
+                        'curveball_three': CurveballFactory(),
+                    }],
                     'children': [{
                         'label': 'Confirm Second Decision',
                         'slug': 'confirm-second-decision',

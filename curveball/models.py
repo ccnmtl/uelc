@@ -30,6 +30,18 @@ class CurveballBlock(models.Model):
     curveball_three = models.ForeignKey(Curveball, null=True, blank=True,
                                         related_name='curveball_three')
 
+    def as_dict(self):
+        return dict(
+            description=self.description,
+            curveball_one=self.curveball_one,
+            curveball_two=self.curveball_two,
+            curveball_three=self.curveball_three,
+        )
+
+    @classmethod
+    def create_from_dict(cls, d):
+        return cls.objects.create(**d)
+
     def _get_section(self):
         return self.pageblock().section
 
