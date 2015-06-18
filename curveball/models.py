@@ -1,9 +1,8 @@
-from datetime import datetime
 from django import forms
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
-from pagetree.models import PageBlock, Section, UserLocation
+from pagetree.models import PageBlock, UserLocation
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -70,7 +69,7 @@ class CurveballBlock(models.Model):
             curveballblock_user_id=user.id).delete()
 
     def pageblock(self):
-        return self.pageblocks.all()[0]
+        return self.pageblocks.first()
 
     def needs_submit(self):
         return True
@@ -195,14 +194,12 @@ class CurveballBlock(models.Model):
 
     def create_submission(self, group_user, curveball):
         CurveballSubmission.objects.create(
-            section=self.section,
             curveball=curveball,
             curveballblock=self,
             group_curveball=group_user)
 
 
 class CurveballSubmission(models.Model):
-    section = models.ForeignKey(Section)
     curveball = models.ForeignKey(Curveball, null=True, blank=True)
     curveballblock = models.ForeignKey(CurveballBlock)
     '''associate the group with the curveball so we know
@@ -210,7 +207,7 @@ class CurveballSubmission(models.Model):
     group_curveball = models.ForeignKey(User, related_name='curveball_user')
     '''group user has been shown curveball and has read it'''
     group_confirmation = models.BooleanField(default=False)
-    submitted = models.DateTimeField(default=datetime.now)
+    submitted = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return "curveball %d submission by %s at %s for choice %s" % (

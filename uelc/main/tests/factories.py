@@ -10,15 +10,20 @@ from uelc.main.models import (
     TextBlockDT, UELCHandler,
     LibraryItem, CaseQuiz
 )
+from curveball.tests.factories import CurveballBlockFactory
 
 
 class CohortFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = Cohort
+    class Meta:
+        model = Cohort
+
     name = factory.Sequence(lambda n: "cohort %03d" % n)
 
 
 class AdminUserFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = User
+    class Meta:
+        model = User
+
     username = factory.Sequence(lambda n: "admin%03d" % n)
     is_superuser = True
     first_name = 'admin user'
@@ -26,82 +31,106 @@ class AdminUserFactory(factory.DjangoModelFactory):
 
 
 class FacilitatorUserFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = User
+    class Meta:
+        model = User
+
     username = factory.Sequence(lambda n: "user%03d" % n)
     is_staff = False
     first_name = 'facilitator user'
 
 
 class GroupUserFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = User
+    class Meta:
+        model = User
+
     username = factory.Sequence(lambda n: "user%03d" % n)
     is_staff = False
     first_name = 'group user'
 
 
 class AdminUpFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = UserProfile
+    class Meta:
+        model = UserProfile
+
     user = factory.SubFactory(AdminUserFactory)
     cohort = factory.SubFactory(CohortFactory)
     profile_type = 'admin'
 
 
 class FacilitatorUpFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = UserProfile
+    class Meta:
+        model = UserProfile
+
     user = factory.SubFactory(FacilitatorUserFactory)
     cohort = factory.SubFactory(CohortFactory)
     profile_type = 'assistant'
 
 
 class GroupUpFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = UserProfile
+    class Meta:
+        model = UserProfile
+
     user = factory.SubFactory(GroupUserFactory)
     cohort = factory.SubFactory(CohortFactory)
     profile_type = 'group_user'
 
 
 class HierarchyFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = Hierarchy
+    class Meta:
+        model = Hierarchy
+
     base_url = "/pages/case-one/"
     name = "case-one"
 
 
 class CaseFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = Case
+    class Meta:
+        model = Case
+
     name = factory.Sequence(lambda n: "case %03d" % n)
     hierarchy = factory.SubFactory(HierarchyFactory)
 
 
 class CaseMapFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = CaseMap
+    class Meta:
+        model = CaseMap
+
     case = factory.SubFactory(CaseFactory)
     user = factory.SubFactory(GroupUserFactory)
 
 
 class QuizFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = Quiz
+    class Meta:
+        model = Quiz
 
 
 class CaseQuizFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = CaseQuiz
+    class Meta:
+        model = CaseQuiz
 
 
 class QuestionFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = Question
+    class Meta:
+        model = Question
 
 
 class TextBlockDTFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = TextBlockDT
+    class Meta:
+        model = TextBlockDT
 
 
 class UELCHandlerFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = UELCHandler
+    class Meta:
+        model = UELCHandler
+
     depth = 1
     hierarchy = factory.SubFactory(HierarchyFactory)
 
 
 class LibraryItemFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = LibraryItem
+    class Meta:
+        model = LibraryItem
+
     name = factory.Sequence(lambda n: "item %03d" % n)
     case = factory.SubFactory(CaseFactory)
 
@@ -112,6 +141,8 @@ class UELCModuleFactory(object):
     for testing UELC.
     """
     def __init__(self):
+        curveballblock = CurveballBlockFactory()
+
         hierarchy = HierarchyFactory(name='case-test',
                                      base_url='/pages/case-test/')
         # hierarchy: case-test at /pages/case-test/
@@ -215,6 +246,13 @@ class UELCModuleFactory(object):
                         'pageblocks': [{
                             'block_type': 'Gate Block',
                             'label': 'Curveball',
+                            'pageblocks': [
+                                {
+                                    'block_type': 'Gate Block',
+                                    'label': 'Curveball',
+                                },
+                                curveballblock,
+                            ],
                         }],
                         'children': [{
                             'label': 'Confirm First Decision',

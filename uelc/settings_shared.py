@@ -220,4 +220,5 @@ ZMQ_APPNAME = "uelc"
 WINDSOCK_SECRET = "6f1d916c-7761-4874-8d5b-8f8f93d20bf2"
 WINDSOCK_WEBSOCKETS_BASE = "ws://localhost:5050/socket/"
 
+# Set this to True in local_settings.py
 BEHAVE_DEBUG_ON_ERROR = False
