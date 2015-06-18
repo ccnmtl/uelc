@@ -171,6 +171,7 @@ class CurveballBlock(models.Model):
             )
             curveball = forms.ChoiceField(
                 required=True,
+                label='Assign Curveball',
                 widget=forms.Select(
                     attrs={'class': 'curveball-select', 'required': True}),
                 choices=CURVEBALL_CHOICES,

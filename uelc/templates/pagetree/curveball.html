@@ -4,7 +4,7 @@
 <div class="gated-curveball">
 {% get_selected_curveball u.0 sec.7.1 as selected_curveball %}
     {% if selected_curveball %}
-        <p>selected curveball:</p>
+        <p>Selected Curveball:</p>
         <p>{{ selected_curveball.curveball.title }}</p>
     {% else %}
         <form action="." method="post">{% csrf_token %}
