@@ -605,17 +605,6 @@ class CaseQuiz(Quiz):
         return unlocked
 
 
-class CaseQuestion(models.Model):
-    quiz = models.ForeignKey(Quiz)
-    question_type = models.CharField(
-        max_length=256,
-        choices=(
-            ("single choice", "Multiple Choice: Single answer"),
-        ))
-    explanation = models.TextField(blank=True)
-    intro_text = models.TextField(blank=True)
-
-
 class CaseAnswer(models.Model):
     def default_question(self):
         return self.answer.question.id
