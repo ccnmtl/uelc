@@ -1,4 +1,3 @@
-from datetime import datetime
 from django import forms
 from django.db import models
 from django.contrib.auth.models import User
@@ -104,7 +103,7 @@ class GateSubmission(models.Model):
     gateblock = models.ForeignKey(GateBlock)
     gate_user = models.ForeignKey(User, related_name='gate_user')
     section = models.ForeignKey(Section)
-    submitted = models.DateTimeField(default=datetime.now)
+    submitted = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return "gate %d submission by %s at %s" % (self.gateblock.id,
