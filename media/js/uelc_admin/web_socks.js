@@ -97,7 +97,7 @@ $(function() {
         console.log(gateSection);
         gateSection.append('<div class-"response">' +
             data.notification.data + '</div>');
-    }
+    };
     var setGroupLocation = function(gcs, sectionBlock) {
         var groupIcon = jQuery('<span class="glyphicon glyphicon-user" ' +
             'aria-hidden="true"></span>');

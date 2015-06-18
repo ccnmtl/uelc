@@ -274,8 +274,8 @@ class UELCPageView(LoggedInMixin,
             if display_name == 'Gate Block' and grp_usr:
                 gate_blocks.append(dict(id=block.id))
                 notification = dict(
-                        data='',
-                        message='At Gate Block')
+                    data='',
+                    message='At Gate Block')
                 self.notify_facilitators(request, path, notification)
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
@@ -368,7 +368,7 @@ class UELCPageView(LoggedInMixin,
                         answer_title = ca.display_title()
             notification = dict(
                 data=answer_title,
-                message= 'Decision Submitted')
+                message='Decision Submitted')
             self.notify_facilitators(request, path, notification)
             return page_submit(self.section, request)
         else:
