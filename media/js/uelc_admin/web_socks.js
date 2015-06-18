@@ -52,14 +52,15 @@ $(function() {
             String(sectionId) + '"]';
         window.sectionBlock = jQuery(groupColumnSelector + ' ' +
             sectionRowSelector);
+        alert(data.notification.data);
 
-        if (data.notification === 'At Gate Block') {
+        if (data.notification.message === 'At Gate Block') {
             msg = 'we just landed on a page with a gateblock!';
             action = 'gateblock';
             setGroupLocation(groupColumnSelector, sectionBlock);
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
         }
-        if (data.notification === 'Section Submitted') {
+        if (data.notification.message === 'Section Submitted') {
             msg = 'we just confirmed a page';
             action = 'section submitted';
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
@@ -68,16 +69,17 @@ $(function() {
             setGroupMessage(jQuery(groupColumnSelector), msg);
             UA.setFormClickHandler();
         }
-        if (data.notification === 'Decision Submitted') {
+        if (data.notification.message === 'Decision Submitted') {
             msg = 'we just made a decision';
             action = 'made decision';
             setGroupMessage(jQuery(groupColumnSelector), msg);
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
             highlightActiveGate(groupColumnSelector, sectionBlock);
+            displayDecisionTitle(groupColumnSelector, sectionBlock, data);
             UA.setFormClickHandler();
         }
 
-        if (data.notification === 'Decision Block') {
+        if (data.notification.message === 'Decision Block') {
             msg = 'we just landed on a Decision Block';
             setGroupMessage(jQuery(groupColumnSelector), msg);
         }
@@ -88,6 +90,13 @@ $(function() {
     }else {
         alert($('Your browser does not support WebSockets. ' +
                 'You will have to refresh your browser to view updates.'));
+    }
+    var displayDecisionTitle = function(gcs, sectionBlock, data) {
+        gateSection = sectionBlock.find('.gate-section');
+        console.log(sectionBlock);
+        console.log(gateSection);
+        gateSection.append('<div class-"response">' +
+            data.notification.data + '</div>');
     }
     var setGroupLocation = function(gcs, sectionBlock) {
         var groupIcon = jQuery('<span class="glyphicon glyphicon-user" ' +

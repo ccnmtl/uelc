@@ -174,7 +174,7 @@ class UELCPageView(LoggedInMixin,
         socket.connect(settings.WINDSOCK_BROKER_URL)
         msg = dict()
 
-        if(notification == 'Decision Submitted'):
+        if(notification['message'] == 'Decision Submitted'):
             cb = self.section.get_next()
             if (hasattr(cb, 'display_name')
                and cb.display_name == "Curveball Block"):
@@ -190,14 +190,14 @@ class UELCPageView(LoggedInMixin,
                 notification=notification,
                 facil_msg=facil_msg)
 
-        elif(notification == 'At Gate Block'):
+        elif(notification['message'] == 'At Gate Block'):
             msg = dict(
                 userId=user.id,
                 path=path,
                 sectionPk=self.section.pk,
                 notification=notification)
 
-        elif(notification == 'Decision Block'):
+        elif(notification['message'] == 'Decision Block'):
             msg = dict(
                 userId=user.id,
                 path=path,
@@ -265,12 +265,18 @@ class UELCPageView(LoggedInMixin,
                 quiz = block.block()
                 completed = quiz.is_submitted(quiz, request.user)
                 if not completed and grp_usr:
-                    self.notify_facilitators(request, path, 'Decision Block')
+                    notification = dict(
+                        data='',
+                        message='Decision Block')
+                    self.notify_facilitators(request, path, notification)
                 decision_blocks.append(dict(id=block.id,
                                             completed=completed))
             if display_name == 'Gate Block' and grp_usr:
                 gate_blocks.append(dict(id=block.id))
-                self.notify_facilitators(request, path, 'At Gate Block')
+                notification = dict(
+                        data='',
+                        message='At Gate Block')
+                self.notify_facilitators(request, path, notification)
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
@@ -343,7 +349,27 @@ class UELCPageView(LoggedInMixin,
             # want the facilitator's dashboard to be updated
             '''Will need to get the correct curveball choices to send
             facilitator'''
-            self.notify_facilitators(request, path, 'Decision Submitted')
+            post_keys = request.POST.keys()
+            q_id = None
+            q_answer_set = None
+            answer_value = None
+            answer_title = None
+            for k in post_keys:
+                k_split = k.split('question')
+                if len(k_split) > 1:
+                    q_id = k_split[1]
+                    answer_value = request.POST.get(k)
+                    q = Question.objects.get(id=q_id)
+                    q_answer_set = q.answer_set.all()
+            if q_answer_set:
+                for an in q_answer_set:
+                    if an.value == answer_value:
+                        ca = CaseAnswer.objects.get(answer=an)
+                        answer_title = ca.display_title()
+            notification = dict(
+                data=answer_title,
+                message= 'Decision Submitted')
+            self.notify_facilitators(request, path, notification)
             return page_submit(self.section, request)
         else:
             action_args = dict(error='error')
@@ -379,7 +405,9 @@ class SubmitSectionView(LoggedInMixin,
         section = Section.objects.get(id=section_id)
         SectionSubmission.objects.get_or_create(section=section, user=user)
 
-        notification = "Section Submitted"
+        notification = dict(
+            data='',
+            message='Section Submitted')
         self.notify_facilitators(request, section, notification)
         return HttpResponse('Success')
 

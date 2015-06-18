@@ -49,7 +49,19 @@
                         {% include "pagetree/curveball.html" %}
                     {% endif %}
 
-                    
+                    <div class="gate-section">
+                        {% if sec.0.pk == u.2.id %}
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                        {% endif %}
+
+                        <span> {{ sec.1.pageblock.label }}</span>
+                        <br />
+                        <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
+
+                        {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
+                            <div class="response">{{ sec.8.2.title }}</div>
+                        {% endif %}
+                    </div><!--end .gate-section-->
 
                   <div class="gate-button unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                     <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">                        
@@ -59,19 +71,7 @@
                    </div>
                    <div class="clearfix visible-lg-block"></div>
                   </div><!-- end .gate-button-->
-                  <div class="gate-section">
-                    {% if sec.0.pk == u.2.id %}
-                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                    {% endif %}
-
-                    <span> {{ sec.1.pageblock.label }}</span>
-                    <br />
-                    <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
-
-                    {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
-                        <div class="response">{{ sec.8.2.title }}</div>
-                    {% endif %}
-                </div><!--end .gate-section-->
+                  
                 </div><!-- end .gate-block-->
                 {% endif %}
             
@@ -84,6 +84,18 @@
                     {% include "pagetree/curveball.html" %}
                 {% endif %}
 
+                <div class="gate-section">
+                    {% if sec.0.pk == u.2.id %}
+                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                    {% endif %}
+                    <span> {{ sec.1.pageblock.label }}</span>
+                    <br />
+                    <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
+                    
+                    {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
+                        <div class="response">{{ sec.8.2.title }}</div>
+                    {% endif %}
+                </div><!--end .gate-section-->
                 
                 <div class="gate-button locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                   <form action ="." method="post">{% csrf_token %}
@@ -103,18 +115,7 @@
                     </form>
                 </div><!-- end .gate-button-->
 
-                <div class="gate-section">
-                    {% if sec.0.pk == u.2.id %}
-                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                    {% endif %}
-                    <span> {{ sec.1.pageblock.label }}</span>
-                    <br />
-                    <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
-                    
-                    {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
-                        <div class="response">{{ sec.8.2.title }}</div>
-                    {% endif %}
-                </div><!--end .gate-section-->
+                
             </div><!-- end .gate-block -->
                 {% endif %} 
             {% endif %}

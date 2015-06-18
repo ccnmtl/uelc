@@ -270,7 +270,6 @@ ul.pager li.next a.disabled:active {
 
 /* Facilitator page */
 .gate-section{
-    float: left;
     width: 100%;
 }
 .gate-block{
