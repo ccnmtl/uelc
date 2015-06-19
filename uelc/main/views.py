@@ -489,6 +489,24 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         socket.send(json.dumps(e))
         socket.recv()
 
+    def notify_facilitator(self, request, section, user, msg):
+        socket = zmq_context.socket(zmq.REQ)
+        socket.connect(settings.WINDSOCK_BROKER_URL)
+        notification = dict(
+            data='',
+            message=msg)
+        msg = dict(
+            userId=user.id,
+            sectionPk=section.pk,
+            notification=notification)
+
+        e = dict(address="%s.pages/%s/facilitator/" %
+                 (settings.ZMQ_APPNAME, section.hierarchy.name),
+                 content=json.dumps(msg))
+
+        socket.send(json.dumps(e))
+        socket.recv()
+
     def post_curveball_select(self, request):
         '''Show the facilitator their choices for the curveball,
         facilitator selects what curveball the group will see'''
@@ -511,6 +529,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         if action == 'submit':
             self.set_upv(user, section, "complete")
             self.notify_group_user(section, user, "Open Gate")
+            self.notify_facilitator(request, section, user, "Open Gate")
             admin_ajax_page_submit(section, user)
 
     def post(self, request, path):

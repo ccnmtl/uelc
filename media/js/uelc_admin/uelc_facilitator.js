@@ -18,7 +18,13 @@ UELCAdmin = {
             var btn = jQuery('.gate-block.active .gate-button form .btn');
             btn.css('cursor', 'pointer');
             btn.click(function() {
-                jQuery(this).parent().parent('form').submit();
+                form  = jQuery(this).closest('form');
+                data = jQuery(form).serialize();
+                jQuery.post(
+                    '/pages/case-one/facilitator/',data).error(function(){
+                    alert('I am sorry! There was a problem opening the gate.' +
+                        'Please refresh your browser and try again.');
+                });
             });
         };
         this.setPartsOnGateblocks = function() {

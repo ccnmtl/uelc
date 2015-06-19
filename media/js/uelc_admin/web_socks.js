@@ -50,10 +50,9 @@ $(function() {
         var groupColumnSelector = '#group-user-section-' + groupId;
         var sectionRowSelector = '[data-section-id="' +
             String(sectionId) + '"]';
-        window.sectionBlock = jQuery(groupColumnSelector + ' ' +
+        var sectionBlock = jQuery(groupColumnSelector + ' ' +
             sectionRowSelector);
-        alert(data.notification.data);
-
+        console.log(data)
         if (data.notification.message === 'At Gate Block') {
             msg = 'we just landed on a page with a gateblock!';
             action = 'gateblock';
@@ -83,6 +82,9 @@ $(function() {
             msg = 'we just landed on a Decision Block';
             setGroupMessage(jQuery(groupColumnSelector), msg);
         }
+        if (data.notification.message === 'Open Gate') {
+            openGate(groupColumnSelector, sectionBlock);
+        }
     };
 
     if (window.WebSocket) {
@@ -92,9 +94,7 @@ $(function() {
                 'You will have to refresh your browser to view updates.'));
     }
     var displayDecisionTitle = function(gcs, sectionBlock, data) {
-        gateSection = sectionBlock.find('.gate-section');
-        console.log(sectionBlock);
-        console.log(gateSection);
+        var gateSection = sectionBlock.find('.gate-section');
         gateSection.append('<div class-"response">' +
             data.notification.data + '</div>');
     };
@@ -104,7 +104,16 @@ $(function() {
         jQuery(gcs).find('.glyphicon-user').remove();
         sectionBlock.find('.gate-section').append(groupIcon);
     };
+    var openGate = function(groupColumnSelector, sectionBlock) {
+        var btn = sectionBlock.find('.btn-danger');
+        var glyph = sectionBlock.find('.glyphicon-lock');
+        jQuery(groupColumnSelector).find('.gate-block').each(function() {
+            jQuery(this).removeClass('active');
+        });
 
+        btn.removeClass('btn-danger').addClass('btn-success');
+        glyph.removeClass('glyphicon-lock').addClass('glyphicon-ok');
+    };
     var updateGateSectionStatus = function(gcs, sectionBlock, action) {
         var badge = sectionBlock.find('.badge');
         if (action === 'section submitted' || action === 'made decision') {
@@ -116,7 +125,7 @@ $(function() {
             return;
         }else {
             badge.text('reviewing');
-            badge.removeClass('to').removeClass('be').removeClass('reviewed');
+            badge.removeClass('to be reviewed');
             badge.addClass('reviewing');
         }
     };
