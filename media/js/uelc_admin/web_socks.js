@@ -50,34 +50,40 @@ $(function() {
         var groupColumnSelector = '#group-user-section-' + groupId;
         var sectionRowSelector = '[data-section-id="' +
             String(sectionId) + '"]';
-        window.sectionBlock = jQuery(groupColumnSelector + ' ' +
+        var sectionBlock = jQuery(groupColumnSelector + ' ' +
             sectionRowSelector);
 
-        if (data.notification === 'At Gate Block') {
+        if (data.notification.message === 'At Gate Block') {
             msg = 'we just landed on a page with a gateblock!';
             action = 'gateblock';
             setGroupLocation(groupColumnSelector, sectionBlock);
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
         }
-        if (data.notification === 'Section Submitted') {
+        if (data.notification.message === 'Section Submitted') {
             msg = 'we just confirmed a page';
             action = 'section submitted';
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
             setGroupLocation(groupColumnSelector, sectionBlock);
             highlightActiveGate(groupColumnSelector, sectionBlock);
             setGroupMessage(jQuery(groupColumnSelector), msg);
+            UA.setFormClickHandler();
         }
-        if (data.notification === 'Decision Submitted') {
+        if (data.notification.message === 'Decision Submitted') {
             msg = 'we just made a decision';
             action = 'made decision';
             setGroupMessage(jQuery(groupColumnSelector), msg);
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
+            highlightActiveGate(groupColumnSelector, sectionBlock);
+            displayDecisionTitle(groupColumnSelector, sectionBlock, data);
+            UA.setFormClickHandler();
         }
 
-        if (data.notification === 'Decision Block') {
+        if (data.notification.message === 'Decision Block') {
             msg = 'we just landed on a Decision Block';
             setGroupMessage(jQuery(groupColumnSelector), msg);
-            highlightActiveGate(groupColumnSelector, sectionBlock);
+        }
+        if (data.notification.message === 'Open Gate') {
+            openGate(groupColumnSelector, sectionBlock);
         }
     };
 
@@ -87,23 +93,40 @@ $(function() {
         alert($('Your browser does not support WebSockets. ' +
                 'You will have to refresh your browser to view updates.'));
     }
+    var displayDecisionTitle = function(gcs, sectionBlock, data) {
+        var gateSection = sectionBlock.find('.gate-section');
+        gateSection.append('<div class-"response">' +
+            data.notification.data + '</div>');
+    };
     var setGroupLocation = function(gcs, sectionBlock) {
         var groupIcon = jQuery('<span class="glyphicon glyphicon-user" ' +
             'aria-hidden="true"></span>');
         jQuery(gcs).find('.glyphicon-user').remove();
-        sectionBlock.find('.gate-button').prepend(groupIcon);
+        sectionBlock.find('.gate-section').append(groupIcon);
     };
+    var openGate = function(groupColumnSelector, sectionBlock) {
+        var btn = sectionBlock.find('.btn-danger');
+        var glyph = sectionBlock.find('.glyphicon-lock');
+        jQuery(groupColumnSelector).find('.gate-block').each(function() {
+            jQuery(this).removeClass('active');
+        });
 
+        btn.removeClass('btn-danger').addClass('btn-success');
+        glyph.removeClass('glyphicon-lock').addClass('glyphicon-ok');
+    };
     var updateGateSectionStatus = function(gcs, sectionBlock, action) {
         var badge = sectionBlock.find('.badge');
         if (action === 'section submitted' || action === 'made decision') {
             badge.text('reviewed');
+            badge.removeClass('reviewing').addClass('reviewed');
             return;
         }
         if (badge.text() === 'reviewed') {
             return;
         }else {
             badge.text('reviewing');
+            badge.removeClass('to be reviewed');
+            badge.addClass('reviewing');
         }
     };
 

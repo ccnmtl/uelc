@@ -175,7 +175,7 @@ class UELCPageView(LoggedInMixin,
         socket.connect(settings.WINDSOCK_BROKER_URL)
         msg = dict()
 
-        if(notification == 'Decision Submitted'):
+        if(notification['message'] == 'Decision Submitted'):
             cb = self.section.get_next()
             if (hasattr(cb, 'display_name')
                and cb.display_name == "Curveball Block"):
@@ -191,14 +191,14 @@ class UELCPageView(LoggedInMixin,
                 notification=notification,
                 facil_msg=facil_msg)
 
-        elif(notification == 'At Gate Block'):
+        elif(notification['message'] == 'At Gate Block'):
             msg = dict(
                 userId=user.id,
                 path=path,
                 sectionPk=self.section.pk,
                 notification=notification)
 
-        elif(notification == 'Decision Block'):
+        elif(notification['message'] == 'Decision Block'):
             msg = dict(
                 userId=user.id,
                 path=path,
@@ -218,10 +218,6 @@ class UELCPageView(LoggedInMixin,
         if not request.user.is_superuser and self.section.get_depth() == 2:
             skip_url = self.section.get_next().get_absolute_url()
             return HttpResponseRedirect(skip_url)
-
-    def go_tree_path(self, tree_path):
-        if tree_path[0]:
-            return HttpResponseRedirect(tree_path[1])
 
     def get(self, request, path):
         self.check_user(request, path)
@@ -248,14 +244,15 @@ class UELCPageView(LoggedInMixin,
         tree_path = self.check_part_path(casemap, hand, part)
         roots = get_root_context(self.request)
 
-        self.go_tree_path(tree_path)
+        if tree_path[0]:
+            return HttpResponseRedirect(tree_path[1])
 
         allow_redo = False
         needs_submit = self.section.needs_submit()
         if needs_submit:
             allow_redo = self.section.allow_redo()
-        if not request.user.is_impersonate:
-            self.upv.visit()
+
+        self.upv.visit()
         instructor_link = has_responses(self.section)
         decision_blocks = []
         gate_blocks = []
@@ -272,12 +269,18 @@ class UELCPageView(LoggedInMixin,
                 quiz = block.block()
                 completed = quiz.is_submitted(quiz, request.user)
                 if not completed and grp_usr:
-                    self.notify_facilitators(request, path, 'Decision Block')
+                    notification = dict(
+                        data='',
+                        message='Decision Block')
+                    self.notify_facilitators(request, path, notification)
                 decision_blocks.append(dict(id=block.id,
                                             completed=completed))
             if display_name == 'Gate Block' and grp_usr:
                 gate_blocks.append(dict(id=block.id))
-                self.notify_facilitators(request, path, 'At Gate Block')
+                notification = dict(
+                    data='',
+                    message='At Gate Block')
+                self.notify_facilitators(request, path, notification)
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
@@ -350,7 +353,27 @@ class UELCPageView(LoggedInMixin,
             # want the facilitator's dashboard to be updated
             '''Will need to get the correct curveball choices to send
             facilitator'''
-            self.notify_facilitators(request, path, 'Decision Submitted')
+            post_keys = request.POST.keys()
+            q_id = None
+            q_answer_set = None
+            answer_value = None
+            answer_title = None
+            for k in post_keys:
+                k_split = k.split('question')
+                if len(k_split) > 1:
+                    q_id = k_split[1]
+                    answer_value = request.POST.get(k)
+                    q = Question.objects.get(id=q_id)
+                    q_answer_set = q.answer_set.all()
+            if q_answer_set:
+                for an in q_answer_set:
+                    if an.value == answer_value:
+                        ca = CaseAnswer.objects.get(answer=an)
+                        answer_title = ca.display_title()
+            notification = dict(
+                data=answer_title,
+                message='Decision Submitted')
+            self.notify_facilitators(request, path, notification)
             return page_submit(self.section, request)
         else:
             action_args = dict(error='error')
@@ -386,7 +409,9 @@ class SubmitSectionView(LoggedInMixin,
         section = Section.objects.get(id=section_id)
         SectionSubmission.objects.get_or_create(section=section, user=user)
 
-        notification = "Section Submitted"
+        notification = dict(
+            data='',
+            message='Section Submitted')
         self.notify_facilitators(request, section, notification)
         return HttpResponse('Success')
 
@@ -468,6 +493,24 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         socket.send(json.dumps(e))
         socket.recv()
 
+    def notify_facilitator(self, request, section, user, msg):
+        socket = zmq_context.socket(zmq.REQ)
+        socket.connect(settings.WINDSOCK_BROKER_URL)
+        notification = dict(
+            data='',
+            message=msg)
+        msg = dict(
+            userId=user.id,
+            sectionPk=section.pk,
+            notification=notification)
+
+        e = dict(address="%s.pages/%s/facilitator/" %
+                 (settings.ZMQ_APPNAME, section.hierarchy.name),
+                 content=json.dumps(msg))
+
+        socket.send(json.dumps(e))
+        socket.recv()
+
     def post_curveball_select(self, request):
         '''Show the facilitator their choices for the curveball,
         facilitator selects what curveball the group will see'''
@@ -490,6 +533,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         if action == 'submit':
             self.set_upv(user, section, "complete")
             self.notify_group_user(section, user, "Open Gate")
+            self.notify_facilitator(request, section, user, "Open Gate")
             admin_ajax_page_submit(section, user)
 
     def post(self, request, path):
@@ -557,7 +601,11 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                                                      part_usermap),
                              (hand.get_part_by_section(g.pageblock().section),
                               part_usermap),
-                             hand.is_curveball(g.pageblock().section)]
+                             hand.is_curveball(g.pageblock().section),
+                             hand.is_decision_block(
+                             g.pageblock().section,
+                             user),
+                             hand.is_next_curvball(g.pageblock().section)]
                             for g in gateblocks]
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section, user_last_location])

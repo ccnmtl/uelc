@@ -76,6 +76,7 @@
                {% else %}
 
 <input name="pageblock-{{block.pageblock.id}}-question{{question.id}}" value="{{answer.value}}" type="radio" />
+<input name="qaid-{{question.id}}-{{answer.id}}" value="{{answer.id}}" type="hidden" />
             {{answer.label}}
             {% if answer.caseanswer_set.count %}
               {% for caseanswer in answer.caseanswer_set.all %}

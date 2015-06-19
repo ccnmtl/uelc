@@ -2,6 +2,7 @@ var UELCAdmin;
 UELCAdmin = {
     Admin: function() {
         this.init = function() {
+            this.setFormClickHandler();
             //this.setPartsOnGateblocks();
             //this.setChoicesOnSecondParts();
             //this.impersonate();
@@ -12,6 +13,20 @@ UELCAdmin = {
             });
             this.deleteLibraryItem();
             */
+        };
+        this.setFormClickHandler = function() {
+            var btn = jQuery('.gate-block.active .gate-button form .btn');
+            btn.css('cursor', 'pointer');
+            btn.click(function() {
+                form  = jQuery(this).closest('form');
+                data = jQuery(form).serialize();
+                jQuery.post(
+                    '/pages/case-one/facilitator/', data).error(function() {
+                    var msg = 'I am sorry! There was a problem opening' +
+                        ' the gate. Please refresh your browser and try again.';
+                    alert(msg);
+                });
+            });
         };
         this.setPartsOnGateblocks = function() {
             var partOneElms = jQuery('.part1:first-child');

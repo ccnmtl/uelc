@@ -42,6 +42,12 @@ class GateBlock(models.Model):
         unlocked = self.unlocked(user, gate_section)
         ss = SectionSubmission.objects.filter(user=user, section=gate_section)
 
+        uloc = UserLocation.objects.get_or_create(
+            user=user,
+            hierarchy=hierarchy)
+        uloc_path = h_url + uloc[0].path
+        uv = self.pageblock().section.get_uservisit(user)
+
         for block in gate_section.pageblock_set.all():
             bk = block.block()
 
@@ -57,12 +63,6 @@ class GateBlock(models.Model):
         if unlocked:
             status = 'reviewed'
             return status
-
-        uloc = UserLocation.objects.get_or_create(
-            user=user,
-            hierarchy=hierarchy)
-        uloc_path = h_url + uloc[0].path
-        uv = self.pageblock().section.get_uservisit(user)
 
         if uv:
             status = "reviewing"

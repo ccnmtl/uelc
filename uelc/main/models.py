@@ -388,12 +388,33 @@ class UELCHandler(Section):
         return p1pre
 
     def is_curveball(self, current_section):
+        block = None
         for pb in current_section.pageblock_set.all():
             block = pb.block()
             if (hasattr(block, 'display_name')
                and block.display_name == "Curveball Block"):
                 return (True, block)
         return (False, block)
+
+    def is_decision_block(self, current_section, user):
+        for pb in current_section.pageblock_set.all():
+            block = pb.block()
+            ca = None
+            if (hasattr(block, 'display_name')
+               and block.display_name == "Decision Block"):
+                ss = block.submission_set.filter(user=user).last()
+                if ss:
+                    response = ss.response_set.filter(
+                        submission_id=ss.id).last()
+                    ca = CaseAnswer.objects.get(answer=response.answer())
+                return (True, block, ca)
+        return (False, block, ca)
+
+    def is_next_curvball(self, section):
+        next = section.get_next()
+        is_cb = self.is_curveball(next)
+        if is_cb[0]:
+            return is_cb
 
 
 class LibraryItem(models.Model):
