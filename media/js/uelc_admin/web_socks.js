@@ -52,7 +52,7 @@ $(function() {
             String(sectionId) + '"]';
         var sectionBlock = jQuery(groupColumnSelector + ' ' +
             sectionRowSelector);
-        console.log(data)
+
         if (data.notification.message === 'At Gate Block') {
             msg = 'we just landed on a page with a gateblock!';
             action = 'gateblock';
