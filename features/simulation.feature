@@ -17,6 +17,8 @@ Feature: Simulation
     When I click the link "Your First Decision"
     Then my URL ends with "/part-1/your-first-decision/"
     Then I see the text "Choice 1: Full Disclosure"
+
     When I select the first radio option
     When I click the button "Submit Decision"
-    Then my URL ends with "/part-1/your-first-decision/curve-ball/"
+    Then I see the text "Please wait for the facilitator to allow you to proceed"
+    Then my URL ends with "/part-1/your-first-decision/"

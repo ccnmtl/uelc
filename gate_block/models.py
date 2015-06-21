@@ -1,17 +1,13 @@
 from django import forms
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.contenttypes import generic
-from pagetree.models import PageBlock, Section, UserLocation
+from pagetree.models import Section, UserLocation
+from pagetree.generic.models import BasePageBlock
 
 
-class GateBlock(models.Model):
-    pageblocks = generic.GenericRelation(PageBlock)
+class GateBlock(BasePageBlock):
     template_file = "gate_block/gateblock.html"
     display_name = "Gate Block"
-
-    def __unicode__(self):
-        return unicode(self.pageblock())
 
     def redirect_to_self_on_submit(self):
         return True

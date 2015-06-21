@@ -1,9 +1,9 @@
 from django import forms
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.contenttypes import generic
-from pagetree.models import PageBlock, UserLocation
 from django.core.exceptions import ObjectDoesNotExist
+from pagetree.models import UserLocation
+from pagetree.generic.models import BasePageBlock
 
 
 class Curveball(models.Model):
@@ -16,8 +16,7 @@ class Curveball(models.Model):
         return unicode(self.title)
 
 
-class CurveballBlock(models.Model):
-    pageblocks = generic.GenericRelation(PageBlock)
+class CurveballBlock(BasePageBlock):
     template_file = "curveball/curveballblock.html"
     display_name = "Curveball Block"
     description = models.TextField(blank=True)
@@ -46,9 +45,6 @@ class CurveballBlock(models.Model):
         return self.pageblock().section
 
     section = property(_get_section)
-
-    def __unicode__(self):
-        return unicode(self.pageblock())
 
     def get_curveballs(self):
         return [self.curveball_one, self.curveball_two, self.curveball_three]
@@ -79,9 +75,6 @@ class CurveballBlock(models.Model):
         CurveballSubmission.objects.filter(
             curveballblock_id=self.id,
             curveballblock_user_id=user.id).delete()
-
-    def pageblock(self):
-        return self.pageblocks.first()
 
     def needs_submit(self):
         return True
