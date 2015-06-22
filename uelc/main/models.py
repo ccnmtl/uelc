@@ -108,7 +108,7 @@ class UserProfile(models.Model):
 
     def set_image_upload_permissions(self, user):
         permission_set = Permission.objects.filter(
-            content_type__name="image upload item")
+            content_type__model="imageuploaditem")
         for perm in permission_set:
             if user.is_staff:
                 user.user_permissions.add(perm.pk)
