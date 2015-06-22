@@ -15,6 +15,12 @@ class Curveball(models.Model):
     def __unicode__(self):
         return unicode(self.title)
 
+    def as_dict(self):
+        return {
+            'title': self.title,
+            'explanation': self.explanation,
+        }
+
 
 class CurveballBlock(BasePageBlock):
     template_file = "curveball/curveballblock.html"
@@ -32,9 +38,9 @@ class CurveballBlock(BasePageBlock):
     def as_dict(self):
         return dict(
             description=self.description,
-            curveball_one=self.curveball_one,
-            curveball_two=self.curveball_two,
-            curveball_three=self.curveball_three,
+            curveball_one=self.curveball_one.as_dict(),
+            curveball_two=self.curveball_two.as_dict(),
+            curveball_three=self.curveball_three.as_dict(),
         )
 
     @classmethod
