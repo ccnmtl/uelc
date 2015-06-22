@@ -20,5 +20,12 @@ Feature: Simulation
 
     When I select the first radio option
     When I click the button "Submit Decision"
-    Then I see the text "Please wait for the facilitator to allow you to proceed"
+    Then I see the css selector ".alert.alert-danger"
     Then my URL ends with "/part-1/your-first-decision/"
+
+    When I sign out
+    When I sign in as a "admin"
+    When I attach the admins to the group user's cohort
+    When I visit "/pages/case-test/facilitator/"
+    Then I see the text "Case Control for case-test"
+    Then I see the css selector ".gate-section-list"
