@@ -143,7 +143,9 @@ def visit_root(section, fallback_url):
 
 
 @login_required
-def fresh_token(request, hierarchy_name):
+def fresh_token(request, hierarchy_name=None):
+    if hierarchy_name is None:
+        hierarchy_name = 'main'
     hierarchy = get_object_or_404(Hierarchy, name=hierarchy_name)
     return HttpResponse(
         json.dumps(
