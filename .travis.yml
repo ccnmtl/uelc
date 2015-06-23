@@ -11,3 +11,5 @@ install:
 script:
   - make
   - make behave
+notifications:
+  slack: ccnmtl:GizSNscLWJLldjQrffB8mwgm
