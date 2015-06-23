@@ -32,6 +32,13 @@ def i_get_a_http_response(context, status_code):
     assert context.browser.status_code == int(status_code)
 
 
+@then(u'I see the css selector "{selector}"')
+def i_see_the_css_selector(context, selector):
+    matches = context.browser.find_by_css(selector)
+    assert len(matches) > 0
+    assert matches.visible
+
+
 @then(u'I see the text "{text}"')
 def i_see_the_text(context, text):
     assert context.browser.is_text_present(text)
