@@ -198,12 +198,6 @@ class UELCPageView(LoggedInMixin,
                 sectionPk=self.section.pk,
                 notification=notification)
 
-        elif(notification['message'] == 'Decision Block'):
-            msg = dict(
-                userId=user.id,
-                path=path,
-                sectionPk=self.section.pk,
-                notification=notification)
         e = dict(address="%s.pages/%s/facilitator/" %
                  (settings.ZMQ_APPNAME, self.section.hierarchy.name),
                  content=json.dumps(msg))
@@ -212,6 +206,7 @@ class UELCPageView(LoggedInMixin,
         try:
             socket.recv(zmq.NOBLOCK)
         except zmq.ZMQError:
+            socket.recv()
             pass
 
     def check_user(self, request, path):
@@ -256,7 +251,6 @@ class UELCPageView(LoggedInMixin,
         instructor_link = has_responses(self.section)
         decision_blocks = []
         gate_blocks = []
-
         for block in self.section.pageblock_set.all():
             display_name = block.block().display_name
             grp_usr = request.user.profile.is_group_user()
@@ -268,19 +262,17 @@ class UELCPageView(LoggedInMixin,
                 # if so add yes/no to dict
                 quiz = block.block()
                 completed = quiz.is_submitted(quiz, request.user)
-                if not completed and grp_usr:
-                    notification = dict(
-                        data='',
-                        message='Decision Block')
-                    self.notify_facilitators(request, path, notification)
                 decision_blocks.append(dict(id=block.id,
                                             completed=completed))
+
             if display_name == 'Gate Block' and grp_usr:
+
                 gate_blocks.append(dict(id=block.id))
                 notification = dict(
                     data='',
                     message='At Gate Block')
                 self.notify_facilitators(request, path, notification)
+
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on

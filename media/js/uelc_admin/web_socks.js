@@ -77,11 +77,6 @@ $(function() {
             displayDecisionTitle(groupColumnSelector, sectionBlock, data);
             UA.setFormClickHandler();
         }
-
-        if (data.notification.message === 'Decision Block') {
-            msg = 'we just landed on a Decision Block';
-            setGroupMessage(jQuery(groupColumnSelector), msg);
-        }
         if (data.notification.message === 'Open Gate') {
             openGate(groupColumnSelector, sectionBlock);
         }
