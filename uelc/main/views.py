@@ -264,15 +264,12 @@ class UELCPageView(LoggedInMixin,
                 completed = quiz.is_submitted(quiz, request.user)
                 decision_blocks.append(dict(id=block.id,
                                             completed=completed))
-
             if display_name == 'Gate Block' and grp_usr:
-
                 gate_blocks.append(dict(id=block.id))
                 notification = dict(
                     data='',
                     message='At Gate Block')
                 self.notify_facilitators(request, path, notification)
-
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
