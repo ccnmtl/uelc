@@ -149,7 +149,8 @@ def fresh_token(request, hierarchy_name=None):
     hierarchy = get_object_or_404(Hierarchy, name=hierarchy_name)
     return HttpResponse(
         json.dumps(
-            dict(hierarchy=hierarchy, token=gen_token(request, hierarchy.name),
+            dict(hierarchy=hierarchy.as_dict(),
+                 token=gen_token(request, hierarchy.name),
                  websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)),
         content_type='applicaton/json')
 

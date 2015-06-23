@@ -29,3 +29,8 @@ Feature: Simulation
     When I visit "/pages/case-test/facilitator/"
     Then I see the text "Case Control for case-test"
     Then I see the css selector ".gate-section-list"
+    Then there are no curveball submissions
+
+    When I click the button "Submit"
+    Then I see the text "Selected Curveball:"
+    Then a curveball submission exists
