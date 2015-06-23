@@ -1,3 +1,4 @@
+import json
 import hmac
 import hashlib
 import time
@@ -7,7 +8,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
 
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
@@ -144,8 +145,11 @@ def visit_root(section, fallback_url):
 @login_required
 def fresh_token(request, hierarchy_name):
     hierarchy = get_object_or_404(Hierarchy, name=hierarchy_name)
-    return dict(hierarchy=hierarchy, token=gen_token(request, hierarchy.name),
-                websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)
+    return HttpResponse(
+        json.dumps(
+            dict(hierarchy=hierarchy, token=gen_token(request, hierarchy.name),
+                 websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)),
+        content_type='applicaton/json')
 
 
 def gen_token(request, hierarchy_name):
@@ -171,8 +175,11 @@ def gen_token(request, hierarchy_name):
 @login_required
 def fresh_grp_token(request, section_id):
     section = get_object_or_404(Section, pk=section_id)
-    return dict(section=section, token=gen_group_token(request, section.pk),
-                websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)
+    return HttpResponse(
+        json.dumps(dict(section=section,
+                        token=gen_group_token(request, section.pk),
+                        websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)),
+        content_type='applicaton/json')
 
 
 def gen_group_token(request, section_pk):
