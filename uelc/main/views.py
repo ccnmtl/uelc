@@ -1,6 +1,7 @@
 import json
 import zmq
 import urlparse
+import sys
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
@@ -198,21 +199,20 @@ class UELCPageView(LoggedInMixin,
                 sectionPk=self.section.pk,
                 notification=notification)
 
-        elif(notification['message'] == 'Decision Block'):
-            msg = dict(
-                userId=user.id,
-                path=path,
-                sectionPk=self.section.pk,
-                notification=notification)
         e = dict(address="%s.pages/%s/facilitator/" %
                  (settings.ZMQ_APPNAME, self.section.hierarchy.name),
                  content=json.dumps(msg))
 
         socket.send(json.dumps(e))
-        try:
-            socket.recv(zmq.NOBLOCK)
-        except zmq.ZMQError:
-            pass
+
+        # TODO: behave hangs on socket.recv()
+        if sys.argv[1:2] == ['behave']:
+            try:
+                socket.recv(zmq.NOBLOCK)
+            except zmq.ZMQError:
+                pass
+        else:
+            socket.recv()
 
     def check_user(self, request, path):
         if not request.user.is_superuser and self.section.get_depth() == 2:
@@ -256,7 +256,6 @@ class UELCPageView(LoggedInMixin,
         instructor_link = has_responses(self.section)
         decision_blocks = []
         gate_blocks = []
-
         for block in self.section.pageblock_set.all():
             display_name = block.block().display_name
             grp_usr = request.user.profile.is_group_user()
@@ -268,11 +267,6 @@ class UELCPageView(LoggedInMixin,
                 # if so add yes/no to dict
                 quiz = block.block()
                 completed = quiz.is_submitted(quiz, request.user)
-                if not completed and grp_usr:
-                    notification = dict(
-                        data='',
-                        message='Decision Block')
-                    self.notify_facilitators(request, path, notification)
                 decision_blocks.append(dict(id=block.id,
                                             completed=completed))
             if display_name == 'Gate Block' and grp_usr:
