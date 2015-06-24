@@ -2,8 +2,11 @@ from django.test import TestCase
 from django.test.client import Client
 from pagetree.helpers import get_hierarchy
 
-from factories import GroupUpFactory, AdminUpFactory, \
-    CaseFactory, CohortFactory, FacilitatorUpFactory
+from factories import (
+    GroupUpFactory, AdminUpFactory,
+    CaseFactory, CohortFactory, FacilitatorUpFactory,
+    UELCModuleFactory
+)
 from pagetree.tests.factories import ModuleFactory
 
 
@@ -426,3 +429,12 @@ class TestAdminUserViewContext(TestCase):
         self.assertIn('hierarchies', response.context)
         self.assertIn('cases', response.context)
         self.assertIn('cohorts', response.context)
+
+
+class TestFreshGrpTokenView(TestCase):
+    def setUp(self):
+        UELCModuleFactory()
+
+    def test_get(self):
+        response = self.client.get("/group_user/fresh_token/1/")
+        self.assertEqual(response.status_code, 302)
