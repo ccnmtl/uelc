@@ -179,7 +179,7 @@ def gen_token(request, hierarchy_name):
 def fresh_grp_token(request, section_id):
     section = get_object_or_404(Section, pk=section_id)
     return HttpResponse(
-        json.dumps(dict(section=section,
+        json.dumps(dict(section=section.as_dict(),
                         token=gen_group_token(request, section.pk),
                         websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)),
         content_type='applicaton/json')

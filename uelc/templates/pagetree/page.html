@@ -39,7 +39,7 @@
 <script>
   window.sectionId = '{{section.pk}}';
 	window.username = '{{request.user.username}}';
-	window.freshTokenUrl = '/group_user/fresh_token/';
+	window.freshTokenUrl = '/group_user/fresh_token/{{section.pk}}';
 	window.token = '{{token}}';
 	window.websocketsBase = '{{websockets_base}}';
 </script>
