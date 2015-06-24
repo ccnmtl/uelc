@@ -7,6 +7,7 @@ from factories import (
     CaseFactory, CohortFactory, FacilitatorUpFactory,
     UELCModuleFactory
 )
+from pagetree.models import Section
 from pagetree.tests.factories import ModuleFactory
 
 
@@ -434,7 +435,15 @@ class TestAdminUserViewContext(TestCase):
 class TestFreshGrpTokenView(TestCase):
     def setUp(self):
         UELCModuleFactory()
+        self.grp_usr_profile = GroupUpFactory()
+        self.grp_usr_profile.user.set_password("test")
+        self.grp_usr_profile.user.save()
+        self.client = Client()
+        self.client.login(
+            username=self.grp_usr_profile.user.username,
+            password="test")
 
     def test_get(self):
-        response = self.client.get("/group_user/fresh_token/1/")
-        self.assertEqual(response.status_code, 302)
+        s = Section.objects.first()
+        response = self.client.get("/group_user/fresh_token/{}/".format(s.pk))
+        self.assertEqual(response.status_code, 200)
