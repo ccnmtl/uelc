@@ -3,60 +3,50 @@
    Please Login
 {% endblock %}
 
-{% block usernav %}{% endblock %}
-
-{% block content %}
-<div class="jumbotron text-center">
-    <img style="margin-bottom: 20px;" class="img-responsive" src="{{STATIC_URL}}img/logo-jumbotron.png" />
-    
-    {% block loginbox %}
-    <div class="row well" style="color: black;">
-    {% if form.errors %}
-    <p class="alert alert-danger">
-    <strong>Oops!</strong> Invalid username or password (note that both username and password are case-sensitive). For additional help, please contact UELC.
-    </p>
-    {% endif %}
-        <form id="login-local" name="login_local" method="post" action=".">
-            {% csrf_token %}
-                    
-            <label for="id_username">Username:</label> {{ form.username }}
-    
-            <label for="id_password">Password:</label> {{ form.password }}
-    
-            <input class="btn btn-default" type="submit" value="Sign In" />                        
-            <input type="hidden" name="next" value="{{ next|urlencode }}" />
-            
-        </form>
-    </div>
-    {% endblock %}
-
-</div>
-
-<div class="row">
-    <div class="col-md-4 text-center">
-    <img class="img-responsive img-rounded" src="{{STATIC_URL}}img/smallgroup.jpg" />
-    <h2>Engagement</h2>
-    <p>
-    Each experience includes a multimedia narrative of an educational leader placed in a high stakes situation. Participants must take into account data regarding important stakeholders, respond to unexpected events and make the best decision given the circumstances.
-    </p>
-</div>
-<div class="col-md-4 text-center">
-    <img class="img-responsive img-rounded" src="{{STATIC_URL}}img/facilitator.jpg" />
-    <h2>Leadership</h2>
-    <p>
-    Each experience includes a compelling narrative written by the Urban Education Leadership Collaborative at Teachers College Columbia University and vetted by experienced education leaders from around the country.
-    </p>
-</div>
-<div class="col-md-4 text-center">
-    <img class="img-responsive img-rounded" src="{{STATIC_URL}}img/experts.jpg" />
-    <h2>Discussion</h2>
-    <p>
-    ELDEX content is responsive to decisions made by participants in small discussion groups. At key decision points in the narrative, participants discuss the status of situation and submit a choice. Contextual content is revealed in response to the choice made by the group.
-    </p>
-</div>
-</div>
+{% block courseinformation %}
 {% endblock %}
 
+{% block content %}
 
+<div class="loginbox-container">
+    <div class="loginbox">
+        <h2>Log In</h2>
+        <div class="content">
+            {% if form.errors %}
+                <p class="errornote">
+                    <span>
+                        <b>ERROR:</b> Invalid username or password.
+                    </span>
+                    Please try again. Note that both username and password are case-sensitive.
+                </p>
+            {% endif %}
+        
+            <br />
+            <form id="login-local" name="login_local" method="post" action=".">
+                {% csrf_token %}
+                <div class="login-local-form" {% if not form.errors %}style="display: none"{% endif %}>
+                    <div class="fieldwrapper">
+                        <label for="id_username">Username:</label>
+                        {{ form.username }}
+                    </div><!-- fieldwrapper -->
+                
+                    <div class="fieldwrapper">
+                        <label for="id_password">Password:</label>
+                        {{ form.password }}
+                    </div><!-- fieldwrapper -->
+                </div>      
+                <input class="btn-primary" type="button" value="Guest Log In" {% if form.errors %}style="display: none"{% endif %}
+                    onclick="jQuery('.login-local-form').show(); jQuery(this).hide(); return false;"/>
+                <input class="btn-primary login-local-form" type="submit" value="Log In" {% if not form.errors %}style="display: none;"{% endif %} />                        
+                <input type="hidden" name="next" value="{{ next|urlencode }}" />
+            </form>
+            <p class="smalltxt"><a href="/accounts/password_reset/">Forgot Password?</a></p>
+            <p class="smalltxt"><a href="{% url "registration_register" %}">Need a guest account?</a></p>
+            <br />
+        </div>
+    </div>
+</div>
 
+{% include "registration/description.html" %}
 
+{% endblock %}
