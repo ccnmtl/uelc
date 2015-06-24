@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase
 from uelc.main.tests.factories import (
     AdminUserFactory, AdminUpFactory, FacilitatorUpFactory,
@@ -7,6 +8,7 @@ from uelc.main.tests.factories import (
     UELCModuleFactory
 )
 from uelc.main.models import TextBlockDT, LibraryItem, CaseQuiz
+from pagetree.models import Hierarchy
 from quizblock.tests.test_models import FakeReq
 from quizblock.models import Submission
 
@@ -253,3 +255,8 @@ class CaseQuizTest(TestCase):
 class UELCModuleFactoryTest(TestCase):
     def test_is_valid_from_factory(self):
         UELCModuleFactory()
+
+    def test_is_json_serializable(self):
+        UELCModuleFactory()
+        h = Hierarchy.objects.get(name='case-test')
+        json.dumps(h.as_dict())
