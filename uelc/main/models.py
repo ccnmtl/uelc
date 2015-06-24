@@ -410,11 +410,13 @@ class UELCHandler(Section):
                 return (True, block, ca)
         return (False, block, ca)
 
-    def is_next_curvball(self, section):
+    def is_next_curveball(self, section):
         next = section.get_next()
         is_cb = self.is_curveball(next)
         if is_cb[0]:
             return is_cb
+        else:
+            return False
 
 
 class LibraryItem(models.Model):
