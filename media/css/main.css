@@ -272,6 +272,9 @@ ul.pager li.next a.disabled:active {
 .badge.status{
     border-radius:.25em !important;
 }
+.pull-right .glyphicon-user{
+    margin: 2px 0 0 0;
+}
 .gate-section{
     width: 100%;
 }
