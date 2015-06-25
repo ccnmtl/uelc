@@ -122,10 +122,10 @@ class UELCPageView(LoggedInMixin,
 
     def iterate_blocks(self, section):
         for block in section.pageblock_set.all():
-            display_name = block.block().display_name
-            if (hasattr(block.block(), 'needs_submit') and
-                    display_name == 'Gate Block'):
-                return block.block()
+            block_obj = block.block()
+            if (hasattr(block_obj, 'needs_submit') and
+                    block_obj.display_name == 'Gate Block'):
+                return block_obj
         return False
 
     def get_next_gate(self, section):
@@ -137,19 +137,6 @@ class UELCPageView(LoggedInMixin,
         if block:
             return (block, last_sibling)
         return False
-
-    def run_section_gatecheck(self, user, path):
-        section_gatecheck = self.section.gate_check(self.request.user)
-        if not section_gatecheck[0]:
-            gate_section_gateblock = self.get_next_gate(self.section)
-            if not gate_section_gateblock:
-                block_unlocked = True
-            else:
-                block_unlocked = gate_section_gateblock[0].unlocked(
-                    self.request.user, gate_section_gateblock[1])
-                if not block_unlocked:
-                    back_url = self.section.get_previous().get_absolute_url()
-                    return HttpResponseRedirect(back_url)
 
     def check_part_path(self, casemap, hand, part):
         if part > 1 and self.request.user.profile.is_group_user():
@@ -257,7 +244,8 @@ class UELCPageView(LoggedInMixin,
         decision_blocks = []
         gate_blocks = []
         for block in self.section.pageblock_set.all():
-            display_name = block.block().display_name
+            b = block.block()
+            display_name = b.display_name
             grp_usr = request.user.profile.is_group_user()
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
@@ -265,7 +253,7 @@ class UELCPageView(LoggedInMixin,
             if display_name == 'Decision Block':
                 # is the quiz really submitted?
                 # if so add yes/no to dict
-                quiz = block.block()
+                quiz = b
                 completed = quiz.is_submitted(quiz, request.user)
                 decision_blocks.append(dict(id=block.id,
                                             completed=completed))
@@ -279,7 +267,6 @@ class UELCPageView(LoggedInMixin,
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
         # user decisions.
-        self.run_section_gatecheck(request.user, path)
         uloc[0].path = path
         uloc[0].save()
         context = dict(
@@ -370,8 +357,7 @@ class UELCPageView(LoggedInMixin,
             self.notify_facilitators(request, path, notification)
             return page_submit(self.section, request)
         else:
-            action_args = dict(error='error')
-            messages.error(request, action_args['error'],
+            messages.error(request, 'error',
                            extra_tags='quizSubmissionError')
             return HttpResponseRedirect(request.path)
 
@@ -608,9 +594,11 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section, user_last_location])
 
-        quizzes = [p.block() for p in section.pageblock_set.all()
-                   if hasattr(p.block(), 'needs_submit')
-                   and p.block().needs_submit()]
+        quizzes = []
+        for p in section.pageblock_set.all():
+            block_obj = p.block()
+            if hasattr(block_obj, 'needs_submit') and block_obj.needs_submit():
+                quizzes.append(block_obj)
         # curveballs = p.block()
         context = dict(section=section,
                        quizzes=quizzes,

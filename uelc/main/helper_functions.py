@@ -34,8 +34,8 @@ def get_cases(request):
 
 def admin_ajax_page_submit(section, user):
     for block in section.pageblock_set.all():
-        if block.block().display_name == "Gate Block":
-            block_obj = block.block()
+        block_obj = block.block()
+        if block_obj.display_name == "Gate Block":
             GateSubmission.objects.create(
                 gateblock_id=block_obj.id,
                 section=section,
@@ -83,12 +83,11 @@ def get_root_context(request):
     context = dict()
     try:
         cases = get_cases(request)
+        roots = [('None', 'None')]
         if cases:
             roots = [(case.hierarchy.get_absolute_url(),
                       case.hierarchy.name)
                      for case in cases]
-        else:
-            roots = [('None', 'None')]
         context = dict(roots=roots)
     except ObjectDoesNotExist:
         pass
@@ -96,10 +95,11 @@ def get_root_context(request):
 
 
 def has_responses(section):
-    quizzes = [p.block() for p in section.pageblock_set.all()
-               if hasattr(p.block(), 'needs_submit')
-               and p.block().needs_submit()]
-    return quizzes != []
+    for p in section.pageblock_set.all():
+        b = p.block()
+        if hasattr(b, 'needs_submit') and b.needs_submit():
+            return True
+    return False
 
 
 def get_user_map(hierarchy, user):
