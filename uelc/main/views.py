@@ -419,8 +419,8 @@ class UELCEditView(LoggedInFacilitatorMixin,
 
 class FacilitatorView(LoggedInFacilitatorMixin,
                       DynamicHierarchyMixin,
-                      TemplateView,
-                      SectionMixin):
+                      SectionMixin,
+                      TemplateView):
     template_name = "pagetree/facilitator.html"
     extra_context = dict()
 
@@ -438,7 +438,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             upv.save()
         except AttributeError:
             pass
-        return
 
     def post_library_item(self, request):
         doc = request.FILES.get('doc')
@@ -448,8 +447,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         case = Case.objects.get(id=case_id)
         li = LibraryItem.objects.create(doc=doc, name=name, case=case)
         li.save()
-        for index in range(len(users)):
-            user = User.objects.get(id=users[index])
+        user_objs = User.objects.filter(id__in=users)
+        for user in user_objs:
             li.user.add(user)
 
     def post_library_item_delete(self, request):
@@ -468,8 +467,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         if name:
             li.update(name=name)
         li.first().user.clear()
-        for index in range(len(users)):
-            user = User.objects.get(id=users[index])
+        user_objs = User.objects.filter(id__in=users)
+        for user in user_objs:
             li.first().user.add(user)
 
     def notify_group_user(self, section, user, notification):
@@ -579,9 +578,9 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         user_sections = []
         for user in cohort_users:
             try:
-                user_last_path = user.userlocation_set.all()[0].path
+                user_last_path = user.userlocation_set.first().path
                 user_last_location = self.get_section(user_last_path)
-            except IndexError:
+            except AttributeError:
                 user_last_location = None
 
             um = get_user_map(hierarchy, user)
@@ -596,10 +595,9 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                              (hand.get_part_by_section(g.pageblock().section),
                               part_usermap),
                              hand.is_curveball(g.pageblock().section),
-                             hand.is_decision_block(
-                             g.pageblock().section,
-                             user),
-                             hand.is_next_curvball(g.pageblock().section)]
+                             hand.is_decision_block(g.pageblock().section,
+                                                    user),
+                             hand.is_next_curveball(g.pageblock().section)]
                             for g in gateblocks]
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section, user_last_location])
