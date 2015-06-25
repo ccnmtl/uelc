@@ -34,7 +34,6 @@ class GateBlock(BasePageBlock):
         gate_section = self.pageblock().section
         h_url = hierarchy.get_absolute_url()
         gs_url = gate_section.get_absolute_url()
-        status = 'None'
         unlocked = self.unlocked(user, gate_section)
         ss = SectionSubmission.objects.filter(user=user, section=gate_section)
 
@@ -42,34 +41,27 @@ class GateBlock(BasePageBlock):
             user=user,
             hierarchy=hierarchy)
         uloc_path = h_url + uloc[0].path
-        uv = self.pageblock().section.get_uservisit(user)
+        uv = gate_section.get_uservisit(user)
 
         for block in gate_section.pageblock_set.all():
-            bk = block.block()
-
             if ss and block.section == gate_section:
-                status = 'reviewed'
-                return status
+                return 'reviewed'
 
+            bk = block.block()
             if bk.display_name == "Decision Block":
                 if bk.is_submitted(bk, user):
-                    status = 'reviewed'
-                    return status
+                    return 'reviewed'
 
         if unlocked:
-            status = 'reviewed'
-            return status
+            return 'reviewed'
 
         if uv:
-            status = "reviewing"
-            return status
+            return "reviewing"
 
         if uloc_path == gs_url:
-            status = "reviewing"
-            return status
+            return "reviewing"
 
-        status = "to be reviewed"
-        return status
+        return "to be reviewed"
 
     @classmethod
     def add_form(self):

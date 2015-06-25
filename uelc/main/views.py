@@ -585,20 +585,26 @@ class FacilitatorView(LoggedInFacilitatorMixin,
 
             um = get_user_map(hierarchy, user)
             part_usermap = hand.get_partchoice_by_usermap(um)
-            gate_section = [[g.pageblock().section,
-                             g,
-                             g.unlocked(user, section),
-                             self.get_tree_depth(g.pageblock().section),
-                             g.status(user, hierarchy),
-                             hand.can_show_gateblock(g.pageblock().section,
-                                                     part_usermap),
-                             (hand.get_part_by_section(g.pageblock().section),
-                              part_usermap),
-                             hand.is_curveball(g.pageblock().section),
-                             hand.is_decision_block(g.pageblock().section,
-                                                    user),
-                             hand.is_next_curveball(g.pageblock().section)]
-                            for g in gateblocks]
+
+            gate_section = []
+            for g in gateblocks:
+                gateblock_section = g.pageblock().section
+                gate_section.append([
+                    gateblock_section,
+                    g,
+                    g.unlocked(user, section),
+                    self.get_tree_depth(gateblock_section),
+                    g.status(user, hierarchy),
+                    hand.can_show_gateblock(gateblock_section,
+                                            part_usermap),
+                    (hand.get_part_by_section(gateblock_section),
+                     part_usermap),
+                    hand.is_curveball(gateblock_section),
+                    hand.is_decision_block(gateblock_section,
+                                           user),
+                    hand.is_next_curveball(gateblock_section)
+                ])
+
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section, user_last_location])
 
