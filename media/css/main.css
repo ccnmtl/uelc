@@ -270,7 +270,7 @@ ul.pager li.next a.disabled:active {
 
 /* Facilitator page */
 .badge.status{
-    border-radius: 0px !important;
+    border-radius:.25em !important;
 }
 .gate-section{
     width: 100%;

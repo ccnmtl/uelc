@@ -70,13 +70,17 @@
                                 <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                             {% endif %}
 
-                            <span> {{ sec.1.pageblock.label }}</span>
-                            <br />
-                            <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
+                            <div class="panel-heading">
+                                <h3 class="panel-title text-center">{{ sec.1.pageblock.label }}</h3>
+                            </div>
 
-                            {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
-                                <div class="response">{{ sec.8.2.title }}</div>
-                            {% endif %}
+                            <div class="panel-body">
+                                <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
+
+                                {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
+                                    <div class="response">{{ sec.8.2.title }}</div>
+                                {% endif %}
+                            </div>
                         </div><!--end .gate-section-->
 
                       <div class="gate-button unlocked" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
@@ -104,13 +108,17 @@
                         {% if sec.0.pk == u.2.id %}
                             <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                         {% endif %}
-                        <span> {{ sec.1.pageblock.label }}</span>
-                        <br />
-                        <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
+                        <div class="panel-heading">
+                            <h3 class="panel-title text-center">{{ sec.1.pageblock.label }}</h3>
+                        </div>
 
-                        {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
-                            <div class="response">{{ sec.8.2.title }}</div>
-                        {% endif %}
+                        <div class="panel-body">
+                            <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
+
+                            {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
+                                <div class="response">{{ sec.8.2.title }}</div>
+                            {% endif %}
+                        </div>
                     </div><!--end .gate-section-->
 
                     <div class="gate-button locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">

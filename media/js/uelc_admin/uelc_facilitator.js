@@ -3,7 +3,7 @@ UELCAdmin = {
     Admin: function() {
         this.init = function() {
             this.setFormClickHandler();
-            this.seperateParts();
+            this.separateParts();
             //this.setPartsOnGateblocks();
             //this.setChoicesOnSecondParts();
             //this.impersonate();
@@ -15,13 +15,22 @@ UELCAdmin = {
             this.deleteLibraryItem();
             */
         };
-        this.seperateParts = function() {
-            
-        }
+        this.separateParts = function() {
+            jQuery('.gate-section-list').each(function() {
+                var partTwo = jQuery(this).children('.part-2');
+                var wrapDiv = '<div class="gate-section-list well well-sm">Part 2</div>';
+                var glyph = '<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>';
+                partTwo.detach().wrapAll(wrapDiv).parent().insertAfter(this);
+                jQuery(this).after(glyph);
+            })
+
+        };
         this.setFormClickHandler = function() {
             var btn = jQuery('.gate-block.active .gate-button form .btn');
             btn.css('cursor', 'pointer');
             btn.click(function() {
+                btn.unbind('click');
+                btn.css('cursor', 'not-allowed');
                 form  = jQuery(this).closest('form');
                 data = jQuery(form).serialize();
                 jQuery.post(
