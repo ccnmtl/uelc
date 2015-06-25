@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase
 from django.test.client import Client
 from pagetree.helpers import get_hierarchy
@@ -5,7 +6,7 @@ from pagetree.helpers import get_hierarchy
 from factories import (
     GroupUpFactory, AdminUpFactory,
     CaseFactory, CohortFactory, FacilitatorUpFactory,
-    UELCModuleFactory
+    UELCModuleFactory, HierarchyFactory
 )
 from pagetree.models import Section
 from pagetree.tests.factories import ModuleFactory
@@ -432,13 +433,30 @@ class TestAdminUserViewContext(TestCase):
         self.assertIn('cohorts', response.context)
 
 
+class TestFacilitatorTokenView(TestCase):
+    def setUp(self):
+        HierarchyFactory(name='main', base_url='/pages/main/')
+        self.usr_profile = FacilitatorUpFactory()
+        self.usr_profile.user.set_password("test")
+        self.usr_profile.user.save()
+        self.client.login(
+            username=self.usr_profile.user.username,
+            password="test")
+
+    def test_get(self):
+        response = self.client.get("/facilitator/fresh_token/")
+        self.assertEqual(response.status_code, 200)
+
+        token = json.loads(response.content)
+        self.assertNotEqual(token, {})
+
+
 class TestFreshGrpTokenView(TestCase):
     def setUp(self):
         UELCModuleFactory()
         self.grp_usr_profile = GroupUpFactory()
         self.grp_usr_profile.user.set_password("test")
         self.grp_usr_profile.user.save()
-        self.client = Client()
         self.client.login(
             username=self.grp_usr_profile.user.username,
             password="test")
@@ -447,3 +465,6 @@ class TestFreshGrpTokenView(TestCase):
         s = Section.objects.first()
         response = self.client.get("/group_user/fresh_token/{}/".format(s.pk))
         self.assertEqual(response.status_code, 200)
+
+        token = json.loads(response.content)
+        self.assertNotEqual(token, {})
