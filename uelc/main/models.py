@@ -397,9 +397,10 @@ class UELCHandler(Section):
         return (False, block)
 
     def is_decision_block(self, current_section, user):
+        block = None
+        ca = None
         for pb in current_section.pageblock_set.all():
             block = pb.block()
-            ca = None
             if (hasattr(block, 'display_name')
                and block.display_name == "Decision Block"):
                 ss = block.submission_set.filter(user=user).last()
@@ -630,7 +631,7 @@ class CaseQuiz(Quiz):
 
 class CaseAnswer(models.Model):
     def default_question(self):
-        return self.answer.question.id
+        return self.answer.question_id
 
     answer = models.ForeignKey(Answer)
     title = models.TextField(blank=True)
