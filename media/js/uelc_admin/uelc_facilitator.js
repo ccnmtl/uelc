@@ -3,6 +3,7 @@ UELCAdmin = {
     Admin: function() {
         this.init = function() {
             this.setFormClickHandler();
+            this.seperateParts();
             //this.setPartsOnGateblocks();
             //this.setChoicesOnSecondParts();
             //this.impersonate();
@@ -14,6 +15,9 @@ UELCAdmin = {
             this.deleteLibraryItem();
             */
         };
+        this.seperateParts = function() {
+            
+        }
         this.setFormClickHandler = function() {
             var btn = jQuery('.gate-block.active .gate-button form .btn');
             btn.css('cursor', 'pointer');

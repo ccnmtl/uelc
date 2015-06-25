@@ -133,11 +133,12 @@ $(function() {
     };
 
     var setGroupMessage = function(groupColumn, msg) {
-        msgHtml = jQuery('<div class="group-message alert alert-warning ' +
+        var groupNameDiv =  groupColumn.find('.group-name');
+        var msgHtml = jQuery('<div class="group-message alert alert-warning ' +
             'alert-dismissable">' +
             '<button type="button" class="close" data-dismiss="alert"' +
             'aria-hidden="true">×</button></div>');
         msgHtml.append(msg);
-        groupColumn.prepend(msgHtml);
+        groupNameDiv.append(msgHtml);
     };
 });

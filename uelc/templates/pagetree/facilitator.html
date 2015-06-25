@@ -24,36 +24,86 @@
 
     {% for u in user_sections %}
       {% if u.0.profile.profile_type == "group_user" %}
-      <div class="col-xs-3 text-center">
+      <div class="col-sm-3 text-center">
       <!-- user (u.0), gateblocks (u.1), (u.2) user_last_location -->
-      <div class="gate-sections" id="group-user-section-{{u.0.id}}">
-        <h3 class="facilitator-usrnm">Group {{u.0}}<br /><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></h3>
-        <div class="gate-section-list">
-        {% for sec in u.1 %}
+          <div class="gate-sections" id="group-user-section-{{u.0.id}}">
 
-            {% comment %}
-            <!--
-                section (sec.0), gateblock (sec.1), unlocked (sec.2),
-                user (sec.3), status (sec.4), can_show_gateblock (sec.5),
-                (sec.6) section part, (sec.7.0) is_curveball,
-                (sec.7.1) curveball block, (sec.8.0) is_decision_block,
-                (sec.8.1) decision block, (sec.9) is_next_curveball
-            -->
-            {% endcomment %}
 
-            {% if sec.2 %}<!-- if unlocked -->
-                {% if sec.5 %}<!-- can show gateblock -->
-                <div class="group-btn-list gate-block" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
-                    {{ sec.9.0 }}
+            <div class="group-name panel panel-default">
+                <div class="panel-body">
+                    <h3 class="text-center">
+                        <h3 class="facilitator-usrnm">Group {{u.0}}</h3> 
+                    </h3>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+            </div>
+
+        
+
+            <div class="gate-section-list well well-sm">
+            {% for sec in u.1 %}
+
+                {% comment %}
+                <!--
+                    section (sec.0), gateblock (sec.1), unlocked (sec.2),
+                    user (sec.3), status (sec.4), can_show_gateblock (sec.5),
+                    (sec.6) section part, (sec.7.0) is_curveball,
+                    (sec.7.1) curveball block, (sec.8.0) is_decision_block,
+                    (sec.8.1) decision block, (sec.9) is_next_curveball
+                -->
+                {% endcomment %}
+
+                {% if sec.2 %}<!-- if unlocked -->
+                    {% if sec.5 %}<!-- can show gateblock -->
+                    <div class="group-btn-list gate-block part-{{sec.6.0|part}}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
+                        {{ sec.9.0 }}
+                        {% if sec.7.0 %}<!-- if curveball -->
+                            {% include "pagetree/curveball.html" %}
+                        {% endif %}
+
+                        <div class="gate-section panel panel-default">
+
+                            {% if sec.0.pk == u.2.id %}
+                                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                            {% endif %}
+
+                            <span> {{ sec.1.pageblock.label }}</span>
+                            <br />
+                            <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
+
+                            {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
+                                <div class="response">{{ sec.8.2.title }}</div>
+                            {% endif %}
+                        </div><!--end .gate-section-->
+
+                      <div class="gate-button unlocked" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
+                        <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">
+                          <div type="submit" class="btn-sm btn-success text-center status-{{sec.4}}" style="margin-top: 5px;">
+                            <span><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {{ sec.1.pageblock.label }} </span>
+                          </div>
+                       </div>
+                       <div class="clearfix visible-lg-block"></div>
+                      </div><!-- end .gate-button-->
+
+                    </div><!-- end .gate-block-->
+                    {% endif %}
+
+                {% else %}<!-- gateblock not unlocked-->
+
+                  {% if sec.5 %} <!-- can show gateblock -->
+                  <div class="group-btn-list gate-block part-{{sec.6.0|part}} {% if sec.4 == 'reviewing' or sec.4 == 'reviewed' %}active{% endif%}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
+                  {{ sec.9.0 }}
                     {% if sec.7.0 %}<!-- if curveball -->
                         {% include "pagetree/curveball.html" %}
                     {% endif %}
 
-                    <div class="gate-section">
+                    <div class="gate-section panel panel-default">
                         {% if sec.0.pk == u.2.id %}
                             <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                         {% endif %}
-
                         <span> {{ sec.1.pageblock.label }}</span>
                         <br />
                         <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
@@ -63,192 +113,38 @@
                         {% endif %}
                     </div><!--end .gate-section-->
 
-                  <div class="gate-button unlocked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
-                    <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">
-                      <div type="submit" class="btn-sm btn-success text-center status-{{sec.4}}" style="margin-top: 5px;">
-                        <span><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {{ sec.1.pageblock.label }} </span>
-                      </div>
-                   </div>
-                   <div class="clearfix visible-lg-block"></div>
-                  </div><!-- end .gate-button-->
+                    <div class="gate-button locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
+                      <form action ="." method="post">{% csrf_token %}
+                        <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">
+                          <div display="none" type="none" class="btn btn-sm btn-danger btn-block text-center" style="margin-top: 5px;">
+                            <span><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> {{ sec.1.pageblock.label }}</span>
+                           </div>
 
-                </div><!-- end .gate-block-->
-                {% endif %}
+                            </div>
+                            <div class="clearfix visible-lg-block"></div>
+                            <input type="hidden" name="gate-action" value="submit" />
+                            <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
+                            <input type="hidden" name="user_id" value="{{u.0.id}}" />
+                            <input type="hidden" name="section" value="{{sec.0.id}}" />
+                            <input type="hidden" name="block" value="{{sec.1.id}}" />
+                            <input type="hidden" class="post" value="{{sec.0.get_absolute_url}}">
+                        </form>
+                    </div><!-- end .gate-button-->
 
-            {% else %}<!-- gateblock not unlocked-->
 
-              {% if sec.5 %} <!-- can show gateblock -->
-              <div class="group-btn-list gate-block {% if sec.4 == 'reviewing' or sec.4 == 'reviewed' %}active{% endif%}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
-              {{ sec.9.0 }}
-                {% if sec.7.0 %}<!-- if curveball -->
-                    {% include "pagetree/curveball.html" %}
-                {% endif %}
-
-                <div class="gate-section">
-                    {% if sec.0.pk == u.2.id %}
-                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                </div><!-- end .gate-block -->
                     {% endif %}
-                    <span> {{ sec.1.pageblock.label }}</span>
-                    <br />
-                    <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
-
-                    {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
-                        <div class="response">{{ sec.8.2.title }}</div>
-                    {% endif %}
-                </div><!--end .gate-section-->
-
-                <div class="gate-button locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
-                  <form action ="." method="post">{% csrf_token %}
-                    <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">
-                      <div display="none" type="none" class="btn btn-sm btn-danger btn-block text-center" style="margin-top: 5px;">
-                        <span><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> {{ sec.1.pageblock.label }}</span>
-                       </div>
-
-                        </div>
-                        <div class="clearfix visible-lg-block"></div>
-                        <input type="hidden" name="gate-action" value="submit" />
-                        <input type="hidden" name="user_type" value="{{u.0.profile.profile_type}}" />
-                        <input type="hidden" name="user_id" value="{{u.0.id}}" />
-                        <input type="hidden" name="section" value="{{sec.0.id}}" />
-                        <input type="hidden" name="block" value="{{sec.1.id}}" />
-                        <input type="hidden" class="post" value="{{sec.0.get_absolute_url}}">
-                    </form>
-                </div><!-- end .gate-button-->
-
-
-            </div><!-- end .gate-block -->
                 {% endif %}
-            {% endif %}
 
-        {% endfor %}
-    </div>
-    </div><!--end gate-section -->
-   </div><!-- end .col-xs-3 -->
+            {% endfor %}
+            </div><!--end gaet-section-list-->
+        </div><!--end gate-sections -->
+   </div><!-- end .col-sm-3 -->
    {% endif %}
     {% endfor %}
+
 <br style="clear:both;"/>
-{% comment %}
-        <hr />
-        <br style="clear:both;"/>
-        <div id="library-content">
-            <div id="library-add-form" class="modal fade">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <div class="modal-header panel-heading">Add Library Item</div>
-                        <div class="modal-body">
-                            <form action="." method="post" enctype="multipart/form-data">{% csrf_token %}
-                                {{library_item.add_form|bootstrap}}
-                                <div id="user-tooltip"><span data-toggle="tooltip" title="Select Users that will have access to the library item" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>Select user/s</div>
-                                <select class="library-item-user-select" multiple="multiple" name="user">
-                                    {% for u in user_sections %}
-                                    {% if u.0.profile.profile_type == "group_user" %}
-                                      <option value="{{u.0.id}}" name="user">{{u.0}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
-                                <input type="hidden" name="case" value="{{case.id}}" />
-                                <input type="hidden" name="library-item" value="true" />
-                                <input type ="submit" value="submit" class="btn btn-primary library-item-submit">
-                            </form>
-                        </div> <!--end modal-dialog-->
-                    </div><!-- end modal-content-->
-                </div><!--end .model-body-->
-            </div><!--end #library-add-form .modal-->
-            {% for library_doc in library_items %}
-            <div id="library-edit-form-{{library_doc.id}}" class="modal fade">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <div class="modal-header panel-heading">Edit Library Item</div>
-                        <div class="modal-body">
-                            <form action="." method="post" enctype="multipart/form-data">{% csrf_token %}
-                                {{library_doc.edit_form|bootstrap}}
-                                <div id="user-tooltip"><span data-toggle="tooltip" title="Select Users that will have access to the library item" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>Select user/s</div>
-                                <select class="library-item-user-select" multiple="multiple" name="user">
-                                    {% for u in user_sections %}
-                                    {% if u.0.profile.profile_type == "group_user"%}
 
-                                        <option value="{{u.0.id}}"
-                                            {% for lib_user in library_doc.user.all %}
-                                                {% if u.0.id == lib_user.id %}
-                                                    selected="selected"
-                                                {% endif %}
-                                            {% endfor %}name="user">{{u.0}}
-                                        </option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
-                                <input type="hidden" name="case" value="{{case.id}}" />
-                                <input type="hidden" name="library-item-id" value="{{library_doc.id}}" />
-                                <input type="hidden" name="library-item-edit" value="true" />
-                                <input type ="submit" value="submit" class="btn btn-primary library-item">
-                            </form>
-                        </div> <!--end modal-dialog-->
-                    </div><!-- end modal-content-->
-                </div><!--end .model-body-->
-            </div><!--end #library-edit-form .modal-->
-
-            <div id="library-delete-form-{{library_doc.id}}" class="modal fade">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <div class="modal-header panel-heading">Edit Library Item</div>
-                        <div class="modal-body">
-                            <form action="." method="post">{% csrf_token %}
-                                <input type="hidden" name="case" value="{{case.id}}" />
-                                <input type="hidden" name="library-item-id" value="{{library_doc.id}}" />
-                                <input type="hidden" name="library-item-delete" value="true" />
-                                <input type="submit" value="delete" class="btn btn-primary library-item">
-                            </form>
-                        </div> <!--end modal-dialog-->
-                    </div><!-- end modal-content-->
-                </div><!--end .model-body-->
-            </div><!--end #library-edit-form .modal-->
-
-            {%endfor%}
-        </div><!--end #library-content-->
-
-        <div id="case-lirary-items" class="col-md-12">
-            <div class="panel panel-default">
-          <!-- Default panel contents -->
-          <div class="panel-heading">Case Library</div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Document</th>
-                        <th>Users</th>
-                        <th>
-                            <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#library-add-form" href="#library-add-form">Add Library Item</button>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for item in library_items %}
-                    <tr>
-                        <td> {{item.name}} </td>
-                        <td class="library-item-document">
-                            <span class="hidden">{{item.id}}</span>
-                            <a target="_blank" href="{{MEDIA_URL}}{{item.doc}}">Document link</a>
-                        </td>
-                        <td class="library-item-users">
-                            {% for user in item.user.all %}
-                                <span class="hidden">{{user.id}}</span>
-                                {{ user }}{% if not forloop.last %}, {% endif %}
-                            {% empty %}
-                                <span>None</span>
-                            {% endfor %}
-                        </td>
-                        <td class="library-item-admin">
-                            <button class="glyphicon glyphicon-edit" data-toggle="modal"  data-target="#library-edit-form-{{item.id}}" href="#library-edit-form-{{item.id}}"></button>
-                            <button class="glyphicon glyphicon-trash" data-toggle="modal" data-target="#library-delete-form-{{item.id}}"  href="#library-delete-form-{{item.id}}"></button></td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div><!--end #case-lirary-items-->
-{% endcomment %}
 </div><!--end .content -->
 <script src="{{STATIC_URL}}js/uelc_admin/uelc_facilitator.js"></script>
 {% endblock %}
