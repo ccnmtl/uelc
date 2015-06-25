@@ -94,10 +94,10 @@ $(function() {
             data.notification.data + '</div>');
     };
     var setGroupLocation = function(gcs, sectionBlock) {
-        var groupIcon = jQuery('<span class="glyphicon glyphicon-user" ' +
-            'aria-hidden="true"></span>');
+        var groupIcon = jQuery('<span class="glyphicon glyphicon-user ' +
+            ' pull-right" aria-hidden="true"></span>');
         jQuery(gcs).find('.glyphicon-user').remove();
-        sectionBlock.find('.gate-section').append(groupIcon);
+        sectionBlock.find('.gate-section .panel-body').append(groupIcon);
     };
     var openGate = function(groupColumnSelector, sectionBlock) {
         var btn = sectionBlock.find('.btn-danger');
