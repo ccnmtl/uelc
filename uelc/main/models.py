@@ -388,29 +388,32 @@ class UELCHandler(Section):
             p1pre = vals[0]
         return p1pre
 
-    def is_curveball(self, current_section):
+    def is_curveball(self, current_section, pageblocks=None):
         block = None
-        for pb in current_section.pageblock_set.all():
+        if pageblocks is None:
+            pageblocks = current_section.pageblock_set.all()
+        for pb in pageblocks:
             block = pb.block()
             if (hasattr(block, 'display_name')
                and block.display_name == "Curveball Block"):
                 return (True, block)
         return (False, block)
 
-    def is_decision_block(self, current_section, user):
-        block = None
-        ca = None
-        for pb in current_section.pageblock_set.all():
+    def is_decision_block(self, current_section, user, pageblocks=None):
+        if pageblocks is None:
+            pageblocks = current_section.pageblock_set.all()
+        for pb in pageblocks:
             block = pb.block()
             if (hasattr(block, 'display_name')
                and block.display_name == "Decision Block"):
                 ss = block.submission_set.filter(user=user).last()
+                ca = None
                 if ss:
                     response = ss.response_set.filter(
                         submission_id=ss.id).last()
                     ca = CaseAnswer.objects.get(answer=response.answer())
                 return (True, block, ca)
-        return (False, block, ca)
+        return (False, None, None)
 
     def is_next_curveball(self, section):
         next = section.get_next()
@@ -609,8 +612,7 @@ class CaseQuiz(Quiz):
         submissions = GateSubmission.objects.filter(gate_user_id=user.id)
         if submissions.count() > 0:
             for sub in submissions:
-                section_id = sub.gateblock.pageblock().section_id
-                section = Section.objects.get(id=section_id)
+                section = sub.gateblock.pageblock().section
                 upv = section.get_uservisit(user)
                 blocks = section.pageblock_set.all()
                 for block in blocks:
@@ -619,13 +621,11 @@ class CaseQuiz(Quiz):
                         unlocked = obj.unlocked(user, section)
             is_quiz_submitted = self.is_submitted(self, user)
             if upv:
+                upv.status = 'complete'
+                upv.save()
                 if not (unlocked and is_quiz_submitted):
                     unlocked = False
-                    upv.status = 'complete'
-                    upv.save()
                 else:
-                    upv.status = 'complete'
-                    upv.save()
                     unlocked = True
         return unlocked
 

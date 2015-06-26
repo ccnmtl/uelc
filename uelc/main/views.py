@@ -576,6 +576,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                 hierarchy=hierarchy)
             for g in gateblocks:
                 gateblock_section = g.pageblock().section
+                pageblocks = gateblock_section.pageblock_set.all()
                 gate_section.append([
                     gateblock_section,
                     g,
@@ -586,9 +587,11 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                                             part_usermap),
                     (hand.get_part_by_section(gateblock_section),
                      part_usermap),
-                    hand.is_curveball(gateblock_section),
-                    hand.is_decision_block(gateblock_section,
-                                           user),
+                    hand.is_curveball(gateblock_section, pageblocks),
+                    hand.is_decision_block(
+                        gateblock_section,
+                        user,
+                        pageblocks),
                     hand.is_next_curveball(gateblock_section)
                 ])
 
