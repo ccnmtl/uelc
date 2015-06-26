@@ -88,7 +88,8 @@
                       <div class="gate-button unlocked" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                         <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">
                           <div type="submit" class="btn-sm btn-success text-center status-{{sec.4}}" style="margin-top: 5px;">
-                            <span><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {{ sec.1.pageblock.label }} </span>
+                            <span>{{ sec.1.pageblock.label }}</span><br/>
+                            <span>Unlocked </span><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> 
                           </div>
                        </div>
                        <div class="clearfix visible-lg-block"></div>
@@ -130,7 +131,8 @@
                       <form action ="." method="post">{% csrf_token %}
                         <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">
                           <div display="none" type="none" class="btn btn-sm btn-danger btn-block text-center" style="margin-top: 5px;">
-                            <span><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> {{ sec.1.pageblock.label }}</span>
+                            <span>{{ sec.1.pageblock.label }}</span><br/>
+                            <span>Locked </span><span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
                            </div>
 
                             </div>

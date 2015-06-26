@@ -4,6 +4,7 @@ UELCAdmin = {
         this.init = function() {
             this.setFormClickHandler();
             this.separateParts();
+            this.setCurballBlockHandler();
             //this.setPartsOnGateblocks();
             //this.setChoicesOnSecondParts();
             //this.impersonate();
@@ -15,15 +16,34 @@ UELCAdmin = {
             this.deleteLibraryItem();
             */
         };
+        this.setChoicesOnParts = function() {
+            jQuery('.user-part2').each(function() {
+                var partTwoHeader = jQuery('<div class="part2-header">Part 2</div>');
+                var header = jQuery(this);
+                var prevPartColumn = header.parent().children('.gate-section-list').eq(0);
+                var responseText = prevPartColumn.find('.response').eq(1).text();
+                jQuery(this).prepend(partTwoHeader);
+                partTwoHeader.append(responseText);
+            });
+        };
         this.separateParts = function() {
             jQuery('.gate-section-list').each(function() {
                 var partTwo = jQuery(this).children('.part-2');
-                var wrapDiv = '<div class="gate-section-list well well-sm">Part 2</div>';
+                var wrapDiv = '<div class="gate-section-list well well-sm user-part2"></div>';
                 var glyph = '<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>';
                 partTwo.detach().wrapAll(wrapDiv).parent().insertAfter(this);
                 jQuery(this).after(glyph);
-            })
+            });
+            this.setChoicesOnParts();
 
+        };
+        this.setCurballBlockHandler = function() {
+            jQuery('.set-curveball').click(function() {
+                var modal = jQuery(this).closest('.modal');
+                var modId = modal.attr('id').split('-')[1];
+                var form = jQuery('#curveball-form-' + modId);
+                form.submit();
+            });
         };
         this.setFormClickHandler = function() {
             var btn = jQuery('.gate-block.active .gate-button form .btn');
@@ -96,27 +116,6 @@ UELCAdmin = {
                 });
             });
         };
-        /*
-        this.deleteLibraryItem = function() {
-            jQuery('.library-item-admin .glyphicon-trash').click(function() {
-                var retVal = confirm('Do you want to delete the item?');
-                if (retVal === true) {
-                    tr = jQuery(this).parent().parent();
-                    td = tr.children('.library-item-document')
-                           .children('span').text();
-                    data = {
-                            'library-item-delete':true,
-                            'library_item_id': td
-                            };
-                    window.url = window.location.href;
-                    jQuery.post(url, data).done(function() {
-                        alert('Item deleted');
-                        window.location = window.url;
-                    });
-                }
-            });
-        };
-        */
 
         this.init();
     }

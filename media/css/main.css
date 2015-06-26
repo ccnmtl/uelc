@@ -269,6 +269,19 @@ ul.pager li.next a.disabled:active {
 }
 
 /* Facilitator page */
+.curveball-select.form-control{
+    width: 94%;
+    margin-left: 3%;
+}
+.curveball-commit-btn{
+      margin: 0 0 5px 5px;
+}
+.response {   
+  clear: both;
+  margin: 30px 0 0 0;
+  padding: 0px;  
+}  
+  
 .badge.status{
     border-radius:.25em !important;
 }
