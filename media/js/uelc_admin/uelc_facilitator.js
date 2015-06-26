@@ -19,7 +19,6 @@ UELCAdmin = {
         };
         this.setChoicesOnParts = function() {
             jQuery('.user-part2').each(function() {
-                console.log('asd');
                 var partTwoHeader = jQuery('<div class="part2-header">' +
                     'Part 2</div>');
                 var header = jQuery(this);
@@ -45,10 +44,32 @@ UELCAdmin = {
         };
         this.setCurballBlockHandler = function() {
             jQuery('.set-curveball').click(function() {
+                window.ts = jQuery(this);
+                var lgf = jQuery(this).parent().parent().find(
+                    '.loading-spinner');
                 var modal = jQuery(this).closest('.modal');
                 var modId = modal.attr('id').split('-')[1];
-                var form = jQuery('#curveball-form-' + modId);
-                form.submit();
+                var cbForm = jQuery('#curveball-form-' + modId);
+                var postUrl = window.location.pathname;
+                var gate = jQuery(cbForm).parent().parent();
+                var prevForm = gate.prev().find('.gate-button form');
+                var prevFormData = prevForm.serialize();
+                window.UA.tempForm = cbForm;
+
+                lgf.removeClass('hidden');
+                jQuery.post(postUrl, prevFormData).fail(function() {
+                    var msg ='We are sorry! Something went wrong with ' +
+                    'setting the curveball. Please Try again.';
+                    alert(msg);
+                }).success(function() {
+                    var cbFormData = window.UA.tempForm.serialize();
+                    var postUrl = window.location.pathname;
+                    jQuery.post(postUrl, cbFormData);
+
+                }).done(function() {
+                    window.location.reload()
+                });
+
             });
         };
         this.setFormClickHandler = function() {
@@ -59,8 +80,8 @@ UELCAdmin = {
                 btn.css('cursor', 'not-allowed');
                 form  = jQuery(this).closest('form');
                 data = jQuery(form).serialize();
-                jQuery.post(
-                    '/pages/case-one/facilitator/', data).error(function() {
+                postUrl = window.location.pathname
+                jQuery.post(postUrl, data).error(function() {
                     var msg = 'I am sorry! There was a problem opening' +
                         ' the gate. Please refresh your browser and try again.';
                     alert(msg);
