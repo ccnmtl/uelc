@@ -19,15 +19,15 @@ UELCAdmin = {
         };
         this.setChoicesOnParts = function() {
             jQuery('.user-part2').each(function() {
+                console.log('asd');
                 var partTwoHeader = jQuery('<div class="part2-header">' +
                     'Part 2</div>');
                 var header = jQuery(this);
-                var column = header.parent()
-                    .children('.gate-section-list').eq(0);
-                var responseText = prevPartColumn.find('.response')
-                    .eq(1).text();
+                window.hed = header;
+                var col = header.parent().children('.gate-section-list').eq(0);
+                var rt = col.find('.response').eq(1).text();
                 jQuery(this).prepend(partTwoHeader);
-                partTwoHeader.append(responseText);
+                partTwoHeader.append(rt);
             });
         };
         this.separateParts = function() {
@@ -50,18 +50,6 @@ UELCAdmin = {
                 var form = jQuery('#curveball-form-' + modId);
                 form.submit();
             });
-        };
-        this.separateParts = function() {
-            jQuery('.gate-section-list').each(function() {
-                var partTwo = jQuery(this).children('.part-2');
-                var wrapDiv = '<div class="gate-section-list well well-sm">' +
-                'Part 2</div>';
-                var glyph = '<span class="glyphicon ' +
-                'glyphicon-triangle-bottom" aria-hidden="true"></span>';
-                partTwo.detach().wrapAll(wrapDiv).parent().insertAfter(this);
-                jQuery(this).after(glyph);
-            });
-
         };
         this.setFormClickHandler = function() {
             var btn = jQuery('.gate-block.active .gate-button form .btn');
@@ -129,7 +117,6 @@ UELCAdmin = {
                 var userId = jQuery(this).data('user');
                 var impersonateUrl = '/_impersonate/' + userId + '/';
                 $.get(impersonateUrl).complete(function() {
-                    //alert('fired');
                     window.open(destination, '_blank');
                 });
             });
