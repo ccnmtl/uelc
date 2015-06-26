@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 from django.contrib.auth.models import User
-from pagetree.models import Section, UserLocation
+from pagetree.models import Section
 from pagetree.generic.models import BasePageBlock
 
 
@@ -30,21 +30,14 @@ class GateBlock(BasePageBlock):
             gateblock_id=self.id,
             gate_user_id=user.id).count() > 0
 
-    def status(self, user, hierarchy):
+    def status(self, user, hierarchy, uloc):
+        """Takes a User, Hierarchy, and UserLocation."""
         gate_section = self.pageblock().section
-        h_url = hierarchy.get_absolute_url()
-        gs_url = gate_section.get_absolute_url()
-        unlocked = self.unlocked(user, gate_section)
-        ss = SectionSubmission.objects.filter(user=user, section=gate_section)
-
-        uloc = UserLocation.objects.get_or_create(
-            user=user,
-            hierarchy=hierarchy)
-        uloc_path = h_url + uloc[0].path
-        uv = gate_section.get_uservisit(user)
+        ss_exists = SectionSubmission.objects.filter(
+            user=user, section=gate_section).exists()
 
         for block in gate_section.pageblock_set.all():
-            if ss and block.section == gate_section:
+            if ss_exists and block.section == gate_section:
                 return 'reviewed'
 
             bk = block.block()
@@ -52,13 +45,15 @@ class GateBlock(BasePageBlock):
                 if bk.is_submitted(bk, user):
                     return 'reviewed'
 
-        if unlocked:
+        if self.unlocked(user, gate_section):
             return 'reviewed'
 
-        if uv:
+        if gate_section.get_uservisit(user):
             return "reviewing"
 
-        if uloc_path == gs_url:
+        h_url = hierarchy.get_absolute_url()
+        uloc_path = h_url + uloc.path
+        if uloc_path == gate_section.get_absolute_url():
             return "reviewing"
 
         return "to be reviewed"
