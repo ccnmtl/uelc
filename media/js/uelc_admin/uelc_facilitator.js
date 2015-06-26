@@ -4,7 +4,6 @@ UELCAdmin = {
         this.init = function() {
             this.setFormClickHandler();
             this.separateParts();
-
             this.setCurballBlockHandler();
             //this.setPartsOnGateblocks();
             //this.setChoicesOnSecondParts();
@@ -70,6 +69,14 @@ UELCAdmin = {
                     window.location.reload()
                 });
 
+        });
+        this.separateParts = function() {
+            jQuery('.gate-section-list').each(function() {
+                var partTwo = jQuery(this).children('.part-2');
+                var wrapDiv = '<div class="gate-section-list well well-sm">Part 2</div>';
+                var glyph = '<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>';
+                partTwo.detach().wrapAll(wrapDiv).parent().insertAfter(this);
+                jQuery(this).after(glyph);
             });
         };
         this.setFormClickHandler = function() {

@@ -4,8 +4,10 @@
 <div class="gated-curveball panel panel-default">
 {% get_selected_curveball u.0 sec.7.1 as selected_curveball %}
     {% if selected_curveball %}
+
         <div class="panel-heading">
              <p>Selected Curveball:</p>
+       
         </div>
         <div class="panel-body">
              <p>{{ selected_curveball.curveball.title }}</p>
