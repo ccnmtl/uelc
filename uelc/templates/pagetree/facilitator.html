@@ -65,6 +65,7 @@
                         {% endif %}
 
                         <div class="gate-section panel panel-default">
+
                             <div class="panel-heading">
                                 <h3 class="panel-title text-center">{{ sec.1.pageblock.label }}</h3>
                             </div>
@@ -80,10 +81,6 @@
                                 <div class="response">
                                     <p>{{ sec.8.2.title }}</p>
                                 </div>
-                                <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
-
-                                {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
-                                    <div class="response">{{ sec.8.2.title }}</div>
                                 {% endif %}
                             </div>
                         </div><!--end .gate-section-->
@@ -127,10 +124,6 @@
                                 <div class="response">
                                     <p>{{ sec.8.2.title }}</p>
                                 </div>
-                            <span class="badge text-capitalize status {{sec.4}}">{{sec.4}}</span>
-
-                            {% if sec.8.0 and sec.8.2 %} <!-- if decision block and responded -->
-                                <div class="response">{{ sec.8.2.title }}</div>
                             {% endif %}
                         </div>
                     </div><!--end .gate-section-->
