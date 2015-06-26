@@ -338,9 +338,10 @@ class UELCHandler(Section):
         modules = section.get_root().get_children()
         sec_module = section.get_module()
         part = 0
-        for index in range(modules.count()):
-            if modules[index] == sec_module:
-                part = index
+        for idx, module in enumerate(modules):
+            if module == sec_module:
+                part = idx
+
         if part == 0:
             return 1
         else:
