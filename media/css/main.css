@@ -269,6 +269,26 @@ ul.pager li.next a.disabled:active {
 }
 
 /* Facilitator page */
+
+.curveball-select.form-control{
+    width: 94%;
+    margin-left: 3%;
+}
+.curveball-commit-btn{
+      margin: 0 0 5px 5px;
+}
+.response {   
+  clear: both;
+  margin: 30px 0 0 0;
+  padding: 0px;  
+}  
+
+.badge.status{
+    border-radius:.25em !important;
+}
+.pull-right .glyphicon-user{
+    margin: 2px 0 0 0;
+}
 .gate-section{
     width: 100%;
 }
@@ -279,12 +299,11 @@ ul.pager li.next a.disabled:active {
     border: 3px solid #FFA771;
     border-radius: 6px;
 }
-.gate-block .gate-button form .btn{
+.gate-block .gate-button form .btn, .gate-button.unlocked{
     cursor: not-allowed;
 }
 .gate-button, .gated-curveball, .gate-section{
     margin: 8px 0;
-    border: 2px solid #333;
 }
 .library-item-name{
     width: 250px;
@@ -336,13 +355,13 @@ ul.gate-section-list{
     color: #fff;
 }
 .badge.status.reviewed{
-    background: green !important;
+    background-color: #5cb85c;
 }
 .badge.status.reviewing{
-    background: yellow !important;
+      background-color: #f0ad4e;
 }
 .badge.status.to.be.reviewed{
-    background: red !important;
+ background-color: #d9534f;
 }
 .btn-block.btn-incomplete .badge{
     background: #fff;

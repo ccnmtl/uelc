@@ -26,3 +26,8 @@ def convert_part2(arg):
             return 'p1c2-' + choice
     else:
         return 0
+
+
+@register.filter(name='part')
+def part(arg):
+    return int(arg)

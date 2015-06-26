@@ -94,10 +94,10 @@ $(function() {
             data.notification.data + '</div>');
     };
     var setGroupLocation = function(gcs, sectionBlock) {
-        var groupIcon = jQuery('<span class="glyphicon glyphicon-user" ' +
-            'aria-hidden="true"></span>');
+        var groupIcon = jQuery('<span class="glyphicon glyphicon-user ' +
+            ' pull-right" aria-hidden="true"></span>');
         jQuery(gcs).find('.glyphicon-user').remove();
-        sectionBlock.find('.gate-section').append(groupIcon);
+        sectionBlock.find('.gate-section .panel-body').append(groupIcon);
     };
     var openGate = function(groupColumnSelector, sectionBlock) {
         var btn = sectionBlock.find('.btn-danger');
@@ -133,11 +133,12 @@ $(function() {
     };
 
     var setGroupMessage = function(groupColumn, msg) {
-        msgHtml = jQuery('<div class="group-message alert alert-warning ' +
+        var groupNameDiv =  groupColumn.find('.group-name');
+        var msgHtml = jQuery('<div class="group-message alert alert-warning ' +
             'alert-dismissable">' +
             '<button type="button" class="close" data-dismiss="alert"' +
             'aria-hidden="true">×</button></div>');
         msgHtml.append(msg);
-        groupColumn.prepend(msgHtml);
+        groupNameDiv.append(msgHtml);
     };
 });
