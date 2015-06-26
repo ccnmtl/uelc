@@ -19,10 +19,13 @@ UELCAdmin = {
         };
         this.setChoicesOnParts = function() {
             jQuery('.user-part2').each(function() {
-                var partTwoHeader = jQuery('<div class="part2-header">Part 2</div>');
+                var partTwoHeader = jQuery('<div class="part2-header">' +
+                    'Part 2</div>');
                 var header = jQuery(this);
-                var prevPartColumn = header.parent().children('.gate-section-list').eq(0);
-                var responseText = prevPartColumn.find('.response').eq(1).text();
+                var column = header.parent()
+                    .children('.gate-section-list').eq(0);
+                var responseText = prevPartColumn.find('.response')
+                    .eq(1).text();
                 jQuery(this).prepend(partTwoHeader);
                 partTwoHeader.append(responseText);
             });
@@ -30,8 +33,10 @@ UELCAdmin = {
         this.separateParts = function() {
             jQuery('.gate-section-list').each(function() {
                 var partTwo = jQuery(this).children('.part-2');
-                var wrapDiv = '<div class="gate-section-list well well-sm user-part2"></div>';
-                var glyph = '<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>';
+                var wrapDiv = '<div class="gate-section-list well well-sm ' +
+                'user-part2"></div>';
+                var glyph = '<span class="glyphicon ' +
+                'glyphicon-triangle-bottom" aria-hidden="true"></span>';
                 partTwo.detach().wrapAll(wrapDiv).parent().insertAfter(this);
                 jQuery(this).after(glyph);
             });
@@ -49,11 +54,13 @@ UELCAdmin = {
         this.separateParts = function() {
             jQuery('.gate-section-list').each(function() {
                 var partTwo = jQuery(this).children('.part-2');
-                var wrapDiv = '<div class="gate-section-list well well-sm">Part 2</div>';
-                var glyph = '<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>';
+                var wrapDiv = '<div class="gate-section-list well well-sm">' +
+                'Part 2</div>';
+                var glyph = '<span class="glyphicon ' +
+                'glyphicon-triangle-bottom" aria-hidden="true"></span>';
                 partTwo.detach().wrapAll(wrapDiv).parent().insertAfter(this);
                 jQuery(this).after(glyph);
-            })
+            });
 
         };
         this.setFormClickHandler = function() {

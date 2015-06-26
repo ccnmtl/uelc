@@ -27,6 +27,7 @@ def convert_part2(arg):
     else:
         return 0
 
+
 @register.filter(name='part')
 def part(arg):
     return int(arg)
