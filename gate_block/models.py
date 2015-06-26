@@ -30,9 +30,10 @@ class GateBlock(BasePageBlock):
             gateblock_id=self.id,
             gate_user_id=user.id).count() > 0
 
-    def status(self, user, hierarchy, uloc):
-        """Takes a User, Hierarchy, and UserLocation."""
-        gate_section = self.pageblock().section
+    def status(self, gate_section, user, hierarchy, uloc):
+        """
+        Takes self.pageblock().section, a User, Hierarchy, and UserLocation.
+        """
         ss_exists = SectionSubmission.objects.filter(
             user=user, section=gate_section).exists()
 
