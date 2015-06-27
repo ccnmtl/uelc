@@ -411,11 +411,9 @@ class FacilitatorView(LoggedInFacilitatorMixin,
     extra_context = dict()
 
     def get_tree_depth(self, section):
-        tree_depth = 0
-        for sec in section.get_tree():
-            tree_depth += 1
+        for idx, sec in enumerate(section.get_tree()):
             if sec == section:
-                return tree_depth
+                return idx
 
     def set_upv(self, user, section, status):
         upv = UserPageVisit.objects.filter(section=section, user=user).first()
@@ -573,21 +571,31 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             part_usermap = hand.get_partchoice_by_usermap(um)
 
             gate_section = []
+            uloc = UserLocation.objects.get_or_create(
+                user=user,
+                hierarchy=hierarchy)
             for g in gateblocks:
                 gateblock_section = g.pageblock().section
+                pageblocks = gateblock_section.pageblock_set.all()
                 gate_section.append([
                     gateblock_section,
                     g,
                     g.unlocked(user, section),
                     self.get_tree_depth(gateblock_section),
-                    g.status(user, hierarchy),
+                    g.status(
+                        gateblock_section,
+                        user, hierarchy,
+                        uloc[0],
+                        pageblocks),
                     hand.can_show_gateblock(gateblock_section,
                                             part_usermap),
                     (hand.get_part_by_section(gateblock_section),
                      part_usermap),
-                    hand.is_curveball(gateblock_section),
-                    hand.is_decision_block(gateblock_section,
-                                           user),
+                    hand.is_curveball(gateblock_section, pageblocks),
+                    hand.is_decision_block(
+                        gateblock_section,
+                        user,
+                        pageblocks),
                     hand.is_next_curveball(gateblock_section)
                 ])
 
