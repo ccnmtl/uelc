@@ -577,6 +577,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             for g in gateblocks:
                 gateblock_section = g.pageblock().section
                 pageblocks = gateblock_section.pageblock_set.all()
+                part = hand.get_part_by_section(gateblock_section)
                 gate_section.append([
                     gateblock_section,
                     g,
@@ -588,9 +589,9 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                         uloc[0],
                         pageblocks),
                     hand.can_show_gateblock(gateblock_section,
-                                            part_usermap),
-                    (hand.get_part_by_section(gateblock_section),
-                     part_usermap),
+                                            part_usermap,
+                                            part),
+                    (part, part_usermap),
                     hand.is_curveball(gateblock_section, pageblocks),
                     hand.is_decision_block(
                         gateblock_section,

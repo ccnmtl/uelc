@@ -374,9 +374,12 @@ class UELCHandler(Section):
 
         return content_value
 
-    def can_show_gateblock(self, gate_section, part_usermap):
+    def can_show_gateblock(self, gate_section, part_usermap,
+                           part_section=None):
+        if part_section is None:
+            part_section = self.get_part_by_section(gate_section)
+
         can_show = False
-        part_section = self.get_part_by_section(gate_section)
         if part_section == 1 or part_section == round(part_usermap, 1):
             can_show = True
         return can_show
