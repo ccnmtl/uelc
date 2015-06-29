@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
 from pagetree.generic.views import PageView, EditView, UserPageVisitor
@@ -549,10 +549,9 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         # library_item = LibraryItem
         # library_items = LibraryItem.objects.all()
         # is there really only going to be one cohort per case?
-        try:
-            cohort = case.cohort.get(user_profile_cohort__user=user)
-        except Cohort.DoesNotExist:
-            raise Http404()
+
+        cohort = case.cohort.get(user_profile_cohort__user=user)
+
         cohort_user_profiles = cohort.user_profile_cohort.filter(
             profile_type="group_user").order_by('user__username')
         cohort_users = [profile.user for profile in cohort_user_profiles]
@@ -565,8 +564,14 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         user_sections = []
         for user in cohort_users:
             try:
+                # bug happens when a user has previously navigated to a
+                # section before a slug change. Example: when /intro/part-1/
+                # has been cahnaged to /intro/part1/ when the user visited
+                # the first slug and it no loger exists.
+
                 user_last_path = user.userlocation_set.first().path
-                user_last_location = self.get_section(user_last_path)
+                user_last_location = hierarchy.find_section_from_path(
+                    user_last_path)
             except AttributeError:
                 user_last_location = None
 
@@ -577,6 +582,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             uloc = UserLocation.objects.get_or_create(
                 user=user,
                 hierarchy=hierarchy)
+
             for g in gateblocks:
                 gateblock_section = g.pageblock().section
                 pageblocks = gateblock_section.pageblock_set.all()
@@ -625,6 +631,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                        token=gen_token(request, section.hierarchy.name),
                        roots=roots['roots']
                        )
+
         return render(request, self.template_name, context)
 
 
