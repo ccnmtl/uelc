@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
 from pagetree.generic.views import PageView, EditView, UserPageVisitor
@@ -549,7 +549,10 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         # library_item = LibraryItem
         # library_items = LibraryItem.objects.all()
         # is there really only going to be one cohort per case?
-        cohort = case.cohort.get(user_profile_cohort__user=user)
+        try:
+            cohort = case.cohort.get(user_profile_cohort__user=user)
+        except Cohort.DoesNotExist:
+            raise Http404()
         cohort_user_profiles = cohort.user_profile_cohort.filter(
             profile_type="group_user").order_by('user__username')
         cohort_users = [profile.user for profile in cohort_user_profiles]
