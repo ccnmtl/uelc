@@ -562,8 +562,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             depth=0,
             path=hierarchy.base_url)[0]
         user_sections = []
-        import pdb
-        pdb.set_trace()
         for user in cohort_users:
             try:
                 # bug happens when a user has previously navigated to a
@@ -572,7 +570,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                 # the first slug and it no loger exists.
 
                 user_last_path = user.userlocation_set.first().path
-                user_last_location = self.get_section(user_last_path)
+                user_last_location = hierarchy.find_section_from_path(
+                    user_last_path)
             except AttributeError:
                 user_last_location = None
 
