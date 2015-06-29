@@ -393,13 +393,14 @@ class UELCHandler(Section):
 
     def is_curveball(self, current_section, pageblocks=None):
         block = None
-        if pageblocks is None:
+        if pageblocks is None and current_section is not None:
             pageblocks = current_section.pageblock_set.all()
-        for pb in pageblocks:
-            block = pb.block()
-            if (hasattr(block, 'display_name')
-               and block.display_name == "Curveball Block"):
-                return (True, block)
+        if pageblocks:
+            for pb in pageblocks:
+                block = pb.block()
+                if (hasattr(block, 'display_name')
+                   and block.display_name == "Curveball Block"):
+                    return (True, block)
         return (False, block)
 
     def is_decision_block(self, current_section, user, pageblocks=None):
