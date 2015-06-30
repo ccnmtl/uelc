@@ -387,6 +387,10 @@ ul.pager li.next a.disabled:active {
 .gate-section{
     width: 100%;
 }
+.gate-sections .group-name {
+    z-index: 9;
+    top: 56px;
+}
 .gate-block{
     clear: both;
 }
