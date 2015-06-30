@@ -71,7 +71,9 @@ $(function() {
             setGroupMessage(jQuery(groupColumnSelector), msg);
             UA.setFormClickHandler();
         }
-        if (data.notification.message === 'Decision Submitted') {
+        if (data.notification.message === 'Decision Submitted' &&
+            data.notification.data !== null
+           ) {
             msg = 'we just made a decision';
             action = 'made decision';
             setGroupMessage(jQuery(groupColumnSelector), msg);
