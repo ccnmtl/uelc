@@ -31,6 +31,8 @@ Feature: Simulation
     Then I see the css selector ".gate-section-list"
     Then there are no curveball submissions
 
-    When I click the button "Submit"
+    When I click the button "Commit"
+    Then I see the text "Are you sure?"
+    When I click the button "Yes. Set it."
     Then I see the text "Selected Curveball:"
     Then a curveball submission exists

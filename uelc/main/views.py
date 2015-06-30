@@ -411,11 +411,9 @@ class FacilitatorView(LoggedInFacilitatorMixin,
     extra_context = dict()
 
     def get_tree_depth(self, section):
-        tree_depth = 0
-        for sec in section.get_tree():
-            tree_depth += 1
+        for idx, sec in enumerate(section.get_tree()):
             if sec == section:
-                return tree_depth
+                return idx
 
     def set_upv(self, user, section, status):
         upv = UserPageVisit.objects.filter(section=section, user=user).first()
@@ -551,7 +549,9 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         # library_item = LibraryItem
         # library_items = LibraryItem.objects.all()
         # is there really only going to be one cohort per case?
+
         cohort = case.cohort.get(user_profile_cohort__user=user)
+
         cohort_user_profiles = cohort.user_profile_cohort.filter(
             profile_type="group_user").order_by('user__username')
         cohort_users = [profile.user for profile in cohort_user_profiles]
@@ -564,8 +564,14 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         user_sections = []
         for user in cohort_users:
             try:
+                # bug happens when a user has previously navigated to a
+                # section before a slug change. Example: when /intro/part-1/
+                # has been cahnaged to /intro/part1/ when the user visited
+                # the first slug and it no loger exists.
+
                 user_last_path = user.userlocation_set.first().path
-                user_last_location = self.get_section(user_last_path)
+                user_last_location = hierarchy.find_section_from_path(
+                    user_last_path)
             except AttributeError:
                 user_last_location = None
 
@@ -573,21 +579,33 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             part_usermap = hand.get_partchoice_by_usermap(um)
 
             gate_section = []
+            uloc = UserLocation.objects.get_or_create(
+                user=user,
+                hierarchy=hierarchy)
+
             for g in gateblocks:
                 gateblock_section = g.pageblock().section
+                pageblocks = gateblock_section.pageblock_set.all()
+                part = hand.get_part_by_section(gateblock_section)
                 gate_section.append([
                     gateblock_section,
                     g,
                     g.unlocked(user, section),
                     self.get_tree_depth(gateblock_section),
-                    g.status(user, hierarchy),
+                    g.status(
+                        gateblock_section,
+                        user, hierarchy,
+                        uloc[0],
+                        pageblocks),
                     hand.can_show_gateblock(gateblock_section,
-                                            part_usermap),
-                    (hand.get_part_by_section(gateblock_section),
-                     part_usermap),
-                    hand.is_curveball(gateblock_section),
-                    hand.is_decision_block(gateblock_section,
-                                           user),
+                                            part_usermap,
+                                            part),
+                    (part, part_usermap),
+                    hand.is_curveball(gateblock_section, pageblocks),
+                    hand.is_decision_block(
+                        gateblock_section,
+                        user,
+                        pageblocks),
                     hand.is_next_curveball(gateblock_section)
                 ])
 
@@ -613,6 +631,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                        token=gen_token(request, section.hierarchy.name),
                        roots=roots['roots']
                        )
+
         return render(request, self.template_name, context)
 
 
