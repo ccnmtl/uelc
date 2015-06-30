@@ -45,7 +45,6 @@ UELCAdmin = {
                 window.UA.tempForm = cbForm;
 
                 lgf.removeClass('hidden');
-                
                 jQuery.post(postUrl, prevFormData).fail(function() {
                     var msg = 'We are sorry! Something went wrong with ' +
                     'setting the curveball. Please Try again.';
@@ -58,8 +57,6 @@ UELCAdmin = {
                 }).done(function() {
                     window.location.reload();
                 });
-                
-
             });
         };
         this.setFormClickHandler = function() {
