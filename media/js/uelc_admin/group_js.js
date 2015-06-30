@@ -39,6 +39,9 @@ $(function() {
         conn.onopen = function(evt) {
             currentRefresh = defaultRefresh;
         };
+        $(window).on('beforeunload', function() {
+            conn.close();
+        });
     };
 
     var onMessage = function(evt) {
