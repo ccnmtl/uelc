@@ -294,7 +294,6 @@ class UELCPageView(LoggedInMixin,
             gate_blocks=gate_blocks,
             section_submission=section_submission,
             casemap=casemap,
-            # library_items=self.get_library_items(case),
             part=part,
             websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
             token=gen_group_token(request, self.section.pk),
@@ -559,12 +558,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         roots = get_root_context(self.request)
         hierarchy = section.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
-        # library_item = LibraryItem
-        # library_items = LibraryItem.objects.all()
         # is there really only going to be one cohort per case?
-
         cohort = case.cohort.get(user_profile_cohort__user=user)
-
         cohort_user_profiles = cohort.user_profile_cohort.filter(
             profile_type="group_user").order_by('user__username')
         cohort_users = [profile.user for profile in cohort_user_profiles]
@@ -630,15 +625,12 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             block_obj = p.block()
             if hasattr(block_obj, 'needs_submit') and block_obj.needs_submit():
                 quizzes.append(block_obj)
-        # curveballs = p.block()
         context = dict(section=section,
                        quizzes=quizzes,
                        user_sections=user_sections,
                        module=section.get_module(),
                        modules=root.get_children(),
                        root=section.hierarchy.get_root(),
-                       # library_item=library_item,
-                       # library_items=library_items,
                        case=case,
                        websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
                        token=gen_token(request, section.hierarchy.name),
