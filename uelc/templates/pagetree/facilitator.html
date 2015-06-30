@@ -23,19 +23,19 @@
     <p>Use the control panel to check group progress as well as lock and unlock.</p>
 
     {% for u in user_sections %}
-      {% if u.0.profile.profile_type == "group_user" %}
+    {% if u.0.profile.profile_type == "group_user" %}
       <div class="col-sm-3 text-center">
       <!-- user (u.0), gateblocks (u.1), (u.2) user_last_location -->
           <div class="gate-sections" id="group-user-section-{{u.0.id}}">
 
-
-            <div class="group-name panel panel-default">
-                <div class="panel-body">
-                    <h3 class="text-center">
-                        <h3 class="facilitator-usrnm">Group {{u.0}}</h3> 
-                    </h3>
-                </div>
-            </div>
+              <div class="group-name panel panel-default"
+                   data-spy="affix" data-offset-top="200">
+                  <div class="panel-body">
+                      <h3 class="text-center">
+                          <h3 class="facilitator-usrnm">Group {{u.0}}</h3> 
+                      </h3>
+                  </div>
+              </div>
 
             <div class="text-center">
                 <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>

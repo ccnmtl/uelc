@@ -128,4 +128,12 @@ UELCAdmin = {
 
 jQuery(document).ready(function() {
     window.UA = new UELCAdmin.Admin();
+
+    var updateWidth = function() {
+        var width = $('.gate-sections:first').width();
+        $('.gate-sections .group-name').width(width);
+    };
+
+    $(window).resize(updateWidth);
+    updateWidth();
 });
