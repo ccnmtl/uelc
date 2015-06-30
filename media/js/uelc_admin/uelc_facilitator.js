@@ -4,18 +4,7 @@ UELCAdmin = {
         this.init = function() {
             this.setFormClickHandler();
             this.separateParts();
-
             this.setCurballBlockHandler();
-            //this.setPartsOnGateblocks();
-            //this.setChoicesOnSecondParts();
-            //this.impersonate();
-            /*
-             jQuery('.library-item-user-select').multiselect();
-             jQuery('[data-toggle="tooltip"]').tooltip({
-                'placement': 'top'
-            });
-            this.deleteLibraryItem();
-            */
         };
         this.setChoicesOnParts = function() {
             jQuery('.user-part2').each(function() {
@@ -44,11 +33,10 @@ UELCAdmin = {
         };
         this.setCurballBlockHandler = function() {
             jQuery('.set-curveball').click(function() {
-                window.ts = jQuery(this);
                 var lgf = jQuery(this).parent().parent().find(
                     '.loading-spinner');
                 var modal = jQuery(this).closest('.modal');
-                var modId = modal.attr('id').split('-')[1];
+                var modId = modal.attr('id').split('CurveballModal-')[1];
                 var cbForm = jQuery('#curveball-form-' + modId);
                 var postUrl = window.location.pathname;
                 var gate = jQuery(cbForm).parent().parent();
@@ -57,6 +45,7 @@ UELCAdmin = {
                 window.UA.tempForm = cbForm;
 
                 lgf.removeClass('hidden');
+                
                 jQuery.post(postUrl, prevFormData).fail(function() {
                     var msg = 'We are sorry! Something went wrong with ' +
                     'setting the curveball. Please Try again.';
@@ -69,6 +58,7 @@ UELCAdmin = {
                 }).done(function() {
                     window.location.reload();
                 });
+                
 
             });
         };
