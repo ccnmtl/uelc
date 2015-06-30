@@ -4,8 +4,10 @@
 <div class="gated-curveball panel panel-default">
 {% get_selected_curveball u.0 sec.7.1 as selected_curveball %}
     {% if selected_curveball %}
+
         <div class="panel-heading">
              <p>Selected Curveball:</p>
+       
         </div>
         <div class="panel-body">
              <p>{{ selected_curveball.curveball.title }}</p>
@@ -33,6 +35,7 @@
                     </div>
                     <div class="modal-body">
                         Are you sure? This cannot be undone.
+                        <div class="hidden loading-spinner">Setting your curveball! One moment...</div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary set-curveball">Yes. Set it.</button> <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> 

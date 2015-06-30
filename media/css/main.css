@@ -364,7 +364,12 @@ ul.pager li.next a.disabled:active {
 }
 
 /* Facilitator page */
-
+.loading-spinner{
+    background: url("/media/img/loading1.gif") no-repeat 5px 5px #FFF;
+    min-height: 100px;
+    min-width: 100px;
+    background-position: center;
+}
 .curveball-select.form-control{
     width: 94%;
     margin-left: 3%;

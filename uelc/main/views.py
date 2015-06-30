@@ -37,6 +37,24 @@ from curveball.models import Curveball, CurveballBlock
 zmq_context = zmq.Context()
 
 
+def behave_socket_open(socket):
+    """Make the socket behave-compatible. :-/"""
+    if sys.argv[1:2] == ['behave']:
+        socket.linger = 0
+
+
+def behave_socket_recv(socket):
+    """ZMQ socket.recv() that doesn't hang on behave"""
+    # TODO: behave hangs on socket.recv()
+    if sys.argv[1:2] == ['behave']:
+        try:
+            socket.recv(zmq.NOBLOCK)
+        except zmq.ZMQError:
+            pass
+    else:
+        socket.recv()
+
+
 class IndexView(TemplateView):
     template_name = "main/index.html"
 
@@ -159,7 +177,7 @@ class UELCPageView(LoggedInMixin,
     def notify_facilitators(self, request, path, notification):
         user = get_object_or_404(User, pk=request.user.pk)
         socket = zmq_context.socket(zmq.REQ)
-        socket.linger = 0
+        behave_socket_open(socket)
         socket.connect(settings.WINDSOCK_BROKER_URL)
         msg = dict()
 
@@ -191,15 +209,7 @@ class UELCPageView(LoggedInMixin,
                  content=json.dumps(msg))
 
         socket.send(json.dumps(e))
-
-        # TODO: behave hangs on socket.recv()
-        if sys.argv[1:2] == ['behave']:
-            try:
-                socket.recv(zmq.NOBLOCK)
-            except zmq.ZMQError:
-                pass
-        else:
-            socket.recv()
+        behave_socket_recv(socket)
 
     def check_user(self, request, path):
         if not request.user.is_superuser and self.section.get_depth() == 2:
@@ -369,6 +379,7 @@ class SubmitSectionView(LoggedInMixin,
 
     def notify_facilitators(self, request, section, notification):
         socket = zmq_context.socket(zmq.REQ)
+        behave_socket_open(socket)
         socket.connect(settings.WINDSOCK_BROKER_URL)
 
         msg = dict(
@@ -381,7 +392,7 @@ class SubmitSectionView(LoggedInMixin,
                  content=json.dumps(msg))
 
         socket.send(json.dumps(e))
-        socket.recv()
+        behave_socket_recv(socket)
 
     def post(self, request):
         user = request.user
@@ -457,6 +468,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
 
     def notify_group_user(self, section, user, notification):
         socket = zmq_context.socket(zmq.REQ)
+        behave_socket_open(socket)
         socket.connect(settings.WINDSOCK_BROKER_URL)
         msg = dict(userId=user.id,
                    username=user.username,
@@ -468,10 +480,11 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                  (settings.ZMQ_APPNAME, section.pk),
                  content=json.dumps(msg))
         socket.send(json.dumps(e))
-        socket.recv()
+        behave_socket_recv(socket)
 
     def notify_facilitator(self, request, section, user, msg):
         socket = zmq_context.socket(zmq.REQ)
+        behave_socket_open(socket)
         socket.connect(settings.WINDSOCK_BROKER_URL)
         notification = dict(
             data='',
@@ -486,7 +499,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                  content=json.dumps(msg))
 
         socket.send(json.dumps(e))
-        socket.recv()
+        behave_socket_recv(socket)
 
     def post_curveball_select(self, request):
         '''Show the facilitator their choices for the curveball,
