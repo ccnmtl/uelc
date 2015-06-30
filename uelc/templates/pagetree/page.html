@@ -36,6 +36,31 @@
 {% endblock %}
 
 {% block content %}
+
+{% for block in section.pageblock_set.all %}
+
+{% for quiz in decision_blocks %}
+{% if quiz.id == block.id %}
+{% is_section_unlocked request section as unlocked %}
+{% if not unlocked and quiz.completed %}
+<p class="wait-msg alert alert-danger">
+    Please wait for the facilitator to allow you to proceed.
+</p>
+{% endif %}
+{% endif %}
+{% endfor %}
+
+{% if block.block.display_name == "Gate Block" %}
+<div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+    {% render block %}
+    <p class="unlock-msg alert alert-success" style="display:none">
+        You may proceed to the next section
+    </p>
+</div>
+{% endif %}
+
+{% endfor %}{# End for block in pageblock_set #}
+
 <script>
   window.sectionId = '{{section.pk}}';
 	window.username = '{{request.user.username}}';
