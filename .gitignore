@@ -13,3 +13,4 @@ local_settings.py
 .settings
 .idea
 node_modules
+.python-version
