@@ -5,14 +5,12 @@
 {% get_selected_curveball u.0 sec.7.1 as selected_curveball %}
     {% if selected_curveball %}
 
-        <div class="panel-heading">
-             <p>Selected Curveball:</p>
-       
-        </div>
         <div class="panel-body">
+			<label>Selected Curveball</label>
              <p>{{ selected_curveball.curveball.title }}</p>
         </div>
     {% else %}
+        <div class="panel-body">
         <form id="curveball-form-{{ sec.7.1.id }}" action="." method="post">{% csrf_token %}
         {{sec.7.1.curveball_select_form|bootstrap}}
         <input type="hidden" name="curveball-block-id" value="{{ sec.7.1.id }}" />
@@ -21,6 +19,7 @@
         </form>
          <button class="pull-left btn btn-default curveball-commit-btn" data-toggle="modal" data-target="#CurveballModal-{{ sec.7.1.id }}">Commit</button> 
          <span class="clearfix"></span>
+         </div>
     {% endif %}
 </div>
 

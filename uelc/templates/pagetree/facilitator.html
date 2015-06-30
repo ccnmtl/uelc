@@ -20,7 +20,7 @@
 
 <div id="content" class="container-fluid">
     <h1>Case Control for {{case.name}}</h1>
-    <p>Use the control panel to check group progress as well as lock and unlock.</p>
+    <p>Each group has it's own vertical path of progress. Follow your group by scrolling down to each section of the case after unlocking its content after review.</p>
 
     {% for u in user_sections %}
     {% if u.0.profile.profile_type == "group_user" %}
@@ -39,9 +39,6 @@
                   </div>
               </div>
 
-            <div class="text-center">
-                <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-            </div>
 
         
 
@@ -129,6 +126,7 @@
                         </div>
                     </div><!--end .gate-section-->
 
+
                     <div class="gate-button {%if sec.9.0%}hidden{%endif%} locked {{sec.6.0|convert}}" data-part-dec-raw="{{sec.6.1}}" data-part-decision="{{sec.6.1|convert_part2}}">
                       <form action ="." method="post">{% csrf_token %}
                         <div class="btn-group-vertical" role="group" aria-label="..."  style="width: 100%;">
@@ -147,10 +145,12 @@
                             <input type="hidden" name="block" value="{{sec.1.id}}" />
                             <input type="hidden" class="post" value="{{sec.0.get_absolute_url}}">
                         </form>
+						<div class="separator">
+						<span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+						</div>
                     </div><!-- end .gate-button-->
 
-
-                </div><!-- end .gate-block -->
+ </div><!-- end .gate-block -->
                     {% endif %}
                 {% endif %}
 
