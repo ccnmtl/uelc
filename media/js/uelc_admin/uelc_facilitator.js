@@ -152,7 +152,7 @@ jQuery(document).ready(function() {
 
     var updateWidth = function() {
         var width = $('.gate-sections:first').width();
-        $('.gate-sections .group-name').width(width);
+        $('.gate-sections .group-name:lt(4)').width(width);
     };
 
     $(window).resize(updateWidth);
