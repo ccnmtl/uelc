@@ -44,9 +44,7 @@ UELCAdmin = {
                 prevForm = gate.parent().prev().find('.gate-button form');
                 var prevFormData = prevForm.serialize();
                 window.UA.tempForm = prevForm;
-
                 lgf.removeClass('hidden');
-                
                 jQuery.post(postUrl, cbFormData).fail(function() {
                     var msg = 'We are sorry! Something went wrong with ' +
                     'setting the curveball. Please Try again.';
@@ -62,7 +60,6 @@ UELCAdmin = {
                 }).done(function() {
                     window.location.reload();
                 });
-                
             });
         };
         this.setFormClickHandler = function() {
