@@ -4,7 +4,8 @@ UELCAdmin = {
         this.init = function() {
             this.setFormClickHandler();
             this.separateParts();
-            this.setCurballBlockHandler();
+            this.setCurveballBlockHandler();
+            this.setCurveballCommitAccess();
         };
         this.setChoicesOnParts = function() {
             jQuery('.user-part2').each(function() {
@@ -31,7 +32,31 @@ UELCAdmin = {
             this.setChoicesOnParts();
 
         };
-        this.setCurballBlockHandler = function() {
+        this.setCurveballCommitAccess = function() {
+            jQuery('.curveball-commit-btn').each(function() {
+                thisBtn = jQuery(this);
+                decisionBadge = thisBtn.closest(
+                    '.gate-block').prev().find('.badge');
+                decisionStatus = decisionBadge.text();
+                if (decisionStatus !== "reviewed") {
+                    thisBtn.css('cursor', 'not-allowed');
+                    thisBtn.attr('data-toggle', '');
+                    thisBtn.click(function() {
+                        var msg = 'You must wait until the' +
+                        ' group has confirmed their decision!' +
+                        ' Please remind the group user to' +
+                        ' select a choice and confirm their' +
+                        ' choice.';
+                        alert(msg);
+                    });
+                }else {
+                    thisBtn.unbind('click');
+                    thisBtn.css('cursor', 'pointer');
+                    thisBtn.attr('data-toggle', 'modal');
+                }
+            });
+        };
+        this.setCurveballBlockHandler = function() {
             jQuery('.set-curveball').click(function() {
                 var lgf = jQuery(this).parent().parent().find(
                     '.loading-spinner');
@@ -70,8 +95,8 @@ UELCAdmin = {
                 window.lastPartOneBlock = thisBtn.closest(
                     '.gate-section-list').children('.part-1').last();
                 window.btnBlock = thisBtn.closest('.part-1');
-                var lastBlockSec = lastPartOneBlock.data('section-id');
-                var btnSec = btnBlock.data('section-id');
+                window.lastBlockSec = lastPartOneBlock.data('section-id');
+                window.btnSec = btnBlock.data('section-id');
                 thisBtn.unbind('click');
                 thisBtn.css('cursor', 'not-allowed');
                 form  = jQuery(this).closest('form');
@@ -82,17 +107,16 @@ UELCAdmin = {
                         ' opening the gate. Please refresh your' +
                         ' browser and try again.';
                     alert(msg);
-                });
-
-                // Test to see if this is the last Part 1 gate.
-                // If so, reload the page to load in the part 2
-                // gate blocks.
-
-                if (typeof btnSec !== 'undefined') {
-                    if (lastBlockSec === btnSec) {
-                        window.location.reload();
+                }).done(function() {
+                    // Test to see if this is the last Part 1 gate.
+                    // If so, reload the page to load in the part 2
+                    // gate blocks.
+                    if (typeof window.btnSec !== 'undefined') {
+                        if (window.lastBlockSec === window.btnSec) {
+                            window.location.reload();
+                        }
                     }
-                }
+                });
             });// end click
         };
         this.setPartsOnGateblocks = function() {
