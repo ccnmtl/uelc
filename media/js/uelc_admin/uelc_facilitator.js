@@ -68,8 +68,14 @@ UELCAdmin = {
             var btn = jQuery('.gate-block.active .gate-button form .btn');
             btn.css('cursor', 'pointer');
             btn.click(function() {
-                btn.unbind('click');
-                btn.css('cursor', 'not-allowed');
+                var thisBtn = jQuery(this);
+                window.lastPartOneBlock = thisBtn.closest(
+                    '.gate-section-list').children('.part-1').last();
+                window.btnBlock = thisBtn.closest('.part-1');
+                var lastBlockSec = lastPartOneBlock.data('section-id');
+                var btnSec = btnBlock.data('section-id');
+                thisBtn.unbind('click');
+                thisBtn.css('cursor', 'not-allowed');
                 form  = jQuery(this).closest('form');
                 data = jQuery(form).serialize();
                 postUrl = window.location.pathname;
@@ -78,7 +84,13 @@ UELCAdmin = {
                         ' the gate. Please refresh your browser and try again.';
                     alert(msg);
                 });
-            });
+                // Test to see if this is the last Part 1 gate.
+                // If so, reload the page to load in the part 2 
+                // gate blocks.
+                if(lastBlockSec === btnSec){
+                    window.location.reload();
+                }
+            });// end click
         };
         this.setPartsOnGateblocks = function() {
             var partOneElms = jQuery('.part1:first-child');
