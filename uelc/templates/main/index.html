@@ -5,14 +5,12 @@
 
 {% if not request.user.is_anonymous %}
 
-    <h1 class="username-start-header" style="
-    text-transform: capitalize;">
-    {% if request.user.last_name %}{{request.user.first_name}} {{request.user.last_name}}{% else %}{{ request.user.username }}{% endif %}'s Start Page</h1>
+    <h1 class="username-start-header">
+    Hello,  {% if request.user.last_name %}{{request.user.first_name}} {{request.user.last_name}}{% else %}{{ request.user.username }}{% endif %}!
+    </h1>
     
-    <p class="badge">Cohort: {{ request.user.profile.cohort}}</p>
-    
-    <p></p>
-    
+    <h3><span class="label label-default">Cohort: {{ request.user.profile.cohort}}</span></h3>
+
     <div class="well">
        {% if cases %}
         <h2>Group Leader Case List</h2>
@@ -33,7 +31,7 @@
     <div class="admin-section well">
         <h2>Facilitator Case Control</h2>
         <p>Select a case to facilitate the experience for a group.</p>
-        <ul>
+        <ul class="case-index-list">
             {% for case in cases %}
                 <li><a href="{{ case.hierarchy.base_url }}facilitator/">{{case.name}}</a> - {{case.description}}</li>
             {% endfor %}

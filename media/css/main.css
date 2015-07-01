@@ -18,6 +18,8 @@ body > .container {
   padding-top: 75px;
 }
 
+.case-index-list li {margin-top: 10px;}
+
 form.decision-block {margin-bottom: 20px;}
 
 .delete-decision{
