@@ -19,7 +19,8 @@ from gate_block.models import GateBlock, SectionSubmission, GateSubmission
 from uelc.main.helper_functions import (
     get_root_context, get_user_map, visit_root, gen_group_token,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
-    gen_token)
+    gen_token, get_user_last_location
+)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
@@ -579,17 +580,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             path=hierarchy.base_url)[0]
         user_sections = []
         for user in cohort_users:
-            try:
-                # bug happens when a user has previously navigated to a
-                # section before a slug change. Example: when /intro/part-1/
-                # has been cahnaged to /intro/part1/ when the user visited
-                # the first slug and it no loger exists.
-
-                user_last_path = user.userlocation_set.first().path
-                user_last_location = hierarchy.find_section_from_path(
-                    user_last_path)
-            except AttributeError:
-                user_last_location = None
+            user_last_location = get_user_last_location(user, hierarchy)
 
             um = get_user_map(hierarchy, user)
             part_usermap = hand.get_partchoice_by_usermap(um)
