@@ -89,7 +89,6 @@ UELCAdmin = {
                 // Test to see if this is the last Part 1 gate.
                 // If so, reload the page to load in the part 2
                 // gate blocks.
-
                 if (btnSec !== undefined) {
                     if (lastBlockSec === btnSec) {
                       window.location.reload();  
