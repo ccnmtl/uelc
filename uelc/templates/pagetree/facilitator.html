@@ -15,7 +15,7 @@
 
 <div id="content" class="container-fluid">
     <h1>Case Control for {{case.name}}</h1>
-    <p>Each group has it's own vertical path of progress. Follow your group by scrolling down to each section of the case after unlocking its content after review.</p>
+    <p>Use the case control panel below to track your assigned group user along the progress path of the case. The case control will provide you alerts on group user decisions and progress. The system will prompt you to take action when a group user is waiting for you to unlock new content.</p>
 
     {% for u in user_sections %}
     {% if u.0.profile.profile_type == "group_user" %}
