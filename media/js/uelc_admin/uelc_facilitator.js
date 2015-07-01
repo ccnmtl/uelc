@@ -38,15 +38,15 @@ UELCAdmin = {
                 var modal = jQuery(this).closest('.modal');
                 var modId = modal.attr('id').split('CurveballModal-')[1];
                 var cbForm = jQuery('#curveball-form-' + modId);
-                var cbFormData = cbForm.serialize();
-                var postUrl = window.location.pathname;
-                var gate = jQuery(cbForm).parent().parent();
-                var prevForm = gate.prev().find('.gate-button form');
+                cbFormData = cbForm.serialize();
+                postUrl = window.location.pathname;
+                gate = jQuery(cbForm).parent().parent();
+                prevForm = gate.parent().prev().find('.gate-button form');
                 var prevFormData = prevForm.serialize();
                 window.UA.tempForm = prevForm;
 
                 lgf.removeClass('hidden');
-
+                
                 jQuery.post(postUrl, cbFormData).fail(function() {
                     var msg = 'We are sorry! Something went wrong with ' +
                     'setting the curveball. Please Try again.';
@@ -62,6 +62,7 @@ UELCAdmin = {
                 }).done(function() {
                     window.location.reload();
                 });
+                
             });
         };
         this.setFormClickHandler = function() {
