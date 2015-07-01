@@ -19,7 +19,7 @@ Feature: Simulation
     Then I see the text "Choice 1: Full Disclosure"
 
     When I select the first radio option
-    When I click the button "Submit Decision"
+    When I click the button "Confirm"
     Then I see the css selector ".alert.alert-danger"
     Then my URL ends with "/part-1/your-first-decision/"
 
