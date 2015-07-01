@@ -511,3 +511,48 @@ ul.gate-section-list{
 .decision-block{
     clear: right;
 }
+
+
+/* start - inline maps*/
+
+.mapcontainer { position: relative; }		
+
+.mapcontainer .map { width: 100%; }
+
+.mapcontainer h1 {font-size: 24px; position: absolute; color: #fff; padding: 0px 0px 0px 20px; text-shadow: 1px 1px 2px rgba(0, 0, 0, 1);}
+
+.mapcontainer .county
+{
+    position: absolute;
+    display: block;
+    font-weight: bold;
+    background-color: #000;
+    padding: 10px;
+    text-decoration: none;
+    font-size: 14px;
+    color: #fff;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;	
+}
+
+
+.mapcontainer .west
+{
+    left: 20%;
+    top: 25%;
+}
+
+.mapcontainer .east
+{
+    right: 15%;
+    top: 20%;
+}
+
+.mapcontainer .popover {background-color: black !important;}
+        
+pre {display: none;}
+		
+
+/* stop - inline maps*/
+
