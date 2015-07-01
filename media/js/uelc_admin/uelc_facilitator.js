@@ -34,10 +34,10 @@ UELCAdmin = {
         };
         this.setCurveballCommitAccess = function() {
             jQuery('.curveball-commit-btn').each(function() {
-                thisBtn = jQuery(this);
-                decisionBadge = thisBtn.closest(
+                var thisBtn = jQuery(this);
+                var decisionBadge = thisBtn.closest(
                     '.gate-block').prev().find('.badge');
-                decisionStatus = decisionBadge.text();
+                var decisionStatus = decisionBadge.text();
                 if (decisionStatus !== "reviewed") {
                     thisBtn.css('cursor', 'not-allowed');
                     thisBtn.attr('data-toggle', '');
