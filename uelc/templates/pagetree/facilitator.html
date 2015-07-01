@@ -4,11 +4,6 @@
 {% block content %}
 {% load part_string %}
 
-{% comment %}
-    <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
-    <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
-{% endcomment %}
-
 <script>
     window.hierarchy_name = '{{section.hierarchy.name}}';
     window.username = '{{request.user.username}}';

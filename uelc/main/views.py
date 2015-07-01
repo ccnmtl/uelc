@@ -625,17 +625,19 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             block_obj = p.block()
             if hasattr(block_obj, 'needs_submit') and block_obj.needs_submit():
                 quizzes.append(block_obj)
-        context = dict(section=section,
-                       quizzes=quizzes,
-                       user_sections=user_sections,
-                       module=section.get_module(),
-                       modules=root.get_children(),
-                       root=section.hierarchy.get_root(),
-                       case=case,
-                       websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
-                       token=gen_token(request, section.hierarchy.name),
-                       roots=roots['roots']
-                       )
+        context = dict(
+            is_facilitator_view=True,
+            section=section,
+            quizzes=quizzes,
+            user_sections=user_sections,
+            module=section.get_module(),
+            modules=root.get_children(),
+            root=section.hierarchy.get_root(),
+            case=case,
+            websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
+            token=gen_token(request, section.hierarchy.name),
+            roots=roots['roots']
+        )
 
         return render(request, self.template_name, context)
 
