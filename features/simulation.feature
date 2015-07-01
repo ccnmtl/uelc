@@ -34,5 +34,5 @@ Feature: Simulation
     When I click the button "Commit"
     Then I see the text "Are you sure?"
     When I click the button "Yes. Set it."
-    Then I see the text "Selected Curveball:"
+    Then I see the text "Choice 1:"
     Then a curveball submission exists
