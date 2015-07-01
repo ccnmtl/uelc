@@ -130,13 +130,13 @@ jQuery(document).ready(function() {
               alert(data.error);
           }else {
               // success
-              elem = jQuery('.hierarchy-select');
-              html = '<option value=' + data.value + '>';
+              var elem = jQuery('.hierarchy-select');
+              var html = '<option value=' + data.value + '>';
               html += data.name + '</option>';
-              form = jQuery('#add-hierarchy-form');
+              var form = jQuery('#add-hierarchy-form');
               elem.append(html);
               this.resetForm(form);
-              alertMsg = 'Your Hierarchy has been created!';
+              var alertMsg = 'Your Hierarchy has been created!';
               alertMsg += 'It is available for editing,';
               alertMsg += 'so go and add some content! You can access it here,';
               alertMsg += data.url + 'edit/';
@@ -150,10 +150,10 @@ jQuery(document).ready(function() {
                   .parent().parent().addClass('has-error');
               alert(data.error);
           }else {
-              elem = jQuery('.user-select');
-              html = '<option value=' + data.user + '>';
+              var elem = jQuery('.user-select');
+              var html = '<option value=' + data.user + '>';
               html += data.username + '</option>';
-              form = jQuery('#add-user-form');
+              var form = jQuery('#add-user-form');
               elem.append(html);
               this.resetForm(form);
               alert('created user');
@@ -164,13 +164,13 @@ jQuery(document).ready(function() {
           if (data.error) {
               alert(data.error);
           }else {
-              userID = data.userID;
-              username = data.username;
-              profile = data.profile;
-              cohorts = data.cohorts;
-              row = jQuery('#user-' + userID);
+              var userID = data.userID;
+              var username = data.username;
+              var profile = data.profile;
+              var cohorts = data.cohorts;
+              var row = jQuery('#user-' + userID);
               this.updateUserRow(row, username, profile, cohorts);
-              modal = jQuery('#edit-user-form-modal-' + userID);
+              var modal = jQuery('#edit-user-form-modal-' + userID);
               modal.modal('hide');
               alert('user has been updated successfully!');
           }
@@ -180,9 +180,9 @@ jQuery(document).ready(function() {
           if (data.error) {
               alert(data.error);
           }else {
-              userID = data.userID;
-              modal = jQuery('#delete-user-form-modal-' + userID);
-              row = jQuery('#user-' + userID);
+              var userID = data.userID;
+              var modal = jQuery('#delete-user-form-modal-' + userID);
+              var row = jQuery('#user-' + userID);
               modal.on('hidden.bs.modal', row, function() {
                   row.remove();
               });
@@ -192,9 +192,9 @@ jQuery(document).ready(function() {
       };
 
       this.updateUserRow = function(row, username, profile, cohorts) {
-          tdUsername = jQuery(row).children('.td-username');
-          tdProfile = jQuery(row).children('.td-profile');
-          tdCohorts = jQuery(row).children('.td-cohorts');
+          var tdUsername = jQuery(row).children('.td-username');
+          var tdProfile = jQuery(row).children('.td-profile');
+          var tdCohorts = jQuery(row).children('.td-cohorts');
           tdUsername.text(username);
           tdProfile.text(profile);
           tdCohorts.text(cohorts);
@@ -209,8 +209,8 @@ jQuery(document).ready(function() {
               alert(data.error);
           }else {
               // success
-              elem = jQuery('.cohort-select');
-              html = '<option value=' + data.cohort + '>';
+              var elem = jQuery('.cohort-select');
+              var html = '<option value=' + data.cohort + '>';
               html += data.name + '</option>';
               elem.append(html);
               jQuery('.cohort-select')
@@ -235,7 +235,7 @@ jQuery(document).ready(function() {
               alert(data.error);
           }else {
               // success
-              form = jQuery('#add-case-form');
+              var form = jQuery('#add-case-form');
               this.resetForm(form);
               form.find('input.form-control').each(function() {
                   window.admin.removeHighlight(this);
@@ -251,7 +251,7 @@ jQuery(document).ready(function() {
       };
 
       this.showMessageModal = function() {
-          modal = jQuery('#message-modal');
+          var modal = jQuery('#message-modal');
           callback = modal.attr('data-callback');
           modal.modal('show');
 

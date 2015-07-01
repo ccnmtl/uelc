@@ -74,9 +74,9 @@ UELCAdmin = {
                 var btnSec = btnBlock.data('section-id');
                 thisBtn.unbind('click');
                 thisBtn.css('cursor', 'not-allowed');
-                form  = jQuery(this).closest('form');
-                data = jQuery(form).serialize();
-                postUrl = window.location.pathname;
+                var form  = jQuery(this).closest('form');
+                var data = jQuery(form).serialize();
+                var postUrl = window.location.pathname;
                 jQuery.post(postUrl, data).error(function() {
                     var msg = 'I am sorry! There was a problem' +
                         ' opening the gate. Please refresh your' +
@@ -101,7 +101,7 @@ UELCAdmin = {
             var p2l = jQuery('.part2').length;
 
             partOneElms.each(function() {
-                html = '<div class="part1text">Part 1 </div>';
+                var html = '<div class="part1text">Part 1 </div>';
                 jQuery(this).prepend(html);
             });
             if (p2l) {
@@ -127,7 +127,8 @@ UELCAdmin = {
             });
             for (var i = 0; i < lastPart2Gates.length; i ++) {
                 var gate = lastPart2Gates[i];
-                choiceAttr = gate.children().last().attr('data-part-decision');
+                var choiceAttr = gate.children().last().attr(
+                    'data-part-decision');
                 var decision;
                 if (choiceAttr.match('p2c2-')) {
                     var choice = choiceAttr.split('p2c2-')[1];

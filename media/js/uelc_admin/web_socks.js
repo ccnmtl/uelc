@@ -1,6 +1,5 @@
 $(function() {
     // Taken from Tala
-    var conn;
     var currentRefresh = 1000;
     var defaultRefresh = 1000;
     var maxRefresh = 1000 * 5 * 60; // 5 minutes
@@ -31,7 +30,8 @@ $(function() {
     };
 
     var connectSocket = function() {
-        conn = new WebSocket(window.websocketsBase + '?token=' + window.token);
+        var conn = new WebSocket(
+            window.websocketsBase + '?token=' + window.token);
         conn.onclose = requestFailed;
         conn.onmessage = onMessage;
         conn.onopen = function(evt) {
