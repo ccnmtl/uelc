@@ -85,9 +85,9 @@ UELCAdmin = {
                     alert(msg);
                 });
                 // Test to see if this is the last Part 1 gate.
-                // If so, reload the page to load in the part 2 
+                // If so, reload the page to load in the part 2
                 // gate blocks.
-                if(lastBlockSec === btnSec){
+                if (lastBlockSec === btnSec) {
                     window.location.reload();
                 }
             });// end click
