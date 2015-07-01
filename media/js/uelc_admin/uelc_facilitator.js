@@ -38,10 +38,10 @@ UELCAdmin = {
                 var modal = jQuery(this).closest('.modal');
                 var modId = modal.attr('id').split('CurveballModal-')[1];
                 var cbForm = jQuery('#curveball-form-' + modId);
-                cbFormData = cbForm.serialize();
-                postUrl = window.location.pathname;
-                gate = jQuery(cbForm).parent().parent();
-                prevForm = gate.parent().prev().find('.gate-button form');
+                var cbFormData = cbForm.serialize();
+                var postUrl = window.location.pathname;
+                var gate = jQuery(cbForm).parent().parent();
+                var prevForm = gate.parent().prev().find('.gate-button form');
                 var prevFormData = prevForm.serialize();
                 window.UA.tempForm = prevForm;
                 lgf.removeClass('hidden');
