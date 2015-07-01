@@ -155,8 +155,8 @@ jQuery(document).ready(function() {
     window.UA = new UELCAdmin.Admin();
 
     var updateWidth = function() {
-        var width = $('.gate-sections:first').width();
-        $('.gate-sections .group-name:lt(4)').width(width);
+        var width = $('.gate-sections:first').outerWidth();
+        $('.gate-sections .group-name:lt(4)').outerWidth(width);
     };
 
     $(window).resize(updateWidth);
