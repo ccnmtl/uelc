@@ -15,7 +15,7 @@ from django.views.generic.base import TemplateView, View
 from pagetree.generic.views import PageView, EditView, UserPageVisitor
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
-from gate_block.models import GateBlock, SectionSubmission
+from gate_block.models import GateBlock, SectionSubmission, GateSubmission
 from uelc.main.helper_functions import (
     get_root_context, get_user_map, visit_root, gen_group_token,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
@@ -231,6 +231,13 @@ class UELCPageView(LoggedInMixin,
         except SectionSubmission.DoesNotExist:
             section_submission = None
 
+        try:
+            gate_submission = GateSubmission.objects.get(
+                section=self.section,
+                gate_user=request.user)
+        except GateSubmission.DoesNotExist:
+            gate_submission = None
+
         # handler stuff
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
@@ -292,6 +299,7 @@ class UELCPageView(LoggedInMixin,
             case=case,
             decision_blocks=decision_blocks,
             gate_blocks=gate_blocks,
+            gate_submission=gate_submission,
             section_submission=section_submission,
             casemap=casemap,
             part=part,
