@@ -107,6 +107,17 @@
 <!--<form action="." method="post">-->
 {% endif %}
 {% endif %}
+{% if not gate_submission %}
+    <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
+        Please wait for the facilitator to allow you to proceed.
+    </p>
+  {% endif %}
+
+  {% if section_submission and not gate_submission%}
+    <p class="wait-msg alert alert-danger curveball-alert-danger">
+        Please wait for the facilitator to allow you to proceed.
+    </p>
+  {% endif %}
 
   {% for block in section.pageblock_set.all %}
     {% if block.block.display_name == "Gate Block" %}
@@ -150,11 +161,12 @@
   {% endfor %}
 
     {% elif block.block.display_name == "Curveball Block" %}
+      
+      
       <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-        {% if block.label %}
-          <h3>{{block.label}}</h3>
-        {% endif %}
+        
         {% render block %}
+        
       </div>
     {% elif block.block.display_name == "Text Block" %}
       {% is_block_on_user_path request section block casemap.value as user_path %}
@@ -174,6 +186,18 @@
 
 {% endif %}
 {% endfor %}
+
+{% if not gate_submission %}
+  <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
+      Please wait for the facilitator to allow you to proceed.
+  </p>
+{% endif %}
+  {% if section_submission and not gate_submission%}
+  <p class="wait-msg alert alert-danger curveball-alert-danger">
+      Please wait for the facilitator to allow you to proceed.
+  </p>
+{% endif %}
+
 {% is_section_unlocked request section as unlocked %}
 {% if gate_blocks|length == 1 and decision_blocks|length == 0 %}
   {% if not section_submission %}
@@ -183,6 +207,9 @@
     </form>
   {% else %}
     <input class="button-confirmed" type="submit" value="Confirm" style="cursor: not-allowed"/>
+    <p class="wait-msg alert alert-danger hidden submission-alert-danger">
+            Please wait for the facilitator to allow you to proceed.
+        </p>
   {% endif %}
 {% endif %}
 {% include "pagetree/toc.html" %}
@@ -197,9 +224,9 @@
       'type="submit" value="Confirm" style="cursor: not-allowed"/>';
       jQuery('#confirm').before(btnConfirmed);
       jQuery('#confirm').remove();
+      jQuery('.curveball-alert-danger').removeClass('hidden');
     })   
-  })
-  
+  });
 </script>
 
 </div>
@@ -237,34 +264,3 @@
   {% endif %}
   <!-- end block content-nav-->
 {% endblock %}
-
-{% comment %}
-  {% block library %}
-  {% if library_items|length > 0 %}
-      <div id="library-item-view">
-          <div class="panel panel-default">
-          <!-- Default panel contents -->
-          <div class="panel-heading header">Library</div>
-          <table class="table">
-          <thead>
-              <tr>
-                  <th>Name</th>
-                  <th>Document</th>
-              </tr>
-          </thead>
-          <tbody>
-          {% for item in library_items %}
-              <tr>
-                  <td> {{item.name}} </td>
-                  <td class="library-item-document"> 
-                      <span class="hidden">{{item.id}}</span>
-                      <a target="_blank" href="{{MEDIA_URL}}{{item.doc}}">Document link</a> 
-                  </td>
-              </tr>
-          {% endfor %}
-          </tbody>
-          </table>
-      </div><!--end #library-item-view-->
-  {% endif %}
-  {% endblock %}
-{% endcomment %}

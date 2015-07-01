@@ -4,11 +4,6 @@
 {% block content %}
 {% load part_string %}
 
-{% comment %}
-    <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
-    <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
-{% endcomment %}
-
 <script>
     window.hierarchy_name = '{{section.hierarchy.name}}';
     window.username = '{{request.user.username}}';
@@ -36,6 +31,15 @@
                       <h3 class="text-center">
                           <h3 class="facilitator-usrnm">Group {{u.0}}</h3> 
                       </h3>
+                      <div class="user-icon
+                           {# crazy but works #}
+                           {% for sec in u.1 %}
+                           {% if sec.0.pk == u.2.id %}
+                           hidden
+                           {% endif %}
+                           {% endfor %}">
+                          <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                      </div>
                   </div>
               </div>
 

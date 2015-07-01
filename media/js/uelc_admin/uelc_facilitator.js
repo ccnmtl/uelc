@@ -4,18 +4,7 @@ UELCAdmin = {
         this.init = function() {
             this.setFormClickHandler();
             this.separateParts();
-
             this.setCurballBlockHandler();
-            //this.setPartsOnGateblocks();
-            //this.setChoicesOnSecondParts();
-            //this.impersonate();
-            /*
-             jQuery('.library-item-user-select').multiselect();
-             jQuery('[data-toggle="tooltip"]').tooltip({
-                'placement': 'top'
-            });
-            this.deleteLibraryItem();
-            */
         };
         this.setChoicesOnParts = function() {
             jQuery('.user-part2').each(function() {
@@ -44,32 +33,35 @@ UELCAdmin = {
         };
         this.setCurballBlockHandler = function() {
             jQuery('.set-curveball').click(function() {
-                window.ts = jQuery(this);
                 var lgf = jQuery(this).parent().parent().find(
                     '.loading-spinner');
                 var modal = jQuery(this).closest('.modal');
-                var modId = modal.attr('id').split('-')[1];
+                var modId = modal.attr('id').split('CurveballModal-')[1];
                 var cbForm = jQuery('#curveball-form-' + modId);
+                var cbFormData = cbForm.serialize();
                 var postUrl = window.location.pathname;
                 var gate = jQuery(cbForm).parent().parent();
                 var prevForm = gate.prev().find('.gate-button form');
                 var prevFormData = prevForm.serialize();
-                window.UA.tempForm = cbForm;
+                window.UA.tempForm = prevForm;
 
                 lgf.removeClass('hidden');
-                jQuery.post(postUrl, prevFormData).fail(function() {
+
+                jQuery.post(postUrl, cbFormData).fail(function() {
                     var msg = 'We are sorry! Something went wrong with ' +
                     'setting the curveball. Please Try again.';
                     alert(msg);
                 }).success(function() {
-                    var cbFormData = window.UA.tempForm.serialize();
+                    var formData = window.UA.tempForm.serialize();
                     var postUrl = window.location.pathname;
-                    jQuery.post(postUrl, cbFormData);
-
+                    jQuery.post(postUrl, formData).fail(function() {
+                        var msg = 'We are sorry! Something went wrong ' +
+                        'with opening the gate. Please refresh your ' +
+                        'browser and continue.';
+                    });
                 }).done(function() {
                     window.location.reload();
                 });
-
             });
         };
         this.setFormClickHandler = function() {

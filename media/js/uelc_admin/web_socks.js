@@ -71,7 +71,9 @@ $(function() {
             setGroupMessage(jQuery(groupColumnSelector), msg);
             UA.setFormClickHandler();
         }
-        if (data.notification.message === 'Decision Submitted') {
+        if (data.notification.message === 'Decision Submitted' &&
+            data.notification.data !== null
+           ) {
             msg = 'we just made a decision';
             action = 'made decision';
             setGroupMessage(jQuery(groupColumnSelector), msg);
@@ -101,6 +103,10 @@ $(function() {
             ' pull-right" aria-hidden="true"></span>');
         jQuery(gcs).find('.glyphicon-user').remove();
         sectionBlock.find('.gate-section .panel-body').append(groupIcon);
+        // Look for this column's corresponding .group-name box, and
+        // hide the user icon in case it's there.
+        sectionBlock.closest('.col-sm-3').find(
+            '.group-name .user-icon').hide();
     };
     var openGate = function(groupColumnSelector, sectionBlock) {
         var btn = sectionBlock.find('.btn-danger');

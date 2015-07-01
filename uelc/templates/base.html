@@ -31,7 +31,7 @@
     <link rel="shortcut icon" type="image/png" href="{{STATIC_URL}}img/favicon-16x16.png" sizes="16x16">
 	{% block css %}{% endblock %}
 	
-	<script src="{{STATIC_URL}}js/jquery-1.11.1.min.js"></script>
+	<script src="{{STATIC_URL}}js/jquery-1.11.3.min.js"></script>
 	{% block feeds %}{% endblock %}
 </head>
 
@@ -142,27 +142,27 @@
 
 <div class="container" id="outer-container">
 
-    {% if not request.user.profile.is_group_user %}
+    {% if not request.user.profile.is_group_user and not is_facilitator_view %}
     <div class="col-md-12">
-    {% block topnavbarleftitems %}{% endblock %}
-    {% block moduletabs %}
-    <ul class="nav nav-tabs nav-justified">
-    {% for section in modules %}
-    <li{% ifequal section.id module.id %} class="active"{% endifequal %}><a href="{{section.get_absolute_url}}">{{section.label}}</a></li>
-    {% endfor %}
-    </ul>
-    {% endblock %}
+        {% block topnavbarleftitems %}{% endblock %}
+        {% block moduletabs %}
+        <ul class="nav nav-tabs nav-justified">
+            {% for section in modules %}
+            <li{% ifequal section.id module.id %} class="active"{% endifequal %}><a href="{{section.get_absolute_url}}">{{section.label}}</a></li>
+            {% endfor %}
+        </ul>
+        {% endblock %}
     </div>
-    {% endif %}
+    {% endif %}{# if not is_group_user #}
 
     {% block masthead %}
     {% block primarynav %}{% endblock %}
     {% endblock %}
-	   <div class="col-sm-12">
+	<div class="col-sm-12">
 		{% block pagetitle %}{% endblock %}
 		{% block content %}{% endblock %}
         {% block content-nav %}{% endblock %}
-	   </div>
+	</div>
     <!--end .row-->
 </div>
 

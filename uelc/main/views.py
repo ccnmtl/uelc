@@ -15,7 +15,7 @@ from django.views.generic.base import TemplateView, View
 from pagetree.generic.views import PageView, EditView, UserPageVisitor
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
-from gate_block.models import GateBlock, SectionSubmission
+from gate_block.models import GateBlock, SectionSubmission, GateSubmission
 from uelc.main.helper_functions import (
     get_root_context, get_user_map, visit_root, gen_group_token,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
@@ -231,6 +231,13 @@ class UELCPageView(LoggedInMixin,
         except SectionSubmission.DoesNotExist:
             section_submission = None
 
+        try:
+            gate_submission = GateSubmission.objects.get(
+                section=self.section,
+                gate_user=request.user)
+        except GateSubmission.DoesNotExist:
+            gate_submission = None
+
         # handler stuff
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
@@ -292,9 +299,9 @@ class UELCPageView(LoggedInMixin,
             case=case,
             decision_blocks=decision_blocks,
             gate_blocks=gate_blocks,
+            gate_submission=gate_submission,
             section_submission=section_submission,
             casemap=casemap,
-            # library_items=self.get_library_items(case),
             part=part,
             websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
             token=gen_group_token(request, self.section.pk),
@@ -559,12 +566,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         roots = get_root_context(self.request)
         hierarchy = section.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
-        # library_item = LibraryItem
-        # library_items = LibraryItem.objects.all()
         # is there really only going to be one cohort per case?
-
         cohort = case.cohort.get(user_profile_cohort__user=user)
-
         cohort_user_profiles = cohort.user_profile_cohort.filter(
             profile_type="group_user").order_by('user__username')
         cohort_users = [profile.user for profile in cohort_user_profiles]
@@ -630,20 +633,19 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             block_obj = p.block()
             if hasattr(block_obj, 'needs_submit') and block_obj.needs_submit():
                 quizzes.append(block_obj)
-        # curveballs = p.block()
-        context = dict(section=section,
-                       quizzes=quizzes,
-                       user_sections=user_sections,
-                       module=section.get_module(),
-                       modules=root.get_children(),
-                       root=section.hierarchy.get_root(),
-                       # library_item=library_item,
-                       # library_items=library_items,
-                       case=case,
-                       websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
-                       token=gen_token(request, section.hierarchy.name),
-                       roots=roots['roots']
-                       )
+        context = dict(
+            is_facilitator_view=True,
+            section=section,
+            quizzes=quizzes,
+            user_sections=user_sections,
+            module=section.get_module(),
+            modules=root.get_children(),
+            root=section.hierarchy.get_root(),
+            case=case,
+            websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
+            token=gen_token(request, section.hierarchy.name),
+            roots=roots['roots']
+        )
 
         return render(request, self.template_name, context)
 
