@@ -47,18 +47,18 @@ UELCAdmin = {
 
                 lgf.removeClass('hidden');
 
-                jQuery.post(postUrl, cbFormData).fail(function(){
+                jQuery.post(postUrl, cbFormData).fail(function() {
                     var msg = 'We are sorry! Something went wrong with ' +
                     'setting the curveball. Please Try again.';
                     alert(msg);
-                }).success(function(){
+                }).success(function() {
                     var formData = window.UA.tempForm.serialize();
                     var postUrl = window.location.pathname;
-                    jQuery.post(postUrl, formData).fail(function(){
+                    jQuery.post(postUrl, formData).fail(function() {
                         var msg = 'We are sorry! Something went wrong ' +
                         'with opening the gate. Please refresh your ' +
-                        'browser and continue.'
-                    })
+                        'browser and continue.';
+                    });
                 }).done(function() {
                     window.location.reload();
                 });
