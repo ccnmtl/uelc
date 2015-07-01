@@ -79,21 +79,22 @@ UELCAdmin = {
                 form  = jQuery(this).closest('form');
                 data = jQuery(form).serialize();
                 postUrl = window.location.pathname;
-                
                 jQuery.post(postUrl, data).error(function() {
-                    var msg = 'I am sorry! There was a problem opening' +
-                        ' the gate. Please refresh your browser and try again.';
+                    var msg = 'I am sorry! There was a problem' +
+                        ' opening the gate. Please refresh your' +
+                        ' browser and try again.';
                     alert(msg);
                 });
-                
+
                 // Test to see if this is the last Part 1 gate.
                 // If so, reload the page to load in the part 2
                 // gate blocks.
+
                 if (btnSec !== undefined) {
                     if (lastBlockSec === btnSec) {
-                      window.location.reload();  
-                    };
-                };
+                        window.location.reload();
+                    }
+                }
             });// end click
         };
         this.setPartsOnGateblocks = function() {
