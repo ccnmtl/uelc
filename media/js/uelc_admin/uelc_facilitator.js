@@ -38,7 +38,7 @@ UELCAdmin = {
                 var decisionBadge = thisBtn.closest(
                     '.gate-block').prev().find('.badge');
                 var decisionStatus = decisionBadge.text();
-                if (decisionStatus !== "reviewed") {
+                if (decisionStatus !== 'reviewed') {
                     thisBtn.css('cursor', 'not-allowed');
                     thisBtn.attr('data-toggle', '');
                     thisBtn.click(function() {
