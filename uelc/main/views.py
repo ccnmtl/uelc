@@ -233,9 +233,9 @@ class UELCPageView(LoggedInMixin,
             section_submission = None
 
         try:
-            gate_submission = GateSubmission.objects.get(
+            gate_submission = GateSubmission.objects.filter(
                 section=self.section,
-                gate_user=request.user)
+                gate_user=request.user).latest('submitted')
         except GateSubmission.DoesNotExist:
             gate_submission = None
 
