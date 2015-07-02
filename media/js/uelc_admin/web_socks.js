@@ -81,6 +81,7 @@ $(function() {
             highlightActiveGate(groupColumnSelector, sectionBlock);
             displayDecisionTitle(groupColumnSelector, sectionBlock, data);
             UA.setFormClickHandler();
+            UA.setCurveballCommitAccess();
         }
         if (data.notification.message === 'Open Gate') {
             openGate(groupColumnSelector, sectionBlock);
