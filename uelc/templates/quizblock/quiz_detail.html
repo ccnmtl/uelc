@@ -96,6 +96,15 @@ jQuery(document).ready(function(){
         
         <form data-post-url="{% url 'edit-question' question.id %}" action="." method="post" class="well form-horizontal">
           {% csrf_token %}
+          <style>
+          label[for=id_text] {
+            visibility: hidden;
+          }
+          label[for=id_text]::before{
+            content: "Prompt";
+            visibility: visible;
+          }
+          </style>
           {{ question.edit_form|bootstrap }}
           <input id="submit-edit-decision" type="button" value="save" class="btn btn-primary" />
         </form>
