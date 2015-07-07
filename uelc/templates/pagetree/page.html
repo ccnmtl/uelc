@@ -51,12 +51,23 @@
 {% endfor %}
 
 {% if block.block.display_name == "Gate Block" %}
-<div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-    {% render block %}
-    <p class="unlock-msg alert alert-success" style="display:none">
-        You may proceed to the next section
+
+
+  {% if not gate_submission %}
+    <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
+        Please wait for the facilitator to allow you to proceed.
     </p>
-</div>
+  {% endif %}
+
+  {% if section_submission and not gate_submission%}
+    <p class="wait-msg alert alert-danger curveball-alert-danger">
+        Please wait for the facilitator to allow you to proceed.
+    </p>
+  {% endif %}
+  <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+    {% render block %}
+    <p class="unlock-msg alert alert-success" style="display:none">You may proceed to the next section</p>
+  </div>
 {% endif %}
 
 {% endfor %}{# End for block in pageblock_set #}
@@ -107,20 +118,20 @@
 <!--<form action="." method="post">-->
 {% endif %}
 {% endif %}
-{% if not gate_submission %}
-    <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
-        Please wait for the facilitator to allow you to proceed.
-    </p>
-  {% endif %}
-
-  {% if section_submission and not gate_submission%}
-    <p class="wait-msg alert alert-danger curveball-alert-danger">
-        Please wait for the facilitator to allow you to proceed.
-    </p>
-  {% endif %}
 
   {% for block in section.pageblock_set.all %}
     {% if block.block.display_name == "Gate Block" %}
+      {% if not gate_submission %}
+        <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
+            Please wait for the facilitator to allow you to proceed.
+        </p>
+      {% endif %}
+
+      {% if section_submission and not gate_submission%}
+        <p class="wait-msg alert alert-danger curveball-alert-danger">
+            Please wait for the facilitator to allow you to proceed.
+        </p>
+      {% endif %}
       <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
         {% render block %}
         <p class="unlock-msg alert alert-success" style="display:none">You may proceed to the next section</p>
@@ -176,6 +187,20 @@
         {% render block %}
         </div>
       {%endif%}
+    
+    {% elif block.block.display_name == "Gate Block" %}
+
+    {% if not gate_submission %}
+      <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
+          Please wait for the facilitator to allow you to proceed.
+      </p>
+    {% endif %}
+      {% if section_submission and not gate_submission%}
+      <p class="wait-msg alert alert-danger curveball-alert-danger">
+          Please wait for the facilitator to allow you to proceed.
+      </p>
+    {% endif %}
+
     {% else %}
 
     <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
@@ -184,19 +209,9 @@
     {% render block %}
     </div>
 
-{% endif %}
+  
+  {% endif %}
 {% endfor %}
-
-{% if not gate_submission %}
-  <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
-      Please wait for the facilitator to allow you to proceed.
-  </p>
-{% endif %}
-  {% if section_submission and not gate_submission%}
-  <p class="wait-msg alert alert-danger curveball-alert-danger">
-      Please wait for the facilitator to allow you to proceed.
-  </p>
-{% endif %}
 
 {% is_section_unlocked request section as unlocked %}
 {% if gate_blocks|length == 1 and decision_blocks|length == 0 %}
