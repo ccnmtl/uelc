@@ -111,7 +111,7 @@
                     {% endif %}
                     <li class="menu-item dropdown dropdown-submenu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Facilitate</a>
-                        <ul class="dropdown-menu" style="width: 120%;">
+                        <ul class="dropdown-menu" style="width: 125%;">
                         <li class="menu-item ">
                         {% for case in request.user.profile.cohort.case %}
                         <li><a href="{{case.hierarchy.get_absolute_url}}facilitator/">{{ case.name }}</a></li>
