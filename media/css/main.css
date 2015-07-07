@@ -57,6 +57,7 @@ table.heatmap td
 { 
 	padding: 10px; 
 	height: 3em;
+	border-bottom: 1px solid black;
 }
 
 table.heatmap .label-variables
@@ -112,11 +113,36 @@ table.heatmap .metric
 {
 	background-color: #fff;
 	color: #000;
-	border: 2px solid black;
 	font-weight: bold;
 }
 
 table.heatmap .variable { text-align: center; }
+
+/*alternate*/
+
+/*
+table.heatmap .variable-09, 
+table.heatmap .variable-08, 
+table.heatmap .variable-07, 
+table.heatmap .variable-06, 
+table.heatmap .variable-05, 
+table.heatmap .variable-04, 
+table.heatmap .variable-03, 
+table.heatmap .variable-02, 
+table.heatmap .variable-01 
+{ background-color: #fff; }
+
+table.heatmap .variable-09.active { background-color: #0e5bb3; color: #fff; font-weight: bold;}
+table.heatmap .variable-08.active { background-color: #2d9fee; color: #fff; font-weight: bold;}
+table.heatmap .variable-07.active { background-color: #4cc488; color: #fff; font-weight: bold;}
+table.heatmap .variable-06.active { background-color: #82cc3f; color: #fff; font-weight: bold;}
+table.heatmap .variable-05.active { background-color: #fdf936; color: #fff; font-weight: bold;}
+table.heatmap .variable-04.active { background-color: #f8b42d; color: #fff; font-weight: bold;}
+table.heatmap .variable-03.active { background-color: #ec4c20; color: #fff; font-weight: bold;}
+table.heatmap .variable-02.active { background-color: #e9261d; color: #fff; font-weight: bold;}
+table.heatmap .variable-01.active { background-color: #b01c16; color: #fff; font-weight: bold;
+*/
+
 table.heatmap .variable-09 { background-color: #0e5bb3; }
 table.heatmap .variable-08 { background-color: #2d9fee; }
 table.heatmap .variable-07 { background-color: #4cc488; }
@@ -134,6 +160,7 @@ table.heatmap .active
 	font-weight: bold;
 	border: 2px solid black;
 }
+
 /*stop - heatmap*/
 
 
