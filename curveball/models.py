@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from pagetree.models import UserLocation
 from pagetree.generic.models import BasePageBlock
+from ckeditor.widgets import CKEditorWidget
 
 
 class Curveball(models.Model):
@@ -122,13 +123,16 @@ class CurveballBlock(BasePageBlock):
         class AddForm(forms.Form):
             choice_one_title = forms.CharField(label="Choice One Label")
             choice_one_explanation = forms.CharField(
-                label="Choice One Content", widget=forms.widgets.Textarea())
+                label="Choice One Content", widget=CKEditorWidget(
+                    attrs={"id": "editor"}))
             choice_two_title = forms.CharField(label="Choice Two Label")
             choice_two_explanation = forms.CharField(
-                label="Choice Two Content", widget=forms.widgets.Textarea())
+                label="Choice Two Content", widget=CKEditorWidget(
+                    attrs={"id": "editor"}))
             choice_three_title = forms.CharField(label="Choice Three Label")
             choice_three_explanation = forms.CharField(
-                label="Choice Three Content", widget=forms.widgets.Textarea())
+                label="Choice Three Content", widget=CKEditorWidget(
+                    attrs={"id": "editor"}))
         return AddForm()
 
     @classmethod
@@ -155,19 +159,19 @@ class CurveballBlock(BasePageBlock):
             choice_one_explanation = forms.CharField(
                 label="Choice One Content",
                 initial=self.curveball_one.explanation,
-                widget=forms.widgets.Textarea())
+                widget=CKEditorWidget(attrs={"id": "editor"}))
             choice_two_title = forms.CharField(
                 label="Choice Two Label", initial=self.curveball_two.title)
             choice_two_explanation = forms.CharField(
                 label="Choice Two Content",
                 initial=self.curveball_two.explanation,
-                widget=forms.widgets.Textarea())
+                widget=CKEditorWidget(attrs={"id": "editor"}))
             choice_three_title = forms.CharField(
                 label="Choice Three Label", initial=self.curveball_three.title)
             choice_three_explanation = forms.CharField(
                 label="Choice Three Content",
                 initial=self.curveball_three.explanation,
-                widget=forms.widgets.Textarea())
+                widget=CKEditorWidget(attrs={"id": "editor"}))
         return EditForm()
 
     ''' a form so the facilitator can choose which curball to throw to
