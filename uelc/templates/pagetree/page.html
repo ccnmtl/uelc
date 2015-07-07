@@ -118,7 +118,7 @@
 
   {% for block in section.pageblock_set.all %}
     {% if block.block.display_name == "Gate Block" %}
-      
+    
     {% if section_submission %}
       <p class="wait-msg alert alert-danger {% if gate_submission %}hidden {% endif %} curveball-alert-danger">
           Please wait for the facilitator to allow you to proceed.
@@ -128,7 +128,6 @@
           Please wait for the facilitator to allow you to proceed.
       </p>
     {% endif %}
-
       <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
         {% render block %}
         <p class="unlock-msg alert alert-success" style="display:none">You may proceed to the next section</p>
