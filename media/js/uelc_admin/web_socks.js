@@ -104,10 +104,6 @@ $(function() {
             ' pull-right" aria-hidden="true"></span>');
         jQuery(gcs).find('.glyphicon-user').remove();
         sectionBlock.find('.gate-section .panel-body').prepend(groupIcon);
-        // Look for this column's corresponding .group-name box, and
-        // hide the user icon in case it's there.
-        sectionBlock.closest('.col-sm-3').find(
-            '.group-name .user-icon').hide();
     };
     var openGate = function(groupColumnSelector, sectionBlock) {
         var btn = sectionBlock.find('.btn-danger');
