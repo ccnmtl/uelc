@@ -114,6 +114,7 @@ $(function() {
 
         btn.removeClass('btn-danger').addClass('btn-success');
         glyph.removeClass('glyphicon-lock').addClass('glyphicon-ok');
+        glyph.prev('span').text('Unlocked');
     };
     var updateGateSectionStatus = function(gcs, sectionBlock, action) {
         var badge = sectionBlock.find('.badge');
