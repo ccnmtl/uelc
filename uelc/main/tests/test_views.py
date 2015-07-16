@@ -1,4 +1,5 @@
 import json
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test.client import Client
 from pagetree.helpers import get_hierarchy
@@ -189,10 +190,32 @@ class TestAdminBasicViews(TestCase):
     def test_uelc_admin_create_user(self):
         request = self.client.post(
             "/uelcadmin/createuser/",
-            {'username': 'NewUser', 'password1': 'magic_password',
-             'user_profile': 'assistant', 'cohort': str(self.cohort.id)},
+            {
+                'username': 'NewUser',
+                'password1': 'magic_password',
+                'user_profile': 'assistant',
+                'cohort': self.cohort.id
+            },
             HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
         self.assertEqual(request.status_code, 302)
+        u = User.objects.get(username='NewUser')
+        self.assertTrue(u.profile.is_assistant())
+
+    def test_uelc_admin_create_user_long_username(self):
+        request = self.client.post(
+            "/uelcadmin/createuser/",
+            {
+                'username': 'NewUserThatIsLongerThan30Characters',
+                'password1': 'magic_password',
+                'password2': 'magic_password',
+                'user_profile': 'group_user',
+                'cohort': self.cohort.id,
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+        self.assertFalse(
+            User.objects.filter(
+                username='NewUserThatIsLongerThan30Characters').exists())
 
     def test_uelc_admin_create_case(self):
         request = self.client.post(
