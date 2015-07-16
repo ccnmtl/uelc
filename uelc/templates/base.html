@@ -87,21 +87,21 @@
                 <!-- <li class="navbar-text"></li> -->
                 <li class="dropdown">
                 {% if request.user.profile.profile_type == "group_user" %}
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                        Hi,
+                        {% if request.user.last_name %}
+                        {{request.user.first_name}} {{request.user.last_name}}
+                        {% else %}
+                        {{ request.user.username|truncatechars:11 }}!
+                        {% endif %}
+                    </a>
+                {% else %}
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                 Hi,
                 {% if request.user.last_name %}
                 {{request.user.first_name}} {{request.user.last_name}}
                 {% else %}
-                {{ request.user.username }}!
-                {% endif %}
-                </a>
-                {% else %}
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                Hi,
-                {% if request.user.last_name %}
-                {{request.user.first_name}} {{request.user.last_name}}
-                {% else %}
-                {{ request.user.username }}!
+                {{ request.user.username|truncatechars:11 }}!
                 {% endif %}
                 <span class="caret"></span>
                 </a>
