@@ -4,8 +4,7 @@ FLAKE8=./ve/bin/flake8
 
 jenkins: ./ve/bin/python flake8 jshint jscs validate test
 
-travis: ./ve/bin/python flake8 jshint jscs validate
-	$(MANAGE) test
+travis: ./ve/bin/python flake8 jshint jscs validate test integration
 
 ./ve/bin/python: requirements.txt bootstrap.py virtualenv.py
 	chmod +x manage.py bootstrap.py
@@ -13,6 +12,9 @@ travis: ./ve/bin/python flake8 jshint jscs validate
 
 test: ./ve/bin/python
 	$(MANAGE) jenkins --pep8-exclude=migrations --enable-coverage --coverage-rcfile=.coveragerc
+
+integration: ./ve/bin/python
+	$(MANAGE) jenkins --settings=uelc.settings_integration
 
 behave: ./ve/bin/python
 	$(MANAGE) behave features/
