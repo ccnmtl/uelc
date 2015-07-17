@@ -10,7 +10,7 @@ before_install:
 install:
   - ./bootstrap.py
 script:
-  - make
+  - make travis
   - make behave
 notifications:
   slack: ccnmtl:GizSNscLWJLldjQrffB8mwgm

@@ -657,15 +657,17 @@ class UELCAdminCreateUserView(
             cohort = Cohort.objects.get(id=cohort_id)
         else:
             cohort = None
+
         user_filter = User.objects.filter(Q(username=username))
         if user_filter.exists():
-            action_args = dict(
-                error="That username already exists! Please enter a new one.")
-            messages.error(request, action_args['error'],
-                           extra_tags='createUserViewError')
-
-        if not user_filter.exists() and not profile_type == "":
-            user = User.objects.create(username=username, password=password)
+            error = "That username already exists! Please enter a new one."
+            messages.error(request, error, extra_tags='createUserViewError')
+        elif len(username) > 30:
+            error = "The username needs to be 30 characters or fewer."
+            messages.error(request, error, extra_tags='createUserViewError')
+        elif profile_type != "":
+            user = User.objects.create_user(
+                username=username, password=password)
             UserProfile.objects.create(
                 user=user,
                 profile_type=profile_type,
