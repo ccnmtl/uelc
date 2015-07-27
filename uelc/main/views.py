@@ -860,6 +860,13 @@ class UELCAdminDeleteCohortView(LoggedInMixinAdmin,
     def post(self, request):
         cohort_id = request.POST.get('cohort_id')
         cohort = Cohort.objects.get(id=cohort_id)
+
+        # make sure that the userprofile cohort
+        # is set to None to prevent the userprofile
+        # cohort being Null
+        for user in cohort.users:
+            user.profile.cohort = None
+            user.profile.save()
         cohort.delete()
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
