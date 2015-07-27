@@ -144,12 +144,16 @@ $(function() {
     };
 
     var setGroupMessage = function(groupColumn, msg) {
+        var date = new Date();
+        var time = date.toLocaleTimeString();
+        var timeDiv = '<div class="message-time">' + time + '</div>';
         var groupNameDiv =  groupColumn.find('.group-name');
         var msgHtml = jQuery('<div class="group-message alert alert-warning ' +
             'alert-dismissable">' +
             '<button type="button" class="close" data-dismiss="alert"' +
             'aria-hidden="true">×</button></div>');
-        msgHtml.append(msg);
+
+        msgHtml.append(msg, timeDiv);
         groupNameDiv.append(msgHtml);
     };
 });
