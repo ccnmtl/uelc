@@ -863,7 +863,7 @@ class UELCAdminDeleteCohortView(LoggedInMixinAdmin,
 
         # make sure that the userprofile cohort
         # is set to None to prevent the userprofile
-        # cohort being Null 
+        # cohort being Null
         for user in cohort.users:
             user.profile.cohort = None
             user.profile.save()
