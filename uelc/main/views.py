@@ -4,7 +4,6 @@ import urlparse
 import sys
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
@@ -650,32 +649,42 @@ class UELCAdminCreateUserView(
 
     def post(self, request):
         username = request.POST.get('username', '')
-        password = make_password(request.POST.get('password1', ''))
         profile_type = request.POST.get('user_profile', '')
-        cohort_id = request.POST.get('cohort', '')
-        if cohort_id:
-            cohort = Cohort.objects.get(id=cohort_id)
-        else:
-            cohort = None
+        password1 = request.POST.get('password1', '')
+        password2 = request.POST.get('password2', '')
 
         user_filter = User.objects.filter(Q(username=username))
+        error = None
         if user_filter.exists():
-            error = "That username already exists! Please enter a new one."
-            messages.error(request, error, extra_tags='createUserViewError')
+            error = 'That username already exists! Please enter a new one.'
         elif len(username) > 30:
-            error = "The username needs to be 30 characters or fewer."
-            messages.error(request, error, extra_tags='createUserViewError')
-        elif profile_type != "":
+            error = 'The username needs to be 30 characters or fewer',
+        elif password1 == '':
+            error = 'The password is blank'
+        elif password1 != password2:
+            error = 'The passwords don\'t match.'
+        elif profile_type != '':
+            cohort_id = request.POST.get('cohort', '')
+            if cohort_id:
+                cohort = Cohort.objects.get(id=cohort_id)
+            else:
+                cohort = None
+
             user = User.objects.create_user(
-                username=username, password=password)
+                username=username, password=password1)
             UserProfile.objects.create(
                 user=user,
                 profile_type=profile_type,
                 cohort=cohort)
-            if not profile_type == "group_user":
+
+            if profile_type != "group_user":
                 user.is_staff = True
+
             user.save()
             user.profile.set_image_upload_permissions(user)
+
+        if error is not None:
+            messages.error(request, error, extra_tags='createUserViewError')
 
         url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
