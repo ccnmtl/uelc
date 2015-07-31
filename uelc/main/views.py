@@ -729,7 +729,16 @@ class UELCAdminEditUserView(LoggedInMixinAdmin,
         user_id = request.POST.get('user_id', '')
         profile = request.POST.get('profile_type', '')
         cohort_id = request.POST.get('cohort', '')
-        user = User.objects.get(pk=user_id)
+
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            messages.error(
+                request,
+                'User not found.',
+                extra_tags='createUserViewError')
+            return HttpResponseRedirect(url)
+
         if cohort_id:
             cohort = Cohort.objects.get(id=cohort_id)
         else:

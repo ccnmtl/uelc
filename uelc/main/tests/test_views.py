@@ -286,7 +286,7 @@ class TestAdminBasicViews(TestCase):
         request = self.client.post(
             "/uelcadmin/edituser/",
             {
-                'user_id': up.pk,
+                'user_id': up.user.pk,
                 'username': 'some_random_name',
                 'profile_type': up.profile_type,
                 'cohort': up.cohort.pk,
