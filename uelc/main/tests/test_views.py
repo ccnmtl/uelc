@@ -188,6 +188,52 @@ class TestAdminBasicViews(TestCase):
         self.assertEqual(request.status_code, 302)
 
     def test_uelc_admin_create_user(self):
+        response = self.client.post(
+            '/uelcadmin/createuser/',
+            {
+                'username': 'NewUser',
+                'password1': 'magic_password',
+                'password2': 'magic_password',
+                'user_profile': 'assistant',
+                'cohort': self.cohort.id,
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER='/uelcadmin/')
+        self.assertEqual(response.status_code, 302)
+        u = User.objects.get(username='NewUser')
+        self.assertEqual(u.username, 'NewUser', 'The user was not created.')
+        self.assertTrue(u.profile.is_assistant(),
+                        'The user is not an assistant.')
+
+        # Test that I can log in as the created user with the
+        # given password.
+        self.client.get('/accounts/logout/')
+        response = self.client.post(
+            '/accounts/login/',
+            {
+                'username': 'NewUser',
+                'password': 'magic_password',
+            },
+            follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Oops!')
+        self.assertNotContains(response, 'Invalid username or password')
+
+    def test_uelc_admin_create_user_missing_password1(self):
+        request = self.client.post(
+            "/uelcadmin/createuser/",
+            {
+                'username': 'NewUser',
+                'password2': 'magic_password',
+                'user_profile': 'assistant',
+                'cohort': self.cohort.id
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER='/uelcadmin/')
+        self.assertEqual(request.status_code, 302)
+        self.assertEqual(
+            User.objects.filter(username='NewUser').count(), 0,
+            'The user was created.')
+
+    def test_uelc_admin_create_user_missing_password2(self):
         request = self.client.post(
             "/uelcadmin/createuser/",
             {
@@ -196,10 +242,28 @@ class TestAdminBasicViews(TestCase):
                 'user_profile': 'assistant',
                 'cohort': self.cohort.id
             },
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER='/uelcadmin/')
         self.assertEqual(request.status_code, 302)
-        u = User.objects.get(username='NewUser')
-        self.assertTrue(u.profile.is_assistant())
+        self.assertEqual(
+            User.objects.filter(username='NewUser').count(), 0,
+            'The user was created.')
+
+    def test_uelc_admin_create_user_mismatch_password(self):
+        request = self.client.post(
+            "/uelcadmin/createuser/",
+            {
+                'username': 'NewUser',
+                'password1': 'magic_password',
+                'password2': 'magic_password2',
+                'user_profile': 'assistant',
+                'cohort': self.cohort.id
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+            HTTP_REFERER='/uelcadmin/')
+        self.assertEqual(request.status_code, 302)
+        self.assertEqual(
+            User.objects.filter(username='NewUser').count(), 0,
+            'The user was created.')
 
     def test_uelc_admin_create_user_long_username(self):
         request = self.client.post(
