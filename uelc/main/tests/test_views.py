@@ -281,6 +281,40 @@ class TestAdminBasicViews(TestCase):
             User.objects.filter(
                 username='NewUserThatIsLongerThan30Characters').exists())
 
+    def test_uelc_admin_update_user(self):
+        up = GroupUpFactory()
+        request = self.client.post(
+            "/uelcadmin/edituser/",
+            {
+                'user_id': up.pk,
+                'username': 'some_random_name',
+                'profile_type': up.profile_type,
+                'cohort': up.cohort.pk,
+            },
+            follow=True)
+        self.assertEqual(request.status_code, 200)
+        self.assertTrue(
+            User.objects.filter(username='some_random_name').exists())
+
+    def test_uelc_admin_update_user_long_username(self):
+        up = GroupUpFactory()
+        original_username = up.user.username
+        long_username = 'some_random_name_longer_than_30_characters'
+        request = self.client.post(
+            "/uelcadmin/edituser/",
+            {
+                'user_id': up.pk,
+                'username': long_username,
+                'profile_type': up.profile_type,
+                'cohort': up.cohort.pk,
+            },
+            follow=True)
+        self.assertEqual(request.status_code, 200)
+        self.assertFalse(
+            User.objects.filter(username=long_username).exists())
+        self.assertTrue(
+            User.objects.filter(username=original_username).exists())
+
     def test_uelc_admin_create_case(self):
         request = self.client.post(
             "/uelcadmin/createcase/",
