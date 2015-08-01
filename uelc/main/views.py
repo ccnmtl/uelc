@@ -686,7 +686,7 @@ class UELCAdminCreateUserView(
         if error is not None:
             messages.error(request, error, extra_tags='createUserViewError')
 
-        url = request.META['HTTP_REFERER']
+        url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
 
 
@@ -706,7 +706,7 @@ class UELCAdminDeleteUserView(LoggedInMixinAdmin,
                       delete superuser accounts.")
             messages.error(request, action_args['error'],
                            extra_tags='deleteSuperUser')
-        url = request.META['HTTP_REFERER']
+        url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
 
 
@@ -716,11 +716,29 @@ class UELCAdminEditUserView(LoggedInMixinAdmin,
     extra_context = dict()
 
     def post(self, request):
+        url = request.META.get('HTTP_REFERER')
+
         username = request.POST.get('username', '')
+        if len(username) > 30:
+            messages.error(
+                request,
+                'The username needs to be 30 characters or fewer.',
+                extra_tags='createUserViewError')
+            return HttpResponseRedirect(url)
+
         user_id = request.POST.get('user_id', '')
         profile = request.POST.get('profile_type', '')
         cohort_id = request.POST.get('cohort', '')
-        user = User.objects.get(pk=user_id)
+
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            messages.error(
+                request,
+                'User not found.',
+                extra_tags='createUserViewError')
+            return HttpResponseRedirect(url)
+
         if cohort_id:
             cohort = Cohort.objects.get(id=cohort_id)
         else:
@@ -735,7 +753,6 @@ class UELCAdminEditUserView(LoggedInMixinAdmin,
         user.profile.set_image_upload_permissions(user)
         user.username = username
         user.save()
-        url = request.META['HTTP_REFERER']
         return HttpResponseRedirect(url)
 
 
@@ -780,14 +797,14 @@ class UELCAdminCreateHierarchyView(LoggedInMixinAdmin,
                           or create one with a different name and url.")
                 messages.error(request, action_args['error'],
                                extra_tags='createCaseViewError')
-                url = request.META['HTTP_REFERER']
+                url = request.META.get('HTTP_REFERER')
                 return HttpResponseRedirect(url)
 
             hier = Hierarchy.objects.create(
                 base_url=url,
                 name=name)
             hier.save()
-            url = request.META['HTTP_REFERER']
+            url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(url)
 
 
@@ -799,7 +816,7 @@ class UELCAdminDeleteHierarchyView(LoggedInMixinAdmin,
         hierarchy_id = request.POST.get('hierarchy_id')
         hier = Hierarchy.objects.get(id=hierarchy_id)
         hier.delete()
-        url = request.META['HTTP_REFERER']
+        url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
 
 
@@ -858,7 +875,7 @@ class UELCAdminCreateCohortView(LoggedInMixinAdmin,
             messages.error(request, action_args['error'],
                            extra_tags='createCohortViewError')
 
-        url = request.META['HTTP_REFERER']
+        url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
 
 
@@ -877,7 +894,7 @@ class UELCAdminDeleteCohortView(LoggedInMixinAdmin,
             user.profile.cohort = None
             user.profile.save()
         cohort.delete()
-        url = request.META['HTTP_REFERER']
+        url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
 
 
@@ -911,7 +928,7 @@ class UELCAdminEditCohortView(LoggedInMixinAdmin,
             messages.error(request, action_args['error'],
                            extra_tags='editCohortViewError')
 
-        url = request.META['HTTP_REFERER']
+        url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
 
 
@@ -933,7 +950,7 @@ class UELCAdminCreateCaseView(LoggedInMixinAdmin,
                       Please use existing case or rename.")
             messages.error(request, action_args['error'],
                            extra_tags='createCaseViewError')
-            url = request.META['HTTP_REFERER']
+            url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(url)
         if case_exists_hier.exists():
             action_args = dict(
@@ -944,7 +961,7 @@ class UELCAdminCreateCaseView(LoggedInMixinAdmin,
                       an existing case?")
             messages.error(request, action_args['error'],
                            extra_tags='createCaseViewError')
-            url = request.META['HTTP_REFERER']
+            url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(url)
         if hierarchy == "" or cohort == "":
             action_args = dict(
@@ -952,7 +969,7 @@ class UELCAdminCreateCaseView(LoggedInMixinAdmin,
                       cohort is selected")
             messages.error(request, action_args['error'],
                            extra_tags='createCaseViewError')
-            url = request.META['HTTP_REFERER']
+            url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(url)
 
         hier_obj = Hierarchy.objects.get(id=hierarchy)
@@ -962,7 +979,7 @@ class UELCAdminCreateCaseView(LoggedInMixinAdmin,
             description=description,
             hierarchy=hier_obj)
         case.cohort.add(coh_obj)
-        url = request.META['HTTP_REFERER']
+        url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
 
 
@@ -974,7 +991,7 @@ class UELCAdminDeleteCaseView(LoggedInMixinAdmin,
         case_id = request.POST.get('case_id')
         case = Case.objects.get(id=case_id)
         case.delete()
-        url = request.META['HTTP_REFERER']
+        url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
 
 
@@ -997,7 +1014,7 @@ class UELCAdminEditCaseView(LoggedInMixinAdmin,
                       Please use existing case or rename.")
             messages.error(request, action_args['error'],
                            extra_tags='createCaseViewError')
-            url = request.META['HTTP_REFERER']
+            url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(url)
         if case_exists_hier.count() > 1:
             action_args = dict(
@@ -1008,7 +1025,7 @@ class UELCAdminEditCaseView(LoggedInMixinAdmin,
                       an existing case?")
             messages.error(request, action_args['error'],
                            extra_tags='createCaseViewError')
-            url = request.META['HTTP_REFERER']
+            url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(url)
         if hierarchy == "" or cohorts == "":
             action_args = dict(
@@ -1025,7 +1042,7 @@ class UELCAdminEditCaseView(LoggedInMixinAdmin,
         case.cohort.clear()
         case.cohort.add(*coh_obj)
         case.save()
-        url = request.META['HTTP_REFERER']
+        url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
 
 
