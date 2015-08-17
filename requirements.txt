@@ -70,7 +70,6 @@ django-pageblocks==1.0.3
 gunicorn==19.3.0
 django-infranil==0.1.0
 django-flatblocks==0.9.1
-djangorestframework==2.4.5
 
 parse==1.6.6  # for behave
 parse-type==0.3.4  # for behave
