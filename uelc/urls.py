@@ -1,11 +1,8 @@
 from django.conf.urls import patterns, include, url
-from django.contrib.auth.models import User
 from django.contrib import admin
 from django.conf import settings
 from django.views.generic import TemplateView
-from rest_framework import routers, serializers, viewsets
 from uelc.main import views
-from uelc.main.models import UserProfile
 from uelc.main.views import (
     UELCPageView, UELCEditView, FacilitatorView, UELCAdminView,
     UELCAdminCohortView, UELCAdminCreateHierarchyView,
@@ -37,41 +34,12 @@ if hasattr(settings, 'CAS_BASE'):
                          {'next_page': redirect_after_logout})
 
 
-# Serializers define the API representation.
-class UserProfileSerializer(serializers.ModelSerializer):
-    cohorts = serializers.Field()
-
-    class Meta:
-        model = UserProfile
-        fields = ('profile_type', 'cohorts',)
-
-
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    profile = UserProfileSerializer(many=False)
-
-    class Meta:
-        model = User
-        fields = ("url", "username", "email", "profile")
-
-
-# ViewSets define the view behavior.
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-router = routers.DefaultRouter()
-router.register(r'user', UserViewSet)
-
 urlpatterns = patterns(
     '',
 
     logout_page,
     admin_logout_page,
     auth_urls,
-    url(r'^api/', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls',
-                               namespace='rest_framework')),
     (r'^registration/', include('registration.backends.default.urls')),
     (r'^$', views.IndexView.as_view()),
     (r'^ckeditor/', include('ckeditor.urls')),

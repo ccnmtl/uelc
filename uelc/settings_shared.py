@@ -106,7 +106,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'sorl.thumbnail',
     'django.contrib.admin',
-    'rest_framework',
     'tagging',
     'typogrify',
     'compressor',
@@ -206,13 +205,6 @@ LOGGING = {
 
 ACCOUNT_ACTIVATION_DAYS = 7
 
-REST_FRAMEWORK = {
-    'DEFAULT_MODEL_SERIALIZER_CLASS':
-    'rest_framework.serializers.ModelSerializer',
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ]
-}
 
 WINDSOCK_BROKER_URL = "tcp://localhost:5555"
 ZMQ_APPNAME = "uelc"
