@@ -1,4 +1,5 @@
 from django.test import TestCase
+from quizblock.tests.test_models import FakeReq
 from gate_block.models import GateBlock
 from uelc.main.tests.factories import GroupUserFactory
 
@@ -33,3 +34,13 @@ class GateBlockTest(TestCase):
         tb = GateBlock.objects.create()
         u = GroupUserFactory()
         self.assertFalse(tb.unlocked(u, None))
+
+
+class CreateGateBlockTest(TestCase):
+
+    def setUp(self):
+        self.fake_req = FakeReq()
+
+    def test_create(self):
+        newgb = GateBlock.create(self.fake_req)
+        self.assertEqual(type(newgb), GateBlock)
