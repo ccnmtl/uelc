@@ -59,6 +59,18 @@ class CurveballBlockTest(TestCase):
         cbsub = self.c.get_latest_curveball_submission(self.gu)
         self.assertIsNotNone(cbsub)
 
+    def test_curveball_select_form(self):
+        csf = self.c.curveball_select_form()
+        self.assertEqual(type(csf).__name__, 'CurveballSelectForm')
+
+    def test_curveball_edit(self):
+        data = {'choice_one_title': 'choice_one_title',
+                'choice_one_explanation': 'choice_one_explanation'}
+        self.c.edit(data, None)
+        self.assertEquals(self.c.curveball_one.title, 'choice_one_title')
+        self.assertEquals(self.c.curveball_one.explanation,
+                          'choice_one_explanation')
+
 
 class CurveballSubmissionTest(TestCase):
     def setUp(self):
@@ -67,8 +79,21 @@ class CurveballSubmissionTest(TestCase):
     def test_is_valid_from_factory(self):
         self.cs.full_clean()
 
+    def test_unicode(self):
+        self.assertIn(unicode(self.cs.group_curveball), str(self.cs))
+
 
 class CreateCurveballTest(TestCase):
+
+    def setUp(self):
+        self.fake_req = FakeReq()
+
+    def test_create(self):
+        newcb = CurveballBlock.create(self.fake_req)
+        self.assertEqual(type(newcb), CurveballBlock)
+
+
+class EditCurveballTest(TestCase):
 
     def setUp(self):
         self.fake_req = FakeReq()
