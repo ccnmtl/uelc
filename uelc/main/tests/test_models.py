@@ -5,7 +5,8 @@ from uelc.main.tests.factories import (
     GroupUpFactory, CaseFactory, GroupUserFactory,
     CohortFactory, LibraryItemFactory, CaseMapFactory,
     TextBlockDTFactory, UELCHandlerFactory, CaseQuizFactory,
-    UELCModuleFactory, ImageUploadItemFactory
+    UELCModuleFactory, ImageUploadItemFactory, CaseAnswerFactory,
+    AnswerFactory, QuestionFactory, QuizFactory
 )
 from uelc.main.models import TextBlockDT, LibraryItem, CaseQuiz
 from pagetree.models import Hierarchy
@@ -257,6 +258,20 @@ class CaseQuizTest(TestCase):
         sub = Submission.objects.create(quiz=cq, user=user)
         self.assertTrue(cq.is_submitted(cq, user))
         self.assertTrue(sub in cq.submission_set.filter(user=user))
+
+
+class CaseAnswerTest(TestCase):
+    def setUp(self):
+        self.caseans = CaseAnswerFactory(
+            answer=AnswerFactory(question=QuestionFactory(quiz=QuizFactory())))
+
+    def test_unicode(self):
+        self.assertEqual(self.caseans.default_question(),
+                         self.caseans.answer.question_id)
+        self.assertEqual(self.caseans.display_answer(), self.caseans.answer)
+        self.assertEqual(self.caseans.display_title(), self.caseans.title)
+        self.assertEqual(self.caseans.display_description(),
+                         self.caseans.description)
 
 
 class UELCModuleFactoryTest(TestCase):

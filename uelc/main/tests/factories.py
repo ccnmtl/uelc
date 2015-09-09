@@ -2,7 +2,7 @@ import factory
 from django.contrib.auth.models import User
 
 from pagetree.models import Hierarchy
-from quizblock.models import Quiz, Question
+from quizblock.models import Quiz, Question, Answer
 
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap,
@@ -120,6 +120,18 @@ class CaseQuizFactory(factory.DjangoModelFactory):
 class QuestionFactory(factory.DjangoModelFactory):
     class Meta:
         model = Question
+
+
+class AnswerFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = Answer
+    question = factory.SubFactory(QuestionFactory)
+
+
+class CaseAnswerFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = CaseAnswer
+    answer = factory.SubFactory(AnswerFactory)
 
 
 class TextBlockDTFactory(factory.DjangoModelFactory):
