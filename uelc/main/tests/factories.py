@@ -6,7 +6,7 @@ from quizblock.models import Quiz, Question
 
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap,
-    CaseAnswer,
+    CaseAnswer, ImageUploadItem,
     TextBlockDT, UELCHandler,
     LibraryItem, CaseQuiz
 )
@@ -19,6 +19,13 @@ class CohortFactory(factory.DjangoModelFactory):
         model = Cohort
 
     name = factory.Sequence(lambda n: "cohort %03d" % n)
+
+
+class ImageUploadItemFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = ImageUploadItem
+
+    name = factory.Sequence(lambda n: "image_upload %03d" % n)
 
 
 class AdminUserFactory(factory.DjangoModelFactory):

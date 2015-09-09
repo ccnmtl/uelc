@@ -5,7 +5,7 @@ from uelc.main.tests.factories import (
     GroupUpFactory, CaseFactory, GroupUserFactory,
     CohortFactory, LibraryItemFactory, CaseMapFactory,
     TextBlockDTFactory, UELCHandlerFactory, CaseQuizFactory,
-    UELCModuleFactory
+    UELCModuleFactory, ImageUploadItemFactory
 )
 from uelc.main.models import TextBlockDT, LibraryItem, CaseQuiz
 from pagetree.models import Hierarchy
@@ -215,6 +215,13 @@ class LibraryItemTest(TestCase):
     def test_edit_form(self):
         i = LibraryItemFactory()
         self.assertTrue('name' in i.edit_form().fields)
+
+
+class ImageUploadItemTest(TestCase):
+    def test_unicode(self):
+        imgup = ImageUploadItemFactory()
+        self.assertEqual(imgup.display_name(), imgup.name)
+        self.assertEqual(str(imgup), imgup.name)
 
 
 class CaseQuizTest(TestCase):
