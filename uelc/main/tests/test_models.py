@@ -75,6 +75,13 @@ class CohortTest(TestCase):
         self.assertTrue(grp1.user in cohort._get_users())
         self.assertTrue(grp2.user in cohort._get_users())
 
+    def test_casename(self):
+        cohort = CohortFactory()
+        case = CaseFactory()
+        case.cohort.add(cohort)
+        self.assertIsNotNone(cohort.casename)
+        self.assertTrue(case, cohort.casename)
+
     def test_get_case(self):
         '''test incomplete'''
         cohort = CohortFactory()
@@ -105,16 +112,28 @@ class CohortTest(TestCase):
 
 
 class CaseTest(TestCase):
+    def setUp(self):
+        self.case = CaseFactory()
+        self.cohort = CohortFactory()
+        self.case.cohort.add(self.cohort)
+
     def test_unicode(self):
-        c = CaseFactory()
-        self.assertEqual(c.display_name(), c.name)
-        self.assertTrue(str(c).startswith("case "))
+        self.assertEqual(self.case.display_name(), self.case.name)
+        self.assertTrue(str(self.case).startswith("case "))
 
     def test_add_form(self):
         add_form = CaseFactory().add_form()
         self.assertTrue('name' in add_form.fields)
         self.assertTrue('hierarchy' in add_form.fields)
         self.assertTrue('cohort' in add_form.fields)
+
+    def test_case_get_cohorts(self):
+        self.assertIsNotNone(self.case._get_cohorts())
+        self.assertTrue(self.cohort in self.case._get_cohorts())
+
+    def test_case_cohortnames(self):
+        self.assertIsNotNone(self.case.cohortnames())
+        self.assertTrue(self.cohort.name in self.case.cohortnames())
 
 
 class CaseMapTest(TestCase):
@@ -272,6 +291,10 @@ class CaseAnswerTest(TestCase):
         self.assertEqual(self.caseans.display_title(), self.caseans.title)
         self.assertEqual(self.caseans.display_description(),
                          self.caseans.description)
+
+    def test_edit_form(self):
+        edit_form = self.caseans.edit_form()
+        self.assertEqual(type(edit_form).__name__, 'CaseAnswerForm')
 
 
 class UELCModuleFactoryTest(TestCase):
