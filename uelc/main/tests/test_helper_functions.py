@@ -90,9 +90,3 @@ class TestPageSubmitFunction(TestCase):
         self.assertEqual(
             self.last_request['Location'],
             self.last_section.get_absolute_url())
-
-    def test_get_root_context(self):
-        pass
-
-    def test_has_responses(self):
-        pass
