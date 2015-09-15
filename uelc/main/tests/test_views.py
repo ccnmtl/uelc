@@ -7,7 +7,8 @@ from pagetree.helpers import get_hierarchy
 from factories import (
     GroupUpFactory, AdminUpFactory,
     CaseFactory, CohortFactory, FacilitatorUpFactory,
-    UELCModuleFactory, HierarchyFactory
+    UELCModuleFactory, HierarchyFactory, CaseQuizFactory,
+    QuestionFactory, AnswerFactory, CaseAnswerFactory
 )
 from pagetree.models import Section
 from pagetree.tests.factories import ModuleFactory
@@ -585,6 +586,97 @@ class TestFreshGrpTokenView(TestCase):
         s = Section.objects.first()
         response = self.client.get("/group_user/fresh_token/{}/".format(s.pk))
         self.assertEqual(response.status_code, 200)
-
         token = json.loads(response.content)
         self.assertNotEqual(token, {})
+
+
+class TestCaseQuizViews(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.h = get_hierarchy("main", "/pages/main/")
+        self.root = self.h.get_root()
+        self.root.add_child_section_from_dict(
+            {
+                'label': 'Section 1',
+                'slug': 'section-1',
+                'pageblocks': [],
+                'children': [],
+            })
+        self.case = CaseFactory()
+        self.case_quiz = CaseQuizFactory()
+        self.profile = AdminUpFactory()
+        self.gu = GroupUpFactory()
+        self.cohort = CohortFactory()
+        self.client.login(username=self.profile.user.username, password='test')
+
+    def test_admin_add_case_answer_get(self):
+        '''First test the 404 response for non-existant question'''
+        request = self.client.get("/edit_question/0/add_case_answer/")
+        self.assertEqual(request.status_code, 404)
+        self.assertTemplateUsed(request,
+                                '404.html')
+        '''Add question to quiz and check that it is rendered with
+        the correct template'''
+        question = QuestionFactory(quiz=self.case_quiz)
+        request = self.client.get(
+            "/edit_question/" + str(question.pk) + "/add_case_answer/")
+        self.assertEqual(request.status_code, 200)
+        self.assertTemplateUsed(request,
+                                'quizblock/edit_question.html')
+
+    def test_admin_add_case_answer_post_valid_values(self):
+        question = QuestionFactory(quiz=self.case_quiz)
+        '''Submit a request'''
+        request = self.client.post(
+            "/edit_question/" + str(question.pk) + "/add_case_answer/",
+            {'value': 5, 'title': 'title'})
+        self.assertEqual(request.status_code, 200)
+        self.assertTemplateUsed(request,
+                                'quizblock/edit_question.html')
+
+    def test_admin_add_case_answer_post_missing_title(self):
+        question = QuestionFactory(quiz=self.case_quiz)
+        response = self.client.post(
+            "/edit_question/" + str(question.pk) + "/add_case_answer/",
+            {'value': 5, 'title': ''})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'quizblock/edit_question.html')
+        self.assertIn('question', response.context)
+        self.assertIn('case_answer_form', response.context)
+
+    def test_admin_edit_case_answer_get(self):
+        ca = CaseAnswerFactory(
+            answer=AnswerFactory(
+                question=QuestionFactory(quiz=self.case_quiz)))
+        response = self.client.get(
+            "/edit_case_answer/" + str(ca.pk) + "/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'quizblock/edit_answer.html')
+        self.assertIn('case_answer', response.context)
+        self.assertIn('case_answer_form', response.context)
+
+    def test_admin_edit_case_answer_post(self):
+        ca = CaseAnswerFactory(
+            answer=AnswerFactory(
+                question=QuestionFactory(quiz=self.case_quiz)))
+        response = self.client.post(
+            "/edit_case_answer/" + str(ca.pk) + "/",
+            {'value': ca.answer.value, 'title': ca.title,
+             'description': ca.description})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'quizblock/edit_answer.html')
+        self.assertIn('case_answer', response.context)
+        self.assertIn('case_answer_form', response.context)
+
+    def test_admin_delete_case_answer_post(self):
+        ca = CaseAnswerFactory(
+            answer=AnswerFactory(
+                question=QuestionFactory(quiz=self.case_quiz)))
+        response = self.client.post(
+            "/edit_question/" + str(ca.pk) + "/delete_case_answer/",
+            {})
+        self.assertEqual(response.status_code, 302)
