@@ -398,8 +398,8 @@ class UELCHandler(Section):
         if pageblocks:
             for pb in pageblocks:
                 block = pb.block()
-                if (hasattr(block, 'display_name')
-                   and block.display_name == "Curveball Block"):
+                if (hasattr(block, 'display_name') and
+                        block.display_name == "Curveball Block"):
                     return (True, block)
         return (False, block)
 
@@ -408,8 +408,8 @@ class UELCHandler(Section):
             pageblocks = current_section.pageblock_set.all()
         for pb in pageblocks:
             block = pb.block()
-            if (hasattr(block, 'display_name')
-               and block.display_name == "Decision Block"):
+            if (hasattr(block, 'display_name') and
+                    block.display_name == "Decision Block"):
                 ss = block.submission_set.filter(user=user).last()
                 ca = None
                 if ss:
@@ -554,8 +554,8 @@ class CaseQuiz(Quiz):
             description = forms.CharField(
                 widget=forms.widgets.Textarea(),
                 initial=self.description)
-            alt_text = ("<a href=\"" + reverse("edit-quiz", args=[self.id])
-                        + "\">manage decision/choices</a>")
+            alt_text = ("<a href=\"" + reverse("edit-quiz", args=[self.id]) +
+                        "\">manage decision/choices</a>")
         return EditForm()
 
     def is_q_answered(self, data):

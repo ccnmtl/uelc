@@ -39,5 +39,9 @@ class CachedS3BotoStorage(S3BotoStorage):
         return naive
 
 
-CompressorS3BotoStorage = lambda: CachedS3BotoStorage(location='media')
-MediaRootS3BotoStorage = lambda: S3BotoStorage(location='media')
+def CompressorS3BotoStorage():
+    return CachedS3BotoStorage(location='media')
+
+
+def MediaRootS3BotoStorage():
+    return S3BotoStorage(location='media')
