@@ -444,11 +444,12 @@ class TestAdminErrorHandlingInCaseViews(TestCase):
         self.assertRedirects(response2, '/uelcadmin/')
         m = list(response2.context['messages'])
         self.assertEqual(len(m), 1)
-        tmp_stg = 'Case already exists! A case has already' + \
-            '                      been created that is attached to the' + \
-            '                      selected hierarchy. Do you need to create' + \
-            '                      another hierarchy or should you use' + \
-            '                      an existing case?'
+        tmp_stg = (
+            'Case already exists! A case has already' +
+            '                      been created that is attached to the' +
+            '                      selected hierarchy. Do you need to create' +
+            '                      another hierarchy or should you use' +
+            '                      an existing case?')
         er_msg = str(m[0])
         self.assertEqual(tmp_stg.strip(), er_msg.strip())
 
