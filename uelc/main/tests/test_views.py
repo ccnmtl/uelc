@@ -176,6 +176,19 @@ class TestAdminBasicViews(TestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
         self.assertEqual(request.status_code, 302)
 
+    def test_uelc_admin_create_already_existing_hierarchy(self):
+        response = self.client.post(
+            "/uelcadmin/createhierarchy/", {'name': self.h.name},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/",
+            follow=True)
+        self.assertEqual(response.status_code, 200)
+        m = list(response.context['messages'])
+        self.assertEqual(len(m), 1)
+        tmp_stg = "Hierarchy exists! Please use the exisiting one,\
+                          or create one with a different name and url."
+        er_msg = str(m[0])
+        self.assertEqual(tmp_stg.strip(), er_msg.strip())
+
     def test_uelc_admin_create_cohort(self):
         request = self.client.post(
             "/uelcadmin/createcohort/", {'name': 'NewCohort'},
@@ -218,6 +231,25 @@ class TestAdminBasicViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Oops!')
         self.assertNotContains(response, 'Invalid username or password')
+
+    def test_uelc_admin_create_already_existing_user(self):
+        response = self.client.post(
+            '/uelcadmin/createuser/',
+            {
+                'username': self.gu.user.username,
+                'password1': 'magic_password',
+                'password2': 'magic_password',
+                'user_profile': 'assistant',
+                'cohort': self.cohort.id,
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER='/uelcadmin/',
+            follow=True)
+        self.assertEqual(response.status_code, 200)
+        m = list(response.context['messages'])
+        self.assertEqual(len(m), 1)
+        tmp_stg = 'That username already exists! Please enter a new one.'
+        er_msg = str(m[0])
+        self.assertEqual(tmp_stg.strip(), er_msg.strip())
 
     def test_uelc_admin_create_user_missing_password1(self):
         request = self.client.post(
@@ -339,6 +371,20 @@ class TestAdminBasicViews(TestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
         self.assertEqual(request.status_code, 302)
 
+    def test_uelc_admin_edit_non_existing_user(self):
+        response = self.client.post(
+            "/uelcadmin/edituser/",
+            {'username': 'EditUser', 'user_id': '22',
+             'profile_type': 'group_user', 'cohort': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/",
+            follow=True)
+        self.assertEqual(response.status_code, 200)
+        m = list(response.context['messages'])
+        self.assertEqual(len(m), 1)
+        tmp_stg = 'User not found.'
+        er_msg = str(m[0])
+        self.assertEqual(tmp_stg.strip(), er_msg.strip())
+
     def test_uelc_admin_edit_case(self):
         request = self.client.post(
             "/uelcadmin/editcase/",
@@ -359,6 +405,20 @@ class TestAdminBasicViews(TestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
         self.assertEqual(request.status_code, 302)
 
+    def test_uelc_admin_delete_superuser(self):
+        newsuperuser = AdminUpFactory()
+        response = self.client.post(
+            "/uelcadmin/deleteuser/", {'user_id': str(newsuperuser.user.pk)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/",
+            follow=True)
+        self.assertEqual(response.status_code, 200)
+        m = list(response.context['messages'])
+        self.assertEqual(len(m), 1)
+        tmp_stg = "Sorry, you are not permitted to \
+                      delete superuser accounts."
+        er_msg = str(m[0])
+        self.assertEqual(tmp_stg.strip(), er_msg.strip())
+
     def test_uelc_admin_delete_case(self):
         request = self.client.post(
             "/uelcadmin/deletecase/", {'case_id': str(self.case.id)},
@@ -370,6 +430,28 @@ class TestAdminBasicViews(TestCase):
             "/uelcadmin/deletehierarchy/", {'hierarchy_id': str(self.h.id)},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
         self.assertEqual(request.status_code, 302)
+
+    def test_uelc_admin_edit_user_password(self):
+        response = self.client.get(
+            '/uelcadmin/edituserpass/' + str(self.gu.user.pk) + '/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'pagetree/uelc_admin_user_pass_reset.html')
+        self.assertIn('edit_user_pass_form', response.context)
+        self.assertIn('user', response.context)
+
+        response = self.client.post(
+            '/uelcadmin/edituserpass/' + str(self.gu.user.pk) + '/',
+            {
+                'newPassword1': 'magic_password'
+            },
+            HTTP_REFERER='/uelcadmin/', follow=True)
+        self.assertEqual(response.status_code, 200)
+        m = list(response.context['messages'])
+        self.assertEqual(len(m), 1)
+        tmp_stg = "User password has been updated!"
+        er_msg = str(m[0])
+        self.assertEqual(tmp_stg.strip(), er_msg.strip())
 
 
 class TestAdminErrorHandlingInCaseViews(TestCase):
