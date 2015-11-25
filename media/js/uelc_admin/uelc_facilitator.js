@@ -95,8 +95,9 @@ UELCAdmin = {
                 window.lastPartOneBlock = thisBtn.closest(
                     '.gate-section-list').children('.part-1').last();
                 window.btnBlock = thisBtn.closest('.part-1');
-                window.lastBlockSec = lastPartOneBlock.data('section-id');
-                window.btnSec = btnBlock.data('section-id');
+                window.lastBlockSec = window.lastPartOneBlock
+                    .data('section-id');
+                window.btnSec = window.btnBlock.data('section-id');
                 thisBtn.unbind('click');
                 thisBtn.css('cursor', 'not-allowed');
                 var form  = jQuery(this).closest('form');
@@ -146,7 +147,7 @@ UELCAdmin = {
             var part2Gates = jQuery('.part2');
             var lastPart2Gates = [];
             part2Gates.parent().each(function() {
-                lastChild = jQuery(this).last();
+                var lastChild = jQuery(this).last();
                 lastPart2Gates.push(lastChild);
             });
             for (var i = 0; i < lastPart2Gates.length; i ++) {

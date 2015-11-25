@@ -252,7 +252,7 @@ jQuery(document).ready(function() {
 
       this.showMessageModal = function() {
           var modal = jQuery('#message-modal');
-          callback = modal.attr('data-callback');
+          window.callback = modal.attr('data-callback');
           modal.modal('show');
 
       };
