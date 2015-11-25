@@ -69,7 +69,7 @@ $(function() {
             setGroupLocation(groupColumnSelector, sectionBlock);
             highlightActiveGate(groupColumnSelector, sectionBlock);
             setGroupMessage(jQuery(groupColumnSelector), msg);
-            UA.setFormClickHandler();
+            window.UA.setFormClickHandler();
         }
         if (data.notification.message === 'Decision Submitted' &&
             data.notification.data !== null
@@ -80,8 +80,8 @@ $(function() {
             updateGateSectionStatus(groupColumnSelector, sectionBlock, action);
             highlightActiveGate(groupColumnSelector, sectionBlock);
             displayDecisionTitle(groupColumnSelector, sectionBlock, data);
-            UA.setFormClickHandler();
-            UA.setCurveballCommitAccess();
+            window.UA.setFormClickHandler();
+            window.UA.setCurveballCommitAccess();
         }
         if (data.notification.message === 'Open Gate') {
             openGate(groupColumnSelector, sectionBlock);

@@ -1,0 +1,15 @@
+{
+    "white": true,
+    "trailing": true,
+    "undef": true,
+    "browser": true,
+    "eqeqeq": true,
+    "curly": true,
+    "predef": [
+        "$",
+				"admin",
+				"alert",
+        "confirm",
+        "jQuery"
+    ]
+}
