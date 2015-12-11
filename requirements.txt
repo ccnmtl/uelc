@@ -81,7 +81,7 @@ django-flatblocks==0.9.2
 
 parse==1.6.6  # for behave
 parse-type==0.3.4  # for behave
-enum34==1.0.4  # for behave
+enum34==1.1.1  # for behave
 behave==1.2.5
 behave-django==0.3.0
 splinter==0.7.3
