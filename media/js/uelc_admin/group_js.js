@@ -23,13 +23,13 @@ $(function() {
 
         // circuit breaker pattern for failed requests
         // to ease up on the server when it's having trouble
-    updateToken();
-    currentRefresh = 2 * currentRefresh; // double the refresh time
-    if (currentRefresh > maxRefresh) {
-        currentRefresh = maxRefresh;
-    }
-    setTimeout(connectSocket, currentRefresh);
-	};
+        updateToken();
+        currentRefresh = 2 * currentRefresh; // double the refresh time
+        if (currentRefresh > maxRefresh) {
+            currentRefresh = maxRefresh;
+        }
+        setTimeout(connectSocket, currentRefresh);
+    };
 
     var connectSocket = function() {
         var conn = new WebSocket(

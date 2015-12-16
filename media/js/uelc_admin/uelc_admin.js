@@ -1,5 +1,5 @@
 jQuery(document).ready(function() {
-  // create Admin class
+    // create Admin class
     var UELCAdmin = function() {
       this.setMultiselects = function() {
           jQuery('.hierarchy-select').multiselect();
@@ -57,27 +57,27 @@ jQuery(document).ready(function() {
                   url: {
                       required: true,
                   },
-                  username:{
-                    minlength: 3,
-                    required: true,
+                  username: {
+                      minlength: 3,
+                      required: true,
                   },
-                  password1:{
-                    minlength: 3,
-                    required: true,
+                  password1: {
+                      minlength: 3,
+                      required: true,
                   },
-                  password2:{
-                    minlength: 3,
-                    required: true,
-                    equalTo : '#id_password1',
+                  password2: {
+                      minlength: 3,
+                      required: true,
+                      equalTo: '#id_password1',
                   },
-                  newPassword1:{
-                    minlength: 3,
-                    required: true,
+                  newPassword1: {
+                      minlength: 3,
+                      required: true,
                   },
-                  newPassword2:{
-                    minlength: 3,
-                    required: true,
-                    equalTo : '#id_newPassword1',
+                  newPassword2: {
+                      minlength: 3,
+                      required: true,
+                      equalTo: '#id_newPassword1',
                   },
                   user: 'required',
                   hierarchy: 'required',
@@ -108,7 +108,7 @@ jQuery(document).ready(function() {
               error: function() {
                   alert('problem!');
               },
-            });//end validate
+          });//end validate
       };
 
       this.resetForm = function(form) {
