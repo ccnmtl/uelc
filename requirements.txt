@@ -18,6 +18,7 @@ cssselect==0.9.1
 lxml==3.4.4
 fuzzywuzzy==0.8.0
 sure==1.2.24
+ptyprocess==0.5
 ipdb==0.8.1
 traitlets==4.0.0
 ipython_genutils==0.1.0
