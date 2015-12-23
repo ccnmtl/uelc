@@ -1,7 +1,9 @@
 import json
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
-from django.http.response import HttpResponseNotFound, HttpResponseNotAllowed
+from django.http.response import (
+    HttpResponseForbidden, HttpResponseNotFound, HttpResponseNotAllowed
+)
 from django.utils.decorators import method_decorator
 from pagetree.helpers import get_section_from_path
 from pagetree.models import Hierarchy
@@ -69,7 +71,7 @@ class RestrictedModuleMixin(object):
                 if case_hier.name == self.hierarchy_name:
                     return super(RestrictedModuleMixin,
                                  self).dispatch(*args, **kwargs)
-        return HttpResponse("you don't have permission")
+        return HttpResponseForbidden("you don't have permission")
 
 
 def ajax_required(func):
