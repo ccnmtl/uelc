@@ -305,3 +305,10 @@ class UELCModuleFactoryTest(TestCase):
         UELCModuleFactory()
         h = Hierarchy.objects.get(name='case-test')
         json.dumps(h.as_dict())
+
+    def test_can_clone_hierarchy(self):
+        UELCModuleFactory()
+        h = Hierarchy.objects.get(name='case-test')
+        clone = Hierarchy.clone(h, 'cloned', '/pages/cloned/')
+        self.assertEqual(clone.name, 'cloned')
+        self.assertEqual(clone.base_url, '/pages/cloned/')
