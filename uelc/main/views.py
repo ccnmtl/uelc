@@ -125,9 +125,15 @@ class UELCPageView(LoggedInMixin,
         if self.section == self.module and pt == "group_user":
             '''forward them to the home page of the part'''
 
+            nxt = self.section.get_next()
+            if nxt is not None:
+                nxt_path = nxt.get_path()
+            else:
+                nxt_path = self.section.get_path()
+
             ns_path = urlparse.urljoin(
                 hierarchy.base_url,
-                self.section.get_next().get_path())
+                nxt_path)
 
             return HttpResponseRedirect(ns_path)
 

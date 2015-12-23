@@ -1,22 +1,20 @@
 import json
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.test.client import Client
 from pagetree.helpers import get_hierarchy
-
-from factories import (
+from pagetree.models import Hierarchy, Section
+from pagetree.tests.factories import ModuleFactory
+from uelc.main.tests.factories import (
     GroupUpFactory, AdminUpFactory,
     CaseFactory, CohortFactory, FacilitatorUpFactory,
     UELCModuleFactory, HierarchyFactory, CaseQuizFactory,
     QuestionFactory, AnswerFactory, CaseAnswerFactory
 )
-from pagetree.models import Section
-from pagetree.tests.factories import ModuleFactory
 
 
 class BasicTest(TestCase):
     def setUp(self):
-        self.c = Client()
+        self.c = self.client
 
     def test_root(self):
         response = self.c.get("/")
@@ -29,7 +27,7 @@ class BasicTest(TestCase):
 
 class PagetreeViewTestsLoggedOut(TestCase):
     def setUp(self):
-        self.c = Client()
+        self.c = self.client
         self.h = get_hierarchy("main", "/pages/main/")
         self.root = self.h.get_root()
         self.root.add_child_section_from_dict(
@@ -55,7 +53,7 @@ class PagetreeViewTestsLoggedOut(TestCase):
 
 class PagetreeViewTestsLoggedIn(TestCase):
     def setUp(self):
-        self.c = Client()
+        self.c = self.client
         self.h = get_hierarchy("main", "/pages/main/")
         self.root = self.h.get_root()
         self.root.add_child_section_from_dict(
@@ -68,13 +66,19 @@ class PagetreeViewTestsLoggedIn(TestCase):
         self.grp_usr_profile = GroupUpFactory()
         self.grp_usr_profile.user.set_password("test")
         self.grp_usr_profile.user.save()
+
+        # Need a "Case" object associated with this hierarchy and this
+        # user's cohort in order from them to be able to view it.
+        case = CaseFactory(name='case-test', hierarchy=self.h)
+        case.cohort.add(self.grp_usr_profile.cohort)
+
         self.c.login(
             username=self.grp_usr_profile.user.username,
             password="test")
 
     def test_page(self):
         r = self.c.get("/pages/main/section-1/")
-        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.status_code, 302)
 
     def test_edit_page(self):
         r = self.c.get("/pages/main/edit/section-1/")
@@ -93,7 +97,10 @@ class TestGroupUserLoggedInViews(TestCase):
         self.grp_usr_profile = GroupUpFactory()
         self.grp_usr_profile.user.set_password("test")
         self.grp_usr_profile.user.save()
-        self.client = Client()
+
+        case = CaseFactory(name='case-test', hierarchy=self.hierarchy)
+        case.cohort.add(self.grp_usr_profile.cohort)
+
         self.client.login(
             username=self.grp_usr_profile.user.username,
             password="test")
@@ -120,7 +127,10 @@ class TestFacilitatorLoggedInViews(TestCase):
         self.facilitator_profile = FacilitatorUpFactory()
         self.facilitator_profile.user.set_password("test")
         self.facilitator_profile.user.save()
-        self.client = Client()
+
+        case = CaseFactory(name='case-test', hierarchy=self.hierarchy)
+        case.cohort.add(self.facilitator_profile.cohort)
+
         self.client.login(
             username=self.facilitator_profile.user.username,
             password="test")
@@ -142,7 +152,6 @@ class TestFacilitatorLoggedInViews(TestCase):
 class TestAdminBasicViews(TestCase):
 
     def setUp(self):
-        self.client = Client()
         self.h = get_hierarchy("main", "/pages/main/")
         self.root = self.h.get_root()
         self.root.add_child_section_from_dict(
@@ -457,7 +466,6 @@ class TestAdminBasicViews(TestCase):
 class TestAdminErrorHandlingInCaseViews(TestCase):
 
     def setUp(self):
-        self.client = Client()
         self.h = get_hierarchy("main", "/pages/main/")
         self.root = self.h.get_root()
         self.root.add_child_section_from_dict(
@@ -570,7 +578,6 @@ class TestAdminErrorHandlingInCaseViews(TestCase):
 class TestAdminCohortViewContext(TestCase):
 
     def setUp(self):
-        self.client = Client()
         self.h = get_hierarchy("main", "/pages/main/")
         self.root = self.h.get_root()
         self.root.add_child_section_from_dict(
@@ -605,7 +612,6 @@ class TestAdminCohortViewContext(TestCase):
 class TestAdminUserViewContext(TestCase):
 
     def setUp(self):
-        self.client = Client()
         self.h = get_hierarchy("main", "/pages/main/")
         self.root = self.h.get_root()
         self.root.add_child_section_from_dict(
@@ -676,7 +682,6 @@ class TestFreshGrpTokenView(TestCase):
 class TestCaseQuizViews(TestCase):
 
     def setUp(self):
-        self.client = Client()
         self.h = get_hierarchy("main", "/pages/main/")
         self.root = self.h.get_root()
         self.root.add_child_section_from_dict(
@@ -763,3 +768,47 @@ class TestCaseQuizViews(TestCase):
             "/edit_question/" + str(ca.pk) + "/delete_case_answer/",
             {})
         self.assertEqual(response.status_code, 302)
+
+
+class ClonedModuleFactoryTest(TestCase):
+    def setUp(self):
+        UELCModuleFactory()
+        h = Hierarchy.objects.get(name='case-test')
+
+        self.profile = AdminUpFactory()
+        self.client.login(username=self.profile.user.username, password='test')
+
+        self.cloned_hier = Hierarchy.clone(h, 'cloned', '/pages/cloned/')
+        case = CaseFactory(name='case-cloned', hierarchy=self.cloned_hier)
+        case.cohort.add(self.profile.cohort)
+
+    def test_can_view_part_one(self):
+        r = self.client.get('/pages/cloned/part-1/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'Edit Page')
+        self.assertContains(r, 'These elements use Bootstrap for styling.')
+
+    def test_can_view_intro_page(self):
+        r = self.client.get('/pages/cloned/part-1/intro/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'Edit Page')
+
+    def test_can_view_decision_block(self):
+        r = self.client.get('/pages/cloned/part-1/your-first-decision/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'Edit Page')
+        self.assertContains(r, 'Select One')
+
+    def test_can_view_curveball(self):
+        r = self.client.get(
+            '/pages/cloned/part-1/your-first-decision/curve-ball/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'Edit Page')
+
+    def test_can_view_curveball_confirmation(self):
+        r = self.client.get(
+            '/pages/cloned/part-1/your-first-decision/curve-ball/'
+            'confirm-first-decision/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'Edit Page')
+        self.assertContains(r, 'Confirm First Decision')
