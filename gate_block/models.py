@@ -9,6 +9,10 @@ class GateBlock(BasePageBlock):
     template_file = "gate_block/gateblock.html"
     display_name = "Gate Block"
 
+    @classmethod
+    def create_from_dict(cls, d):
+        return cls.objects.create(**d)
+
     def redirect_to_self_on_submit(self):
         return True
 

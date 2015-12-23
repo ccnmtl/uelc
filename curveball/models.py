@@ -22,13 +22,17 @@ class Curveball(models.Model):
             'explanation': self.explanation,
         }
 
+    @classmethod
+    def create_from_dict(cls, d):
+        if type(d) is not dict:
+            d = d.as_dict()
+        return cls.objects.create(**d)
+
 
 class CurveballBlock(BasePageBlock):
     template_file = "curveball/curveballblock.html"
     display_name = "Curveball Block"
     description = models.TextField(blank=True)
-    exportable = False
-    importable = False
     curveball_one = models.ForeignKey(Curveball, null=True, blank=True,
                                       related_name='curveball_one')
     curveball_two = models.ForeignKey(Curveball, null=True, blank=True,
@@ -46,6 +50,12 @@ class CurveballBlock(BasePageBlock):
 
     @classmethod
     def create_from_dict(cls, d):
+        d['curveball_one'] = Curveball.create_from_dict(
+            d['curveball_one'])
+        d['curveball_two'] = Curveball.create_from_dict(
+            d['curveball_two'])
+        d['curveball_three'] = Curveball.create_from_dict(
+            d['curveball_three'])
         return cls.objects.create(**d)
 
     def _get_section(self):
@@ -118,8 +128,8 @@ class CurveballBlock(BasePageBlock):
             status = "incomplete"
         return status
 
-    @classmethod
-    def add_form(cls):
+    @staticmethod
+    def add_form():
         class AddForm(forms.Form):
             choice_one_title = forms.CharField(label="Choice One Label")
             choice_one_explanation = forms.CharField(
@@ -135,8 +145,8 @@ class CurveballBlock(BasePageBlock):
                     attrs={"id": "editor"}))
         return AddForm()
 
-    @classmethod
-    def create(cls, request):
+    @staticmethod
+    def create(request):
         return CurveballBlock.objects.create(
             curveball_one=Curveball.objects.create(
                 title=request.POST.get('choice_one_title', ''),
