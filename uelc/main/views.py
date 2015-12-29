@@ -11,7 +11,9 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView, View
-from pagetree.generic.views import PageView, EditView, UserPageVisitor
+from pagetree.generic.views import (
+    PageView, EditView, UserPageVisitor, CloneHierarchyView
+)
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
 from gate_block.models import GateBlock, SectionSubmission, GateSubmission
@@ -1244,3 +1246,25 @@ class DeleteCaseAnswerView(LoggedInMixinAdmin,
         case_answer.delete()
         return HttpResponseRedirect(reverse(
             "add-case-answer-to-question", args=[question]))
+
+
+class CloneHierarchyWithCasesView(CloneHierarchyView):
+    def form_valid(self, form):
+        rv = super(CloneHierarchyWithCasesView, self).form_valid(form)
+
+        name = form.cleaned_data['name']
+        clone = Hierarchy.objects.get(name=name)
+        hierarchy_id = self.kwargs.get('hierarchy_id')
+        original = get_object_or_404(Hierarchy, pk=hierarchy_id)
+        original_cases = Case.objects.filter(hierarchy=original)
+
+        for case in original_cases:
+            # Clone the original hierarchy's cases
+            newcase = Case.objects.create(
+                hierarchy=clone,
+                name=case.name,
+                description=case.description)
+            for cohort in case.cohort.all():
+                newcase.cohort.add(cohort)
+
+        return rv

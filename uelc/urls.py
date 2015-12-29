@@ -12,7 +12,8 @@ from uelc.main.views import (
     UELCAdminDeleteCohortView, UELCAdminDeleteCaseView,
     UELCAdminCreateCaseView, UELCAdminDeleteUserView,
     AddCaseAnswerToQuestionView, EditCaseAnswerView, DeleteCaseAnswerView,
-    SubmitSectionView)
+    SubmitSectionView, CloneHierarchyWithCasesView
+)
 import os.path
 admin.autodiscover()
 
@@ -75,6 +76,8 @@ urlpatterns = patterns(
     (r'infranil/', include('infranil.urls')),
     (r'^uploads/(?P<path>.*)$',
      'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    url(r'^pagetree/clone_hierarchy/(?P<hierarchy_id>\d+)/$',
+        CloneHierarchyWithCasesView.as_view(), name='clone-hierarchy'),
     (r'^pagetree/', include('pagetree.urls')),
     (r'^quizblock/', include('quizblock.urls')),
     (r'^pages_save_edit/(?P<hierarchy_name>[-\w]+)/(?P<path>.*)$',
