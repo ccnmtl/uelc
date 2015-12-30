@@ -1262,7 +1262,7 @@ class CloneHierarchyWithCasesView(CloneHierarchyView):
             # Clone the original hierarchy's cases
             newcase = Case.objects.create(
                 hierarchy=clone,
-                name=case.name,
+                name=name,
                 description=case.description)
             for cohort in case.cohort.all():
                 newcase.cohort.add(cohort)

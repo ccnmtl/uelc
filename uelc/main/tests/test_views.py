@@ -850,7 +850,7 @@ class CloneHierarchyWithCasesViewTest(TestCase):
         self.assertEqual(Case.objects.filter(hierarchy=cloned_h).count(), 1)
 
         cloned_case = Case.objects.filter(hierarchy=cloned_h).first()
-        self.assertEqual(cloned_case.name, self.case.name)
+        self.assertEqual(cloned_case.name, 'test')
         self.assertEqual(cloned_case.description, self.case.description)
         self.assertEqual(cloned_case.cohort.count(), self.case.cohort.count())
         self.assertEqual(set(cloned_case.cohort.all()),
