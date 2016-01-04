@@ -1,6 +1,7 @@
 import json
 import zmq
 import urlparse
+import re
 import sys
 from django.conf import settings
 from django.contrib import messages
@@ -661,7 +662,7 @@ class UELCAdminCreateUserView(
         password1 = request.POST.get('password1', '')
         password2 = request.POST.get('password2', '')
 
-        user_filter = User.objects.filter(Q(username=username))
+        user_filter = User.objects.filter(username=username)
         error = None
         if user_filter.exists():
             error = 'That username already exists! Please enter a new one.'
@@ -950,8 +951,8 @@ class UELCAdminCreateCaseView(LoggedInMixinAdmin,
         hierarchy = request.POST.get('hierarchy', '')
         cohort = request.POST.get('cohort', '')
         description = request.POST.get('description', '')
-        case_exists_name = Case.objects.filter(Q(name=name))
-        case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
+        case_exists_name = Case.objects.filter(name=name)
+        case_exists_hier = Case.objects.filter(hierarchy=hierarchy)
         if case_exists_name.exists():
             action_args = dict(
                 error="Case with this name already exists!\
@@ -1012,8 +1013,8 @@ class UELCAdminEditCaseView(LoggedInMixinAdmin,
         description = request.POST.get('description', '')
         hierarchy = request.POST.get('hierarchy', '')
         cohorts = request.POST.getlist('cohort', '')
-        case_exists_name = Case.objects.filter(Q(name=name))
-        case_exists_hier = Case.objects.filter(Q(hierarchy=hierarchy))
+        case_exists_name = Case.objects.filter(name=name)
+        case_exists_hier = Case.objects.filter(hierarchy=hierarchy)
         case_id = request.POST.get('case_id', '')
 
         if case_exists_name.count() > 1:
@@ -1253,7 +1254,12 @@ class CloneHierarchyWithCasesView(CloneHierarchyView):
         rv = super(CloneHierarchyWithCasesView, self).form_valid(form)
 
         name = form.cleaned_data['name']
+        base_url = form.cleaned_data['base_url']
+        slugname = re.match(r'^\/pages\/(\S+)\/$', base_url).group(1)
         clone = Hierarchy.objects.get(name=name)
+        clone.name = slugname
+        clone.save()
+
         hierarchy_id = self.kwargs.get('hierarchy_id')
         original = get_object_or_404(Hierarchy, pk=hierarchy_id)
         original_cases = Case.objects.filter(hierarchy=original)

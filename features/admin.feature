@@ -5,7 +5,7 @@ Feature: Admin
     Then I see the text "Hello"
 
     When I visit "/pages/doesnt-exist/"
-    Then I see the text "No hierarchy named doesnt-exist found"
+    Then I see the text "No hierarchy with url /pages/doesnt-exist/ found"
 
     When I visit "/pages/case-test/"
     Then I see the text "Test Edit Facilitator Scratchpad"

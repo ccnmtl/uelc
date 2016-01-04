@@ -47,17 +47,19 @@ class SectionMixin(object):
 
 class DynamicHierarchyMixin(object):
     def dispatch(self, *args, **kwargs):
-        name = kwargs.pop('hierarchy_name', None)
-        if name is None:
-            msg = "No hierarchy named %s found" % name
+        slugname = kwargs.pop('hierarchy_name', None)
+        if slugname is None:
+            return HttpResponseNotFound('hierarchy_name is None')
+
+        self.hierarchy_name = slugname
+        url = '/pages/{}/'.format(slugname)
+        try:
+            h = Hierarchy.objects.get(base_url=url)
+            self.hierarchy_base = h.base_url
+        except Hierarchy.DoesNotExist:
+            msg = "No hierarchy with url %s found" % url
             return HttpResponseNotFound(msg)
-        else:
-            self.hierarchy_name = name
-            try:
-                self.hierarchy_base = Hierarchy.objects.get(name=name).base_url
-            except Hierarchy.DoesNotExist:
-                msg = "No hierarchy named %s found" % name
-                return HttpResponseNotFound(msg)
+
         return super(DynamicHierarchyMixin, self).dispatch(*args, **kwargs)
 
 
