@@ -233,6 +233,14 @@ class UELCPageView(LoggedInMixin,
         except SectionSubmission.DoesNotExist:
             return None
 
+    def _get_gate_submission(self, user):
+        try:
+            return GateSubmission.objects.filter(
+                section=self.section,
+                gate_user=user).latest('submitted')
+        except GateSubmission.DoesNotExist:
+            return None
+
     def get(self, request, path):
         self.check_user(request, path)
         # skip the first child of part if not admin
@@ -242,13 +250,7 @@ class UELCPageView(LoggedInMixin,
             user=request.user,
             hierarchy=hierarchy)
         section_submission = self._get_section_submission(request.user)
-
-        try:
-            gate_submission = GateSubmission.objects.filter(
-                section=self.section,
-                gate_user=request.user).latest('submitted')
-        except GateSubmission.DoesNotExist:
-            gate_submission = None
+        gate_submission = self._get_gate_submission(request.user)
 
         # handler stuff
         hand = UELCHandler.objects.get_or_create(
