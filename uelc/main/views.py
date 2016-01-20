@@ -225,6 +225,14 @@ class UELCPageView(LoggedInMixin,
             skip_url = self.section.get_next().get_absolute_url()
             return HttpResponseRedirect(skip_url)
 
+    def _get_section_submission(self, user):
+        try:
+            return SectionSubmission.objects.get(
+                section=self.section,
+                user=user)
+        except SectionSubmission.DoesNotExist:
+            return None
+
     def get(self, request, path):
         self.check_user(request, path)
         # skip the first child of part if not admin
@@ -233,12 +241,7 @@ class UELCPageView(LoggedInMixin,
         uloc = UserLocation.objects.get_or_create(
             user=request.user,
             hierarchy=hierarchy)
-        try:
-            section_submission = SectionSubmission.objects.get(
-                section=self.section,
-                user=request.user)
-        except SectionSubmission.DoesNotExist:
-            section_submission = None
+        section_submission = self._get_section_submission(request.user)
 
         try:
             gate_submission = GateSubmission.objects.filter(
