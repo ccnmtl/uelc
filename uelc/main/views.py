@@ -225,6 +225,22 @@ class UELCPageView(LoggedInMixin,
             skip_url = self.section.get_next().get_absolute_url()
             return HttpResponseRedirect(skip_url)
 
+    def _get_section_submission(self, user):
+        try:
+            return SectionSubmission.objects.get(
+                section=self.section,
+                user=user)
+        except SectionSubmission.DoesNotExist:
+            return None
+
+    def _get_gate_submission(self, user):
+        try:
+            return GateSubmission.objects.filter(
+                section=self.section,
+                gate_user=user).latest('submitted')
+        except GateSubmission.DoesNotExist:
+            return None
+
     def get(self, request, path):
         self.check_user(request, path)
         # skip the first child of part if not admin
@@ -233,19 +249,8 @@ class UELCPageView(LoggedInMixin,
         uloc = UserLocation.objects.get_or_create(
             user=request.user,
             hierarchy=hierarchy)
-        try:
-            section_submission = SectionSubmission.objects.get(
-                section=self.section,
-                user=request.user)
-        except SectionSubmission.DoesNotExist:
-            section_submission = None
-
-        try:
-            gate_submission = GateSubmission.objects.filter(
-                section=self.section,
-                gate_user=request.user).latest('submitted')
-        except GateSubmission.DoesNotExist:
-            gate_submission = None
+        section_submission = self._get_section_submission(request.user)
+        gate_submission = self._get_gate_submission(request.user)
 
         # handler stuff
         hand = UELCHandler.objects.get_or_create(
@@ -276,13 +281,9 @@ class UELCPageView(LoggedInMixin,
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
             # Section.submit() in Pageblock library
-            if display_name == 'Decision Block':
-                # is the quiz really submitted?
-                # if so add yes/no to dict
-                quiz = b
-                completed = quiz.is_submitted(quiz, request.user)
-                decision_blocks.append(dict(id=block.id,
-                                            completed=completed))
+            decision_blocks = ensure_decision_block_submitted(
+                b, display_name, request.user, block,
+                decision_blocks)
             if display_name == 'Gate Block' and grp_usr:
                 gate_blocks.append(dict(id=block.id))
                 notification = dict(
@@ -386,6 +387,18 @@ class UELCPageView(LoggedInMixin,
             messages.error(request, 'error',
                            extra_tags='quizSubmissionError')
             return HttpResponseRedirect(request.path)
+
+
+def ensure_decision_block_submitted(b, display_name, user, block,
+                                    decision_blocks):
+    if display_name == 'Decision Block':
+        # is the quiz really submitted?
+        # if so add yes/no to dict
+        quiz = b
+        completed = quiz.is_submitted(quiz, user)
+        decision_blocks.append(dict(id=block.id,
+                                    completed=completed))
+    return decision_blocks
 
 
 class SubmitSectionView(LoggedInMixin,
