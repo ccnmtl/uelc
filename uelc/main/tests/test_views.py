@@ -867,7 +867,7 @@ class CloneHierarchyWithCasesViewTest(TestCase):
 
         self.assertEqual(r.status_code, 302)
 
-        cloned_h = Hierarchy.objects.get(name='test-case')
+        cloned_h = Hierarchy.objects.get(name='Test Case')
         self.assertEqual(cloned_h.base_url, '/pages/test-case/')
         self.assertEqual(Case.objects.filter(hierarchy=cloned_h).count(), 1)
 

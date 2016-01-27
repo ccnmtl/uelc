@@ -1263,16 +1263,26 @@ class DeleteCaseAnswerView(LoggedInMixinAdmin,
 
 
 class CloneHierarchyWithCasesView(CloneHierarchyView):
-    def form_valid(self, form):
-        rv = super(CloneHierarchyWithCasesView, self).form_valid(form)
 
+    def form_valid(self, form):
         name = form.cleaned_data['name']
         base_url = form.cleaned_data['base_url']
-        slugname = re.match(r'^\/pages\/(\S+)\/$', base_url).group(1)
-        clone = Hierarchy.objects.get(name=name)
-        clone.name = slugname
-        clone.save()
 
+        # Pagetree's clone() function expects a "base_url" parameter
+        # to give to the new Hierarchy.  UELC's pagetree is set up to
+        # require the base_url to be in the format: /pages/url/
+        # I want to handle the case where the user doesn't put the
+        # base_url in that format without changing the way pagetree
+        # works.
+        m = re.match(r'^\/pages\/(\S+)\/$', base_url)
+        if m is None:
+            # base_url isn't in the recognizable format, so assume it's
+            # a slug.
+            base_url = '/pages/%s/' % base_url
+            form.cleaned_data['base_url'] = base_url
+        rv = super(CloneHierarchyWithCasesView, self).form_valid(form)
+
+        clone = Hierarchy.objects.get(name=name)
         hierarchy_id = self.kwargs.get('hierarchy_id')
         original = get_object_or_404(Hierarchy, pk=hierarchy_id)
         original_cases = Case.objects.filter(hierarchy=original)
