@@ -565,6 +565,9 @@ class CaseQuiz(Quiz):
             return
 
         s = Submission.objects.create(quiz=self, user=user)
+        self.create_casemap_for_user(user, data, s)
+
+    def create_casemap_for_user(self, user, data, s):
         # create a CaseMap for the user
         # get Case the user is currently on
         for k in data.keys():
