@@ -48,7 +48,6 @@ class UELCCloneHierarchyForm(CloneHierarchyForm):
     def clean(self):
         cleaned_data = super(UELCCloneHierarchyForm, self).clean()
         slugname = slugify(self.cleaned_data['name'])
-        self.data['name'] = slugname
         self.cleaned_data['name'] = slugname
         return cleaned_data
 
