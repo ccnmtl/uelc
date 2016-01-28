@@ -489,12 +489,8 @@ class CaseQuiz(Quiz):
     template_file = "quizblock/quizblock.html"
 
     @classmethod
-    def get_pageblock(cls):
-        return True
-
-    @classmethod
     def create(cls, request):
-        return CaseQuiz.objects.create(
+        return cls.objects.create(
             description=request.POST.get('description', ''),
             rhetorical=request.POST.get('rhetorical', ''),
             allow_redo=request.POST.get('allow_redo', ''),

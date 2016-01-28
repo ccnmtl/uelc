@@ -245,10 +245,6 @@ class ImageUploadItemTest(TestCase):
 
 
 class CaseQuizTest(TestCase):
-    def test_get_pageblock(self):
-        casequiz = CaseQuiz()
-        self.assertTrue(casequiz.get_pageblock())
-
     def test_create(self):
         r = FakeReq()
         r.POST = {'description': 'description', 'rhetorical': 'rhetorical',
