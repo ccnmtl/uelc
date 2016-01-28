@@ -128,11 +128,7 @@ class UELCPageView(LoggedInMixin,
         if self.section == self.module and pt == "group_user":
             '''forward them to the home page of the part'''
 
-            nxt = self.section.get_next()
-            if nxt is not None:
-                nxt_path = nxt.get_path()
-            else:
-                nxt_path = self.section.get_path()
+            nxt_path = self.get_path_of_next_section()
 
             ns_path = urlparse.urljoin(
                 hierarchy.base_url,
@@ -146,6 +142,12 @@ class UELCPageView(LoggedInMixin,
         if not request.user.is_impersonate:
             self.upv = UserPageVisitor(self.section, request.user)
         return None
+
+    def get_path_of_next_section(self):
+        nxt = self.section.get_next()
+        if nxt is not None:
+            return nxt.get_path()
+        return self.section.get_path()
 
     def iterate_blocks(self, section):
         for block in section.pageblock_set.all():
@@ -686,11 +688,7 @@ class UELCAdminCreateUserView(
         elif password1 != password2:
             error = 'The passwords don\'t match.'
         elif profile_type != '':
-            cohort_id = request.POST.get('cohort', '')
-            if cohort_id:
-                cohort = Cohort.objects.get(id=cohort_id)
-            else:
-                cohort = None
+            cohort = self.get_cohort_or_none(request)
 
             user = User.objects.create_user(
                 username=username, password=password1)
@@ -710,6 +708,12 @@ class UELCAdminCreateUserView(
 
         url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
+
+    def get_cohort_or_none(self, request):
+        cohort_id = request.POST.get('cohort', '')
+        if cohort_id:
+            return Cohort.objects.get(id=cohort_id)
+        return None
 
 
 class UELCAdminDeleteUserView(LoggedInMixinAdmin,

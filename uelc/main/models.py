@@ -581,9 +581,11 @@ class CaseQuiz(Quiz):
             return
 
         s = Submission.objects.create(quiz=self, user=user)
+        self.create_casemap_for_user(user, data, s)
+
+    def create_casemap_for_user(self, user, data, s):
         # create a CaseMap for the user
         # get Case the user is currently on
-        quiz = self
         for k in data.keys():
             if k.startswith('case'):
                 case_id = data[k]
@@ -597,24 +599,24 @@ class CaseQuiz(Quiz):
                         case_id=case_id,
                         value=str(0))
 
-                casemap.set_value(quiz, data)
+                casemap.set_value(self, data)
 
             if k.startswith('question'):
                 qid = int(k[len('question'):])
                 question = Question.objects.get(id=qid)
                 # it might make more sense to just accept a QueryDict
                 # instead of a dict so we can use getlist()
+                dlist = []
                 if isinstance(data[k], list):
-                    for v in data[k]:
-                        Response.objects.create(
-                            submission=s,
-                            question=question,
-                            value=v)
+                    dlist = data[k]
                 else:
+                    dlist = [data[k]]
+
+                for v in dlist:
                     Response.objects.create(
                         submission=s,
                         question=question,
-                        value=data[k])
+                        value=v)
 
     def is_submitted(self, quiz, user):
         return Submission.objects.filter(
