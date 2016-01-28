@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.utils.text import slugify
+from pagetree.forms import CloneHierarchyForm
 from uelc.main.models import UserProfile, Cohort
 
 
@@ -40,6 +42,15 @@ class CreateHierarchyForm(forms.Form):
         widget=forms.widgets.Input(
             attrs={'class': 'add-hierarchy-name',
                    'required': True}))
+
+
+class UELCCloneHierarchyForm(CloneHierarchyForm):
+    def clean(self):
+        cleaned_data = super(UELCCloneHierarchyForm, self).clean()
+        slugname = slugify(self.cleaned_data['name'])
+        self.data['name'] = slugname
+        self.cleaned_data['name'] = slugname
+        return cleaned_data
 
 
 class EditUserPassForm(forms.Form):

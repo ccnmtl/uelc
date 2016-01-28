@@ -33,7 +33,8 @@ from uelc.main.models import (
     LibraryItem)
 from uelc.main.forms import (
     CreateUserForm, CreateHierarchyForm,
-    EditUserPassForm, CaseAnswerForm)
+    EditUserPassForm, CaseAnswerForm, UELCCloneHierarchyForm
+)
 
 from curveball.models import Curveball, CurveballBlock
 
@@ -1267,6 +1268,7 @@ class DeleteCaseAnswerView(LoggedInMixinAdmin,
 
 
 class CloneHierarchyWithCasesView(CloneHierarchyView):
+    form_class = UELCCloneHierarchyForm
 
     def form_valid(self, form):
         name = form.cleaned_data['name']
