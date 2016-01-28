@@ -128,11 +128,7 @@ class UELCPageView(LoggedInMixin,
         if self.section == self.module and pt == "group_user":
             '''forward them to the home page of the part'''
 
-            nxt = self.section.get_next()
-            if nxt is not None:
-                nxt_path = nxt.get_path()
-            else:
-                nxt_path = self.section.get_path()
+            nxt_path = self.get_path_of_next_section()
 
             ns_path = urlparse.urljoin(
                 hierarchy.base_url,
@@ -146,6 +142,13 @@ class UELCPageView(LoggedInMixin,
         if not request.user.is_impersonate:
             self.upv = UserPageVisitor(self.section, request.user)
         return None
+
+    def get_path_of_next_section(self):
+        nxt = self.section.get_next()
+        if nxt is not None:
+            return nxt.get_path()
+        else:
+            return self.section.get_path()
 
     def iterate_blocks(self, section):
         for block in section.pageblock_set.all():
