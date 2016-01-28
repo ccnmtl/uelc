@@ -590,17 +590,17 @@ class CaseQuiz(Quiz):
                 question = Question.objects.get(id=qid)
                 # it might make more sense to just accept a QueryDict
                 # instead of a dict so we can use getlist()
+                dlist = []
                 if isinstance(data[k], list):
-                    for v in data[k]:
-                        Response.objects.create(
-                            submission=s,
-                            question=question,
-                            value=v)
+                    dlist = data[k]
                 else:
+                    dlist = [data[k]]
+
+                for v in dlist:
                     Response.objects.create(
                         submission=s,
                         question=question,
-                        value=data[k])
+                        value=v)
 
     def is_submitted(self, quiz, user):
         return Submission.objects.filter(
