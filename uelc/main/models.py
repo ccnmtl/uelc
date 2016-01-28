@@ -567,7 +567,6 @@ class CaseQuiz(Quiz):
         s = Submission.objects.create(quiz=self, user=user)
         # create a CaseMap for the user
         # get Case the user is currently on
-        quiz = self
         for k in data.keys():
             if k.startswith('case'):
                 case_id = data[k]
@@ -581,7 +580,7 @@ class CaseQuiz(Quiz):
                         case_id=case_id,
                         value=str(0))
 
-                casemap.set_value(quiz, data)
+                casemap.set_value(self, data)
 
             if k.startswith('question'):
                 qid = int(k[len('question'):])
