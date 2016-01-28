@@ -5,7 +5,8 @@ from django.test import TestCase
 from pagetree.helpers import get_hierarchy
 from pagetree.models import Hierarchy, Section
 from pagetree.tests.factories import ModuleFactory
-from uelc.main.models import Case
+from quizblock.models import Question, Answer
+from uelc.main.models import Case, CaseQuiz, CaseAnswer
 from uelc.main.tests.factories import (
     GroupUpFactory, AdminUpFactory,
     CaseFactory, CohortFactory, FacilitatorUpFactory,
@@ -855,6 +856,56 @@ class CloneHierarchyWithCasesViewTest(TestCase):
         self.assertEqual(cloned_case.cohort.count(), self.case.cohort.count())
         self.assertEqual(set(cloned_case.cohort.all()),
                          set(self.case.cohort.all()))
+
+        # Find the "Decision Block" defined in UELCModuleFactory. This is
+        # represented by the CaseQuiz class.
+        self.assertEqual(CaseQuiz.objects.count(), 2)
+        casequizzes = []
+        for cq in CaseQuiz.objects.all():
+            if cq.pageblock().section.hierarchy == cloned_h:
+                casequizzes.append(cq)
+
+        self.assertEqual(len(casequizzes), 1)
+        cq = casequizzes[0]
+        self.assertEqual(cq.pageblock().section.label, 'Your First Decision')
+
+        # Now verify that the questions and answers for this CaseQuiz
+        # have been cloned accurately.
+        questions = Question.objects.filter(quiz=cq)
+        self.assertEqual(len(questions), 1)
+        question = questions[0]
+
+        self.assertEqual(question.text, 'Select One')
+        self.assertEqual(question.question_type, 'single choice')
+
+        answers = Answer.objects.filter(question=question)
+        self.assertEqual(len(answers), 3)
+
+        answer1 = answers.get(value=1)
+        answer2 = answers.get(value=2)
+        answer3 = answers.get(value=3)
+
+        # UELC also has the special "CaseAnswer" model, which we need to
+        # verify is correctly cloned.
+        self.assertEqual(CaseAnswer.objects.count(), 6)
+        ca = CaseAnswer.objects.get(answer=answer1)
+        self.assertEqual(ca.title, 'Choice 1: Full Disclosure')
+        self.assertEqual(
+            ca.description,
+            'You have chosen to '
+            'address the allegations publicly '
+            'and commence to investigate the '
+            'allegations.')
+
+        ca = CaseAnswer.objects.get(answer=answer2)
+        self.assertEqual(
+            ca.title,
+            'Choice 2: Initiate an Unofficial Investigation')
+
+        ca = CaseAnswer.objects.get(answer=answer3)
+        self.assertEqual(
+            ca.title,
+            'Choice 3: Initiate an Unofficial Investigation')
 
     def test_post_with_spaces_in_name(self):
         url = reverse('clone-hierarchy', kwargs={

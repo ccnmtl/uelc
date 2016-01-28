@@ -539,6 +539,22 @@ class CaseQuiz(Quiz):
                     x.explanation = a.get('explanation', '')
                     x.save()
 
+    def as_dict(self):
+        d = dict(description=self.description,
+                 rhetorical=self.rhetorical,
+                 allow_redo=self.allow_redo,
+                 show_submit_state=self.show_submit_state)
+
+        questions = self.question_set.all()
+        d['questions'] = [q.as_dict() for q in questions]
+        answers = Answer.objects.filter(question__in=questions)
+        for q in d['questions']:
+            for answer in answers:
+                ca = CaseAnswer.objects.get(answer=answer)
+                q['answers'][answer._order]['title'] = ca.title
+                q['answers'][answer._order]['description'] = ca.description
+        return d
+
     @classmethod
     def add_form(cls):
         class AddForm(forms.Form):
@@ -655,5 +671,11 @@ class CaseAnswer(models.Model):
                 widget=forms.Textarea,
                 initial=self.description)
         return CaseAnswerForm()
+
+    def as_dict(self):
+        return {
+            'title': self.title,
+            'description': self.description,
+        }
 
 ReportableInterface.register(CaseQuiz)
