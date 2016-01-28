@@ -688,11 +688,7 @@ class UELCAdminCreateUserView(
         elif password1 != password2:
             error = 'The passwords don\'t match.'
         elif profile_type != '':
-            cohort_id = request.POST.get('cohort', '')
-            if cohort_id:
-                cohort = Cohort.objects.get(id=cohort_id)
-            else:
-                cohort = None
+            cohort = self.get_cohort_or_none(request)
 
             user = User.objects.create_user(
                 username=username, password=password1)
@@ -712,6 +708,13 @@ class UELCAdminCreateUserView(
 
         url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
+
+    def get_cohort_or_none(self, request):
+        cohort_id = request.POST.get('cohort', '')
+        if cohort_id:
+            return Cohort.objects.get(id=cohort_id)
+        else:
+            return None
 
 
 class UELCAdminDeleteUserView(LoggedInMixinAdmin,
