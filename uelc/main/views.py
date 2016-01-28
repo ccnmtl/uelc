@@ -713,8 +713,7 @@ class UELCAdminCreateUserView(
         cohort_id = request.POST.get('cohort', '')
         if cohort_id:
             return Cohort.objects.get(id=cohort_id)
-        else:
-            return None
+        return None
 
 
 class UELCAdminDeleteUserView(LoggedInMixinAdmin,
