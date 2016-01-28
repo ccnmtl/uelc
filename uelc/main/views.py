@@ -147,8 +147,7 @@ class UELCPageView(LoggedInMixin,
         nxt = self.section.get_next()
         if nxt is not None:
             return nxt.get_path()
-        else:
-            return self.section.get_path()
+        return self.section.get_path()
 
     def iterate_blocks(self, section):
         for block in section.pageblock_set.all():
