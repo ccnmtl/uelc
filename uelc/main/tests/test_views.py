@@ -918,12 +918,22 @@ class CloneHierarchyWithCasesViewTest(TestCase):
 
         self.assertEqual(r.status_code, 302)
 
-        cloned_h = Hierarchy.objects.get(name='Test Case')
+        self.assertEqual(
+            Hierarchy.objects.get(base_url='/pages/test-case/'),
+            Hierarchy.objects.get(name='test-case'))
+        self.assertEqual(
+            Hierarchy.objects.filter(base_url='/pages/test-case/').count(),
+            1)
+        self.assertEqual(
+            Hierarchy.objects.filter(name='test-case').count(),
+            1)
+
+        cloned_h = Hierarchy.objects.get(name='test-case')
         self.assertEqual(cloned_h.base_url, '/pages/test-case/')
         self.assertEqual(Case.objects.filter(hierarchy=cloned_h).count(), 1)
 
         cloned_case = Case.objects.filter(hierarchy=cloned_h).first()
-        self.assertEqual(cloned_case.name, 'Test Case')
+        self.assertEqual(cloned_case.name, 'test-case')
         self.assertEqual(cloned_case.description, self.case.description)
         self.assertEqual(cloned_case.cohort.count(), self.case.cohort.count())
         self.assertEqual(set(cloned_case.cohort.all()),
