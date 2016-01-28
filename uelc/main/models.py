@@ -550,9 +550,15 @@ class CaseQuiz(Quiz):
         answers = Answer.objects.filter(question__in=questions)
         for q in d['questions']:
             for answer in answers:
-                ca = CaseAnswer.objects.get(answer=answer)
-                q['answers'][answer._order]['title'] = ca.title
-                q['answers'][answer._order]['description'] = ca.description
+                a = [x for x in q['answers'] if x['value'] == answer.value]
+                if len(a) > 0:
+                    ca = CaseAnswer.objects.get(answer=answer)
+                    a = a[0]
+                    a['title'] = ca.title
+                    a['description'] = ca.description
+                else:
+                    # This means the answer won't be exported correctly.
+                    pass
         return d
 
     @classmethod
