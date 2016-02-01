@@ -1,7 +1,7 @@
+import re
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.utils.text import slugify
 from pagetree.forms import CloneHierarchyForm
 from uelc.main.models import UserProfile, Cohort
 
@@ -47,9 +47,22 @@ class CreateHierarchyForm(forms.Form):
 class UELCCloneHierarchyForm(CloneHierarchyForm):
     def clean(self):
         cleaned_data = super(UELCCloneHierarchyForm, self).clean()
-        slugname = slugify(self.cleaned_data['name'])
-        self.cleaned_data['name'] = slugname
-        return cleaned_data
+        base_url = cleaned_data['base_url']
+
+        # Pagetree's clone() function expects a "base_url" parameter
+        # to give to the new Hierarchy.  UELC's pagetree is set up to
+        # require the base_url to be in the format: /pages/url/
+        # I want to handle the case where the user doesn't put the
+        # base_url in that format without changing the way pagetree
+        # works.
+        m = re.match(r'^\/pages\/(\S+)\/$', base_url)
+        if m is None:
+            # base_url isn't in the recognizable format, so assume it's
+            # a slug.
+            base_url = '/pages/%s/' % base_url
+            self.cleaned_data['base_url'] = base_url
+
+        return self.cleaned_data
 
 
 class EditUserPassForm(forms.Form):

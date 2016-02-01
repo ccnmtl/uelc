@@ -1,5 +1,6 @@
 import json
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from pagetree.helpers import get_hierarchy
@@ -821,6 +822,9 @@ class CloneHierarchyWithCasesViewTest(TestCase):
     def setUp(self):
         UELCModuleFactory()
         self.h = Hierarchy.objects.get(name='case-test')
+        # Make sure this cache is cleared -- it's persistent across test runs,
+        # and pagetree uses it a lot.
+        cache.clear()
         self.profile = AdminUpFactory()
         self.client.login(username=self.profile.user.username, password='test')
         self.case = Case.objects.get(name='case-test')
@@ -841,10 +845,10 @@ class CloneHierarchyWithCasesViewTest(TestCase):
         })
         r = self.client.post(url, {
             'name': 'test',
-            'base_url': '/pages/test/',
-        })
+            'base_url': 'test',
+        }, follow=True)
 
-        self.assertEqual(r.status_code, 302)
+        self.assertEqual(r.status_code, 200)
 
         cloned_h = Hierarchy.objects.get(name='test')
         self.assertEqual(cloned_h.base_url, '/pages/test/')
@@ -913,27 +917,61 @@ class CloneHierarchyWithCasesViewTest(TestCase):
         })
         r = self.client.post(url, {
             'name': 'Test Case',
-            'base_url': '/pages/test-case/',
-        })
+            'base_url': 'test-case',
+        }, follow=True)
 
-        self.assertEqual(r.status_code, 302)
+        self.assertEqual(r.status_code, 200)
 
+        self.assertEqual(Hierarchy.objects.count(), 2)
         self.assertEqual(
             Hierarchy.objects.get(base_url='/pages/test-case/'),
-            Hierarchy.objects.get(name='test-case'))
+            Hierarchy.objects.get(name='Test Case'))
         self.assertEqual(
             Hierarchy.objects.filter(base_url='/pages/test-case/').count(),
             1)
         self.assertEqual(
-            Hierarchy.objects.filter(name='test-case').count(),
+            Hierarchy.objects.filter(name='Test Case').count(),
             1)
 
-        cloned_h = Hierarchy.objects.get(name='test-case')
+        cloned_h = Hierarchy.objects.get(name='Test Case')
         self.assertEqual(cloned_h.base_url, '/pages/test-case/')
         self.assertEqual(Case.objects.filter(hierarchy=cloned_h).count(), 1)
 
         cloned_case = Case.objects.filter(hierarchy=cloned_h).first()
-        self.assertEqual(cloned_case.name, 'test-case')
+        self.assertEqual(cloned_case.name, 'Test Case')
+        self.assertEqual(cloned_case.description, self.case.description)
+        self.assertEqual(cloned_case.cohort.count(), self.case.cohort.count())
+        self.assertEqual(set(cloned_case.cohort.all()),
+                         set(self.case.cohort.all()))
+
+    def test_post_with_name_different_than_url(self):
+        url = reverse('clone-hierarchy', kwargs={
+            'hierarchy_id': self.h.pk
+        })
+        r = self.client.post(url, {
+            'name': 'Some Random Name',
+            'base_url': 'my-test-case',
+        }, follow=True)
+
+        self.assertEqual(r.status_code, 200)
+
+        self.assertEqual(Hierarchy.objects.count(), 2)
+        self.assertEqual(
+            Hierarchy.objects.get(base_url='/pages/my-test-case/'),
+            Hierarchy.objects.get(name='Some Random Name'))
+        self.assertEqual(
+            Hierarchy.objects.filter(base_url='/pages/my-test-case/').count(),
+            1)
+        self.assertEqual(
+            Hierarchy.objects.filter(name='Some Random Name').count(),
+            1)
+
+        cloned_h = Hierarchy.objects.get(name='Some Random Name')
+        self.assertEqual(cloned_h.base_url, '/pages/my-test-case/')
+        self.assertEqual(Case.objects.filter(hierarchy=cloned_h).count(), 1)
+
+        cloned_case = Case.objects.filter(hierarchy=cloned_h).first()
+        self.assertEqual(cloned_case.name, 'Some Random Name')
         self.assertEqual(cloned_case.description, self.case.description)
         self.assertEqual(cloned_case.cohort.count(), self.case.cohort.count())
         self.assertEqual(set(cloned_case.cohort.all()),

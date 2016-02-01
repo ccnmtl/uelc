@@ -50,12 +50,11 @@ class DynamicHierarchyMixin(object):
         slugname = kwargs.pop('hierarchy_name', None)
         if slugname is None:
             return HttpResponseNotFound('hierarchy_name is None')
-
-        self.hierarchy_name = slugname
         url = '/pages/{}/'.format(slugname)
         try:
             h = Hierarchy.objects.get(base_url=url)
             self.hierarchy_base = h.base_url
+            self.hierarchy_name = h.name
         except Hierarchy.DoesNotExist:
             msg = "No hierarchy with url %s found" % url
             return HttpResponseNotFound(msg)
