@@ -594,19 +594,7 @@ class CaseQuiz(Quiz):
         # get Case the user is currently on
         for k in data.keys():
             if k.startswith('case'):
-                case_id = data[k]
-                try:
-                    casemap = CaseMap.objects.get(
-                        user=user,
-                        case_id=case_id)
-                except CaseMap.DoesNotExist:
-                    casemap = CaseMap.objects.create(
-                        user=user,
-                        case_id=case_id,
-                        value=str(0))
-
-                casemap.set_value(self, data)
-
+                self.make_casemap(user, data, s, k)
             if k.startswith('question'):
                 qid = int(k[len('question'):])
                 question = Question.objects.get(id=qid)
@@ -623,6 +611,16 @@ class CaseQuiz(Quiz):
                         submission=s,
                         question=question,
                         value=v)
+
+    def make_casemap(self, user, data, s, k):
+        case_id = data[k]
+        try:
+            casemap = CaseMap.objects.get(user=user, case_id=case_id)
+        except CaseMap.DoesNotExist:
+            casemap = CaseMap.objects.create(
+                user=user, case_id=case_id, value=str(0))
+
+        casemap.set_value(self, data)
 
     def is_submitted(self, quiz, user):
         return Submission.objects.filter(
