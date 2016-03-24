@@ -99,31 +99,8 @@ class UELCPageView(LoggedInMixin,
             ns_hierarchy = False
         base_url = self.section.hierarchy.base_url
         if self.section.is_root():
-            if not ns or not(ns_hierarchy == hierarchy):
-
-                if not pt == "group_user":
-                    # then root has no children yet
-                    action_args = dict(
-                        error="You just tried accessing a case that has \
-                              no content. You have been forwarded over \
-                              to the root page of the case so that you \
-                              can and add some content if you wish to.")
-                    messages.error(request, action_args['error'],
-                                   extra_tags='rootUrlError')
-                    request.path = base_url+'edit/'
-                    return HttpResponseRedirect(request.path)
-                else:
-                    action_args = dict(
-                        error="For some reason the case you tried to \
-                              access does not have any content yet. \
-                              Please choose another case, or alert \
-                              your facilitator.")
-                    messages.error(request, action_args['error'],
-                                   extra_tags='rootUrlError')
-                    request.path = '/'
-                    return HttpResponseRedirect(request.path)
-
-            return visit_root(self.section, self.no_root_fallback_url)
+            return self.root_section_check(request, ns, ns_hierarchy,
+                                           hierarchy, base_url, pt)
 
         if self.section == self.module and pt == "group_user":
             '''forward them to the home page of the part'''
@@ -142,6 +119,34 @@ class UELCPageView(LoggedInMixin,
         if not request.user.is_impersonate:
             self.upv = UserPageVisitor(self.section, request.user)
         return None
+
+    def root_section_check(self, request, ns, ns_hierarchy,
+                           hierarchy, base_url, pt):
+        if not ns or not(ns_hierarchy == hierarchy):
+
+            if not pt == "group_user":
+                # then root has no children yet
+                action_args = dict(
+                    error="You just tried accessing a case that has \
+                          no content. You have been forwarded over \
+                          to the root page of the case so that you \
+                          can and add some content if you wish to.")
+                messages.error(request, action_args['error'],
+                               extra_tags='rootUrlError')
+                request.path = base_url+'edit/'
+                return HttpResponseRedirect(request.path)
+            else:
+                action_args = dict(
+                    error="For some reason the case you tried to \
+                          access does not have any content yet. \
+                          Please choose another case, or alert \
+                          your facilitator.")
+                messages.error(request, action_args['error'],
+                               extra_tags='rootUrlError')
+                request.path = '/'
+                return HttpResponseRedirect(request.path)
+
+        return visit_root(self.section, self.no_root_fallback_url)
 
     def get_path_of_next_section(self):
         nxt = self.section.get_next()
