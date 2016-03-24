@@ -688,9 +688,7 @@ class UELCAdminCreateUserView(
         password1 = request.POST.get('password1', '')
         password2 = request.POST.get('password2', '')
 
-        user_filter = User.objects.filter(username=username)
-        error = self.check_for_errors(user_filter, username,
-                                      password1, password2)
+        error = self.check_for_errors(username, password1, password2)
         if error is None and profile_type != '':
             cohort = self.get_cohort_or_none(request)
 
@@ -713,7 +711,8 @@ class UELCAdminCreateUserView(
         url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
 
-    def check_for_errors(self, user_filter, username, password1, password2):
+    def check_for_errors(self, username, password1, password2):
+        user_filter = User.objects.filter(username=username)
         error = None
         if user_filter.exists():
             error = 'That username already exists! Please enter a new one.'
