@@ -691,7 +691,7 @@ class UELCAdminCreateUserView(
         user_filter = User.objects.filter(username=username)
         error = self.check_for_errors(user_filter, username,
                                       password1, password2)
-        if profile_type != '':
+        if error is None and profile_type != '':
             cohort = self.get_cohort_or_none(request)
 
             user = User.objects.create_user(
