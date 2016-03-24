@@ -368,15 +368,15 @@ class UELCPageView(LoggedInMixin,
         if request.POST.get('action', '') == 'reset':
             self.upv.visit(status="incomplete")
             return reset_page(self.section, request)
+
         # When quiz is submitted successfully, we
         # want the facilitator's dashboard to be updated
-        '''Will need to get the correct curveball choices to send
-        facilitator'''
+        # Will need to get the correct curveball choices to send
+        # facilitator
         post_keys = request.POST.keys()
         q_id = None
         q_answer_set = None
         answer_value = None
-        answer_title = None
         for k in post_keys:
             k_split = k.split('question')
             if len(k_split) > 1:
@@ -384,16 +384,22 @@ class UELCPageView(LoggedInMixin,
                 answer_value = request.POST.get(k)
                 q = Question.objects.get(id=q_id)
                 q_answer_set = q.answer_set.all()
-        if q_answer_set:
-            for an in q_answer_set:
-                if an.value == answer_value:
-                    ca = CaseAnswer.objects.get(answer=an)
-                    answer_title = ca.display_title()
+        answer_title = get_answer_title(q_answer_set, answer_value)
         notification = dict(
             data=answer_title,
             message='Decision Submitted')
         self.notify_facilitators(request, path, notification)
         return page_submit(self.section, request)
+
+
+def get_answer_title(q_answer_set, answer_value):
+    answer_title = None
+    if q_answer_set:
+        for an in q_answer_set:
+            if an.value == answer_value:
+                ca = CaseAnswer.objects.get(answer=an)
+                answer_title = ca.display_title()
+    return answer_title
 
 
 def ensure_decision_block_submitted(b, display_name, user, block,
