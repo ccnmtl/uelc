@@ -689,16 +689,9 @@ class UELCAdminCreateUserView(
         password2 = request.POST.get('password2', '')
 
         user_filter = User.objects.filter(username=username)
-        error = None
-        if user_filter.exists():
-            error = 'That username already exists! Please enter a new one.'
-        elif len(username) > 30:
-            error = 'The username needs to be 30 characters or fewer',
-        elif password1 == '':
-            error = 'The password is blank'
-        elif password1 != password2:
-            error = 'The passwords don\'t match.'
-        elif profile_type != '':
+        error = self.check_for_errors(user_filter, username,
+                                      password1, password2)
+        if profile_type != '':
             cohort = self.get_cohort_or_none(request)
 
             user = User.objects.create_user(
@@ -719,6 +712,18 @@ class UELCAdminCreateUserView(
 
         url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
+
+    def check_for_errors(self, user_filter, username, password1, password2):
+        error = None
+        if user_filter.exists():
+            error = 'That username already exists! Please enter a new one.'
+        elif len(username) > 30:
+            error = 'The username needs to be 30 characters or fewer',
+        elif password1 == '':
+            error = 'The password is blank'
+        elif password1 != password2:
+            error = 'The passwords don\'t match.'
+        return error
 
     def get_cohort_or_none(self, request):
         cohort_id = request.POST.get('cohort', '')
