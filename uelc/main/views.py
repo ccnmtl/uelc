@@ -1208,20 +1208,19 @@ class AddCaseAnswerToQuestionView(View):
                 self.template_name,
                 dict(question=question, case_answer_form=form))
         description = request.POST.get('description', "")
-        if value:
-            inty = int(value)
-        elif request.POST.get('answer-value'):
-            inty = request.POST.get('answer-value')
-        else:
-            inty = 0
+
+        inty = self.get_inty(value, request)
+
         if not title:
             title = request.POST.get('case-answer-title', "")
             if not title:
                 title = '---'
+
         if not description:
             description = request.POST.get('case-answer-description', "")
             if not description:
                 description = '----'
+
         ans = Answer.objects.create(
             question=question,
             value=inty)
@@ -1234,6 +1233,14 @@ class AddCaseAnswerToQuestionView(View):
             request,
             self.template_name,
             dict(question=question, case_answer_form=CaseAnswerForm()))
+
+    def get_inty(self, value, request):
+        if value:
+            return int(value)
+        elif request.POST.get('answer-value'):
+            return request.POST.get('answer-value')
+        else:
+            return 0
 
 
 class EditCaseAnswerView(View):
