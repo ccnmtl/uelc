@@ -99,31 +99,8 @@ class UELCPageView(LoggedInMixin,
             ns_hierarchy = False
         base_url = self.section.hierarchy.base_url
         if self.section.is_root():
-            if not ns or not(ns_hierarchy == hierarchy):
-
-                if not pt == "group_user":
-                    # then root has no children yet
-                    action_args = dict(
-                        error="You just tried accessing a case that has \
-                              no content. You have been forwarded over \
-                              to the root page of the case so that you \
-                              can and add some content if you wish to.")
-                    messages.error(request, action_args['error'],
-                                   extra_tags='rootUrlError')
-                    request.path = base_url+'edit/'
-                    return HttpResponseRedirect(request.path)
-                else:
-                    action_args = dict(
-                        error="For some reason the case you tried to \
-                              access does not have any content yet. \
-                              Please choose another case, or alert \
-                              your facilitator.")
-                    messages.error(request, action_args['error'],
-                                   extra_tags='rootUrlError')
-                    request.path = '/'
-                    return HttpResponseRedirect(request.path)
-
-            return visit_root(self.section, self.no_root_fallback_url)
+            return self.root_section_check(request, ns, ns_hierarchy,
+                                           hierarchy, base_url, pt)
 
         if self.section == self.module and pt == "group_user":
             '''forward them to the home page of the part'''
@@ -142,6 +119,34 @@ class UELCPageView(LoggedInMixin,
         if not request.user.is_impersonate:
             self.upv = UserPageVisitor(self.section, request.user)
         return None
+
+    def root_section_check(self, request, ns, ns_hierarchy,
+                           hierarchy, base_url, pt):
+        if not ns or not(ns_hierarchy == hierarchy):
+
+            if not pt == "group_user":
+                # then root has no children yet
+                action_args = dict(
+                    error="You just tried accessing a case that has \
+                          no content. You have been forwarded over \
+                          to the root page of the case so that you \
+                          can and add some content if you wish to.")
+                messages.error(request, action_args['error'],
+                               extra_tags='rootUrlError')
+                request.path = base_url+'edit/'
+                return HttpResponseRedirect(request.path)
+            else:
+                action_args = dict(
+                    error="For some reason the case you tried to \
+                          access does not have any content yet. \
+                          Please choose another case, or alert \
+                          your facilitator.")
+                messages.error(request, action_args['error'],
+                               extra_tags='rootUrlError')
+                request.path = '/'
+                return HttpResponseRedirect(request.path)
+
+        return visit_root(self.section, self.no_root_fallback_url)
 
     def get_path_of_next_section(self):
         nxt = self.section.get_next()
@@ -355,40 +360,46 @@ class UELCPageView(LoggedInMixin,
         # a hidden input, key "case" and csrf token
         # is included on all case_quiz submissions thus,
         # musthave more than two keys
-        if len(request.POST.keys()) > 2:
-            if request.POST.get('action', '') == 'reset':
-                self.upv.visit(status="incomplete")
-                return reset_page(self.section, request)
-            # When quiz is submitted successfully, we
-            # want the facilitator's dashboard to be updated
-            '''Will need to get the correct curveball choices to send
-            facilitator'''
-            post_keys = request.POST.keys()
-            q_id = None
-            q_answer_set = None
-            answer_value = None
-            answer_title = None
-            for k in post_keys:
-                k_split = k.split('question')
-                if len(k_split) > 1:
-                    q_id = k_split[1]
-                    answer_value = request.POST.get(k)
-                    q = Question.objects.get(id=q_id)
-                    q_answer_set = q.answer_set.all()
-            if q_answer_set:
-                for an in q_answer_set:
-                    if an.value == answer_value:
-                        ca = CaseAnswer.objects.get(answer=an)
-                        answer_title = ca.display_title()
-            notification = dict(
-                data=answer_title,
-                message='Decision Submitted')
-            self.notify_facilitators(request, path, notification)
-            return page_submit(self.section, request)
-        else:
+        if len(request.POST.keys()) < 3:
             messages.error(request, 'error',
                            extra_tags='quizSubmissionError')
             return HttpResponseRedirect(request.path)
+
+        if request.POST.get('action', '') == 'reset':
+            self.upv.visit(status="incomplete")
+            return reset_page(self.section, request)
+
+        # When quiz is submitted successfully, we
+        # want the facilitator's dashboard to be updated
+        # Will need to get the correct curveball choices to send
+        # facilitator
+        post_keys = request.POST.keys()
+        q_id = None
+        q_answer_set = None
+        answer_value = None
+        for k in post_keys:
+            k_split = k.split('question')
+            if len(k_split) > 1:
+                q_id = k_split[1]
+                answer_value = request.POST.get(k)
+                q = Question.objects.get(id=q_id)
+                q_answer_set = q.answer_set.all()
+        answer_title = get_answer_title(q_answer_set, answer_value)
+        notification = dict(
+            data=answer_title,
+            message='Decision Submitted')
+        self.notify_facilitators(request, path, notification)
+        return page_submit(self.section, request)
+
+
+def get_answer_title(q_answer_set, answer_value):
+    answer_title = None
+    if q_answer_set:
+        for an in q_answer_set:
+            if an.value == answer_value:
+                ca = CaseAnswer.objects.get(answer=an)
+                answer_title = ca.display_title()
+    return answer_title
 
 
 def ensure_decision_block_submitted(b, display_name, user, block,
@@ -677,17 +688,8 @@ class UELCAdminCreateUserView(
         password1 = request.POST.get('password1', '')
         password2 = request.POST.get('password2', '')
 
-        user_filter = User.objects.filter(username=username)
-        error = None
-        if user_filter.exists():
-            error = 'That username already exists! Please enter a new one.'
-        elif len(username) > 30:
-            error = 'The username needs to be 30 characters or fewer',
-        elif password1 == '':
-            error = 'The password is blank'
-        elif password1 != password2:
-            error = 'The passwords don\'t match.'
-        elif profile_type != '':
+        error = self.check_for_errors(username, password1, password2)
+        if error is None and profile_type != '':
             cohort = self.get_cohort_or_none(request)
 
             user = User.objects.create_user(
@@ -708,6 +710,19 @@ class UELCAdminCreateUserView(
 
         url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
+
+    def check_for_errors(self, username, password1, password2):
+        user_filter = User.objects.filter(username=username)
+        error = None
+        if user_filter.exists():
+            error = 'That username already exists! Please enter a new one.'
+        elif len(username) > 30:
+            error = 'The username needs to be 30 characters or fewer',
+        elif password1 == '':
+            error = 'The password is blank'
+        elif password1 != password2:
+            error = 'The passwords don\'t match.'
+        return error
 
     def get_cohort_or_none(self, request):
         cohort_id = request.POST.get('cohort', '')
@@ -1192,20 +1207,19 @@ class AddCaseAnswerToQuestionView(View):
                 self.template_name,
                 dict(question=question, case_answer_form=form))
         description = request.POST.get('description', "")
-        if value:
-            inty = int(value)
-        elif request.POST.get('answer-value'):
-            inty = request.POST.get('answer-value')
-        else:
-            inty = 0
+
+        inty = self.get_inty(value, request)
+
         if not title:
             title = request.POST.get('case-answer-title', "")
             if not title:
                 title = '---'
+
         if not description:
             description = request.POST.get('case-answer-description', "")
             if not description:
                 description = '----'
+
         ans = Answer.objects.create(
             question=question,
             value=inty)
@@ -1218,6 +1232,14 @@ class AddCaseAnswerToQuestionView(View):
             request,
             self.template_name,
             dict(question=question, case_answer_form=CaseAnswerForm()))
+
+    def get_inty(self, value, request):
+        if value:
+            return int(value)
+        elif request.POST.get('answer-value'):
+            return request.POST.get('answer-value')
+        else:
+            return 0
 
 
 class EditCaseAnswerView(View):

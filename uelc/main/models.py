@@ -594,35 +594,33 @@ class CaseQuiz(Quiz):
         # get Case the user is currently on
         for k in data.keys():
             if k.startswith('case'):
-                case_id = data[k]
-                try:
-                    casemap = CaseMap.objects.get(
-                        user=user,
-                        case_id=case_id)
-                except CaseMap.DoesNotExist:
-                    casemap = CaseMap.objects.create(
-                        user=user,
-                        case_id=case_id,
-                        value=str(0))
-
-                casemap.set_value(self, data)
-
+                self.make_casemap(user, data, s, k)
             if k.startswith('question'):
-                qid = int(k[len('question'):])
-                question = Question.objects.get(id=qid)
-                # it might make more sense to just accept a QueryDict
-                # instead of a dict so we can use getlist()
-                dlist = []
-                if isinstance(data[k], list):
-                    dlist = data[k]
-                else:
-                    dlist = [data[k]]
+                self.make_question(user, data, s, k)
 
-                for v in dlist:
-                    Response.objects.create(
-                        submission=s,
-                        question=question,
-                        value=v)
+    def make_casemap(self, user, data, s, k):
+        case_id = data[k]
+        try:
+            casemap = CaseMap.objects.get(user=user, case_id=case_id)
+        except CaseMap.DoesNotExist:
+            casemap = CaseMap.objects.create(
+                user=user, case_id=case_id, value=str(0))
+
+        casemap.set_value(self, data)
+
+    def make_question(self, user, data, s, k):
+        qid = int(k[len('question'):])
+        question = Question.objects.get(id=qid)
+        # it might make more sense to just accept a QueryDict
+        # instead of a dict so we can use getlist()
+        dlist = []
+        if isinstance(data[k], list):
+            dlist = data[k]
+        else:
+            dlist = [data[k]]
+
+        for v in dlist:
+            Response.objects.create(submission=s, question=question, value=v)
 
     def is_submitted(self, quiz, user):
         return Submission.objects.filter(

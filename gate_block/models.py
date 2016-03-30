@@ -39,8 +39,7 @@ class GateBlock(BasePageBlock):
         Takes self.pageblock().section, a User, Hierarchy, UserLocation,
         and optionally, a pageblock set.
         """
-        if pageblocks is None:
-            pageblocks = gate_section.pageblock_set.all()
+        pageblocks = self._get_pageblocks(pageblocks, gate_section)
 
         ss_exists = SectionSubmission.objects.filter(
             user=user, section=gate_section).exists()
@@ -66,6 +65,11 @@ class GateBlock(BasePageBlock):
             return "reviewing"
 
         return "to be reviewed"
+
+    def _get_pageblocks(self, pageblocks, gate_section):
+        if pageblocks is None:
+            pageblocks = gate_section.pageblock_set.all()
+        return pageblocks
 
     @classmethod
     def add_form(self):

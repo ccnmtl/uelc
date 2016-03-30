@@ -1,7 +1,7 @@
 APP=uelc
 JS_FILES=media/js/uelc_admin
 PY_DIRS=$(APP) gate_block curveball features
-MAX_COMPLEXITY=8
+MAX_COMPLEXITY=7
 
 all: jenkins
 
