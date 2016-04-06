@@ -52,7 +52,6 @@ contextlib2==0.5.1
 
 djangowind==0.14.3
 sorl==3.1
-django-tagging==0.4
 typogrify==2.0.7
 django-indexer==0.3.0
 django-templatetag-sugar==1.0
