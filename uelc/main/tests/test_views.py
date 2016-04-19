@@ -336,6 +336,7 @@ class TestAdminBasicViews(TestCase):
                 'profile_type': up.profile_type,
                 'cohort': up.cohort.pk,
             },
+            HTTP_REFERER="/uelcadmin/",
             follow=True)
         self.assertEqual(request.status_code, 200)
         self.assertTrue(
@@ -353,6 +354,7 @@ class TestAdminBasicViews(TestCase):
                 'profile_type': up.profile_type,
                 'cohort': up.cohort.pk,
             },
+            HTTP_REFERER="/uelcadmin/",
             follow=True)
         self.assertEqual(request.status_code, 200)
         self.assertFalse(
@@ -453,11 +455,12 @@ class TestAdminBasicViews(TestCase):
         self.assertIn('user', response.context)
 
         response = self.client.post(
-            '/uelcadmin/edituserpass/' + str(self.gu.user.pk) + '/',
+            reverse('uelcadmin_edituserpass', args=(self.gu.user.pk,)),
             {
                 'newPassword1': 'magic_password'
             },
-            HTTP_REFERER='/uelcadmin/', follow=True)
+            HTTP_REFERER='/uelcadmin/',
+            follow=True)
         self.assertEqual(response.status_code, 200)
         m = list(response.context['messages'])
         self.assertEqual(len(m), 1)

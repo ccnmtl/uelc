@@ -819,7 +819,7 @@ class UELCAdminEditUserPassView(LoggedInMixinAdmin,
             success="User password has been updated!")
         messages.success(request, action_args['success'],
                          extra_tags='userPasswordSuccess')
-        return HttpResponseRedirect('uelcadmin')
+        return HttpResponseRedirect(reverse('uelcadmin'))
 
 
 class UELCAdminCreateHierarchyView(LoggedInMixinAdmin,
