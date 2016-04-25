@@ -22,7 +22,7 @@ fuzzywuzzy==0.10.0
 sure==1.2.24
 ptyprocess==0.5
 ipdb==0.9.0
-traitlets==4.0.0
+traitlets==4.2.1
 ipython_genutils==0.1.0
 decorator==4.0.4
 pexpect==4.0.1
