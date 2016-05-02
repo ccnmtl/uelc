@@ -45,10 +45,9 @@ def admin_ajax_page_submit(section, user):
 def admin_ajax_reset_page(section, user):
     case = Case.objects.get(hierarchy=section.hierarchy)
     try:
-        casemap = CaseMap.objects.get(user=user, case=case)
-    except ObjectDoesNotExist:
-        casemap = CaseMap.objects.create(user=user, case=case)
-        casemap.save()
+        casemap, created = CaseMap.objects.get_or_create(user=user, case=case)
+    except CaseMap.MultipleObjectsReturned:
+        casemap = CaseMap.objects.filter(user=user, case=case).first()
     data = dict(question=0)
     casemap.save_value(section, data)
     for block in section.pageblock_set.all():
@@ -107,10 +106,11 @@ def get_user_map(hierarchy, user):
     # first check and see if a case map exists for the user
     # if not, they have not submitted an answer to a question
     try:
-        casemap = CaseMap.objects.get(user=user, case=case)
-    except ObjectDoesNotExist:
-        casemap = CaseMap.objects.create(user=user, case=case)
-        casemap.save()
+        casemap, created = CaseMap.objects.get_or_create(user=user, case=case)
+    except CaseMap.MultipleObjectsReturned:
+        # The CaseMap should really have (user, case) unique_together,
+        # but until then, don't fail if this is encountered.
+        casemap = CaseMap.objects.filter(user=user, case=case).first()
     return casemap
 
 
