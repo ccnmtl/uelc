@@ -27,7 +27,7 @@ from uelc.mixins import (
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
     RestrictedModuleMixin)
 from uelc.main.models import (
-    Cohort, UserProfile, Case,
+    Cohort, UserProfile, Case, CaseMap,
     CaseAnswer, UELCHandler,
     LibraryItem)
 from uelc.main.forms import (
@@ -1309,5 +1309,9 @@ class CloneHierarchyWithCasesView(CloneHierarchyView):
                 description=case.description)
             for cohort in case.cohort.all():
                 newcase.cohort.add(cohort)
+            for casemap in CaseMap.objects.filter(case=case):
+                CaseMap.objects.get_or_create(
+                    case=newcase,
+                    user=casemap.user)
 
         return rv

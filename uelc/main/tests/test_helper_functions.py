@@ -1,11 +1,15 @@
 from django.test import TestCase
-from factories import GroupUpFactory, HierarchyFactory
+from uelc.main.tests.factories import (
+    CaseFactory, CaseMapFactory, GroupUpFactory, GroupUserFactory,
+    HierarchyFactory
+)
 from quizblock.tests.test_models import FakeReq
 from gate_block.models import GateBlock
-from uelc.main.models import CaseQuiz, Cohort, Case
+from uelc.main.models import CaseQuiz, Cohort, Case, CaseMap
 from uelc.main.helper_functions import (
     admin_ajax_page_submit, admin_ajax_reset_page,
-    page_submit, reset_page)
+    page_submit, reset_page, get_user_map
+)
 
 
 class TestSubmissionResetFunctions(TestCase):
@@ -90,3 +94,27 @@ class TestPageSubmitFunction(TestCase):
         self.assertEqual(
             self.last_request['Location'],
             self.last_section.get_absolute_url())
+
+
+class TestGetUserMap(TestCase):
+    def test_get_user_map_already_created(self):
+        cm = CaseMapFactory()
+        self.assertEqual(get_user_map(cm.case.hierarchy, cm.user), cm)
+
+    def test_get_user_map_not_created(self):
+        case = CaseFactory()
+        user = GroupUserFactory()
+
+        self.assertEqual(CaseMap.objects.count(), 0)
+        get_user_map(case.hierarchy, user)
+        self.assertEqual(CaseMap.objects.count(), 1)
+
+    def test_get_user_map_multiple_matching_casemaps(self):
+        case = CaseFactory()
+        user = GroupUserFactory()
+        cm1 = CaseMapFactory(case=case, user=user)
+        CaseMapFactory(case=case, user=user)
+
+        self.assertEqual(CaseMap.objects.count(), 2)
+        self.assertEqual(get_user_map(case.hierarchy, user), cm1)
+        self.assertEqual(CaseMap.objects.count(), 2)
