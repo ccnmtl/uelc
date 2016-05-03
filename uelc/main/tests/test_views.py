@@ -7,10 +7,10 @@ from pagetree.helpers import get_hierarchy
 from pagetree.models import Hierarchy, Section
 from pagetree.tests.factories import ModuleFactory
 from quizblock.models import Question, Answer
-from uelc.main.models import Case, CaseQuiz, CaseAnswer
+from uelc.main.models import Case, CaseMap, CaseQuiz, CaseAnswer
 from uelc.main.tests.factories import (
     GroupUpFactory, AdminUpFactory,
-    CaseFactory, CohortFactory, FacilitatorUpFactory,
+    CaseFactory, CaseMapFactory, CohortFactory, FacilitatorUpFactory,
     UELCModuleFactory, HierarchyFactory, CaseQuizFactory,
     QuestionFactory, AnswerFactory, CaseAnswerFactory
 )
@@ -831,6 +831,9 @@ class CloneHierarchyWithCasesViewTest(TestCase):
         self.client.login(username=self.profile.user.username, password='test')
         self.case = Case.objects.get(name='case-test')
         self.case.cohort.add(self.profile.cohort)
+        # Simulate the case where there's "duplicate" CaseMaps.
+        CaseMapFactory(case=self.case, user=self.profile.user)
+        CaseMapFactory(case=self.case, user=self.profile.user)
 
     def test_get(self):
         url = reverse('clone-hierarchy', kwargs={
@@ -862,6 +865,14 @@ class CloneHierarchyWithCasesViewTest(TestCase):
         self.assertEqual(cloned_case.cohort.count(), self.case.cohort.count())
         self.assertEqual(set(cloned_case.cohort.all()),
                          set(self.case.cohort.all()))
+
+        self.assertEqual(
+            CaseMap.objects.filter(
+                case=cloned_case,
+                user=self.profile.user).count(), 1)
+        cloned_casemap = CaseMap.objects.get(
+            case=cloned_case, user=self.profile.user)
+        self.assertEqual(cloned_casemap.value, '')
 
         # Find the "Decision Block" defined in UELCModuleFactory. This is
         # represented by the CaseQuiz class.
