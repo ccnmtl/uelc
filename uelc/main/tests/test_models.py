@@ -8,8 +8,8 @@ from uelc.main.tests.factories import (
     UELCModuleFactory, ImageUploadItemFactory, CaseAnswerFactory,
     AnswerFactory, QuestionFactory, QuizFactory
 )
-from uelc.main.models import TextBlockDT, LibraryItem, CaseQuiz
-from pagetree.models import Hierarchy
+from uelc.main.models import TextBlockDT, LibraryItem, CaseQuiz, CaseMap
+from pagetree.models import Hierarchy, PageBlock
 from quizblock.tests.test_models import FakeReq
 from quizblock.models import Submission
 
@@ -273,6 +273,30 @@ class CaseQuizTest(TestCase):
         sub = Submission.objects.create(quiz=cq, user=user)
         self.assertTrue(cq.is_submitted(cq, user))
         self.assertTrue(sub in cq.submission_set.filter(user=user))
+
+    def test_make_casemap(self):
+        UELCModuleFactory()
+        cq = CaseQuizFactory()
+        user = GroupUserFactory()
+        cq.pageblocks.add(PageBlock.objects.last())
+        data = {'question': 1}
+        cq.make_casemap(user, data, None, 'question')
+        self.assertEqual(
+            CaseMap.objects.get(user=user, case_id=1).value,
+            '00000000000000001000000')
+
+    def test_make_casemap_with_multiple_casemaps(self):
+        UELCModuleFactory()
+        cq = CaseQuizFactory()
+        user = GroupUserFactory()
+        CaseMap.objects.create(user=user, case_id=1)
+        CaseMap.objects.create(user=user, case_id=1)
+        cq.pageblocks.add(PageBlock.objects.last())
+        data = {'question': 1}
+        cq.make_casemap(user, data, None, 'question')
+        self.assertEqual(
+            CaseMap.objects.filter(user=user, case_id=1).count(),
+            2)
 
 
 class CaseAnswerTest(TestCase):

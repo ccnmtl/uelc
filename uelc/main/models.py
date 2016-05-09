@@ -601,10 +601,11 @@ class CaseQuiz(Quiz):
     def make_casemap(self, user, data, s, k):
         case_id = data[k]
         try:
-            casemap = CaseMap.objects.get(user=user, case_id=case_id)
-        except CaseMap.DoesNotExist:
-            casemap = CaseMap.objects.create(
-                user=user, case_id=case_id, value=str(0))
+            casemap, created = CaseMap.objects.get_or_create(
+                user=user, case_id=case_id)
+        except CaseMap.MultipleObjectsReturned:
+            casemap = CaseMap.objects.filter(
+                user=user, case_id=case_id).first()
 
         casemap.set_value(self, data)
 
