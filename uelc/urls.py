@@ -43,7 +43,7 @@ urlpatterns = patterns(
     auth_urls,
     (r'^registration/', include('registration.backends.default.urls')),
     (r'^$', views.IndexView.as_view()),
-    (r'^ckeditor/', include('ckeditor.urls')),
+    (r'^ckeditor/', include('ckeditor_uploader.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^uelcadmin/case/', UELCAdminCaseView.as_view()),
     (r'^uelcadmin/createhierarchy/', UELCAdminCreateHierarchyView.as_view()),
