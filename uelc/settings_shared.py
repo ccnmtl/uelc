@@ -17,6 +17,56 @@ ALLOWED_HOSTS += ['eldex.org']  # noqa
 USE_TZ = True
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_IMAGE_BACKEND = "pillow"
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'width': '100%',
+        'removePlugins': 'stylesheetparser',
+        'filebrowserBrowseUrl': '/admin/main/imageuploaditem/',
+        'allowedContent': True,
+        'autofocus': True,
+        'toolbar_Custom': [
+            {
+                'name': 'document',
+                'items': ['Source']
+            },
+            {
+                'name': 'clipboard',
+                'items': ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord',
+                          '-', 'Undo', 'Redo']
+            },
+            {
+                'name': 'editing',
+                'items': ['Find', '-', 'Scayt']
+            },
+            {
+                'name': 'insert',
+                'items': ['Image', 'Table', 'HorizontalRule',
+                          'SpecialChar', 'PageBreak', 'Iframe']
+            },
+            '/',
+            {
+                'name': 'styles',
+                'items': ['Styles', 'Format']
+            },
+            {'name': 'colors', 'items': ['TextColor', 'BGColor']},
+            {
+                'name': 'basicstyles',
+                'items': ['Bold', 'Italic', 'Underline', 'Strike',
+                          'Subscript', 'Superscript', '-', 'RemoveFormat']
+            },
+            {
+                'name': 'paragraph',
+                'items': ['NumberedList', 'BulletedList', '-',
+                          'Outdent', 'Indent', '-', 'Blockquote']
+            },
+            {
+                'name': 'links',
+                'items': ['Link', 'Unlink', 'Anchor']
+            },
+        ]
+    }
+}
 
 TEMPLATE_CONTEXT_PROCESSORS += [  # noqa
     'django.contrib.messages.context_processors.messages',

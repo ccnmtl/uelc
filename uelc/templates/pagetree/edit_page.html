@@ -2,6 +2,7 @@
 {% load compress %}
 {% load bootstrap %}
 {% load render %}
+{% load staticfiles %}
 {% block title %}{{section.label}} (edit){% endblock %}
 
 {% block bodyclass %}edit module-{{module.slug}}{% endblock %}
@@ -26,19 +27,11 @@
 {% endcompress %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-  <script src="{{STATIC_URL}}ckeditor/ckeditor/ckeditor.js"></script>
-<script src="{{STATIC_URL}}ckeditor/ckeditor/adapters/jquery.js"></script>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
 
 
 <script type="text/javascript">
-var wysiwyg = jQuery('[id^=editor]').ckeditor({
-    //filebrowserUploadUrl: '/uploads/',
-    filebrowserBrowseUrl: '/admin/main/imageuploaditem/',
-    allowedContent: true,
-    autofocus: true,
-  });
-
-//wysiwyg.config.allowedContent = true;
 var saveOrderOfChildren = function() {
     var url = "{% url 'reorder-section-children' section.id %}?";
     var worktodo = 0;
@@ -465,52 +458,6 @@ method="post">{% csrf_token %}
             {% endif %}
         {% endwith %}
     </ul>
-{% comment %}
-<!--
-  this inline attempts to deal with a FF bug where the user cannot
-  edit/select the input on the edit_form. 
--->
-{% endcomment %}
-<script>
-jQuery(document).ready(function(){
-  jQuery('.form-control').click(function(){
-    elem = jQuery(this);
-    if(elem.createTextRange) {
-      var range = elem.createTextRange();
-      range.move('character', caretPos);
-      range.select();
-    }
-    else if(elem.selectionStart) {
-      elem.focus();
-      elem.setSelectionRange(caretPos, caretPos);
-    }else{
-        elem.focus();
-    }//end if
-  });// end .click
-  if(CKEDITOR){
-    for(var id in CKEDITOR.instances) {
-      CKEDITOR.instances[id].on('mode', function(event) {
-        
-        var editor = event.editor;
-        window.editor = editor;
-        if(typeof(editor) !== 'undefined') {
-           editor.focus();
-
-           var element = editor.element;
-           var range = editor.createRange();
-           if(range) {
-              range.moveToElementEditablePosition(element, false);
-              range.select();
-           }
-        }
-
-
-      });//end .on
-      
-    }//end for
-  }//end if CKEDITOR
-});//end doc.ready
-</script>
 {% if messages %}
   {% for message in messages %}
   {% if message.level_tag == 'error' %}
