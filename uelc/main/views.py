@@ -784,6 +784,11 @@ class UELCAdminEditUserView(LoggedInMixinAdmin,
             cohort = Cohort.objects.get(id=cohort_id)
         else:
             cohort = None
+
+        if not hasattr(user, 'profile'):
+            user.profile = UserProfile.objects.create(
+                user=user,
+                profile_type='group_user')
         user.profile.cohort = cohort
         user.profile.profile_type = profile
         if not profile == "group_user":
@@ -959,8 +964,13 @@ class UELCAdminEditCohortView(LoggedInMixinAdmin,
                     user.profile.cohort = None
                     user.profile.save()
             for user in user_list_objs:
+                if not hasattr(user, 'profile'):
+                    user.profile = UserProfile.objects.create(
+                        user=user,
+                        profile_type='group_user')
                 user.profile.cohort = cohort_obj
                 user.profile.save()
+
         except IntegrityError:
             action_args = dict(
                 error="A cohort with that name already exists!\
