@@ -385,6 +385,15 @@ class TestAdminBasicViews(TestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
         self.assertEqual(request.status_code, 302)
 
+    def test_uelc_admin_edit_user_no_profile(self):
+        u_no_profile = User.objects.create(username="no_profile")
+        request = self.client.post(
+            "/uelcadmin/edituser/",
+            {'username': 'EditUser', 'user_id': str(u_no_profile.pk),
+             'profile_type': 'group_user', 'cohort': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
     def test_uelc_admin_edit_non_existing_user(self):
         response = self.client.post(
             "/uelcadmin/edituser/",
