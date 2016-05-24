@@ -1,7 +1,7 @@
 language: python
 sudo: false
 addons:
-  firefox: "38.0.5"
+  firefox: "38.8.0esr"
 python:
   - "2.7"
 before_install:
