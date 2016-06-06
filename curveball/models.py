@@ -1,10 +1,12 @@
+from random import randint
+
+from ckeditor.widgets import CKEditorWidget
 from django import forms
-from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from pagetree.models import UserLocation
+from django.db import models
 from pagetree.generic.models import BasePageBlock
-from ckeditor.widgets import CKEditorWidget
+from pagetree.models import UserLocation
 
 
 class Curveball(models.Model):
@@ -131,18 +133,19 @@ class CurveballBlock(BasePageBlock):
     @staticmethod
     def add_form():
         class AddForm(forms.Form):
+            EDITOR = 'editor-{}'.format(randint(0, 5000))
             choice_one_title = forms.CharField(label="Choice One Label")
             choice_one_explanation = forms.CharField(
                 label="Choice One Content", widget=CKEditorWidget(
-                    attrs={"id": "editor"}))
+                    attrs={"id": EDITOR + 'add-choice-1'}))
             choice_two_title = forms.CharField(label="Choice Two Label")
             choice_two_explanation = forms.CharField(
                 label="Choice Two Content", widget=CKEditorWidget(
-                    attrs={"id": "editor"}))
+                    attrs={"id": EDITOR + 'add-choice-2'}))
             choice_three_title = forms.CharField(label="Choice Three Label")
             choice_three_explanation = forms.CharField(
                 label="Choice Three Content", widget=CKEditorWidget(
-                    attrs={"id": "editor"}))
+                    attrs={"id": EDITOR + 'add-choice-3'}))
         return AddForm()
 
     @staticmethod
@@ -164,24 +167,25 @@ class CurveballBlock(BasePageBlock):
 
     def edit_form(self):
         class EditForm(forms.Form):
+            EDITOR = "editor-" + str(self.id)
             choice_one_title = forms.CharField(
                 label="Choice One Label", initial=self.curveball_one.title)
             choice_one_explanation = forms.CharField(
                 label="Choice One Content",
                 initial=self.curveball_one.explanation,
-                widget=CKEditorWidget(attrs={"id": "editor"}))
+                widget=CKEditorWidget(attrs={"id": EDITOR + 'choice-one'}))
             choice_two_title = forms.CharField(
                 label="Choice Two Label", initial=self.curveball_two.title)
             choice_two_explanation = forms.CharField(
                 label="Choice Two Content",
                 initial=self.curveball_two.explanation,
-                widget=CKEditorWidget(attrs={"id": "editor"}))
+                widget=CKEditorWidget(attrs={"id": EDITOR + 'choice-two'}))
             choice_three_title = forms.CharField(
                 label="Choice Three Label", initial=self.curveball_three.title)
             choice_three_explanation = forms.CharField(
                 label="Choice Three Content",
                 initial=self.curveball_three.explanation,
-                widget=CKEditorWidget(attrs={"id": "editor"}))
+                widget=CKEditorWidget(attrs={"id": EDITOR + 'choice-three'}))
         return EditForm()
 
     ''' a form so the facilitator can choose which curball to throw to

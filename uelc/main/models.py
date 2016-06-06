@@ -1,15 +1,18 @@
+from random import randint
+
+from ckeditor.widgets import CKEditorWidget
 from django import forms
-from django.db import models
-from django.forms import widgets
 from django.contrib.auth.models import User, Permission
 from django.core.urlresolvers import reverse
+from django.db import models
+from django.forms import widgets
 from django.utils.safestring import mark_safe
-from ckeditor.widgets import CKEditorWidget
-from gate_block.models import GateSubmission
 from pageblocks.models import TextBlock
 from pagetree.models import Hierarchy, Section
 from pagetree.reports import ReportableInterface
 from quizblock.models import Quiz, Question, Submission, Response, Answer
+
+from gate_block.models import GateSubmission
 
 
 class Cohort(models.Model):
@@ -277,6 +280,7 @@ class TextBlockDT(TextBlock):
     @classmethod
     def add_form(cls):
         class AddForm(forms.Form):
+            EDITOR = 'editor-{}'.format(randint(0, 5000))
             CHOICES = ((0, '0'), (1, '1'), (2, '2'),
                        (3, '3'), (4, '4'), (5, '5'))
             choices = models.IntegerField(
@@ -284,7 +288,7 @@ class TextBlockDT(TextBlock):
                 choices=CHOICES,
                 default=0)
             body = forms.CharField(
-                widget=CKEditorWidget(attrs={"id": "editor"}))
+                widget=CKEditorWidget(attrs={"id": EDITOR}))
             choice = forms.ChoiceField(
                 choices=CHOICES,
                 widget=CustomSelectWidgetAC)
