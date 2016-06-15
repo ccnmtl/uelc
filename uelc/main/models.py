@@ -434,7 +434,7 @@ class UELCHandler(Section):
 
 class LibraryItem(models.Model):
     name = models.TextField(blank=False)
-    doc = models.FileField(upload_to='documents/%Y/%m/%d')
+    doc = models.FileField(upload_to='documents/%Y/%m/%d', max_length=255)
     user = models.ManyToManyField(User, blank=True)
     case = models.ForeignKey(Case)
 
@@ -454,7 +454,7 @@ class LibraryItem(models.Model):
     @classmethod
     def add_form(cls):
         class AddForm(forms.Form):
-            doc = forms.FileField(label="select doc")
+            doc = forms.FileField(label="select doc", max_length=255)
             name = forms.CharField(widget=forms.widgets.Textarea(
                 attrs={'class': 'library-item-name',
                        'cols': 10,
@@ -465,7 +465,8 @@ class LibraryItem(models.Model):
     def edit_form(self):
         class EditLibraryForm(forms.Form):
             doc = forms.FileField(initial=self.doc,
-                                  label="Replace image")
+                                  label="Replace image",
+                                  max_length=255)
             name = forms.CharField(
                 initial=self.name,
                 widget=forms.widgets.Textarea(
@@ -479,7 +480,7 @@ class LibraryItem(models.Model):
 
 class ImageUploadItem(models.Model):
     name = models.TextField(blank=False)
-    doc = models.FileField(upload_to='documents/%Y/%m/%d')
+    doc = models.FileField(upload_to='documents/%Y/%m/%d', max_length=255)
 
     def __unicode__(self):
         return self.name
