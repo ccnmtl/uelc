@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
@@ -37,6 +38,13 @@ class FlatPageCustom(FlatPageAdmin):
         models.TextField: {'widget': CKEditorWidget}
     }
 
+
+class ImageUploadItemAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': forms.widgets.TextInput}
+    }
+
+
 # Re-register UserAdmin
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
@@ -50,7 +58,7 @@ admin.site.register(CaseQuiz)
 admin.site.register(CaseAnswer)
 admin.site.register(Cohort)
 admin.site.register(LibraryItem)
-admin.site.register(ImageUploadItem)
+admin.site.register(ImageUploadItem, ImageUploadItemAdmin)
 admin.site.register(GateBlock)
 admin.site.unregister(FlatPage)
 admin.site.register(FlatPage, FlatPageCustom)
