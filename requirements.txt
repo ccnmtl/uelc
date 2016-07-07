@@ -96,4 +96,4 @@ behave-django==0.3.0
 splinter==0.7.3
 
 django-cacheds3storage==0.1.2
-ccnmtlsettings==0.2.0
+ccnmtlsettings==0.3.0
