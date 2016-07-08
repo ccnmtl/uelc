@@ -63,6 +63,7 @@ class CohortTest(TestCase):
         case = CaseFactory()
         cohort = CohortFactory()
         case.cohort.add(cohort)
+        self.assertEqual(case.status, 'd')
         self.assertEqual(cohort.display_name(), cohort.name)
         self.assertTrue(str(cohort).startswith("cohort "))
 

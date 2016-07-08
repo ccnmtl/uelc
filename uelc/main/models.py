@@ -145,6 +145,13 @@ class Case(models.Model):
         Cohort,
         related_name="case_cohort",
         blank=True)
+    status = models.CharField(
+        max_length=1,
+        choices=(
+            ('a', 'archived'),
+            ('d', 'in development'),
+            ('p', 'published')),
+        default='d')
 
     def __unicode__(self):
         return self.name
