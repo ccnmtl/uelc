@@ -5,9 +5,12 @@ html {
 body {
   background-color: #eee;
   height: 100%;
+  font-family: 'Droid Sans', Helvetica, Arial, Lucida, sans-serif;
 }
 
-h1, h2, h3 {font-family: 'Montserrat', sans-serif;}
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Raleway', Helvetica, Arial, Lucida, sans-serif;
+}
 
 .separator {margin: 10px 0 70px 0 !important;}
 
