@@ -338,7 +338,7 @@ ul.side-nav li li {
     -webkit-border-radius:0 6px 6px 6px;
     -moz-border-radius:0 6px 6px 6px;
     border-radius:0 6px 6px 6px;
-    width: 160%;
+    width: 260%;
 }
 .dropdown-submenu:hover>.dropdown-menu {
     display:block;
