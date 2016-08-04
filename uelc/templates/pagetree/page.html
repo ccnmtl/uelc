@@ -144,7 +144,7 @@
       {% endfor %}
       <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
       {% if block.label %}  
-        <h3>{{block.label}}</h3>
+        <h1>{{block.label}}</h1>
       {% endif %}
       {% render block %}
       </div>
@@ -179,7 +179,7 @@
       {% is_block_on_user_path request section block casemap.value as user_path %}
       {% if user_path %}
         <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-        {% if block.label %}<h3>{{block.label}}</h3>{% endif %}
+        {% if block.label %}<h1>{{block.label}}</h1>{% endif %}
         {% render block %}
         </div>
       {%endif%}
@@ -201,7 +201,7 @@
 
     <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
 
-    {% if block.label %}<h3>{{block.label}}</h3>{% endif %}
+    {% if block.label %}<h1>{{block.label}}</h1>{% endif %}
     {% render block %}
     </div>
 
