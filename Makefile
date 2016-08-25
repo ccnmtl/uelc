@@ -13,4 +13,4 @@ integration: check
 	$(MANAGE) jenkins --settings=$(APP).settings_integration
 
 behave: check
-	$(MANAGE) behave features/
+	$(MANAGE) behave
