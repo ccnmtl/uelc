@@ -3,6 +3,7 @@ from random import randint
 from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib.auth.models import User, Permission
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms import widgets
@@ -346,6 +347,11 @@ class UELCHandler(Section):
         return vals
 
     def get_part_by_section(self, section):
+        key = 'uelc.{}.get_part_by_section'.format(section.pk)
+        v = cache.get(key)
+        if v is not None:
+            return v
+
         modules = section.get_root().get_children()
         sec_module = section.get_module()
         part = 0
@@ -354,9 +360,12 @@ class UELCHandler(Section):
                 part = idx
 
         if part == 0:
-            return 1
+            v = 1
         else:
-            return float(2) + (part * .1)
+            v = float(2) + (part * .1)
+
+        cache.set(key, v)
+        return v
 
     def get_partchoice_by_usermap(self, usermap):
         vals = self.get_vals_from_casemap(usermap.value)
@@ -431,11 +440,18 @@ class UELCHandler(Section):
         return (False, None, None)
 
     def is_next_curveball(self, section):
-        next = section.get_next()
-        is_cb = self.is_curveball(next)
+        key = 'uelc.{}.is_next_curveball'.format(section.pk)
+        v = cache.get(key)
+        if v is not None:
+            return v
+
+        nxt = section.get_next()
+        is_cb = self.is_curveball(nxt)
         if is_cb[0]:
+            cache.set(key, is_cb)
             return is_cb
         else:
+            cache.set(key, False)
             return False
 
 

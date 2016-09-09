@@ -1,6 +1,7 @@
 # Django settings for uelc project.
 import os.path
 from ccnmtlsettings.shared import common
+from uelc.main.utils import clear_handler_cache
 
 project = 'uelc'
 base = os.path.dirname(__file__)
@@ -117,3 +118,5 @@ WINDSOCK_WEBSOCKETS_BASE = "ws://localhost:5050/socket/"
 
 # Set this to True in local_settings.py
 BEHAVE_DEBUG_ON_ERROR = False
+
+PAGETREE_CUSTOM_CACHE_CLEAR = clear_handler_cache
