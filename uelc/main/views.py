@@ -5,6 +5,7 @@ import sys
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Q
@@ -464,8 +465,14 @@ class FacilitatorView(LoggedInFacilitatorMixin,
     extra_context = dict()
 
     def get_tree_depth(self, section):
+        key = 'uelc.{}.get_tree_depth'.format(section.pk)
+        v = cache.get(key)
+        if v is not None:
+            return v
+
         for idx, sec in enumerate(section.get_tree()):
             if sec == section:
+                cache.set(key, idx)
                 return idx
 
     def set_upv(self, user, section, status):
