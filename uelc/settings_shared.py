@@ -69,10 +69,6 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-TEMPLATE_CONTEXT_PROCESSORS += [  # noqa
-    'django.contrib.messages.context_processors.messages',
-]
-
 MIDDLEWARE_CLASSES += [  # noqa
     'django.middleware.csrf.CsrfViewMiddleware',
 ]
