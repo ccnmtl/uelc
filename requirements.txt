@@ -90,7 +90,7 @@ django-quizblock==1.2.2
 django-markwhat==1.5
 django-pageblocks==1.0.4
 gunicorn==19.6.0
-django-infranil==1.0.0
+django-infranil==1.1.0
 django-flatblocks==0.9.3
 django-smtp-ssl==1.0
 python-memcached==1.58
