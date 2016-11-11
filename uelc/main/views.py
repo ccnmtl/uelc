@@ -1181,13 +1181,13 @@ class UELCAdminUserView(LoggedInMixinAdmin,
 
     def get_base_url(self):
         base = reverse('admin-user-view')
-        query = self.request.GET.get('q')
+        query = self.request.GET.get('q', '')
         return u'{}?q={}&page='.format(base, query)
 
     def get_users(self):
         q = self.request.GET.get('q', '')
         if q:
-            users = User.objects.filter(Q(username__startswith=q))
+            users = User.objects.filter(Q(username__contains=q))
         else:
             users = User.objects.all()
 
