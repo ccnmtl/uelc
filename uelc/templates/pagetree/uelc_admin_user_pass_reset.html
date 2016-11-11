@@ -1,28 +1,34 @@
 {% extends 'pagetree/uelc_admin.html' %}
 {% load bootstrap %}
-{% block edituserpass %}
-<style type="text/css">
-button.close{
-  padding: 10px;
-}
-</style>
 
+{% block js %}
+    <script>
+    jQuery(document).ready(function(){
+      jQuery('label[for="id_newPassword1"]').text('New Password')
+      jQuery('label[for="id_newPassword2"]').text('Confirm New Password')
+    })
+    </script>
+{% endblock %}
+
+{% block introduction %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'uelcadmin' %}">Management Panel</a></li>
+        <li><a href="{% url 'uelcadmin-view-cohort' %}">Cohorts</a></li>
+        <li><a href="{% url 'uelcadmin-edit-user' user.id %}">Edit {{user.username}}</a></li>
+        <li class="active">Edit Password</li>
+    </ol>
+{% endblock %}
+
+{% block edituserpass %}
   <div class="panel panel-default">
       <div class="panel-heading">
-        <p>Edit Password for: {{user.username}}</p>
+        <p>Edit Password for: {{user.username}}
+      </div>
 
-      </div><!--end panel-heading-->
-
-                      <form role="form" data-toggle="validator" id="add-user-form" action="." method="post">{% csrf_token %}
-                        {{edit_user_pass_form|bootstrap}}
-                        <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                        <input type="reset" class="reset-button hidden" value="Reset" />
-                      </form>
+      <form role="form" data-toggle="validator" id="add-user-form" action="." method="post">{% csrf_token %}
+        {{edit_user_pass_form|bootstrap}}
+        <input type="submit" class="btn btn-primary form-submit" value="Submit">
+        <input type="reset" class="reset-button hidden" value="Reset" />
+      </form>
   </div>
-<script>
-jQuery(document).ready(function(){
-  jQuery('label[for="id_newPassword1"]').text('New Password')
-  jQuery('label[for="id_newPassword2"]').text('Confirm New Password')
-})
-</script>
 {% endblock %}
