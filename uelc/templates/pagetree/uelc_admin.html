@@ -1,15 +1,23 @@
-{% extends 'pagetree/base_pagetree.html' %}
+{% extends 'base.html' %}
+
 {% load bootstrap %}
+
+{% block js %}
+    <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/uelc_admin.js"></script>
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
+    <style type="text/css">
+    button.close{
+      padding: 10px;
+    }
+    </style>
+{% endblock %}
+
 {% block content %}
-<script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-multiselect.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/uelc_admin.js"></script>
-<link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap-multiselect.css" type="text/css"/>
-<style type="text/css">
-button.close{
-  padding: 10px;
-}
-</style>
 
 <h1>Management Panel</h1>
 
