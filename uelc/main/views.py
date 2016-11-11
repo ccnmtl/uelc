@@ -1,11 +1,12 @@
 import json
-import zmq
-import urlparse
 import sys
+import urlparse
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Q
@@ -17,26 +18,28 @@ from pagetree.generic.views import (
 )
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
+import zmq
+
+from curveball.models import Curveball, CurveballBlock
 from gate_block.models import GateBlock, SectionSubmission, GateSubmission
+from uelc.main.forms import (
+    CreateUserForm, CreateHierarchyForm,
+    EditUserPassForm, CaseAnswerForm, UELCCloneHierarchyForm
+)
 from uelc.main.helper_functions import (
     get_root_context, get_user_map, visit_root, gen_group_token,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
     gen_token, get_user_last_location
 )
-from uelc.mixins import (
-    LoggedInMixin, LoggedInFacilitatorMixin,
-    SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
-    RestrictedModuleMixin)
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap,
     CaseAnswer, UELCHandler,
     LibraryItem)
-from uelc.main.forms import (
-    CreateUserForm, CreateHierarchyForm,
-    EditUserPassForm, CaseAnswerForm, UELCCloneHierarchyForm
-)
+from uelc.mixins import (
+    LoggedInMixin, LoggedInFacilitatorMixin,
+    SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
+    RestrictedModuleMixin)
 
-from curveball.models import Curveball, CurveballBlock
 
 zmq_context = zmq.Context()
 
@@ -1182,18 +1185,44 @@ class UELCAdminUserView(LoggedInMixinAdmin,
         return super(UELCAdminUserView, self).dispatch(
             request, *args, **kwargs)
 
+    def get_base_url(self):
+        base = reverse('admin-user-view')
+        query = self.request.GET.get('q', '')
+        return u'{}?q={}&page='.format(base, query)
+
+    def get_users(self):
+        q = self.request.GET.get('q', '')
+        if q:
+            users = User.objects.filter(Q(username__contains=q))
+        else:
+            users = User.objects.all()
+
+        users = users.order_by('username').select_related('profile__cohort')
+
+        paginator = Paginator(users, 20)  # Show 25 contacts per page
+
+        page = self.request.GET.get('page')
+        try:
+            users = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            users = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results
+            users = paginator.page(paginator.num_pages)
+
+        return users
+
     def get_context_data(self, *args, **kwargs):
         path = self.request.path
         casemodel = Case
         cohortmodel = Cohort
         create_user_form = CreateUserForm
         create_hierarchy_form = CreateHierarchyForm
-        users = User.objects.all().order_by('username').select_related(
-            'profile__cohort')
         hierarchies = Hierarchy.objects.all()
         cases = Case.objects.all()
         cohorts = Cohort.objects.all().order_by('name')
-        context = dict(users=users,
+        context = dict(users=self.get_users(),
                        path=path,
                        cases=cases,
                        cohorts=cohorts,
@@ -1202,6 +1231,8 @@ class UELCAdminUserView(LoggedInMixinAdmin,
                        create_user_form=create_user_form,
                        create_hierarchy_form=create_hierarchy_form,
                        hierarchies=hierarchies,
+                       q=self.request.GET.get('q', ''),
+                       base_url=self.get_base_url()
                        )
         return context
 
