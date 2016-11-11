@@ -550,8 +550,47 @@ ul.gate-section-list{
     clear: right;
 }
 
+#uelc-admin-menu {
+    padding: 0;
+}
 
-/* start - inline maps*/
-		
+.uelc-admin-panel {
+    margin: 20px 10px 0px 10px;
+}
 
-/* stop - inline maps*/
+.nav-tabs.nav-justified>li.active {
+    font-weight: bold;
+}
+
+.tools a.btn {
+    font-size: 12px;
+    color: white;
+}
+.tools a.btn:hover {
+    background-color: #75aecd;
+    color: white;
+}
+
+.tools a.btn.disabled {
+    color: #7b7b7b;
+    background-color: white;
+    border-color: #eee;
+}
+.tools a.btn.disabled {
+    cursor: not-allowed;
+}
+
+.tools input.page-number {
+    width: 50px;
+    display: inline;
+    text-align: right;
+}
+
+.tools .page-count.has-error .error-block {
+    display: block;
+}
+
+.tools .page-count {
+    font-size: 16px;
+    margin: 3px 15px 0px 15px;
+}
