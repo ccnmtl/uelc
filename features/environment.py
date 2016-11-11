@@ -1,8 +1,9 @@
 from django.conf import settings
+from django.core.cache import cache
 from splinter import Browser
 
-from uelc.main.views import zmq_context
 from uelc.main.tests.factories import AdminUpFactory, UELCModuleFactory
+from uelc.main.views import zmq_context
 
 
 def before_all(context):

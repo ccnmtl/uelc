@@ -885,8 +885,18 @@ class UELCAdminCaseView(LoggedInMixinAdmin,
         return super(UELCAdminCaseView, self).dispatch(
             request, *args, **kwargs)
 
-    def get_case_from_hierarchy(self, hierarchy):
-        return hierarchy.case_set.first()
+    def get_hierarchy_cases(self):
+        hierarchies = Hierarchy.objects.all().order_by(
+            'name').prefetch_related('case_set')
+        cases = []
+        for h in hierarchies:
+            if h.case_set.exists():
+                # .first here foils the prefetch. keep indexed
+                cases.append([h, h.case_set.all()[0]])
+            else:
+                cases.append([h, None])
+
+        return cases
 
     def get_context_data(self, *args, **kwargs):
         path = self.request.path
@@ -895,11 +905,12 @@ class UELCAdminCaseView(LoggedInMixinAdmin,
         create_user_form = CreateUserForm
         create_hierarchy_form = CreateHierarchyForm
         users = User.objects.all().order_by('username')
-        hierarchies = Hierarchy.objects.all()
-        cases = Case.objects.all().order_by('name')
+
+        cases = Case.objects.all().order_by('name').select_related(
+            'hierarchy').prefetch_related('cohort')
         cohorts = Cohort.objects.all().order_by('name')
-        hierarchy_cases = [[h, self.get_case_from_hierarchy(h)]
-                           for h in hierarchies]
+        hierarchy_cases = self.get_hierarchy_cases()
+
         context = dict(users=users,
                        path=path,
                        cases=cases,

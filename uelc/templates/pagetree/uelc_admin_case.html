@@ -1,18 +1,11 @@
 {% extends 'pagetree/uelc_admin.html' %}
 {% load bootstrap %}
-{% block case %}
-<style type="text/css">
-button.close{
-  padding: 10px;
-}
-.panel-heading p:first-child {
-  font-weight: bold;
-}
-</style>
 
-  <div class="panel panel-default">
+{% block case %}
+
+  <div class="panel panel-default uelc-admin-case">
       <div class="panel-heading">
-      
+
     <button class="demo btn btn-primary pull-right" data-toggle="modal"  data-target="#add-case-form-modal" href="#add-case-form-modal">Add Case</button>
      <p class="lead">Add and Edit Cases</p>
         <p>Cases are a collection of pages that include text, decision, and gate blocks.<br />Each case is a new decision experience for a cohort of users.</p>
@@ -102,8 +95,7 @@ button.close{
                             </div> <!--end modal-body-->
                         </div><!-- end modal-content-->
                     </div><!--end .modal-dialog-->
-                  </div><!--end #delete-case-form-modal .modal-->
-                  
+                  </div>
                 </td>
               </tr>
               {% endfor %}
@@ -133,11 +125,11 @@ button.close{
                             <input type="reset" class="reset-button hidden" value="Reset" />
                           </form>
                         </div>
-                      </div><!--end #hierarchiess-->
+                      </div>
                       </div> <!--end modal-dialog-->
                 </div><!-- end modal-content-->
             </div><!--end .model-body-->
-        </div><!--end #add-hierarchy-form-modal .modal-->
+        </div>
       </div>
       <div class="panel-body">
         <table id="hierarchy-list" class="table">
@@ -187,4 +179,5 @@ button.close{
         </table>
       </div><!--end panel-body-->
   </div><!--end panel-->
+  
 {% endblock %}
