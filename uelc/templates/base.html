@@ -6,33 +6,24 @@
 <html lang="en">
 
 <head>
+    <meta charset="utf-8" />
+    <link href='//fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
 
-	<meta charset="utf-8" />
-	
-	<link href='//fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+    <title>ELDEx {% block title %}{% endblock %}</title>
 
-	<title>ELDEx {% block title %}{% endblock %}</title>
-	
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="ELDEx Education Leadership Development Experience from Urban Education Leaders Collaborative, Teachers College Columbia University">
-	<meta name="author" content="CCNMTL">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ELDEx Education Leadership Development Experience from Urban Education Leaders Collaborative, Teachers College Columbia University">
+    <meta name="author" content="CCNMTL">
 
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-	<script src="../assets/js/html5shiv.js"></script>
-	<script src="../assets/js/respond.min.js"></script>
-	<![endif]-->
-	
-	
-	<link href="{% bootstrap_css_url %}" rel="stylesheet">
-	{% compress css %}
-	<link href="{{STATIC_URL}}css/main.css" rel="stylesheet">
-	{% endcompress %}
+    <link href="{% bootstrap_css_url %}" rel="stylesheet">
+    {% compress css %}
+    <link href="{{STATIC_URL}}css/main.css" rel="stylesheet">
+    {% endcompress %}
     <link rel="shortcut icon" type="image/png" href="{{STATIC_URL}}img/favicon-16x16.png" sizes="16x16">
-	{% block css %}{% endblock %}
-	
-	<script src="{{STATIC_URL}}js/jquery-1.12.3.min.js"></script>
-	{% block feeds %}{% endblock %}
+    {% block css %}{% endblock %}
+
+    <script src="{{STATIC_URL}}js/jquery-1.12.3.min.js"></script>
+    {% block feeds %}{% endblock %}
 </head>
 
 <body class="{% block bodyclass %}{% endblock %}" id="{% block bodyid %}{% endblock %}">
@@ -41,9 +32,8 @@
 
 {% block topnavbar %}
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-	<!-- Brand and toggle get grouped for better mobile display -->
-	<div class="container">
-	
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
             <span class="sr-only">Toggle navigation</span>
@@ -53,12 +43,9 @@
             </button>
             <a class="navbar-brand" href="/"><img src="{{STATIC_URL}}img/logo.png" /></a>
         </div>
-		
-		
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav navbar-right">
-            
                 {% block topnavbarrightitems %}{% endblock %}
                 {% block usernav %}
                 {% if request.user.is_anonymous %}
@@ -81,7 +68,7 @@
                 {% endblock %}
                 {% endifnotequal %}
                 {% endif %}
-                
+
                 {% if request.user.is_anonymous %}
                 {% else %}
                 <!-- <li class="navbar-text"></li> -->
@@ -140,8 +127,8 @@
                 
             </ul>
         </div>
-		
-	</div>
+        
+    </div>
 </nav>
 
 {% endblock %}
@@ -159,16 +146,16 @@
         </ul>
         {% endblock %}
     </div>
-    {% endif %}{# if not is_group_user #}
+    {% endif %}
 
     {% block masthead %}
     {% block primarynav %}{% endblock %}
     {% endblock %}
-	<div class="col-sm-12">
-		{% block pagetitle %}{% endblock %}
-		{% block content %}{% endblock %}
+    <div class="col-sm-12">
+        {% block pagetitle %}{% endblock %}
+        {% block content %}{% endblock %}
         {% block content-nav %}{% endblock %}
-	</div>
+    </div>
     <!--end .row-->
 </div>
 
@@ -180,7 +167,7 @@
     <div class="col-sm-2 col-sm-offset-4">
     <a href="http://uelp.tc.columbia.edu/" title="UELC"><img class="img-responsive" src="{{STATIC_URL}}img/logo-uelc.png" /></a>
     </div>
-    
+
     <div class="col-sm-2">
     <a href="http://ccnmtl.columbia.edu/" title="CCNMTL"><img class="img-responsive" src="{{STATIC_URL}}img/logo-ccnmtl.png" /></a>
     </div>
@@ -192,38 +179,28 @@
 
 <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 
-
 {% block js %}{% endblock %}
+
 <script src="{% bootstrap_javascript_url %}"></script>
 {% if STAGING_ENV %}
 <div class="alert alert-danger alert-dismissable" style="position: fixed; bottom: 0px;">
-	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-	<h4>Warning: Staging Site</h4>
-	<p>You are viewing a staging version of this site, not the production site.</p>
-	<p>This site was last updated on: <b>{{STAGING_DEPLOY_TIME}}</b></p>
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    <h4>Warning: Staging Site</h4>
+    <p>You are viewing a staging version of this site, not the production site.</p>
+    <p>This site was last updated on: <b>{{STAGING_DEPLOY_TIME}}</b></p>
 </div>
 {% endif %}
 
 {% if request.user.is_impersonate %}
 <div class="alert alert-danger alert-dismissable" style="position: fixed; left: 0px; top: 75px; width:200px">
-	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
     <p>Greetings, {{ request.impersonator }}!<p>
     <p>You are impersonating the user, {{ request.user }}. Please be aware that you are temporarily logged in as {{ request.user }} and viewing the site just as that user sees the site.</p>
     <p>If you are done, please click the "Stop" link below.</p>
-	<a class="btn stop-impersonate" href="#">Stop</a>
+    <a class="btn stop-impersonate" href="#">Stop</a>
 </div>
 {% endif %}
 
-{% if GA_CODE %}
-<script type="text/javascript">
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-ga('create', '{{GA_CODE}}', 'columbia.edu');
-ga('send', 'pageview');
-</script>
-{% endif %}
 <script>
 jQuery(document).ready(function(){
     jQuery('a.stop-impersonate').click(function(e){
@@ -236,23 +213,36 @@ jQuery(document).ready(function(){
 });
 </script>
 
-<script src="//cdn.ravenjs.com/1.2.0/jquery,native/raven.min.js"></script>
-<script>
- Raven.config('https://d5583d00e5b641a4aed0d3588fc76921@sentry.ccnmtl.columbia.edu/39', {
-     whitelistUrls: [/eldex\.org/, /uelc\.stage\.ccnmtl\.columbia\.edu/]
- }).install();
- {% if user.is_anonymous %}
- Raven.setUserContext({
-     email: 'none',
-     id: 'anonymous'
- });
- {% else %}
- Raven.setUserContext({
-     email: '{{user.email}}',
-     id: '{{user.username}}'
- });
- {% endif %}
-</script>
+{% if not debug %}
+    {% if GA_CODE %}
+        <script type="text/javascript">
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', '{{GA_CODE}}', 'columbia.edu');
+        ga('send', 'pageview');
+        </script>
+    {% endif %}
+
+    <script src="//cdn.ravenjs.com/1.2.0/jquery,native/raven.min.js"></script>
+    <script>
+     Raven.config('https://d5583d00e5b641a4aed0d3588fc76921@sentry.ccnmtl.columbia.edu/39', {
+         whitelistUrls: [/eldex\.org/, /uelc\.stage\.ccnmtl\.columbia\.edu/]
+     }).install();
+     {% if user.is_anonymous %}
+     Raven.setUserContext({
+         email: 'none',
+         id: 'anonymous'
+     });
+     {% else %}
+     Raven.setUserContext({
+         email: '{{user.email}}',
+         id: '{{user.username}}'
+     });
+     {% endif %}
+    </script>
+{% endif %}
 
 </body>
 </html>
