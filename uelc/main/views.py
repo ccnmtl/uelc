@@ -1188,7 +1188,8 @@ class UELCAdminUserView(LoggedInMixinAdmin,
         cohortmodel = Cohort
         create_user_form = CreateUserForm
         create_hierarchy_form = CreateHierarchyForm
-        users = User.objects.all().order_by('username')
+        users = User.objects.all().order_by('username').select_related(
+            'profile__cohort')
         hierarchies = Hierarchy.objects.all()
         cases = Case.objects.all()
         cohorts = Cohort.objects.all().order_by('name')

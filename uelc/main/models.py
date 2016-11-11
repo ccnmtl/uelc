@@ -22,6 +22,9 @@ class Cohort(models.Model):
         blank=False,
         unique=True)
 
+    class Meta:
+        ordering = ['name']
+
     def __unicode__(self):
         return self.name
 
@@ -68,6 +71,15 @@ class Cohort(models.Model):
                 empty_label=None)
         return EditForm()
 
+    @classmethod
+    def make_choices(cls):
+        key = 'cohorts'
+        choices = cache.get(key)
+        if choices is None:
+            choices = [(c.id, c.name) for c in Cohort.objects.all()]
+            cache.set(key, choices, 60)
+        return choices
+
 
 class UserProfile(models.Model):
     PROFILE_CHOICES = (
@@ -84,7 +96,13 @@ class UserProfile(models.Model):
         null=True)
 
     def edit_form(self):
+        cohort_id = self.cohort.id if self.cohort else None
+
         class EditForm(forms.Form):
+            def __init__(self):
+                super(EditForm, self).__init__()
+                self.fields['cohort'].choices = Cohort.make_choices()
+
             username = forms.CharField(
                 widget=forms.widgets.Input(
                     attrs={'class': 'edit-user-username'}),
@@ -95,11 +113,11 @@ class UserProfile(models.Model):
                 widget=forms.Select(
                     attrs={'class': 'create-user-profile', 'required': True}),
                 choices=UserProfile.PROFILE_CHOICES)
-            cohort = forms.ModelChoiceField(
-                initial=self.cohort,
+            cohort = forms.ChoiceField(
+                initial=cohort_id,
                 widget=forms.Select(
                     attrs={'class': 'cohort-select'}),
-                queryset=Cohort.objects.all().order_by('name'),)
+                choices=[])
         return EditForm()
 
     def set_image_upload_permissions(self, user):
