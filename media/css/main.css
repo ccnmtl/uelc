@@ -562,6 +562,18 @@ ul.gate-section-list{
     font-weight: bold;
 }
 
+.nav-tabs.nav-justified>li a {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-left: 10px;
+    margin-right: 10px; 
+}
+
+.nav-tabs.nav-justified>li.active a {
+    border: 1px solid #ddd;
+    background-color: #eee;
+}
+
 .tools a.btn {
     font-size: 12px;
     color: white;
