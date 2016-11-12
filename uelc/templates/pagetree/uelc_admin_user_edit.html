@@ -13,7 +13,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">Edit {{user.get_full_name}}</div>
     <div class="panel-body">
-        <form data-toggle="validator" id="edit-user-form" action="/uelcadmin/edituser/" method="post">{% csrf_token %}
+        <form data-toggle="validator" id="edit-user-form" action="{% url 'uelcadmin-edit-user' user.id %}" method="post">{% csrf_token %}
             {{user.profile.edit_form|bootstrap}}
             <p><a target="_blank" href="/uelcadmin/edituserpass/{{user.id}}/">Change Password</a></p>
             <input type="hidden" name="user_id" value="{{user.id}}">

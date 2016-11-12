@@ -40,7 +40,7 @@ class Cohort(models.Model):
         return ', '.join(qs)
 
     def _get_users(self):
-        ids = self.user_profile_cohort.values_list('id', flat=True)
+        ids = self.user_profile_cohort.values_list('user__id', flat=True)
         return User.objects.filter(id__in=ids)
 
     def usernames(self):
@@ -171,10 +171,10 @@ class Case(models.Model):
         return '%s' % (self.name)
 
     def _get_cohorts(self):
-        return self.case_cohort.all()
+        return self.cohort.all()
 
     def cohortnames(self):
-        qs = self.case_cohort.values_list('name', flat=True)
+        qs = self.cohort.values_list('name', flat=True)
         return ', '.join(qs)
 
     cohorts = property(_get_cohorts)

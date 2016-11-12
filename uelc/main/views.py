@@ -773,9 +773,8 @@ class UELCAdminEditUserView(LoggedInMixinAdmin, TemplateView):
         ctx['user'] = self.get_user()
         return ctx
 
-    def post(self, request):
-        user = self.get_user()
-
+    def post(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
         url = request.META.get('HTTP_REFERER')
 
         username = request.POST.get('username', '')
@@ -1186,7 +1185,7 @@ class UELCAdminUserView(LoggedInMixinAdmin,
             request, *args, **kwargs)
 
     def get_base_url(self):
-        base = reverse('admin-user-view')
+        base = reverse('uelcadmin-user-view')
         query = self.request.GET.get('q', '')
         return u'{}?q={}&page='.format(base, query)
 

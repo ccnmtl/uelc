@@ -59,7 +59,6 @@ urlpatterns = [
         UELCAdminDeleteHierarchyView.as_view()),
     url(r'^uelcadmin/editcase/', UELCAdminEditCaseView.as_view()),
     url(r'^uelcadmin/deletecase/', UELCAdminDeleteCaseView.as_view()),
-    # url(r'^uelcadmin/editcohort/', UELCAdminEditCohortView.as_view()),
     url(r'^uelcadmin/deletecohort/', UELCAdminDeleteCohortView.as_view()),
     url(r'^uelcadmin/createuser/', UELCAdminCreateUserView.as_view()),
     url(r'^uelcadmin/edituserpass/(?P<pk>\d+)/$',

@@ -41,7 +41,7 @@
 
         <div class="row tools">
             <div class="col-md-4">
-                <form action='{% url "admin-user-view" %}' method="get">
+                <form action='{% url "uelcadmin-user-view" %}' method="get">
                     <div class="input-group">
                         <span class="input-group-addon">Search</span>
                         <input type="text" class="form-control" name="q"
@@ -89,7 +89,7 @@
                               <div id="edit-user" class="panel panel-default">
                                 <div class="panel-heading">Edit User</div>
                                 <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-user-form" action="/uelcadmin/edituser/" method="post">{% csrf_token %}
+                                  <form data-toggle="validator" id="edit-user-form" action="{% url 'uelcadmin-edit-user' user.id %}" method="post">{% csrf_token %}
                                     {% if user.profile %}
                                     {{user.profile.edit_form|bootstrap}}
                                     {% endif %}
