@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.core.cache import cache
 from splinter import Browser
 
 from uelc.main.tests.factories import AdminUpFactory, UELCModuleFactory
