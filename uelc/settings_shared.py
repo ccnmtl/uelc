@@ -1,7 +1,11 @@
 # Django settings for uelc project.
 import os.path
+import sys
+
 from ccnmtlsettings.shared import common
+
 from uelc.main.utils import clear_handler_cache
+
 
 project = 'uelc'
 base = os.path.dirname(__file__)
@@ -116,3 +120,17 @@ WINDSOCK_WEBSOCKETS_BASE = "ws://localhost:5050/socket/"
 BEHAVE_DEBUG_ON_ERROR = False
 
 PAGETREE_CUSTOM_CACHE_CLEAR = clear_handler_cache
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'uelc',
+    }
+}
+if 'test' in sys.argv or 'jenkins' in sys.argv or 'behave' in sys.argv:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+            'LOCATION': 'uelc',
+        }
+    }

@@ -1,42 +1,33 @@
 {% extends 'pagetree/uelc_admin.html' %}
 {% load bootstrap %}
+
 {% block case %}
-<style type="text/css">
-button.close{
-  padding: 10px;
-}
-.panel-heading p:first-child {
-  font-weight: bold;
-}
-</style>
 
-  <div class="panel panel-default">
+  <div class="panel panel-default uelc-admin-case uelc-admin-panel">
       <div class="panel-heading">
-      
-    <button class="demo btn btn-primary pull-right" data-toggle="modal"  data-target="#add-case-form-modal" href="#add-case-form-modal">Add Case</button>
-     <p class="lead">Add and Edit Cases</p>
-        <p>Cases are a collection of pages that include text, decision, and gate blocks.<br />Each case is a new decision experience for a cohort of users.</p>
-
-        <div id="add-case-form-modal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <div class="modal-header panel-heading">Add Case</div>
-                    <div class="modal-body">
-                      <div id="cases" class="panel panel-default">
-                        <div class="panel-heading">Cases</div>
-                        <div class="panel-body">
-                        <form role="form" data-toggle="validator" id="add-case-form" action="/uelcadmin/createcase/" method="post">{% csrf_token %}
-                          {{casemodel.add_form|bootstrap}}
-                          <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                          <input type="reset" class="reset-button hidden" value="Reset" />
-                        </form>
-                        </div>
-                      </div><!--end #cases-->
-                    </div> <!--end modal-dialog-->
-                </div><!-- end modal-content-->
-            </div><!--end .model-body-->
-        </div><!--end #add-case-form-modal .modal-->
+        <button class="demo btn btn-primary pull-right" data-toggle="modal"  data-target="#add-case-form-modal" href="#add-case-form-modal">Add Case</button>
+         <p class="lead">Add and Edit Cases</p>
+            <p>Cases are a collection of pages that include text, decision, and gate blocks.<br />Each case is a new decision experience for a cohort of users.</p>
+            <div id="add-case-form-modal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <div class="modal-header panel-heading">Add Case</div>
+                        <div class="modal-body">
+                          <div id="cases" class="panel panel-default">
+                            <div class="panel-heading">Cases</div>
+                            <div class="panel-body">
+                            <form role="form" data-toggle="validator" id="add-case-form" action="/uelcadmin/createcase/" method="post">{% csrf_token %}
+                              {{casemodel.add_form|bootstrap}}
+                              <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                              <input type="reset" class="reset-button hidden" value="Reset" />
+                            </form>
+                            </div>
+                          </div><!--end #cases-->
+                        </div> <!--end modal-dialog-->
+                    </div><!-- end modal-content-->
+                </div><!--end .model-body-->
+            </div><!--end #add-case-form-modal .modal-->
       </div>
       <div class="panel-body">
         <table id="case-list" class="table">
@@ -102,8 +93,7 @@ button.close{
                             </div> <!--end modal-body-->
                         </div><!-- end modal-content-->
                     </div><!--end .modal-dialog-->
-                  </div><!--end #delete-case-form-modal .modal-->
-                  
+                  </div>
                 </td>
               </tr>
               {% endfor %}
@@ -112,12 +102,13 @@ button.close{
       </div><!--end panel-body-->
   </div><!--end panel-->
 
-  <div class="panel panel-default">
-
+  <div class="panel panel-default uelc-admin-panel">
+    <div class="panel-heading">
         <button class="demo btn btn-primary pull-right" data-toggle="modal"  data-target="#add-hierarchy-form-modal" href="#add-hierarchy-form-modal">Add Hierarchy Item</button>
-     <p class="lead">Add and Delete Case Hierarchies</p>
+        <p class="lead">Add and Delete Case Hierarchies</p>
         <p>A hierarchy is a unique location on the site where case content may be accessed to view or edit.<br />Add a hierarchy and then add a case to be accessed on that hierarchy.</p>
-
+    </div>
+    <div class="panel-body">
         <div id="add-hierarchy-form-modal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -133,11 +124,11 @@ button.close{
                             <input type="reset" class="reset-button hidden" value="Reset" />
                           </form>
                         </div>
-                      </div><!--end #hierarchiess-->
+                      </div>
                       </div> <!--end modal-dialog-->
                 </div><!-- end modal-content-->
             </div><!--end .model-body-->
-        </div><!--end #add-hierarchy-form-modal .modal-->
+        </div>
       </div>
       <div class="panel-body">
         <table id="hierarchy-list" class="table">
@@ -187,4 +178,5 @@ button.close{
         </table>
       </div><!--end panel-body-->
   </div><!--end panel-->
+  
 {% endblock %}

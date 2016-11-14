@@ -77,6 +77,7 @@ class Cohort(models.Model):
         choices = cache.get(key)
         if choices is None:
             choices = [(c.id, c.name) for c in Cohort.objects.all()]
+            choices.insert(0, ['', '---------'])
             cache.set(key, choices, 60)
         return choices
 
@@ -180,29 +181,52 @@ class Case(models.Model):
     cohorts = property(_get_cohorts)
 
     @classmethod
+    def hierarchy_choices(cls):
+        key = 'hierarchies'
+        choices = cache.get(key)
+        if choices is None:
+            qs = Hierarchy.objects.all().order_by('name')
+            choices = [(h.id, h.name) for h in qs]
+            choices.insert(0, ['', '---------'])
+            cache.set(key, choices, 60)
+        return choices
+
+    @classmethod
     def add_form(cls):
         class AddForm(forms.Form):
+            def __init__(self):
+                super(AddForm, self).__init__()
+                self.fields['cohort'].choices = Cohort.make_choices()
+                self.fields['hierarchy'].choices = Case.hierarchy_choices()
+
             name = forms.CharField(widget=forms.widgets.Input(
                 attrs={'class': 'add-case-name'}))
             description = forms.CharField(widget=forms.widgets.Textarea(
                 attrs={'class': 'add-case-description'}))
-            hierarchy = forms.ModelChoiceField(
+            hierarchy = forms.ChoiceField(
                 widget=forms.Select(
                     attrs={'class': 'hierarchy-select'}),
-                queryset=Hierarchy.objects.all().order_by('name'),)
-            cohort = forms.ModelChoiceField(
+                choices=[])
+            cohort = forms.ChoiceField(
                 widget=forms.Select(
                     attrs={'class': 'cohort-select'}),
-                queryset=Cohort.objects.all().order_by('name'),)
+                choices=[])
         return AddForm()
 
     def edit_form(self):
+        cohort_ids = [cohort.id for cohort in self.cohort.all()]
+        hierarchy_id = self.hierarchy.id
+
         class EditForm(forms.Form):
+            def __init__(self):
+                super(EditForm, self).__init__()
+                self.fields['cohort'].choices = Cohort.make_choices()
+                self.fields['hierarchy'].choices = Case.hierarchy_choices()
+
             name = forms.CharField(
                 widget=forms.widgets.Input(
                     attrs={'class': 'add-case-name'}),
-                initial=self.name
-            )
+                initial=self.name)
 
             description = forms.CharField(
                 widget=forms.widgets.Textarea(
@@ -210,17 +234,17 @@ class Case(models.Model):
                 initial=self.description
             )
 
-            hierarchy = forms.ModelChoiceField(
-                initial=self.hierarchy,
+            hierarchy = forms.ChoiceField(
+                initial=hierarchy_id,
                 widget=forms.Select(
                     attrs={'class': 'hierarchy-select'}),
-                queryset=Hierarchy.objects.all().order_by('name'),)
+                choices=[])
 
-            cohort = forms.ModelChoiceField(
-                initial=[cohort.id for cohort in self.cohort.all()],
+            cohort = forms.ChoiceField(
+                initial=cohort_ids,
                 widget=forms.SelectMultiple(
                     attrs={'class': 'cohort-select'}),
-                queryset=Cohort.objects.all().order_by('name'),)
+                choices=[])
 
         return EditForm()
 
