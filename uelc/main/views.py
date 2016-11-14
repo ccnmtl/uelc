@@ -761,12 +761,20 @@ class UELCAdminDeleteUserView(LoggedInMixinAdmin,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminEditUserView(LoggedInMixinAdmin,
-                            TemplateView):
-    template_name = "pagetree/uelc_admin.html"
-    extra_context = dict()
+class UELCAdminEditUserView(LoggedInMixinAdmin, TemplateView):
+    template_name = "pagetree/uelc_admin_user_edit.html"
 
-    def post(self, request):
+    def get_user(self):
+        pk = self.kwargs.get('pk', None)
+        return get_object_or_404(User, pk=pk)
+
+    def get_context_data(self, **kwargs):
+        ctx = TemplateView.get_context_data(self, **kwargs)
+        ctx['user'] = self.get_user()
+        return ctx
+
+    def post(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
         url = request.META.get('HTTP_REFERER')
 
         username = request.POST.get('username', '')
@@ -777,18 +785,8 @@ class UELCAdminEditUserView(LoggedInMixinAdmin,
                 extra_tags='createUserViewError')
             return HttpResponseRedirect(url)
 
-        user_id = request.POST.get('user_id', '')
         profile = request.POST.get('profile_type', '')
         cohort_id = request.POST.get('cohort', '')
-
-        try:
-            user = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            messages.error(
-                request,
-                'User not found.',
-                extra_tags='createUserViewError')
-            return HttpResponseRedirect(url)
 
         if cohort_id:
             cohort = Cohort.objects.get(id=cohort_id)
@@ -809,6 +807,7 @@ class UELCAdminEditUserView(LoggedInMixinAdmin,
         user.profile.set_image_upload_permissions(user)
         user.username = username
         user.save()
+
         return HttpResponseRedirect(url)
 
 
@@ -965,16 +964,26 @@ class UELCAdminDeleteCohortView(LoggedInMixinAdmin,
         return HttpResponseRedirect(url)
 
 
-class UELCAdminEditCohortView(LoggedInMixinAdmin,
-                              TemplateView):
-    template_name = "pagetree/uelc_admin.html"
+class UELCAdminEditCohortView(LoggedInMixinAdmin, TemplateView):
+    template_name = "pagetree/uelc_admin_cohort_edit.html"
     extra_context = dict()
 
-    def post(self, request):
+    def get_cohort(self):
+        pk = self.kwargs.get('pk', None)
+        return get_object_or_404(Cohort, pk=pk)
+
+    def get_context_data(self, **kwargs):
+        ctx = TemplateView.get_context_data(self, **kwargs)
+        ctx['cohort'] = self.get_cohort()
+        return ctx
+
+    def post(self, request, pk):
+        cohort_obj = get_object_or_404(Cohort, pk=pk)
+
         name = request.POST.get('name', '')
-        cohort_id = request.POST.get('cohort_id', '')
+
         user_list = request.POST.getlist('users')
-        cohort_obj = Cohort.objects.get(pk=cohort_id)
+
         cohort_users = cohort_obj.users
         try:
             cohort_obj.name = name
@@ -1152,11 +1161,6 @@ class UELCAdminView(LoggedInMixinAdmin,
 class UELCAdminCohortView(LoggedInMixinAdmin,
                           TemplateView):
     template_name = "pagetree/uelc_admin_cohort.html"
-    extra_context = dict()
-
-    def dispatch(self, request, *args, **kwargs):
-        return super(UELCAdminCohortView, self).dispatch(
-            request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         path = self.request.path
@@ -1167,7 +1171,8 @@ class UELCAdminCohortView(LoggedInMixinAdmin,
         users = User.objects.all().order_by('username')
         hierarchies = Hierarchy.objects.all()
         cases = Case.objects.all()
-        cohorts = Cohort.objects.all().order_by('name')
+        cohorts = Cohort.objects.all().order_by('name').prefetch_related(
+            'user_profile_cohort__user', 'case_cohort')
         context = dict(users=users,
                        path=path,
                        cases=cases,
@@ -1191,7 +1196,7 @@ class UELCAdminUserView(LoggedInMixinAdmin,
             request, *args, **kwargs)
 
     def get_base_url(self):
-        base = reverse('admin-user-view')
+        base = reverse('uelcadmin-user-view')
         query = self.request.GET.get('q', '')
         return u'{}?q={}&page='.format(base, query)
 

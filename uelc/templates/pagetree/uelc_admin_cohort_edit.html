@@ -1,0 +1,25 @@
+{% extends 'pagetree/uelc_admin.html' %}
+{% load bootstrap %}
+
+{% block introduction %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'uelcadmin' %}">Management Panel</a></li>
+        <li><a href="{% url 'uelcadmin-view-cohort' %}">Cohorts</a></li>
+        <li class="active">Edit Cohort</li>
+    </ol>
+{% endblock %}
+
+{% block cohort %}
+    <div class="panel panel-default">
+        <div class="panel-heading">Edit {{cohort.name}}</div>
+            <div class="panel-body">
+                <form data-toggle="validator" id="edit-cohort-form-{{cohort.id}}" action="." method="post">{% csrf_token %}
+                    {{cohort.edit_form|bootstrap}}
+                    <input type="hidden" name="cohort_id" value="{{cohort.id}}">
+                    <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                    <input type="reset" class="reset-button hidden" value="Reset" />
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

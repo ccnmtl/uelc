@@ -326,30 +326,87 @@ class TestAdminBasicViews(TestCase):
             User.objects.filter(
                 username='NewUserThatIsLongerThan30Characters').exists())
 
+    def test_uelc_admin_create_case(self):
+        request = self.client.post(
+            "/uelcadmin/createcase/",
+            {'name': 'NewCase', 'hierarchy': str(self.h.id),
+             'cohort': str(self.cohort.id)},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
+    def test_uelc_admin_edit_cohort(self):
+        url = reverse('uelcadmin-edit-cohort', kwargs={'pk': self.cohort.id})
+        request = self.client.post(
+            url, {'name': 'EditCohort'},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
+    def test_uelc_admin_edit_user(self):
+        url = reverse('uelcadmin-edit-user', kwargs={'pk': self.gu.user.id})
+        data = {
+            'username': 'EditUser',
+            'profile_type': 'group_user',
+            'cohort': str(self.cohort.id)
+        }
+        request = self.client.post(
+            url, data,
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
+    def test_uelc_admin_edit_user_no_profile(self):
+        u_no_profile = User.objects.create(username='no_profile')
+        url = reverse('uelcadmin-edit-user', kwargs={'pk': u_no_profile.id})
+
+        data = {
+            'username': 'EditUser',
+            'profile_type': 'group_user',
+            'cohort': str(self.cohort.id)
+        }
+
+        request = self.client.post(
+            url, data,
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
+        self.assertEqual(request.status_code, 302)
+
+    def test_uelc_admin_edit_non_existing_user(self):
+        url = reverse('uelcadmin-edit-user', kwargs={'pk': 22})
+        data = {
+            'username': 'EditUser',
+            'profile_type': 'group_user',
+            'cohort': str(self.cohort.id)
+        }
+
+        response = self.client.post(
+            url, data,
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/",
+            follow=True)
+        self.assertEqual(response.status_code, 404)
+
     def test_uelc_admin_update_user(self):
         up = GroupUpFactory()
+        url = reverse('uelcadmin-edit-user', kwargs={'pk': up.user.pk})
+
         request = self.client.post(
-            "/uelcadmin/edituser/",
+            url,
             {
-                'user_id': up.user.pk,
                 'username': 'some_random_name',
                 'profile_type': up.profile_type,
                 'cohort': up.cohort.pk,
             },
-            HTTP_REFERER="/uelcadmin/",
-            follow=True)
+            HTTP_REFERER="/uelcadmin/", follow=True)
         self.assertEqual(request.status_code, 200)
         self.assertTrue(
             User.objects.filter(username='some_random_name').exists())
 
     def test_uelc_admin_update_user_long_username(self):
         up = GroupUpFactory()
+        url = reverse('uelcadmin-edit-user', kwargs={'pk': up.user.pk})
+
         original_username = up.user.username
         long_username = 'some_random_name_longer_than_30_characters'
         request = self.client.post(
-            "/uelcadmin/edituser/",
+            url,
             {
-                'user_id': up.pk,
                 'username': long_username,
                 'profile_type': up.profile_type,
                 'cohort': up.cohort.pk,
@@ -361,52 +418,6 @@ class TestAdminBasicViews(TestCase):
             User.objects.filter(username=long_username).exists())
         self.assertTrue(
             User.objects.filter(username=original_username).exists())
-
-    def test_uelc_admin_create_case(self):
-        request = self.client.post(
-            "/uelcadmin/createcase/",
-            {'name': 'NewCase', 'hierarchy': str(self.h.id),
-             'cohort': str(self.cohort.id)},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
-        self.assertEqual(request.status_code, 302)
-
-    def test_uelc_admin_edit_cohort(self):
-        request = self.client.post(
-            "/uelcadmin/editcohort/",
-            {'name': 'EditCohort', 'cohort_id': str(self.cohort.id)},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
-        self.assertEqual(request.status_code, 302)
-
-    def test_uelc_admin_edit_user(self):
-        request = self.client.post(
-            "/uelcadmin/edituser/",
-            {'username': 'EditUser', 'user_id': str(self.gu.user.pk),
-             'profile_type': 'group_user', 'cohort': str(self.cohort.id)},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
-        self.assertEqual(request.status_code, 302)
-
-    def test_uelc_admin_edit_user_no_profile(self):
-        u_no_profile = User.objects.create(username="no_profile")
-        request = self.client.post(
-            "/uelcadmin/edituser/",
-            {'username': 'EditUser', 'user_id': str(u_no_profile.pk),
-             'profile_type': 'group_user', 'cohort': str(self.cohort.id)},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
-        self.assertEqual(request.status_code, 302)
-
-    def test_uelc_admin_edit_non_existing_user(self):
-        response = self.client.post(
-            "/uelcadmin/edituser/",
-            {'username': 'EditUser', 'user_id': '22',
-             'profile_type': 'group_user', 'cohort': str(self.cohort.id)},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/",
-            follow=True)
-        self.assertEqual(response.status_code, 200)
-        m = list(response.context['messages'])
-        self.assertEqual(len(m), 1)
-        tmp_stg = 'User not found.'
-        er_msg = str(m[0])
-        self.assertEqual(tmp_stg.strip(), er_msg.strip())
 
     def test_uelc_admin_edit_case(self):
         request = self.client.post(

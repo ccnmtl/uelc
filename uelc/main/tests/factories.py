@@ -42,7 +42,7 @@ class FacilitatorUserFactory(factory.DjangoModelFactory):
     class Meta:
         model = User
 
-    username = factory.Sequence(lambda n: "user%03d" % n)
+    username = factory.Sequence(lambda n: "facilitator%03d" % n)
     is_staff = False
     first_name = 'facilitator user'
 

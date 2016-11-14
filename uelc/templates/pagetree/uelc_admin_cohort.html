@@ -1,19 +1,15 @@
 {% extends 'pagetree/uelc_admin.html' %}
 {% load bootstrap %}
-{% block cohort %}
-<style type="text/css">
-button.close{
-  padding: 10px;
-}
-</style>
 
-    <div class="panel panel-default">
+{% block cohort %}
+
+    <div class="panel panel-default uelc-admin-panel">
       <div class="panel-heading">
-      
+
       <button class="btn btn-primary pull-right" data-toggle="modal"  data-target="#add-cohort-form-modal" href="#add-cohort-form-modal">Create Cohort</button>
       <p class="lead">Create and Edit Cohorts</p>
       <p>A cohort is a group of users connected around an assigned case experience.</p>
-      
+
       <div id="add-cohort-form-modal" class="modal fade">
           <div class="modal-dialog">
               <div class="modal-content">
@@ -53,65 +49,19 @@ button.close{
                 <td class="td-cohort-name">{{ cohort.name }}</td>
                 <td class="td-cohort-case">
                 {% if cohort.case %}
-                  {{ cohort.casename }}
+                    {{ cohort.casename }}
                 {% endif %}
-                  
+
                 </td>
                 <td class="td-cohort-users">
-                  {% if cohort.users %}
-                    {% for user in cohort.users %}
-                      <button style="margin: 3px;" class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">{{user}}</button>
-                  <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <div class="modal-header panel-heading">Edit User</div>
-                            <div class="modal-body">
-                              <div id="edit-user" class="panel panel-default">
-                                <div class="panel-heading">Edit User</div>
-                                <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-user-form" action="/uelcadmin/edituser/" method="post">{% csrf_token %}
-                                    {{user.profile.edit_form|bootstrap}}
-                                    <p><a target="_blank" href="/uelcadmin/edituserpass/{{user.id}}/">Change Password</a></p>
-                                    <input type="hidden" name="user_id" value="{{user.id}}">
-                                    <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                                    <input type="reset" class="reset-button hidden" value="Reset" />
-                                  </form>
-                                </div>
-                              </div><!--end #hierarchiess-->
-                              </div> <!--end modal-dialog-->
-                        </div><!-- end modal-content-->
-                    </div><!--end .model-body-->
-                  </div><!--end #edit-user-form-modal .modal-->
+                    {% for up in cohort.user_profile_cohort.all %}
+                        {% with user=up.user %}
+                            <a href="{% url 'uelcadmin-edit-user' user.id %}" style="margin: 3px;" class="demo btn btn-info btn-sm">{{user}}</button>
+                        {% endwith %}
                     {% endfor %}
-                  {% endif %}
                   </td>
                 <td class="td-cohort-edit">
-                  
-                  <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-cohort-form-modal-{{cohort.id}}" href="#edit-cohort-form-modal-{{cohort.id}}">Edit Cohort</button>
-                  <div id="edit-cohort-form-modal-{{cohort.id}}" class="modal fade">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <div class="modal-header panel-heading">Edit Cohort</div>
-                            <div class="modal-body">
-                              <div id="edit-cohort" class="panel panel-default">
-                                <div class="panel-heading">Edit Cohort</div>
-                                <div class="panel-body">
-                                {% if cohort.edit_form %}
-                                  <form data-toggle="validator" id="edit-cohort-form-{{cohort.id}}" action="/uelcadmin/editcohort/" method="post">{% csrf_token %}
-                                    {{cohort.edit_form|bootstrap}}
-                                    <input type="hidden" name="cohort_id" value="{{cohort.id}}">
-                                    <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                                    <input type="reset" class="reset-button hidden" value="Reset" />
-                                  </form>
-                                {% endif %}
-                                </div>
-                              </div><!--end #hierarchiess-->
-                              </div> <!--end modal-dialog-->
-                        </div><!-- end modal-content-->
-                    </div><!--end .model-body-->
-                  </div><!--end #edit-cohort-form-modal .modal-->
+                    <a href="{% url 'uelcadmin-edit-cohort' cohort.id %}" class="demo btn btn-info btn-sm">Edit Cohort</button>
                 </td>
                 <td>
 

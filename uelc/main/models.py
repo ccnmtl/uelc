@@ -33,27 +33,19 @@ class Cohort(models.Model):
 
     def _get_case(self):
         """Returns all the cases for this Cohort as a queryset."""
-        return Case.objects.filter(cohort=self.id)
+        return self.case_cohort.all()
 
     def casename(self):
-        casenames = [case.name.encode(
-            encoding='UTF-8',
-            errors='strict') for case in self.case]
-        nms = ', '.join(casenames)
-        return nms
+        qs = self.case_cohort.values_list('name', flat=True)
+        return ', '.join(qs)
 
     def _get_users(self):
-        upros = UserProfile.objects.filter(
-            cohort=self.id).order_by('user__username')
-        users = [up.user for up in upros if up.cohort.id == self.id]
-        return users
+        ids = self.user_profile_cohort.values_list('user__id', flat=True)
+        return User.objects.filter(id__in=ids)
 
     def usernames(self):
-        unames = [user.username.encode(
-            encoding='UTF-8',
-            errors='strict') for user in self.users]
-        nms = ', '.join(unames)
-        return nms
+        qs = self.user_profile_cohort.values_list('user__username', flat=True)
+        return ', '.join(qs)
 
     case = property(_get_case)
     users = property(_get_users)
@@ -183,12 +175,8 @@ class Case(models.Model):
         return self.cohort.all()
 
     def cohortnames(self):
-        if self.cohort.exists():
-            cohortnames = [cohort.name.encode(
-                encoding='UTF-8',
-                errors='strict') for cohort in self.cohorts]
-            nms = ', '.join(cohortnames)
-            return nms
+        qs = self.cohort.values_list('name', flat=True)
+        return ', '.join(qs)
 
     cohorts = property(_get_cohorts)
 
