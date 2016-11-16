@@ -52,27 +52,11 @@
                       </div>
                   </div>
               </div>
-
-
-        
-
             <div class="gate-section-list well well-sm">
             {% for sec in u.1 %}
-
-                {% comment %}
-                <!--
-                    section (sec.0), gateblock (sec.1), unlocked (sec.2),
-                    user (sec.3), status (sec.4), can_show_gateblock (sec.5),
-                    (sec.6) section part, (sec.7.0) is_curveball,
-                    (sec.7.1) curveball block, (sec.8.0) is_decision_block,
-                    (sec.8.1) decision block, (sec.9) is_next_curveball
-                -->
-                {% endcomment %}
-
                 {% if sec.2 %}<!-- if unlocked -->
                     {% if sec.5 %}<!-- can show gateblock -->
                     <div class="group-btn-list gate-block part-{{sec.6.0|part}}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
-                        
                         {% if sec.7.0 %}<!-- if curveball -->
                             {% include "pagetree/curveball.html" %}
                         {% endif %}
