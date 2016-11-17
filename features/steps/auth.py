@@ -16,14 +16,10 @@ def sign_in_as(context, usertype='group user'):
     case = Case.objects.first()
     case.cohort.add(up.cohort)
 
-    password = 'test_pass1'
-    user.set_password(password)
-    user.save()
-
     b = context.browser
     b.visit(urlparse.urljoin(context.base_url, '/'))
     b.fill('username', user.username)
-    b.fill('password', password)
+    b.fill('password', 'test')
     b.find_by_css('#login-local [type="submit"]').first.click()
 
 

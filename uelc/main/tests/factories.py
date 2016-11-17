@@ -45,6 +45,7 @@ class FacilitatorUserFactory(factory.DjangoModelFactory):
     username = factory.Sequence(lambda n: "facilitator%03d" % n)
     is_staff = False
     first_name = 'facilitator user'
+    password = factory.PostGenerationMethodCall('set_password', 'test')
 
 
 class GroupUserFactory(factory.DjangoModelFactory):
@@ -54,6 +55,7 @@ class GroupUserFactory(factory.DjangoModelFactory):
     username = factory.Sequence(lambda n: "user%03d" % n)
     is_staff = False
     first_name = 'group user'
+    password = factory.PostGenerationMethodCall('set_password', 'test')
 
 
 class AdminUpFactory(factory.DjangoModelFactory):
