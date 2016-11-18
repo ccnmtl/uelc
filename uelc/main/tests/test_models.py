@@ -10,6 +10,7 @@ from uelc.main.tests.factories import (
 )
 from uelc.main.models import TextBlockDT, LibraryItem, CaseQuiz, CaseMap
 from pagetree.models import Hierarchy, PageBlock
+from pagetree.tests.factories import RootSectionFactory
 from quizblock.tests.test_models import FakeReq
 from quizblock.models import Submission
 
@@ -179,43 +180,52 @@ class DummySection(object):
 
 
 class UELCHandlerTest(TestCase):
+    def setUp(self):
+        self.u = UELCHandlerFactory()
 
     def test_get_vals_from_casemap(self):
-        u = UELCHandlerFactory()
-        self.assertEqual(u.get_vals_from_casemap([1]), [1])
-        self.assertEqual(u.get_vals_from_casemap([0, 2, 3]), [2, 3])
+        self.assertEqual(self.u.get_vals_from_casemap([1]), [1])
+        self.assertEqual(self.u.get_vals_from_casemap([0, 2, 3]), [2, 3])
 
     def test_get_partchoice_by_username(self):
         class DummyUserMap(object):
             value = [1]
 
-        u = UELCHandlerFactory()
-        self.assertEqual(u.get_partchoice_by_usermap(DummyUserMap()), 1)
+        self.assertEqual(self.u.get_partchoice_by_usermap(DummyUserMap()), 1)
 
         d = DummyUserMap()
         d.value = [9, 3]
-        r = u.get_partchoice_by_usermap(d)
+        r = self.u.get_partchoice_by_usermap(d)
         self.assertTrue(2.29 < r < 2.31)
 
     def test_get_p1c1(self):
-        u = UELCHandlerFactory()
-        self.assertEqual(u.get_p1c1([1, 2]), 2)
+        self.assertEqual(self.u.get_p1c1([1, 2]), 2)
 
     def test_can_show_empty(self):
-        u = UELCHandlerFactory()
-        r = u.can_show(None, DummySection(), [])
+        r = self.u.can_show(None, DummySection(), [])
         self.assertEqual(r, 0)
 
     def test_can_show(self):
-        u = UELCHandlerFactory()
-        r = u.can_show(None, DummySection(), [7])
+        r = self.u.can_show(None, DummySection(), [7])
         self.assertEqual(r, 7)
 
     def test_p1pre(self):
-        u = UELCHandlerFactory()
-        self.assertEqual(u.p1pre([]), 0)
-        self.assertEqual(u.p1pre([1]), 0)
-        self.assertEqual(u.p1pre([1, 2]), 1)
+        self.assertEqual(self.u.p1pre([]), 0)
+        self.assertEqual(self.u.p1pre([1]), 0)
+        self.assertEqual(self.u.p1pre([1, 2]), 1)
+
+    def test_is_curveball(self):
+        r, block = self.u.is_curveball(None)
+        self.assertFalse(r)
+
+        section = RootSectionFactory(path='path')
+        section.add_pageblock_from_dict({
+            'block_type': 'Test Block',
+            'body': 'test body',
+        })
+
+        r, block = self.u.is_curveball(section)
+        self.assertFalse(r)
 
 
 class LibraryItemTest(TestCase):

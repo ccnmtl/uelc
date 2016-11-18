@@ -611,28 +611,38 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         roots = get_root_context(self.request)
         hierarchy = section.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
+
         # is there really only going to be one cohort per case?
-        cohort = case.cohort.get(user_profile_cohort__user=user)
+        cohort = user.profile.cohort
+
         cohort_user_profiles = cohort.user_profile_cohort.filter(
-            profile_type="group_user").order_by('user__username')
-        cohort_users = [profile.user for profile in cohort_user_profiles]
+            profile_type="group_user").order_by(
+            'user__username').select_related('user').prefetch_related(
+            'user__userlocation_set')
+
         gateblocks = GateBlock.objects.filter(
-            pageblocks__section__hierarchy=hierarchy)
+            pageblocks__section__hierarchy=hierarchy).prefetch_related(
+                'pageblocks__section__pageblock_set',
+                'pageblocks__section__section_submited')
+
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
             depth=0,
             path=hierarchy.base_url)[0]
+
         user_sections = []
-        for user in cohort_users:
+        for user_profile in cohort_user_profiles:
+            user = user_profile.user
+
             user_last_location = get_user_last_location(user, hierarchy)
+            if user_last_location is None:
+                user_last_location = UserLocation.objects.create(
+                    user=user, hierarchy=hierarchy)
 
             um = get_user_map(hierarchy, user)
             part_usermap = hand.get_partchoice_by_usermap(um)
 
             gate_section = []
-            uloc = UserLocation.objects.get_or_create(
-                user=user,
-                hierarchy=hierarchy)
 
             for g in gateblocks:
                 gateblock_section = g.pageblock().section
@@ -646,7 +656,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                     g.status(
                         gateblock_section,
                         user, hierarchy,
-                        uloc[0],
+                        user_last_location,
                         pageblocks),
                     hand.can_show_gateblock(gateblock_section,
                                             part_usermap,
@@ -663,19 +673,12 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section, user_last_location])
 
-        quizzes = []
-        for p in section.pageblock_set.all():
-            block_obj = p.block()
-            if hasattr(block_obj, 'needs_submit') and block_obj.needs_submit():
-                quizzes.append(block_obj)
         context = dict(
             is_facilitator_view=True,
             section=section,
-            quizzes=quizzes,
             user_sections=user_sections,
-            module=section.get_module(),
             modules=root.get_children(),
-            root=section.hierarchy.get_root(),
+            root=root,
             case=case,
             websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
             token=gen_token(request, section.hierarchy.name),

@@ -32,17 +32,17 @@ class GateBlock(BasePageBlock):
     def unlocked(self, user, section):
         return GateSubmission.objects.filter(
             gateblock_id=self.id,
-            gate_user_id=user.id).count() > 0
+            gate_user_id=user.id).exists()
 
     def status(self, gate_section, user, hierarchy, uloc, pageblocks=None):
         """
         Takes self.pageblock().section, a User, Hierarchy, UserLocation,
         and optionally, a pageblock set.
         """
-        pageblocks = self._get_pageblocks(pageblocks, gate_section)
 
-        ss_exists = SectionSubmission.objects.filter(
-            user=user, section=gate_section).exists()
+        # @todo: could these be passed in?
+        pageblocks = self._get_pageblocks(pageblocks, gate_section)
+        ss_exists = gate_section.section_submited.filter(user=user).exists()
 
         for block in pageblocks:
             if ss_exists and block.section == gate_section:
