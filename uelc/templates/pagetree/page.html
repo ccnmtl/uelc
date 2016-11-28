@@ -52,8 +52,8 @@
 {% block pagetitle %}{% endblock %}
 
 {% block navrightextra %}
-    {% if not request.user.profile_type == "group_usr" %}
-    <li><a href="{{section.get_edit_url}}" class="btn-success">edit page</a></li>
+    {% if not request.user.profile.is_group_user %}
+        <li><a href="{{section.get_edit_url}}" class="btn-success">edit page</a></li>
     {% endif %}
 {% endblock %}
 
