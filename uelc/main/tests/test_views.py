@@ -1,12 +1,17 @@
 import json
+
 from django.contrib.auth.models import User
+from django.contrib.messages.middleware import MessageMiddleware
+from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.test.client import RequestFactory
 from pagetree.helpers import get_hierarchy
 from pagetree.models import Hierarchy, Section
 from pagetree.tests.factories import ModuleFactory
 from quizblock.models import Question, Answer
+
 from uelc.main.models import Case, CaseMap, CaseQuiz, CaseAnswer
 from uelc.main.tests.factories import (
     GroupUpFactory, AdminUpFactory,
@@ -14,6 +19,7 @@ from uelc.main.tests.factories import (
     UELCModuleFactory, HierarchyFactory, CaseQuizFactory,
     QuestionFactory, AnswerFactory, CaseAnswerFactory
 )
+from uelc.main.views import UELCPageView
 
 
 class BasicTest(TestCase):
@@ -1009,3 +1015,60 @@ class CloneHierarchyWithCasesViewTest(TestCase):
         self.assertEqual(cloned_case.cohort.count(), self.case.cohort.count())
         self.assertEqual(set(cloned_case.cohort.all()),
                          set(self.case.cohort.all()))
+
+
+class UELCPageViewTest(TestCase):
+
+    def setUp(self):
+        UELCModuleFactory()
+        self.h = Hierarchy.objects.get(name='case-test')
+
+    def setup_request(self, request):
+        """Annotate a request object with a session"""
+        middleware = SessionMiddleware()
+        middleware.process_request(request)
+        request.session.save()
+
+        """Annotate a request object with a messages"""
+        middleware = MessageMiddleware()
+        middleware.process_request(request)
+        request.session.save()
+
+        request.session['some'] = 'some'
+        request.session.save()
+
+    def test_root_section_check_invalid_as_admin(self):
+        s1 = self.h.get_root().get_first_child()
+
+        view = UELCPageView()
+        view.request = RequestFactory().get('/')
+        self.setup_request(view.request)
+        view.request.user = AdminUpFactory().user
+
+        response = view.root_section_check(s1, None)
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.url, '/pages/case-test/edit/')
+
+    def test_root_section_check_invalid_as_group_user(self):
+        s1 = self.h.get_root().get_first_child()
+
+        view = UELCPageView()
+        view.request = RequestFactory().get('/')
+        self.setup_request(view.request)
+        view.request.user = GroupUpFactory().user
+
+        response = view.root_section_check(s1, None)
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.url, view.no_root_fallback_url)
+
+    def test_root_section_check_valid(self):
+        s1 = self.h.get_root().get_first_child()
+        s2 = s1.get_next()
+
+        view = UELCPageView()
+        view.request = RequestFactory().get('/')
+        view.request.user = GroupUpFactory().user
+
+        response = view.root_section_check(s1, s2)
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.url, s2.get_absolute_url())

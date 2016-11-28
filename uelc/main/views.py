@@ -27,7 +27,7 @@ from uelc.main.forms import (
     EditUserPassForm, CaseAnswerForm, UELCCloneHierarchyForm
 )
 from uelc.main.helper_functions import (
-    get_root_context, get_user_map, visit_root, gen_group_token,
+    get_root_context, get_user_map, gen_group_token,
     has_responses, reset_page, page_submit, admin_ajax_page_submit,
     gen_token, get_user_last_location
 )
@@ -94,26 +94,18 @@ class UELCPageView(LoggedInMixin,
         self.section = self.get_section(path)
         self.root = self.section.hierarchy.get_root()
         self.module = self.section.get_module()
-        pt = request.user.profile.profile_type
-        ns = self.section.get_next()
         hierarchy = self.section.hierarchy
-        if ns:
-            ns_hierarchy = ns.hierarchy
-        else:
-            ns_hierarchy = False
-        base_url = self.section.hierarchy.base_url
+        next_section = self.section.get_next()
+
         if self.section.is_root():
-            return self.root_section_check(request, ns, ns_hierarchy,
-                                           hierarchy, base_url, pt)
+            return self.root_section_check(self.section, next_section)
 
-        if self.section == self.module and pt == "group_user":
+        if (self.section == self.module and
+                request.user.profile.is_group_user()):
+
             '''forward them to the home page of the part'''
-
             nxt_path = self.get_path_of_next_section()
-
-            ns_path = urlparse.urljoin(
-                hierarchy.base_url,
-                nxt_path)
+            ns_path = urlparse.urljoin(hierarchy.base_url, nxt_path)
 
             return HttpResponseRedirect(ns_path)
 
@@ -124,33 +116,31 @@ class UELCPageView(LoggedInMixin,
             self.upv = UserPageVisitor(self.section, request.user)
         return None
 
-    def root_section_check(self, request, ns, ns_hierarchy,
-                           hierarchy, base_url, pt):
-        if not ns or not(ns_hierarchy == hierarchy):
+    def root_section_check(self, section, next_section):
+        if next_section and next_section.hierarchy == section.hierarchy:
+            # next_section is valid & matches the existing hierarchy
+            return HttpResponseRedirect(next_section.get_absolute_url())
 
-            if not pt == "group_user":
-                # then root has no children yet
-                action_args = dict(
-                    error="You just tried accessing a case that has \
-                          no content. You have been forwarded over \
-                          to the root page of the case so that you \
-                          can and add some content if you wish to.")
-                messages.error(request, action_args['error'],
-                               extra_tags='rootUrlError')
-                request.path = base_url+'edit/'
-                return HttpResponseRedirect(request.path)
-            else:
-                action_args = dict(
-                    error="For some reason the case you tried to \
-                          access does not have any content yet. \
-                          Please choose another case, or alert \
-                          your facilitator.")
-                messages.error(request, action_args['error'],
-                               extra_tags='rootUrlError')
-                request.path = '/'
-                return HttpResponseRedirect(request.path)
-
-        return visit_root(self.section, self.no_root_fallback_url)
+        if not self.request.user.profile.is_group_user():
+            # then root has no children yet
+            action_args = dict(
+                error="You just tried accessing a case that has \
+                      no content. You have been forwarded over \
+                      to the root page of the case so that you \
+                      can and add some content if you wish to.")
+            messages.error(self.request, action_args['error'],
+                           extra_tags='rootUrlError')
+            path = section.hierarchy.base_url + 'edit/'
+        else:
+            action_args = dict(
+                error="For some reason the case you tried to \
+                      access does not have any content yet. \
+                      Please choose another case, or alert \
+                      your facilitator.")
+            messages.error(self.request, action_args['error'],
+                           extra_tags='rootUrlError')
+            path = self.no_root_fallback_url
+        return HttpResponseRedirect(path)
 
     def get_path_of_next_section(self):
         nxt = self.section.get_next()
