@@ -62,6 +62,8 @@
 {% endblock %}
 
 {% block content %}
+    {% is_section_unlocked request section as unlocked %}
+
     <div id="content">
         <div id="side-navigation">
             {% if module.get_children %}
@@ -123,7 +125,6 @@
                 </div>
                 {% for quiz in decision_blocks %}
                     {% if quiz.id == block.id %}
-                        {% is_section_unlocked request section as unlocked %}
                         {% if not unlocked and quiz.completed %}
                             <p class="wait-msg alert alert-danger">Please wait for the facilitator to allow you to proceed.</p>
                         {% endif %}
@@ -159,7 +160,6 @@
             {% endif %}
         {% endfor %}
 
-        {% is_section_unlocked request section as unlocked %}
         {% if gate_blocks|length == 1 and decision_blocks|length == 0 %}
             {% if not section_submission %}
                 <form class="decision-block" id="confirm" data-action="/submit_section/" >{% csrf_token %}
