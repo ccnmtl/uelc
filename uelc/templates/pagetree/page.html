@@ -3,15 +3,15 @@
 {% load accessible %}
 
 {% block js %}
-{% for block in section.pageblock_set.all %}
-{% renderjs block %}
-{% endfor %}
+    {% for block in section.pageblock_set.all %}
+    {% renderjs block %}
+    {% endfor %}
 {% endblock %}
 
 {% block css %}
-{% for block in section.pageblock_set.all %}
-{% rendercss block %}
-{% endfor %}
+    {% for block in section.pageblock_set.all %}
+    {% rendercss block %}
+    {% endfor %}
 {% endblock %}
 
 {% block bodyclass %}module-{{module.slug}}{% endblock %}
@@ -22,272 +22,252 @@
 
 {% block pagetitle %}{% endblock %}
 
-
-
 {% block navrightextra %}
-{% if not request.user.profile_type == "group_usr" %}
-<li><a href="{{section.get_edit_url}}" class="btn-success">edit page</a></li>
-{% endif %}
+    {% if not request.user.profile_type == "group_usr" %}
+    <li><a href="{{section.get_edit_url}}" class="btn-success">edit page</a></li>
+    {% endif %}
 {% endblock %}
 
-
 {% block sidenav %}
-        <!-- ###### Secondary Navigation ###### -->
+    <!-- ###### Secondary Navigation ###### -->
 {% endblock %}
 
 {% block content %}
-
-{% for block in section.pageblock_set.all %}
-
-{% for quiz in decision_blocks %}
-{% if quiz.id == block.id %}
-{% is_section_unlocked request section as unlocked %}
-{% if not unlocked and quiz.completed %}
-<p class="wait-msg alert alert-danger">
-    Please wait for the facilitator to allow you to proceed.
-</p>
-{% endif %}
-{% endif %}
-{% endfor %}
-
-{% if block.block.display_name == "Gate Block" %}
-
-  {% if section_submission %}
-    <p class="wait-msg alert alert-danger {% if gate_submission %}hidden {% endif %} curveball-alert-danger">
-        Please wait for the facilitator to allow you to proceed.
-    </p>
-  {% else %}
-    <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
-        Please wait for the facilitator to allow you to proceed.
-    </p>
-  {% endif %}
-  <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-    {% render block %}
-    <p class="unlock-msg alert alert-success" style="display:none">You may proceed to the next section</p>
-  </div>
-{% endif %}
-
-{% endfor %}{# End for block in pageblock_set #}
-
-<script>
-  window.sectionId = '{{section.pk}}';
-	window.username = '{{request.user.username}}';
-	window.freshTokenUrl = '/group_user/fresh_token/{{section.pk}}';
-	window.token = '{{token}}';
-	window.websocketsBase = '{{websockets_base}}';
-</script>
-<script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/group_js.js"></script>
-<div id="content">
-  <div id="side-navigation">
-    {% if module.get_children %}
-      {% include "pagetree/menu.html" %}
-    {% endif %}
-  </div>
-
-  {% for message in messages %}
-  {% if message.level_tag == 'error' %}
-       <div id="message-modal" class="modal fade in" data-callback="{{message.extra_tags}}">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <div class="modal-header panel-heading">Message</div>
-              <div class="modal-body">
-                <div id="edit-user" class="panel panel-default">
-                  <div class="panel-heading">Choice submission error.</div>
-                  <div class="panel-body">
-                        It seems you forgot to select one of the choices! Please click on on of the choices and resubmit. Thanks!
-                  </div>
-                </div><!--end #hierarchiess-->
-                </div> <!--end modal-dialog-->
-          </div><!-- end modal-content-->
-      </div><!--end .model-body-->
-    </div><!--end #add-hierarchy-form-modal .modal-->
-    <script>
-        jQuery(document).ready(function(){
-            jQuery('#message-modal').modal('show');
-        })
-    </script>
-    {% endif %}
-  {% endfor %}
-{% if needs_submit %}
-{% if is_submitted %}
-{% else %}
-<!--<form action="." method="post">-->
-{% endif %}
-{% endif %}
-
-  {% for block in section.pageblock_set.all %}
-    {% if block.block.display_name == "Gate Block" %}
-    
-    {% if section_submission %}
-      <p class="wait-msg alert alert-danger {% if gate_submission %}hidden {% endif %} curveball-alert-danger">
-          Please wait for the facilitator to allow you to proceed.
-      </p>
-    {% else %}
-      <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
-          Please wait for the facilitator to allow you to proceed.
-      </p>
-    {% endif %}
-      <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-        {% render block %}
-        <p class="unlock-msg alert alert-success" style="display:none">You may proceed to the next section</p>
-      </div>
-    {% elif block.block.display_name == "Decision Block" %}
-      {% for quiz in decision_blocks %}
-        {% if quiz.id == block.id %}
-          {% if quiz.completed != True%}
-            {% if request.user.profile.is_group_user %}
-              <form class="decision-block" id="pageblock-{{block.id}}-quiz" action="." method="post">{% csrf_token %}
-            {% endif %}
-          {% endif %}
-        {% endif %}
-      {% endfor %}
-      <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-      {% if block.label %}  
-        <h1>{{block.label}}</h1>
-      {% endif %}
-      {% render block %}
-      </div>
-      {% for quiz in decision_blocks %}
+    {% for block in section.pageblock_set.all %}
+        {% for quiz in decision_blocks %}
             {% if quiz.id == block.id %}
-            {% is_section_unlocked request section as unlocked %}
-              {% if not unlocked and quiz.completed %}
-                <p class="wait-msg alert alert-danger">Please wait for the facilitator to allow you to proceed.</p>
-              {% endif %}
-                {% if quiz.completed != True %}
-                <input type="hidden" name="pageblock-{{block.id}}-case" value="{{case.id}}" />
-                {% if request.user.profile.is_group_user %}
-                <button id="pageblock-{{block.id}}-submit" type="submit"
-                        class="btn btn-primary"
-                        >Confirm</button>
-                  </form>
+                {% is_section_unlocked request section as unlocked %}
+                {% if not unlocked and quiz.completed %}
+                    <p class="wait-msg alert alert-danger">
+                        Please wait for the facilitator to allow you to proceed.
+                    </p>
                 {% endif %}
-                {% else %}   
-      {% endif %}
-    {% endif %}
-  {% endfor %}
+            {% endif %}
+        {% endfor %}
 
-    {% elif block.block.display_name == "Curveball Block" %}
-      
-      
-      <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-        
-        {% render block %}
-        
-      </div>
-    {% elif block.block.display_name == "Text Block" %}
-      {% is_block_on_user_path request section block casemap.value as user_path %}
-      {% if user_path %}
-        <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-        {% if block.label %}<h1>{{block.label}}</h1>{% endif %}
-        {% render block %}
+        {% if block.block.display_name == "Gate Block" %}
+            {% if section_submission %}
+                <p class="wait-msg alert alert-danger {% if gate_submission %}hidden {% endif %} curveball-alert-danger">
+                    Please wait for the facilitator to allow you to proceed.
+                </p>
+            {% else %}
+                <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
+                    Please wait for the facilitator to allow you to proceed.
+                </p>
+            {% endif %}
+            <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+                {% render block %}
+                <p class="unlock-msg alert alert-success" style="display:none">You may proceed to the next section</p>
+            </div>
+        {% endif %}
+    {% endfor %}{# End for block in pageblock_set #}
+
+    <script>
+      window.sectionId = '{{section.pk}}';
+    	window.username = '{{request.user.username}}';
+    	window.freshTokenUrl = '/group_user/fresh_token/{{section.pk}}';
+    	window.token = '{{token}}';
+    	window.websocketsBase = '{{websockets_base}}';
+    </script>
+
+    <script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/group_js.js"></script>
+
+    <div id="content">
+        <div id="side-navigation">
+            {% if module.get_children %}
+                {% include "pagetree/menu.html" %}
+            {% endif %}
         </div>
-      {%endif%}
-    
-    {% elif block.block.display_name == "Gate Block" %}
 
-    {% if not gate_submission %}
-      <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
-          Please wait for the facilitator to allow you to proceed.
-      </p>
-    {% endif %}
-      {% if section_submission and not gate_submission%}
-      <p class="wait-msg alert alert-danger curveball-alert-danger">
-          Please wait for the facilitator to allow you to proceed.
-      </p>
-    {% endif %}
+        {% for message in messages %}
+            {% if message.level_tag == 'error' %}
+                <div id="message-modal" class="modal fade in" data-callback="{{message.extra_tags}}">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <div class="modal-header panel-heading">Message</div>
+                            <div class="modal-body">
+                                <div id="edit-user" class="panel panel-default">
+                                    <div class="panel-heading">Choice submission error.</div>
+                                    <div class="panel-body">
+                                        It seems you forgot to select one of the choices! Please click on on of the choices and resubmit. Thanks!
+                                    </div>
+                                </div><!--end #hierarchiess-->
+                            </div> <!--end modal-dialog-->
+                        </div><!-- end modal-content-->
+                    </div><!--end .model-body-->
+                </div><!--end #add-hierarchy-form-modal .modal-->
+                <script>
+                    jQuery(document).ready(function(){
+                        jQuery('#message-modal').modal('show');
+                    });
+                </script>
+            {% endif %}
+        {% endfor %}
 
-    {% else %}
+        {% if needs_submit %}
+        {% if is_submitted %}
+        {% else %}
+        <!--<form action="." method="post">-->
+        {% endif %}
+        {% endif %}
 
-    <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+        {% for block in section.pageblock_set.all %}
+            {% if block.block.display_name == "Gate Block" %}
+                {% if section_submission %}
+                    <p class="wait-msg alert alert-danger {% if gate_submission %}hidden {% endif %} curveball-alert-danger">
+                        Please wait for the facilitator to allow you to proceed.
+                    </p>
+                {% else %}
+                    <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
+                        Please wait for the facilitator to allow you to proceed.
+                    </p>
+                {% endif %}
+                    <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+                        {% render block %}
+                        <p class="unlock-msg alert alert-success" style="display:none">You may proceed to the next section</p>
+                    </div>
+            {% elif block.block.display_name == "Decision Block" %}
+                {% for quiz in decision_blocks %}
+                    {% if quiz.id == block.id %}
+                        {% if quiz.completed != True%}
+                            {% if request.user.profile.is_group_user %}
+                                <form class="decision-block" id="pageblock-{{block.id}}-quiz" action="." method="post">{% csrf_token %}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                 {% endfor %}
+                <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+                    {% if block.label %}  
+                        <h1>{{block.label}}</h1>
+                    {% endif %}
+                    {% render block %}
+                </div>
+                {% for quiz in decision_blocks %}
+                    {% if quiz.id == block.id %}
+                        {% is_section_unlocked request section as unlocked %}
+                        {% if not unlocked and quiz.completed %}
+                            <p class="wait-msg alert alert-danger">Please wait for the facilitator to allow you to proceed.</p>
+                        {% endif %}
+                        {% if quiz.completed != True %}
+                            <input type="hidden" name="pageblock-{{block.id}}-case" value="{{case.id}}" />
+                            {% if request.user.profile.is_group_user %}
+                                <button id="pageblock-{{block.id}}-submit" type="submit"
+                                    class="btn btn-primary"
+                                    >Confirm</button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% elif block.block.display_name == "Curveball Block" %}
+                <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+                    {% render block %}
+                </div>
+            {% elif block.block.display_name == "Text Block" %}
+                {% is_block_on_user_path request section block casemap.value as user_path %}
+                {% if user_path %}
+                    <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+                        {% if block.label %}<h1>{{block.label}}</h1>{% endif %}
+                        {% render block %}
+                    </div>
+                {% endif %}
+            {% elif block.block.display_name == "Gate Block" %}
+                {% if not gate_submission %}
+                    <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
+                        Please wait for the facilitator to allow you to proceed.
+                    </p>
+                {% endif %}
+                {% if section_submission and not gate_submission%}
+                    <p class="wait-msg alert alert-danger curveball-alert-danger">
+                        Please wait for the facilitator to allow you to proceed.
+                    </p>
+                {% endif %}
+            {% else %}
+                <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
+                    {% if block.label %}<h1>{{block.label}}</h1>{% endif %}
+                    {% render block %}
+                </div>
+            {% endif %}
+        {% endfor %}
 
-    {% if block.label %}<h1>{{block.label}}</h1>{% endif %}
-    {% render block %}
+        {% is_section_unlocked request section as unlocked %}
+        {% if gate_blocks|length == 1 and decision_blocks|length == 0 %}
+            {% if not section_submission %}
+                <form class="decision-block" id="confirm" data-action="/submit_section/" >{% csrf_token %}
+                    <input type="hidden" name="section" value="{{section.id}}" />
+                    <input type="button" value="Confirm" class="btn btn-primary confirm" />
+                </form>
+            {% else %}
+                <input class="button-confirmed" type="submit" value="Confirm" style="cursor: not-allowed"/>
+                <p class="wait-msg alert alert-danger hidden submission-alert-danger">
+                    Please wait for the facilitator to allow you to proceed.
+                </p>
+            {% endif %}
+        {% endif %}
+
+        {% include "pagetree/toc.html" %}
+
+        <script>
+            jQuery('.confirm').click(function() {
+                var form = jQuery('#confirm');
+                window.action = form.data('action');
+                window.formData = form.serialize();
+
+                jQuery.post(action, formData).success(function() {
+                    var btnConfirmed = '<input class="button-confirmed"' +
+                        'type="submit" value="Confirm" style="cursor: not-allowed"/>';
+                    jQuery('#confirm').before(btnConfirmed);
+                    jQuery('#confirm').remove();
+                    jQuery('.curveball-alert-danger').removeClass('hidden');
+                });
+            });
+        </script>
+
     </div>
-
-  
-  {% endif %}
-{% endfor %}
-
-{% is_section_unlocked request section as unlocked %}
-{% if gate_blocks|length == 1 and decision_blocks|length == 0 %}
-  {% if not section_submission %}
-    <form class="decision-block" id="confirm" data-action="/submit_section/" >{% csrf_token %}
-      <input type="hidden" name="section" value="{{section.id}}" />
-      <input type="button" value="Confirm" class="btn btn-primary confirm" />
-    </form>
-  {% else %}
-    <input class="button-confirmed" type="submit" value="Confirm" style="cursor: not-allowed"/>
-    <p class="wait-msg alert alert-danger hidden submission-alert-danger">
-            Please wait for the facilitator to allow you to proceed.
-        </p>
-  {% endif %}
-{% endif %}
-{% include "pagetree/toc.html" %}
-
-<script>
-  jQuery('.confirm').click(function(){
-    var form = jQuery('#confirm');
-    window.action = form.data('action');
-    window.formData = form.serialize();
-    jQuery.post(action, formData).success(function(){
-      var btnConfirmed = '<input class="button-confirmed"' +
-      'type="submit" value="Confirm" style="cursor: not-allowed"/>';
-      jQuery('#confirm').before(btnConfirmed);
-      jQuery('#confirm').remove();
-      jQuery('.curveball-alert-danger').removeClass('hidden');
-    })   
-  });
-</script>
-
-</div>
-
 {% endblock %}
 
 {% block content-nav %}
-  {% if not request.user.profile.is_group_user%}
-  {% else %}
-
-  {% comment %}
-    Make sure that we do not provide next buttons of the next button will
-    lead to a section that does not belong to the same hierarchy.
-  {% endcomment %}
-  {% get_next_hierarchy_section request section as next_hier_sec %}
-    {% with previous=section.get_previous next_section=section.get_next %}
-      {% if next_hier_sec %}
+    {% if not request.user.profile.is_group_user%}
+    {% else %}
+        {% comment %}
+            Make sure that we do not provide next buttons of the next button will
+            lead to a section that does not belong to the same hierarchy.
+        {% endcomment %}
+        {% get_next_hierarchy_section request section as next_hier_sec %}
+        {% with previous=section.get_previous next_section=section.get_next %}
+        {% if next_hier_sec %}
             <ul class="pager">
-            {% if previous %}
-              {% get_previous_group_user_section request section previous part as prev_sec %}
-                {% if prev_sec %}
-                <li class="previous">
-                      <a href="{{prev_sec.get_absolute_url}}">&larr; Previous</a>
-                </li>
+                {% if previous %}
+                    {% get_previous_group_user_section request section previous part as prev_sec %}
+                    {% if prev_sec %}
+                        <li class="previous">
+                            <a href="{{prev_sec.get_absolute_url}}">&larr; Previous</a>
+                        </li>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
 
-            {% if next_section %}
-              {% is_not_last_group_user_section request section part as not_last_sec %}
-              {% is_section_unlocked request section as unlocked %}
-                {% if not_last_sec %}
-                <li class="next"><a class="{% if unlocked %}{% else %}disabled{%endif%}" href="{% if unlocked %}{{next_section.get_absolute_url}}{%endif%}">Next &rarr;</a></li>
+                {% if next_section %}
+                    {% is_not_last_group_user_section request section part as not_last_sec %}
+                    {% is_section_unlocked request section as unlocked %}
+                    {% if not_last_sec %}
+                        <li class="next"><a class="{% if unlocked %}{% else %}disabled{%endif%}" href="{% if unlocked %}{{next_section.get_absolute_url}}{%endif%}">Next &rarr;</a></li>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
             </ul>
-      {% else %}
-      
-        <ul class="pager">
-          {% if previous %}
-            {% get_previous_group_user_section request section previous part as prev_sec %}
-              {% if prev_sec %}
-              <li class="previous">
-                    <a href="{{prev_sec.get_absolute_url}}">&larr; Previous</a>
-              </li>
-            {% endif %}
-          {% endif %}
-        </ul>
-        
-      {% endif %}
-    {% endwith %}
-  {% endif %}
-  <!-- end block content-nav-->
+        {% else %}
+            <ul class="pager">
+                {% if previous %}
+                    {% get_previous_group_user_section request section previous part as prev_sec %}
+                    {% if prev_sec %}
+                        <li class="previous">
+                            <a href="{{prev_sec.get_absolute_url}}">&larr; Previous</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+    {% endif %}
 {% endblock %}
