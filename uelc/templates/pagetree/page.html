@@ -6,6 +6,35 @@
     {% for block in section.pageblock_set.all %}
     {% renderjs block %}
     {% endfor %}
+
+    <script>
+        window.sectionId = '{{section.pk}}';
+        window.username = '{{request.user.username}}';
+        window.freshTokenUrl = '/group_user/fresh_token/{{section.pk}}';
+        window.token = '{{token}}';
+        window.websocketsBase = '{{websockets_base}}';
+
+        jQuery(document).ready(function() {
+            jQuery('#message-modal').modal('show');
+
+            jQuery('.confirm').click(function() {
+                var form = jQuery('#confirm');
+                window.action = form.data('action');
+                window.formData = form.serialize();
+
+                jQuery.post(action, formData).success(function() {
+                    var btnConfirmed = '<input class="button-confirmed"' +
+                        'type="submit" value="Confirm" style="cursor: not-allowed"/>';
+                    jQuery('#confirm').before(btnConfirmed);
+                    jQuery('#confirm').remove();
+                    jQuery('.curveball-alert-danger').removeClass('hidden');
+                });
+            });
+        });
+    </script>
+
+    <script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/group_js.js"></script>
+
 {% endblock %}
 
 {% block css %}
@@ -33,16 +62,6 @@
 {% endblock %}
 
 {% block content %}
-    <script>
-      window.sectionId = '{{section.pk}}';
-    	window.username = '{{request.user.username}}';
-    	window.freshTokenUrl = '/group_user/fresh_token/{{section.pk}}';
-    	window.token = '{{token}}';
-    	window.websocketsBase = '{{websockets_base}}';
-    </script>
-
-    <script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/group_js.js"></script>
-
     <div id="content">
         <div id="side-navigation">
             {% if module.get_children %}
@@ -68,11 +87,6 @@
                         </div><!-- end modal-content-->
                     </div><!--end .model-body-->
                 </div><!--end #add-hierarchy-form-modal .modal-->
-                <script>
-                    jQuery(document).ready(function(){
-                        jQuery('#message-modal').modal('show');
-                    });
-                </script>
             {% endif %}
         {% endfor %}
 
@@ -161,23 +175,6 @@
         {% endif %}
 
         {% include "pagetree/toc.html" %}
-
-        <script>
-            jQuery('.confirm').click(function() {
-                var form = jQuery('#confirm');
-                window.action = form.data('action');
-                window.formData = form.serialize();
-
-                jQuery.post(action, formData).success(function() {
-                    var btnConfirmed = '<input class="button-confirmed"' +
-                        'type="submit" value="Confirm" style="cursor: not-allowed"/>';
-                    jQuery('#confirm').before(btnConfirmed);
-                    jQuery('#confirm').remove();
-                    jQuery('.curveball-alert-danger').removeClass('hidden');
-                });
-            });
-        </script>
-
     </div>
 {% endblock %}
 
