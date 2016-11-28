@@ -33,35 +33,6 @@
 {% endblock %}
 
 {% block content %}
-    {% for block in section.pageblock_set.all %}
-        {% for quiz in decision_blocks %}
-            {% if quiz.id == block.id %}
-                {% is_section_unlocked request section as unlocked %}
-                {% if not unlocked and quiz.completed %}
-                    <p class="wait-msg alert alert-danger">
-                        Please wait for the facilitator to allow you to proceed.
-                    </p>
-                {% endif %}
-            {% endif %}
-        {% endfor %}
-
-        {% if block.block.display_name == "Gate Block" %}
-            {% if section_submission %}
-                <p class="wait-msg alert alert-danger {% if gate_submission %}hidden {% endif %} curveball-alert-danger">
-                    Please wait for the facilitator to allow you to proceed.
-                </p>
-            {% else %}
-                <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
-                    Please wait for the facilitator to allow you to proceed.
-                </p>
-            {% endif %}
-            <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
-                {% render block %}
-                <p class="unlock-msg alert alert-success" style="display:none">You may proceed to the next section</p>
-            </div>
-        {% endif %}
-    {% endfor %}{# End for block in pageblock_set #}
-
     <script>
       window.sectionId = '{{section.pk}}';
     	window.username = '{{request.user.username}}';
@@ -104,13 +75,6 @@
                 </script>
             {% endif %}
         {% endfor %}
-
-        {% if needs_submit %}
-        {% if is_submitted %}
-        {% else %}
-        <!--<form action="." method="post">-->
-        {% endif %}
-        {% endif %}
 
         {% for block in section.pageblock_set.all %}
             {% if block.block.display_name == "Gate Block" %}
@@ -172,17 +136,6 @@
                         {% if block.label %}<h1>{{block.label}}</h1>{% endif %}
                         {% render block %}
                     </div>
-                {% endif %}
-            {% elif block.block.display_name == "Gate Block" %}
-                {% if not gate_submission %}
-                    <p class="wait-msg alert alert-danger hidden curveball-alert-danger">
-                        Please wait for the facilitator to allow you to proceed.
-                    </p>
-                {% endif %}
-                {% if section_submission and not gate_submission%}
-                    <p class="wait-msg alert alert-danger curveball-alert-danger">
-                        Please wait for the facilitator to allow you to proceed.
-                    </p>
                 {% endif %}
             {% else %}
                 <div class="pageblock{% if block.css_extra %} {{block.css_extra}}{% endif %}">
