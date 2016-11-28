@@ -3,18 +3,21 @@
 
 {% block title %} | Facilitation{% endblock %}
 
+{% block js %}
+    <script>
+        window.hierarchy_name = '{{section.hierarchy.name}}';
+        window.username = '{{request.user.username}}';
+        window.freshTokenUrl = '/facilitator/fresh_token/';
+        window.token = '{{token}}';
+        window.websocketsBase = '{{websockets_base}}';
+    </script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/web_socks.js"></script>
+    <script src="{{STATIC_URL}}js/uelc_admin/uelc_facilitator.js"></script>
+{% endblock %}
+
 {% block content %}
 
 {% load part_string %}
-
-<script>
-    window.hierarchy_name = '{{section.hierarchy.name}}';
-    window.username = '{{request.user.username}}';
-    window.freshTokenUrl = '/facilitator/fresh_token/';
-    window.token = '{{token}}';
-    window.websocketsBase = '{{websockets_base}}';
-</script>
-<script type="text/javascript" src="{{STATIC_URL}}js/uelc_admin/web_socks.js"></script>
 
 <div id="content" class="container-fluid">
     <h1>Case Control for {{case.name}}</h1>
@@ -158,5 +161,4 @@
 
     <br style="clear:both;"/>
 </div><!--end .content -->
-<script src="{{STATIC_URL}}js/uelc_admin/uelc_facilitator.js"></script>
 {% endblock %}
