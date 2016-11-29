@@ -142,23 +142,6 @@ class UELCPageView(LoggedInMixin,
             path = self.no_root_fallback_url
         return HttpResponseRedirect(path)
 
-    def iterate_blocks(self, section):
-        gate_block = section.pageblock_set.filter(
-            content_type__app_label='gate_block',
-            content_type__model='gateblock').first()
-
-        return gate_block.block() if gate_block else False
-
-    def get_next_gate(self, section):
-        block = self.iterate_blocks(section)
-        last_sibling = self.section.get_last_sibling()
-        if block:
-            return (block, section)
-        block = self.iterate_blocks(last_sibling)
-        if block:
-            return (block, last_sibling)
-        return False
-
     def check_part_path(self, casemap, hand, part):
         if part > 1 and self.request.user.profile.is_group_user():
             # set user on right path
@@ -171,11 +154,6 @@ class UELCPageView(LoggedInMixin,
                 return (True, p2_url)
             return [False, p2_url]
         return (False, False)
-
-    def get_library_items(self, case):
-        user = self.request.user
-        library_items = LibraryItem.objects.filter(case=case, user=user)
-        return library_items
 
     def notify_facilitators(self, request, path, notification):
         user = get_object_or_404(User, pk=request.user.pk)
