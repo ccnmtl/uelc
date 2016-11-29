@@ -1125,3 +1125,12 @@ class UELCPageViewTest(TestCase):
         self.assertEquals(self.view.module, s.get_module())
         self.assertEquals(self.view.upv.section, s)
         self.assertEquals(self.view.upv.user, self.view.request.user)
+
+    def test_iterate_blocks(self):
+        section = Section.objects.get(slug='your-first-decision')
+        gate_block = self.view.iterate_blocks(section)
+        self.assertEquals(gate_block.pageblocks.first().label,
+                          'First Decision Point')
+
+        section = Section.objects.get(slug='home')
+        self.assertFalse(self.view.iterate_blocks(section))

@@ -143,12 +143,11 @@ class UELCPageView(LoggedInMixin,
         return HttpResponseRedirect(path)
 
     def iterate_blocks(self, section):
-        for block in section.pageblock_set.all():
-            block_obj = block.block()
-            if (hasattr(block_obj, 'needs_submit') and
-                    block_obj.display_name == 'Gate Block'):
-                return block_obj
-        return False
+        gate_block = section.pageblock_set.filter(
+            content_type__app_label='gate_block',
+            content_type__model='gateblock').first()
+
+        return gate_block.block() if gate_block else False
 
     def get_next_gate(self, section):
         block = self.iterate_blocks(section)
