@@ -1,6 +1,5 @@
 import json
 import sys
-import urlparse
 
 from django.conf import settings
 from django.contrib import messages
@@ -91,27 +90,28 @@ class UELCPageView(LoggedInMixin,
     gated = False
 
     def perform_checks(self, request, path):
-        self.section = self.get_section(path)
-        self.root = self.section.hierarchy.get_root()
-        self.module = self.section.get_module()
-        hierarchy = self.section.hierarchy
-        next_section = self.section.get_next()
+        section = self.get_section(path)
+        module = section.get_module()
+        next_section = section.get_next()
 
-        if self.section.is_root():
-            return self.root_section_check(self.section, next_section)
+        if section.is_root():
+            # verify root is valid & has content
+            return self.root_section_check(section, next_section)
 
-        if (self.section == self.module and
-                request.user.profile.is_group_user()):
-
-            '''forward them to the home page of the part'''
-            nxt_path = self.get_path_of_next_section()
-            ns_path = urlparse.urljoin(hierarchy.base_url, nxt_path)
-
-            return HttpResponseRedirect(ns_path)
+        if section == module and request.user.profile.is_group_user():
+            # skip module and move to the next section
+            if next_section:
+                return HttpResponseRedirect(next_section.get_absolute_url())
+            else:
+                return HttpResponseRedirect(section.get_absolute_url())
 
         r = self.gate_check(request.user)
         if r is not None:
             return r
+
+        self.section = section
+        self.root = section.hierarchy.get_root()
+        self.module = module
         if not request.user.is_impersonate:
             self.upv = UserPageVisitor(self.section, request.user)
         return None
@@ -141,12 +141,6 @@ class UELCPageView(LoggedInMixin,
                            extra_tags='rootUrlError')
             path = self.no_root_fallback_url
         return HttpResponseRedirect(path)
-
-    def get_path_of_next_section(self):
-        nxt = self.section.get_next()
-        if nxt is not None:
-            return nxt.get_path()
-        return self.section.get_path()
 
     def iterate_blocks(self, section):
         for block in section.pageblock_set.all():

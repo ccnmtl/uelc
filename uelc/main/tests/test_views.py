@@ -1023,6 +1023,13 @@ class UELCPageViewTest(TestCase):
         UELCModuleFactory()
         self.h = Hierarchy.objects.get(name='case-test')
 
+        self.view = UELCPageView()
+        self.view.hierarchy_base = self.h.base_url
+        self.view.hierarchy_name = self.h.name
+
+        self.view.request = RequestFactory().get('/')
+        self.setup_request(self.view.request)
+
     def setup_request(self, request):
         """Annotate a request object with a session"""
         middleware = SessionMiddleware()
@@ -1038,26 +1045,28 @@ class UELCPageViewTest(TestCase):
         request.session.save()
 
     def test_root_section_check_invalid_as_admin(self):
-        s1 = self.h.get_root().get_first_child()
-
         view = UELCPageView()
         view.request = RequestFactory().get('/')
-        self.setup_request(view.request)
         view.request.user = AdminUpFactory().user
+        self.setup_request(view.request)
 
-        response = view.root_section_check(s1, None)
+        h = HierarchyFactory()
+        s = h.get_root()
+
+        response = view.root_section_check(s, None)
         self.assertEquals(response.status_code, 302)
-        self.assertEquals(response.url, '/pages/case-test/edit/')
+        self.assertEquals(response.url, '/pages/case-one/edit/')
 
     def test_root_section_check_invalid_as_group_user(self):
-        s1 = self.h.get_root().get_first_child()
-
         view = UELCPageView()
         view.request = RequestFactory().get('/')
-        self.setup_request(view.request)
         view.request.user = GroupUpFactory().user
+        self.setup_request(view.request)
 
-        response = view.root_section_check(s1, None)
+        h = HierarchyFactory()
+        s = h.get_root()
+
+        response = view.root_section_check(s, None)
         self.assertEquals(response.status_code, 302)
         self.assertEquals(response.url, view.no_root_fallback_url)
 
@@ -1065,10 +1074,54 @@ class UELCPageViewTest(TestCase):
         s1 = self.h.get_root().get_first_child()
         s2 = s1.get_next()
 
-        view = UELCPageView()
-        view.request = RequestFactory().get('/')
-        view.request.user = GroupUpFactory().user
+        self.view.request.user = GroupUpFactory().user
 
-        response = view.root_section_check(s1, s2)
+        response = self.view.root_section_check(s1, s2)
         self.assertEquals(response.status_code, 302)
         self.assertEquals(response.url, s2.get_absolute_url())
+
+    def test_perform_checks_root(self):
+        s = self.h.get_root()
+        child = s.get_next()
+
+        self.view.request.user = GroupUpFactory().user
+
+        response = self.view.perform_checks(self.view.request, '/')
+
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.url, child.get_absolute_url())
+
+    def test_perform_checks_module(self):
+        s = self.h.get_root().get_first_child().get_module()
+
+        self.view.request.user = GroupUpFactory().user
+
+        response = self.view.perform_checks(self.view.request, s.get_path())
+
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.url, s.get_next().get_absolute_url())
+
+    def test_perform_checks_not_allowed(self):
+        self.view.request.user = GroupUpFactory().user
+
+        s = self.h.get_root().get_last_child()
+        response = self.view.perform_checks(self.view.request, s.get_path())
+
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(
+            response.url,
+            '/pages/case-test/part-2-choice-1/your-second-decision/')
+
+    def test_perform_checks_child(self):
+        self.view.request.user = GroupUpFactory().user
+        self.view.request.user.is_impersonate = False
+
+        s = self.h.get_root().get_first_leaf()
+        response = self.view.perform_checks(self.view.request, s.get_path())
+
+        self.assertEquals(response, None)
+        self.assertEquals(self.view.section, s)
+        self.assertEquals(self.view.root, self.h.get_root())
+        self.assertEquals(self.view.module, s.get_module())
+        self.assertEquals(self.view.upv.section, s)
+        self.assertEquals(self.view.upv.user, self.view.request.user)
