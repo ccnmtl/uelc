@@ -56,10 +56,7 @@ def get_previous_group_user_section(section, previous, part):
 
 @register.assignment_tag
 def is_not_last_group_user_section(request, section, part):
-    # make sure next button does not render at end of part 2
-    if part > 1 and section == section.get_last_leaf():
-        return False
-    return True
+    return part == 1 or section != section.get_last_leaf()
 
 
 @register.assignment_tag
