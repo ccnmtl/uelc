@@ -50,21 +50,21 @@ class TestAccessible(TestCase):
         part = 1
 
         self.assertFalse(get_previous_group_user_section(
-            self.view.request, section, previous, part))
+            section, previous, part))
 
         section = Section.objects.get(slug='intro')
         previous = section.get_previous()  # home
         part = 1
 
         self.assertEquals(get_previous_group_user_section(
-            self.view.request, section, previous, part), previous)
+            section, previous, part), previous)
 
         section = Section.objects.get(slug='your-second-decision')
         previous = section.get_previous()  # Part 2 Choice 1
         part = 2
 
         prev = get_previous_group_user_section(
-            self.view.request, section, previous, part)
+            section, previous, part)
         self.assertEquals(prev.slug, 'results')
 
     def test_is_not_last_group_user_section(self):

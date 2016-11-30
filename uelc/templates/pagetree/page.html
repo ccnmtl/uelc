@@ -187,7 +187,7 @@
         {% with previous=section.get_previous next_section=section.get_next %}
         <ul class="pager">
             {% if previous %}
-                {% get_previous_group_user_section request section previous part as prev_sec %}
+                {% get_previous_group_user_section section previous part as prev_sec %}
                 {% if prev_sec %}
                     <li class="previous">
                         <a href="{{prev_sec.get_absolute_url}}">&larr; Previous</a>

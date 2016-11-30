@@ -38,7 +38,7 @@ def submitted(parser, token):
 
 
 @register.assignment_tag
-def get_previous_group_user_section(request, section, previous, part):
+def get_previous_group_user_section(section, previous, part):
     # make sure that group users cannot go to the root page of a Part
     if previous.depth < 3:
         if part == 1:
