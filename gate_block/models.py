@@ -42,7 +42,7 @@ class GateBlock(BasePageBlock):
 
         # @todo: could these be passed in?
         pageblocks = self._get_pageblocks(pageblocks, gate_section)
-        ss_exists = gate_section.section_submited.filter(user=user).exists()
+        ss_exists = gate_section.section_submitted.filter(user=user).exists()
 
         for block in pageblocks:
             if ss_exists and block.section == gate_section:
@@ -108,7 +108,7 @@ class GateSubmission(models.Model):
 
 
 class SectionSubmission(models.Model):
-    section = models.ForeignKey(Section, related_name='section_submited')
+    section = models.ForeignKey(Section, related_name='section_submitted')
     user = models.ForeignKey(User, related_name='section_user')
     submitted = models.DateTimeField(auto_now_add=True, editable=False)
 

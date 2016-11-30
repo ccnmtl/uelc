@@ -584,7 +584,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         gateblocks = GateBlock.objects.filter(
             pageblocks__section__hierarchy=hierarchy).prefetch_related(
                 'pageblocks__section__pageblock_set',
-                'pageblocks__section__section_submited')
+                'pageblocks__section__section_submitted')
 
         hand = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
