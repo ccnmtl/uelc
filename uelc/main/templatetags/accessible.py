@@ -39,19 +39,19 @@ def submitted(parser, token):
 
 @register.assignment_tag
 def get_previous_group_user_section(request, section, previous, part):
-    # make sure that group users cannot go to the
-    # root page of the Part. Also make sure that the
-    # 1st page in Part 1 does not have a prev link.
-    prev_sec = previous
-    if prev_sec.depth < 3:
+    # make sure that group users cannot go to the root page of a Part
+    if previous.depth < 3:
         if part == 1:
+            # 1st page in Part 1 does not have a prev link
             return False
 
-        # If we're in parts 2, then skip back to Part 1's last leaf
+        # If in part 2, and previous is a root (depth=1) or module (depth=2)
+        # then skip back to Part 1's last leaf
+        # @todo - replace this hard-coded logic
         part1 = section.get_root().get_children()[0]
-        prev_sec = part1.get_last_leaf()
+        previous = part1.get_last_leaf()
 
-    return prev_sec
+    return previous
 
 
 @register.assignment_tag
