@@ -92,9 +92,3 @@ class TestAccessible(TestCase):
         # decision block
         section = Section.objects.get(slug='your-first-decision')
         self.assertFalse(is_section_unlocked(self.view.request, section))
-
-    def test_is_block_on_user_path(self):
-        pass
-
-    def test_get_quizblock_attr(self):
-        pass
