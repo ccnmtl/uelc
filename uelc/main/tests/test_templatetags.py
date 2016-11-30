@@ -93,4 +93,3 @@ class TestAccessible(TestCase):
         # decision block
         section = Section.objects.get(slug='your-first-decision')
         self.assertFalse(is_section_unlocked(self.view.request, section))
-
