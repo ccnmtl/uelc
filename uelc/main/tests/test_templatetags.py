@@ -3,9 +3,9 @@ from django.test.client import RequestFactory
 from pagetree.models import Hierarchy, Section
 
 from uelc.main.templatetags.accessible import get_previous_group_user_section,\
-    is_not_last_group_user_section
+    is_not_last_group_user_section, is_section_unlocked
 from uelc.main.templatetags.part_string import convert, convert_part2
-from uelc.main.tests.factories import UELCModuleFactory
+from uelc.main.tests.factories import UELCModuleFactory, GroupUpFactory
 from uelc.main.views import UELCPageView
 
 
@@ -79,7 +79,19 @@ class TestAccessible(TestCase):
         self.assertFalse(is_not_last_group_user_section(section, 2))
 
     def test_is_section_unlocked(self):
-        pass
+        self.view.request.user = GroupUpFactory().user
+
+        # no blocks
+        section = Section.objects.get(slug='home')
+        self.assertTrue(is_section_unlocked(self.view.request, section))
+
+        # gate block
+        section = Section.objects.get(slug='confirm-first-decision')
+        self.assertFalse(is_section_unlocked(self.view.request, section))
+
+        # decision block
+        section = Section.objects.get(slug='your-first-decision')
+        self.assertFalse(is_section_unlocked(self.view.request, section))
 
     def test_is_block_on_user_path(self):
         pass
