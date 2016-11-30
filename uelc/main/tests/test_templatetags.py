@@ -73,6 +73,10 @@ class TestAccessible(TestCase):
         self.assertTrue(is_not_last_group_user_section(
             self.view.request, section, 1))
 
+        section = Section.objects.get(slug='confirm-second-decision')
+        self.assertTrue(is_not_last_group_user_section(
+            self.view.request, section, 2))
+
         section = Section.objects.get(slug='end-of-experience')
         self.assertFalse(is_not_last_group_user_section(
             self.view.request, section, 2))
