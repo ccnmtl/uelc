@@ -2,7 +2,8 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from pagetree.models import Hierarchy, Section
 
-from uelc.main.templatetags.accessible import get_previous_group_user_section
+from uelc.main.templatetags.accessible import get_previous_group_user_section,\
+    is_not_last_group_user_section
 from uelc.main.templatetags.part_string import convert, convert_part2
 from uelc.main.tests.factories import UELCModuleFactory
 from uelc.main.views import UELCPageView
@@ -68,7 +69,13 @@ class TestAccessible(TestCase):
         self.assertEquals(prev.slug, 'results')
 
     def test_is_not_last_group_user_section(self):
-        pass
+        section = Section.objects.get(slug='home')
+        self.assertTrue(is_not_last_group_user_section(
+            self.view.request, section, 1))
+
+        section = Section.objects.get(slug='end-of-experience')
+        self.assertFalse(is_not_last_group_user_section(
+            self.view.request, section, 2))
 
     def test_is_section_unlocked(self):
         pass
