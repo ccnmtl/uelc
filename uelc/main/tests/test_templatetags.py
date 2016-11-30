@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from django.test.client import RequestFactory
 from pagetree.models import Hierarchy, Section
 
@@ -92,3 +93,4 @@ class TestAccessible(TestCase):
         # decision block
         section = Section.objects.get(slug='your-first-decision')
         self.assertFalse(is_section_unlocked(self.view.request, section))
+

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap %}
+{% load part_string %}
 
 {% block title %} | Facilitation{% endblock %}
 
@@ -16,8 +17,6 @@
 {% endblock %}
 
 {% block content %}
-
-{% load part_string %}
 
 <div id="content" class="container-fluid">
     <h1>Case Control for {{case.name}}</h1>
@@ -61,7 +60,7 @@
                         {% for sec in u.1 %}
                             {% if sec.2 %} <!-- if unlocked -->
                                 {% if sec.5 %} <!-- can show gateblock -->
-                                    <div class="group-btn-list gate-block part-{{sec.6.0|part}}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
+                                    <div class="group-btn-list gate-block part-{{sec.6.0|floatformat:'0'}}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
                                         {% if sec.7.0 %}<!-- if curveball -->
                                             {% include "pagetree/curveball.html" %}
                                         {% endif %}
@@ -103,7 +102,7 @@
                                 {% endif %}
                             {% else %}<!-- gateblock is locked-->
                                 {% if sec.5 %} <!-- can show gateblock -->
-                                    <div class="group-btn-list gate-block part-{{sec.6.0|part}} {% if sec.4 == 'reviewed' %}active{% endif%}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
+                                    <div class="group-btn-list gate-block part-{{sec.6.0|floatformat:'0'}} {% if sec.4 == 'reviewed' %}active{% endif%}" data-section-id="{{sec.0.pk}}" data-user-loc="{{ u.2.id }}" data-group-id="{{u.0.id}}">
                                         {% if sec.7.0 %} <!-- if curveball -->
                                             {% include "pagetree/curveball.html" %}
                                         {% endif %}
