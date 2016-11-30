@@ -55,7 +55,7 @@ def get_previous_group_user_section(section, previous, part):
 
 
 @register.assignment_tag
-def is_not_last_group_user_section(request, section, part):
+def is_not_last_group_user_section(section, part):
     return part == 1 or section != section.get_last_leaf()
 
 

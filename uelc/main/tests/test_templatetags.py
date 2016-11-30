@@ -70,16 +70,13 @@ class TestAccessible(TestCase):
 
     def test_is_not_last_group_user_section(self):
         section = Section.objects.get(slug='home')
-        self.assertTrue(is_not_last_group_user_section(
-            self.view.request, section, 1))
+        self.assertTrue(is_not_last_group_user_section(section, 1))
 
         section = Section.objects.get(slug='confirm-second-decision')
-        self.assertTrue(is_not_last_group_user_section(
-            self.view.request, section, 2))
+        self.assertTrue(is_not_last_group_user_section(section, 2))
 
         section = Section.objects.get(slug='end-of-experience')
-        self.assertFalse(is_not_last_group_user_section(
-            self.view.request, section, 2))
+        self.assertFalse(is_not_last_group_user_section(section, 2))
 
     def test_is_section_unlocked(self):
         pass
