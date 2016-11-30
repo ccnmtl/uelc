@@ -1,6 +1,9 @@
 from django import template
-from uelc.main.models import UELCHandler
+from django.db.models.query_utils import Q
 from pagetree.models import PageBlock
+
+from uelc.main.models import UELCHandler
+
 
 register = template.Library()
 
@@ -61,16 +64,11 @@ def is_not_last_group_user_section(section, part):
 
 @register.assignment_tag
 def is_section_unlocked(request, section):
-    unlocked = True
-    for block in section.pageblock_set.all():
-        bl = block.block()
-        if hasattr(bl, 'needs_submit') and bl.display_name == 'Gate Block':
-            unlocked = bl.unlocked(request.user, section)
-        if hasattr(bl, 'needs_submit') and bl.display_name == 'Decision Block':
-            unlocked = bl.unlocked(request.user, section)
-        if not unlocked:
+    q = Q(content_type__model='gateblock') | Q(content_type__model='casequiz')
+    for block in section.pageblock_set.filter(q):
+        if not block.block().unlocked(request.user, section):
             return False
-    return unlocked
+    return True
 
 
 # Need to make this its own tempalte tag as it requires pulling in
