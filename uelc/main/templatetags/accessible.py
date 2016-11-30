@@ -46,8 +46,11 @@ def get_previous_group_user_section(request, section, previous, part):
     if prev_sec.depth < 3:
         if part == 1:
             return False
-        p1 = section.get_root().get_children()[0]
-        prev_sec = p1.get_last_leaf()
+
+        # If we're in parts 2, then skip back to Part 1's last leaf
+        part1 = section.get_root().get_children()[0]
+        prev_sec = part1.get_last_leaf()
+
     return prev_sec
 
 
