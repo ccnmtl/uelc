@@ -3,8 +3,10 @@ from django.test.client import RequestFactory
 from pagetree.models import Hierarchy, Section
 
 from uelc.main.helper_functions import get_user_map
-from uelc.main.templatetags.accessible import get_previous_group_user_section,\
-    is_not_last_group_user_section, is_section_unlocked, is_block_on_user_path
+from uelc.main.templatetags.accessible import \
+    get_previous_group_user_section,\
+    is_not_last_group_user_section, is_section_unlocked, \
+    is_block_on_user_path, get_quizblock_attr
 from uelc.main.templatetags.part_string import convert, convert_part2
 from uelc.main.tests.factories import UELCModuleFactory, GroupUpFactory,\
     AdminUpFactory
@@ -114,3 +116,15 @@ class TestAccessible(TestCase):
         rc = is_block_on_user_path(
             self.view.request, section, block, casemap.value)
         self.assertFalse(rc)
+
+    def test_get_quizblock_attr(self):
+        section = Section.objects.filter(slug='curve-ball').first()
+        block = section.pageblock_set.first()
+        self.assertIsNone(get_quizblock_attr(block.block().id))
+
+        section = Section.objects.get(slug='your-first-decision')
+        block = section.pageblock_set.all()[1]  # DecisionBlock
+        attr = get_quizblock_attr(block.block().id)
+
+        self.assertEquals(attr['edit_url'], section.get_edit_url())
+        self.assertEquals(attr['label'], section.label)
