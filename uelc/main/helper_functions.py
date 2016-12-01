@@ -93,14 +93,6 @@ def get_root_context(request):
     return context
 
 
-def has_responses(section):
-    for p in section.pageblock_set.all():
-        b = p.block()
-        if hasattr(b, 'needs_submit') and b.needs_submit():
-            return True
-    return False
-
-
 def get_user_map(hierarchy, user):
     case = Case.objects.get(hierarchy=hierarchy)
     # first check and see if a case map exists for the user
