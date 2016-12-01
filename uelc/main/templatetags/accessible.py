@@ -64,10 +64,10 @@ def is_block_on_user_path(request, section, block, casemap_value):
 
 @register.assignment_tag
 def get_quizblock_attr(quiz_id):
-    pbs = PageBlock.objects.filter(object_id=quiz_id)
-    for pb in pbs:
-        block = pb.block()
-        if block.display_name == 'Decision Block':
-            edit_url = block.pageblock().section.get_edit_url()
-            label = block.pageblock().section.label
-            return dict(edit_url=edit_url, label=label)
+    block = PageBlock.objects.filter(content_type__model='casequiz',
+                                     object_id=quiz_id).first()
+
+    if block:
+        edit_url = block.section.get_edit_url()
+        label = block.section.label
+        return dict(edit_url=edit_url, label=label)
