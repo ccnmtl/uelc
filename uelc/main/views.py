@@ -27,7 +27,7 @@ from uelc.main.forms import (
 )
 from uelc.main.helper_functions import (
     get_root_context, get_user_map, gen_group_token,
-    has_responses, reset_page, page_submit, admin_ajax_page_submit,
+    reset_page, page_submit, admin_ajax_page_submit,
     gen_token, get_user_last_location
 )
 from uelc.main.models import (
@@ -214,25 +214,19 @@ class UELCPageView(LoggedInMixin,
             return None
 
     def get(self, request, path):
-        self.check_user(request, path)
         # skip the first child of part if not admin
+        self.check_user(request, path)
+
         hierarchy = self.module.hierarchy
-        case = Case.objects.get(hierarchy=hierarchy)
-        uloc = UserLocation.objects.get_or_create(
-            user=request.user,
-            hierarchy=hierarchy)
-        section_submission = self._get_section_submission(request.user)
-        gate_submission = self._get_gate_submission(request.user)
 
         # handler stuff
-        hand = UELCHandler.objects.get_or_create(
+        handler = UELCHandler.objects.get_or_create(
             hierarchy=hierarchy,
             depth=0,
             path=hierarchy.base_url)[0]
         casemap = get_user_map(hierarchy, request.user)
-        part = hand.get_part_by_section(self.section)
-        tree_path = self.check_part_path(casemap, hand, part)
-        roots = get_root_context(self.request)
+        part = handler.get_part_by_section(self.section)
+        tree_path = self.check_part_path(casemap, handler, part)
 
         if tree_path[0]:
             return HttpResponseRedirect(tree_path[1])
@@ -243,7 +237,6 @@ class UELCPageView(LoggedInMixin,
             allow_redo = self.section.allow_redo()
 
         self.upv.visit()
-        instructor_link = has_responses(self.section)
         decision_blocks = []
         gate_blocks = []
         for block in self.section.pageblock_set.all():
@@ -262,32 +255,31 @@ class UELCPageView(LoggedInMixin,
                     data='',
                     message='At Gate Block')
                 self.notify_facilitators(request, path, notification)
+
         # if gateblock is not unlocked then return to last known page
         # section.gate_check(user), doing this because hierarchy cannot
         # be "gated" because we will be skipping around depending on
         # user decisions.
+        uloc = UserLocation.objects.get_or_create(
+            user=request.user, hierarchy=hierarchy)
         uloc[0].path = path
         uloc[0].save()
+
         context = dict(
             section=self.section,
             module=self.module,
             needs_submit=needs_submit,
             allow_redo=allow_redo,
-            is_submitted=self.section.submitted(request.user),
             modules=self.root.get_children(),
-            root=self.section.hierarchy.get_root(),
-            instructor_link=instructor_link,
-            is_view=True,
-            case=case,
+            case=hierarchy.case_set.first(),
             decision_blocks=decision_blocks,
             gate_blocks=gate_blocks,
-            gate_submission=gate_submission,
-            section_submission=section_submission,
+            gate_submission=self._get_gate_submission(request.user),
+            section_submission=self._get_section_submission(request.user),
             casemap=casemap,
             part=part,
             websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
-            token=gen_group_token(request, self.section.pk),
-            roots=roots['roots']
+            token=gen_group_token(request, self.section.pk)
         )
         context.update(self.get_extra_context())
         return render(request, self.template_name, context)
