@@ -43,19 +43,23 @@ def is_section_unlocked(request, section):
 # UELC Handler
 @register.assignment_tag
 def is_block_on_user_path(request, section, block, casemap_value):
-    if not request.user.profile.profile_type == 'group_user':
+    if not request.user.profile.is_group_user():
         return True
-    hand = UELCHandler.objects.get_or_create(
-        hierarchy=section.hierarchy,
-        depth=0,
-        path=section.hierarchy.base_url)[0]
-    can_show = hand.can_show(request, section, casemap_value)
+
+    if block.content_type.model != 'textblockdt':
+        return False
+
     bl = block.block()
-    if hasattr(bl, 'choice') and bl.display_name == 'Text Block':
-        choice = bl.choice
-        if int(choice) == can_show or int(choice) == 0:
-            return True
-    return False
+    choice = int(bl.choice)
+
+    if choice == 0:
+        return True
+
+    handler = UELCHandler.objects.get_or_create(
+        hierarchy=section.hierarchy,
+        depth=0, path=section.hierarchy.base_url)[0]
+    can_show = handler.can_show(request, section, casemap_value)
+    return choice == can_show
 
 
 @register.assignment_tag
