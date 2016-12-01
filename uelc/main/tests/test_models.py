@@ -294,7 +294,7 @@ class CaseQuizTest(TestCase):
         cq.make_casemap(user, data, None, 'question')
         self.assertEqual(
             CaseMap.objects.get(user=user, case_id=1).value,
-            '00000000000000001000000')
+            '0000000000000000100000')
 
     def test_make_casemap_with_multiple_casemaps(self):
         UELCModuleFactory()

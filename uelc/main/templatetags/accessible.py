@@ -1,51 +1,42 @@
 from django import template
-from uelc.main.models import UELCHandler
+from django.db.models.query_utils import Q
 from pagetree.models import PageBlock
+
+from uelc.main.models import UELCHandler
+
 
 register = template.Library()
 
 
 @register.assignment_tag
-def get_next_hierarchy_section(request, section):
-    hierarchy = section.hierarchy
-    if hierarchy == section.get_next().hierarchy:
-        return True
-
-
-@register.assignment_tag
-def get_previous_group_user_section(request, section, previous, part):
-    # make sure that group users cannot go to the
-    # root page of the Part. Also make sure that the
-    # 1st page in Part 1 does not have a prev link.
-    prev_sec = previous
-    if prev_sec.depth < 3:
+def get_previous_group_user_section(section, previous, part):
+    # make sure that group users cannot go to the root page of a Part
+    if previous.depth < 3:
         if part == 1:
+            # 1st page in Part 1 does not have a prev link
             return False
-        p1 = section.get_root().get_children()[0]
-        prev_sec = p1.get_last_leaf()
-    return prev_sec
+
+        # If in part 2, and previous is a root (depth=1) or module (depth=2)
+        # then skip back to Part 1's last leaf
+        # @todo - replace this hard-coded logic
+        part1 = section.get_root().get_children()[0]
+        previous = part1.get_last_leaf()
+
+    return previous
 
 
 @register.assignment_tag
-def is_not_last_group_user_section(request, section, part):
-    # make sure next button does not render at end of part 2
-    if part > 1 and section == section.get_last_leaf():
-        return False
-    return True
+def is_not_last_group_user_section(section, part):
+    return part == 1 or section != section.get_last_leaf()
 
 
 @register.assignment_tag
 def is_section_unlocked(request, section):
-    unlocked = True
-    for block in section.pageblock_set.all():
-        bl = block.block()
-        if hasattr(bl, 'needs_submit') and bl.display_name == 'Gate Block':
-            unlocked = bl.unlocked(request.user, section)
-        if hasattr(bl, 'needs_submit') and bl.display_name == 'Decision Block':
-            unlocked = bl.unlocked(request.user, section)
-        if not unlocked:
+    q = Q(content_type__model='gateblock') | Q(content_type__model='casequiz')
+    for block in section.pageblock_set.filter(q):
+        if not block.block().unlocked(request.user, section):
             return False
-    return unlocked
+    return True
 
 
 # Need to make this its own tempalte tag as it requires pulling in

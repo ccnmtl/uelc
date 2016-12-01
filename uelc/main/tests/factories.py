@@ -355,9 +355,7 @@ class UELCModuleFactory(object):
                                 'children': [{
                                     'label': 'End of Experience',
                                     'slug': 'end-of-experience',
-                                    'pageblocks': [],
-                                    'children': [{
-                                    }]
+                                    'pageblocks': []
                                 }]
                             }]
                         }]

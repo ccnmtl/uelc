@@ -179,45 +179,30 @@
 {% endblock %}
 
 {% block content-nav %}
-    {% if not request.user.profile.is_group_user%}
-    {% else %}
+    {% if request.user.profile.is_group_user%}
         {% comment %}
             Make sure that we do not provide next buttons of the next button will
             lead to a section that does not belong to the same hierarchy.
         {% endcomment %}
-        {% get_next_hierarchy_section request section as next_hier_sec %}
         {% with previous=section.get_previous next_section=section.get_next %}
-        {% if next_hier_sec %}
-            <ul class="pager">
-                {% if previous %}
-                    {% get_previous_group_user_section request section previous part as prev_sec %}
-                    {% if prev_sec %}
-                        <li class="previous">
-                            <a href="{{prev_sec.get_absolute_url}}">&larr; Previous</a>
-                        </li>
-                    {% endif %}
+        <ul class="pager">
+            {% if previous %}
+                {% get_previous_group_user_section section previous part as prev_sec %}
+                {% if prev_sec %}
+                    <li class="previous">
+                        <a href="{{prev_sec.get_absolute_url}}">&larr; Previous</a>
+                    </li>
                 {% endif %}
+            {% endif %}
 
-                {% if next_section %}
-                    {% is_not_last_group_user_section request section part as not_last_sec %}
+            {% if next_section and section.hierarchy == next_section.hierarchy %}
+                {% is_not_last_group_user_section section part as not_last_sec %}
+                {% if not_last_sec %}
                     {% is_section_unlocked request section as unlocked %}
-                    {% if not_last_sec %}
-                        <li class="next"><a class="{% if unlocked %}{% else %}disabled{%endif%}" href="{% if unlocked %}{{next_section.get_absolute_url}}{%endif%}">Next &rarr;</a></li>
-                    {% endif %}
+                    <li class="next"><a class="{% if unlocked %}{% else %}disabled{%endif%}" href="{% if unlocked %}{{next_section.get_absolute_url}}{%endif%}">Next &rarr;</a></li>
                 {% endif %}
-            </ul>
-        {% else %}
-            <ul class="pager">
-                {% if previous %}
-                    {% get_previous_group_user_section request section previous part as prev_sec %}
-                    {% if prev_sec %}
-                        <li class="previous">
-                            <a href="{{prev_sec.get_absolute_url}}">&larr; Previous</a>
-                        </li>
-                    {% endif %}
-                {% endif %}
-            </ul>
-        {% endif %}
+            {% endif %}
+        </ul>
         {% endwith %}
     {% endif %}
 {% endblock %}
