@@ -43,27 +43,31 @@ def is_section_unlocked(request, section):
 # UELC Handler
 @register.assignment_tag
 def is_block_on_user_path(request, section, block, casemap_value):
-    if not request.user.profile.profile_type == 'group_user':
+    if not request.user.profile.is_group_user():
         return True
-    hand = UELCHandler.objects.get_or_create(
-        hierarchy=section.hierarchy,
-        depth=0,
-        path=section.hierarchy.base_url)[0]
-    can_show = hand.can_show(request, section, casemap_value)
+
+    if block.content_type.model != 'textblockdt':
+        return False
+
     bl = block.block()
-    if hasattr(bl, 'choice') and bl.display_name == 'Text Block':
-        choice = bl.choice
-        if int(choice) == can_show or int(choice) == 0:
-            return True
-    return False
+    choice = int(bl.choice)
+
+    if choice == 0:
+        return True
+
+    handler = UELCHandler.objects.get_or_create(
+        hierarchy=section.hierarchy,
+        depth=0, path=section.hierarchy.base_url)[0]
+    can_show = handler.can_show(request, section, casemap_value)
+    return choice == can_show
 
 
 @register.assignment_tag
 def get_quizblock_attr(quiz_id):
-    pbs = PageBlock.objects.filter(object_id=quiz_id)
-    for pb in pbs:
-        block = pb.block()
-        if block.display_name == 'Decision Block':
-            edit_url = block.pageblock().section.get_edit_url()
-            label = block.pageblock().section.label
-            return dict(edit_url=edit_url, label=label)
+    block = PageBlock.objects.filter(content_type__model='casequiz',
+                                     object_id=quiz_id).first()
+
+    if block:
+        edit_url = block.section.get_edit_url()
+        label = block.section.label
+        return dict(edit_url=edit_url, label=label)
