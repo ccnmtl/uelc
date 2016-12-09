@@ -181,8 +181,8 @@ def gen_group_token(request, section_pk):
 
 
 def get_user_last_location(user, hierarchy):
-    """Returns the last Pagetree Section the user has been in."""
-    ul = user.userlocation_set.first()
+    """Returns last Pagetree Section the user has visited in the hierarchy"""
+    ul = user.userlocation_set.filter(hierarchy=hierarchy).first()
     if ul is None:
         return None
 
