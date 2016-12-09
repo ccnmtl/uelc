@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from uelc.main.models import (
     UserProfile, Case, Cohort, CaseMap, CaseQuiz,
-    CaseAnswer, TextBlockDT, LibraryItem, ImageUploadItem)
+    CaseAnswer, TextBlockDT, ImageUploadItem)
 from curveball.models import CurveballBlock
 from pagetree.models import Hierarchy
 from pageblocks.models import TextBlock, ImageBlock
@@ -57,7 +57,6 @@ admin.site.register(CaseMap)
 admin.site.register(CaseQuiz)
 admin.site.register(CaseAnswer)
 admin.site.register(Cohort)
-admin.site.register(LibraryItem)
 admin.site.register(ImageUploadItem, ImageUploadItemAdmin)
 admin.site.register(GateBlock)
 admin.site.unregister(FlatPage)

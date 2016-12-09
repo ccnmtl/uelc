@@ -3,12 +3,12 @@ from django.test import TestCase
 from uelc.main.tests.factories import (
     AdminUserFactory, AdminUpFactory, FacilitatorUpFactory,
     GroupUpFactory, CaseFactory, GroupUserFactory,
-    CohortFactory, LibraryItemFactory, CaseMapFactory,
+    CohortFactory, CaseMapFactory,
     TextBlockDTFactory, UELCHandlerFactory, CaseQuizFactory,
     UELCModuleFactory, ImageUploadItemFactory, CaseAnswerFactory,
     AnswerFactory, QuestionFactory, QuizFactory
 )
-from uelc.main.models import TextBlockDT, LibraryItem, CaseQuiz, CaseMap
+from uelc.main.models import TextBlockDT, CaseQuiz, CaseMap
 from pagetree.models import Hierarchy, PageBlock
 from pagetree.tests.factories import RootSectionFactory
 from quizblock.tests.test_models import FakeReq
@@ -226,26 +226,6 @@ class UELCHandlerTest(TestCase):
 
         r, block = self.u.is_curveball(section)
         self.assertFalse(r)
-
-
-class LibraryItemTest(TestCase):
-    def test_unicode(self):
-        li = LibraryItemFactory()
-        self.assertEqual(li.display_name(), li.name)
-        self.assertEqual(str(li), li.name)
-
-    def test_get_users(self):
-        i = LibraryItemFactory()
-        cohort = CohortFactory()
-        self.assertEqual(len(i.get_users(cohort)), 0)
-
-    def test_add_form(self):
-        f = LibraryItem.add_form()
-        self.assertTrue('name' in f.fields)
-
-    def test_edit_form(self):
-        i = LibraryItemFactory()
-        self.assertTrue('name' in i.edit_form().fields)
 
 
 class ImageUploadItemTest(TestCase):

@@ -8,8 +8,8 @@ from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap,
     CaseAnswer, ImageUploadItem,
     TextBlockDT, UELCHandler,
-    LibraryItem, CaseQuiz
-)
+    CaseQuiz)
+
 from curveball.models import CurveballBlock
 from curveball.tests.factories import CurveballFactory
 
@@ -147,14 +147,6 @@ class UELCHandlerFactory(factory.DjangoModelFactory):
 
     depth = 1
     hierarchy = factory.SubFactory(HierarchyFactory)
-
-
-class LibraryItemFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = LibraryItem
-
-    name = factory.Sequence(lambda n: "item %03d" % n)
-    case = factory.SubFactory(CaseFactory)
 
 
 class UELCModuleFactory(object):

@@ -486,52 +486,6 @@ class UELCHandler(Section):
             return False
 
 
-class LibraryItem(models.Model):
-    name = models.TextField(blank=False)
-    doc = models.FileField(upload_to='documents/%Y/%m/%d', max_length=255)
-    user = models.ManyToManyField(User, blank=True)
-    case = models.ForeignKey(Case)
-
-    template_file = 'main/doc.html'
-
-    def __unicode__(self):
-        return self.name
-
-    def display_name(self):
-        return '%s' % (self.name)
-
-    def get_users(self, cohort):
-        upros = UserProfile.objects.filter(cohort=cohort)
-        users = [profile.user for profile in upros]
-        return users
-
-    @classmethod
-    def add_form(cls):
-        class AddForm(forms.Form):
-            doc = forms.FileField(label="select doc", max_length=255)
-            name = forms.CharField(widget=forms.widgets.Textarea(
-                attrs={'class': 'library-item-name',
-                       'cols': 10,
-                       'rows': 2
-                       }))
-        return AddForm()
-
-    def edit_form(self):
-        class EditLibraryForm(forms.Form):
-            doc = forms.FileField(initial=self.doc,
-                                  label="Replace image",
-                                  max_length=255)
-            name = forms.CharField(
-                initial=self.name,
-                widget=forms.widgets.Textarea(
-                    attrs={'class': 'library-item-name',
-                           'cols': 10,
-                           'rows': 2
-                           }))
-
-        return EditLibraryForm()
-
-
 class ImageUploadItem(models.Model):
     name = models.TextField(blank=False)
     doc = models.FileField(upload_to='documents/%Y/%m/%d', max_length=255)

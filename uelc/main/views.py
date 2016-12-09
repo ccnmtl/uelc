@@ -32,8 +32,7 @@ from uelc.main.helper_functions import (
 )
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap,
-    CaseAnswer, UELCHandler,
-    LibraryItem)
+    CaseAnswer, UELCHandler)
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
@@ -245,7 +244,7 @@ class UELCPageView(LoggedInMixin,
             grp_usr = request.user.profile.is_group_user()
             # make sure that all pageblocks on page
             # have been submitted. Re: potential bug in
-            # Section.submit() in Pageblock library
+            # Section.submit() in Pageblock
             decision_blocks = ensure_decision_block_submitted(
                 b, display_name, request.user, block,
                 decision_blocks)
@@ -439,38 +438,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         except AttributeError:
             pass
 
-    def post_library_item(self, request):
-        doc = request.FILES.get('doc')
-        name = request.POST.get('name')
-        users = request.POST.getlist('user')
-        case_id = request.POST.get('case')
-        case = Case.objects.get(id=case_id)
-        li = LibraryItem.objects.create(doc=doc, name=name, case=case)
-        li.save()
-        user_objs = User.objects.filter(id__in=users)
-        for user in user_objs:
-            li.user.add(user)
-
-    def post_library_item_delete(self, request):
-        item_id = request.POST.get('library-item-id')
-        li = LibraryItem.objects.get(id=item_id)
-        li.delete()
-
-    def post_library_item_edit(self, request):
-        doc = request.FILES.get('doc')
-        name = request.POST.get('name')
-        users = request.POST.getlist('user')
-        li_id = request.POST.get('library-item-id')
-        li = LibraryItem.objects.filter(id=li_id)
-        if doc:
-            li.update(doc=doc)
-        if name:
-            li.update(name=name)
-        li.first().user.clear()
-        user_objs = User.objects.filter(id__in=users)
-        for user in user_objs:
-            li.first().user.add(user)
-
     def notify_group_user(self, section, user, notification):
         socket = zmq_context.socket(zmq.REQ)
         behave_socket_open(socket)
@@ -532,13 +499,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             admin_ajax_page_submit(section, user)
 
     def post(self, request, path):
-        # posted library items
-        if request.POST.get('library-item'):
-            self.post_library_item(request)
-        if request.POST.get('library-item-delete'):
-            self.post_library_item_delete(request)
-        if request.POST.get('library-item-edit'):
-            self.post_library_item_edit(request)
         if request.POST.get('gate-action'):
             self.post_gate_action(request)
         if request.POST.get('curveball-select'):
