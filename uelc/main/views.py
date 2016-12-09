@@ -520,8 +520,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         '''
         user = self.request.user
         section = self.get_section(path)
-        root = section.hierarchy.get_root()
-        roots = get_root_context(self.request)
         hierarchy = section.hierarchy
         case = Case.objects.get(hierarchy=hierarchy)
 
@@ -529,7 +527,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         cohort = user.profile.cohort
 
         cohort_user_profiles = cohort.user_profile_cohort.filter(
-            profile_type="group_user").order_by(
+            profile_type='group_user').order_by(
             'user__username').select_related('user').prefetch_related(
             'user__userlocation_set')
 
@@ -539,9 +537,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                 'pageblocks__section__section_submitted')
 
         hand = UELCHandler.objects.get_or_create(
-            hierarchy=hierarchy,
-            depth=0,
-            path=hierarchy.base_url)[0]
+            hierarchy=hierarchy, depth=0, path=hierarchy.base_url)[0]
 
         user_sections = []
         for user_profile in cohort_user_profiles:
@@ -590,12 +586,10 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             is_facilitator_view=True,
             section=section,
             user_sections=user_sections,
-            modules=root.get_children(),
-            root=root,
+            modules=hierarchy.get_root().get_children(),
             case=case,
             websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
             token=gen_token(request, section.hierarchy.name),
-            roots=roots['roots']
         )
 
         return render(request, self.template_name, context)
