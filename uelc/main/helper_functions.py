@@ -180,34 +180,16 @@ def gen_group_token(request, section_pk):
                                      ip_address, hmc)
 
 
-def fix_user_locations(user, hierarchy):
-    """Account for slug changes on PageTree's UserLocation.
-
-    Remove the user's UserLocations that have outdated slugs.
-    """
-    for loc in user.userlocation_set.all():
-        if hierarchy.find_section_from_path(loc.path) is None:
-            loc.delete()
-
-
 def get_user_last_location(user, hierarchy):
     """Returns the last Pagetree Section the user has been in."""
-    user_last_loc = user.userlocation_set.first()
-    if user_last_loc is None:
+    ul = user.userlocation_set.first()
+    if ul is None:
         return None
 
-    user_last_location = hierarchy.find_section_from_path(
-        user_last_loc.path)
-    if user_last_location is None:
+    section = hierarchy.find_section_from_path(ul.path)
+    if section is None:
         # If we can't find the Section from the path, it may be
-        # an outdated path. In that case, fix up the user's
-        # UserLocation set by removing all outdated paths, and
-        # try again.
-        fix_user_locations(user, hierarchy)
-        user_last_loc = user.userlocation_set.first()
-        if user_last_loc is None:
-            return None
-        user_last_location = hierarchy.find_section_from_path(
-            user_last_loc.path)
+        # an outdated path. In that case, clear the UserLocation
+        ul.delete()
 
-    return user_last_location
+    return section

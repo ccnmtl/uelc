@@ -1,15 +1,15 @@
 from django.test import TestCase
-from uelc.main.tests.factories import (
-    CaseFactory, CaseMapFactory, GroupUpFactory, GroupUserFactory,
-    HierarchyFactory
-)
+from pagetree.models import Hierarchy, UserLocation, Section
 from quizblock.tests.test_models import FakeReq
+
 from gate_block.models import GateBlock
-from uelc.main.models import CaseQuiz, Cohort, Case, CaseMap
 from uelc.main.helper_functions import (
     admin_ajax_page_submit, admin_ajax_reset_page,
-    page_submit, reset_page, get_user_map
-)
+    page_submit, reset_page, get_user_map, get_user_last_location)
+from uelc.main.models import CaseQuiz, Cohort, Case, CaseMap
+from uelc.main.tests.factories import (
+    CaseFactory, CaseMapFactory, GroupUpFactory, GroupUserFactory,
+    HierarchyFactory, UELCModuleFactory)
 
 
 class TestSubmissionResetFunctions(TestCase):
@@ -118,3 +118,27 @@ class TestGetUserMap(TestCase):
         self.assertEqual(CaseMap.objects.count(), 2)
         self.assertEqual(get_user_map(case.hierarchy, user), cm1)
         self.assertEqual(CaseMap.objects.count(), 2)
+
+
+class TestUserLastLocation(TestCase):
+
+    def setUp(self):
+        UELCModuleFactory()
+        self.h = Hierarchy.objects.get(name='case-test')
+
+    def test_get_user_last_location(self):
+        user = GroupUpFactory().user
+        self.assertIsNone(get_user_last_location(user, self.h))
+
+        ul = UserLocation.objects.create(
+            user=user, hierarchy=self.h, path='part-1/home/')
+
+        self.assertEquals(get_user_last_location(user, self.h),
+                          Section.objects.get(slug='home'))
+
+        # invalid path -- the UserLocation should be cleared & None returned
+        ul.path = 'part-1/deletedsection/'
+        ul.save()
+        self.assertIsNone(get_user_last_location(user, self.h))
+        qs = UserLocation.objects.filter(user=user, hierarchy=self.h)
+        self.assertFalse(qs.exists())
