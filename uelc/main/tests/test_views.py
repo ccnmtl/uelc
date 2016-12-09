@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
 from pagetree.helpers import get_hierarchy
-from pagetree.models import Hierarchy, Section
+from pagetree.models import Hierarchy, Section, UserPageVisit
 from pagetree.tests.factories import ModuleFactory
 from quizblock.models import Question, Answer
 
@@ -19,7 +19,7 @@ from uelc.main.tests.factories import (
     UELCModuleFactory, HierarchyFactory, CaseQuizFactory,
     QuestionFactory, AnswerFactory, CaseAnswerFactory
 )
-from uelc.main.views import UELCPageView
+from uelc.main.views import UELCPageView, FacilitatorView
 
 
 class BasicTest(TestCase):
@@ -1125,3 +1125,44 @@ class UELCPageViewTest(TestCase):
         self.assertEquals(self.view.module, s.get_module())
         self.assertEquals(self.view.upv.section, s)
         self.assertEquals(self.view.upv.user, self.view.request.user)
+
+
+class TestFacilitatorView(TestCase):
+
+    def setUp(self):
+        UELCModuleFactory()
+        self.h = Hierarchy.objects.get(name='case-test')
+        self.view = FacilitatorView()
+
+    def test_get_tree_depth(self):
+        section = Section.objects.get(slug='home')
+        self.assertEquals(self.view.get_tree_depth(section), 2)
+
+        section = Section.objects.get(slug='intro')
+        self.assertEquals(self.view.get_tree_depth(section), 3)
+
+        section = Section.objects.get(slug='challenges')
+        self.assertEquals(self.view.get_tree_depth(section), 4)
+
+        section = Section.objects.get(slug='your-first-decision')
+        self.assertEquals(self.view.get_tree_depth(section), 9)
+
+        section = Section.objects.filter(slug='curve-ball').first()
+        self.assertEquals(self.view.get_tree_depth(section), 10)
+
+    def test_set_upv(self):
+        user = GroupUpFactory().user
+        section = Section.objects.get(slug='home')
+
+        # no-op
+        self.view.set_upv(user, section, 'complete')
+        qs = UserPageVisit.objects.filter(user=user, section=section)
+        self.assertEquals(qs.count(), 0)
+
+        # status will be updated on existing upv
+        upv = UserPageVisit.objects.create(user=user, section=section)
+        self.assertEquals(upv.status, 'incomplete')
+
+        self.view.set_upv(user, section, 'complete')
+        upv.refresh_from_db()
+        self.assertEquals(upv.status, 'complete')
