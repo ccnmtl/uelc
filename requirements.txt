@@ -87,7 +87,7 @@ django-registration-redux==1.4
 django-treebeard==4.1.0
 django-pagetree==1.2.3
 django-quizblock==1.2.2
-django-markwhat==1.5
+django-markwhat==1.5.1
 django-pageblocks==1.0.4
 gunicorn==19.6.0
 django-infranil==1.1.0
