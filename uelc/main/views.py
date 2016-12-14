@@ -582,6 +582,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section, user_last_location])
 
+        token = gen_token(request, "module_%02d" % section.hierarchy.pk)
         context = dict(
             is_facilitator_view=True,
             section=section,
@@ -589,7 +590,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             modules=hierarchy.get_root().get_children(),
             case=case,
             websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
-            token=gen_token(request, section.hierarchy.name),
+            token=token,
         )
 
         return render(request, self.template_name, context)
