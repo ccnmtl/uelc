@@ -126,7 +126,7 @@ def fresh_token(request, hierarchy_name=None):
     return HttpResponse(
         json.dumps(
             dict(hierarchy=hierarchy.as_dict(),
-                 token=gen_token(request, hierarchy.name),
+                 token=gen_token(request, "module_%02d" % hierarchy.pk),
                  websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)),
         content_type='applicaton/json')
 
