@@ -370,6 +370,10 @@ ul.side-nav li li {
     border-radius:6px 0 6px 6px;
 }
 
+.dropdown-submenu>.dropdown-menu>li>a {
+    white-space: normal;
+}
+
 /* Add Pageblock  */
 #add-pageblock-tab ul {
 	list-style-type: none;
