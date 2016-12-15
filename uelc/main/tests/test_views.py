@@ -9,9 +9,11 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from pagetree.helpers import get_hierarchy
 from pagetree.models import Hierarchy, Section, UserPageVisit
-from pagetree.tests.factories import ModuleFactory
+from pagetree.tests.factories import ModuleFactory, UserPageVisitFactory
 from quizblock.models import Question, Answer
 
+from curveball.models import CurveballSubmission
+from gate_block.models import GateSubmission
 from uelc.main.models import Case, CaseMap, CaseQuiz, CaseAnswer
 from uelc.main.tests.factories import (
     GroupUpFactory, AdminUpFactory,

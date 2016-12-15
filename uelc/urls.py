@@ -94,7 +94,7 @@ urlpatterns = [
     url(r'^group_user/fresh_token/(?P<section_id>\d+)/$',
         uelc.main.helper_functions.fresh_grp_token),
     url(r'^pages/(?P<hierarchy_name>[-\w]+)/facilitator/(?P<path>.*)$',
-        FacilitatorView.as_view()),
+        FacilitatorView.as_view(), name='facilitator-view'),
     url(r'^pages/(?P<hierarchy_name>[-\w]+)/(?P<path>.*)$',
         UELCPageView.as_view()),
 ]
