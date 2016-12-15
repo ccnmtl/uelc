@@ -1,6 +1,7 @@
 # Django settings for uelc project.
 import os.path
 import sys
+import zmqproxy
 
 from ccnmtlsettings.shared import common
 
@@ -127,6 +128,9 @@ CACHES = {
         'LOCATION': 'uelc',
     }
 }
+
+ZMQ_PROXY = zmqproxy.ZMQProxy
+
 if 'test' in sys.argv or 'jenkins' in sys.argv or 'behave' in sys.argv:
     CACHES = {
         'default': {

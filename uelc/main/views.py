@@ -1,5 +1,4 @@
 import json
-import sys
 
 from django.conf import settings
 from django.contrib import messages
@@ -17,7 +16,6 @@ from pagetree.generic.views import (
 )
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
 from quizblock.models import Question, Answer
-import zmq
 
 from curveball.models import Curveball, CurveballBlock
 from gate_block.models import GateBlock, SectionSubmission, GateSubmission
@@ -37,27 +35,6 @@ from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
     RestrictedModuleMixin)
-
-
-zmq_context = zmq.Context()
-
-
-def behave_socket_open(socket):
-    """Make the socket behave-compatible. :-/"""
-    if sys.argv[1:2] == ['behave']:
-        socket.linger = 0
-
-
-def behave_socket_recv(socket):
-    """ZMQ socket.recv() that doesn't hang on behave"""
-    # TODO: behave hangs on socket.recv()
-    if sys.argv[1:2] == ['behave']:
-        try:
-            socket.recv(zmq.NOBLOCK)
-        except zmq.ZMQError:
-            pass
-    else:
-        socket.recv()
 
 
 class IndexView(TemplateView):
@@ -156,9 +133,7 @@ class UELCPageView(LoggedInMixin,
 
     def notify_facilitators(self, request, path, notification):
         user = get_object_or_404(User, pk=request.user.pk)
-        socket = zmq_context.socket(zmq.REQ)
-        behave_socket_open(socket)
-        socket.connect(settings.WINDSOCK_BROKER_URL)
+        zmq_proxy = settings.ZMQ_PROXY()
         msg = dict()
 
         if(notification['message'] == 'Decision Submitted'):
@@ -188,8 +163,7 @@ class UELCPageView(LoggedInMixin,
                  (settings.ZMQ_APPNAME, self.section.hierarchy.name),
                  content=json.dumps(msg))
 
-        socket.send(json.dumps(e))
-        behave_socket_recv(socket)
+        zmq_proxy.send(json.dumps(e))
 
     def check_user(self, request, path):
         if not request.user.is_superuser and self.section.get_depth() == 2:
@@ -376,9 +350,7 @@ class SubmitSectionView(LoggedInMixin,
     template_name = 'pagetree/page.html'
 
     def notify_facilitators(self, request, section, notification):
-        socket = zmq_context.socket(zmq.REQ)
-        behave_socket_open(socket)
-        socket.connect(settings.WINDSOCK_BROKER_URL)
+        zmq_proxy = settings.ZMQ_PROXY()
 
         msg = dict(
             userId=request.user.id,
@@ -389,8 +361,7 @@ class SubmitSectionView(LoggedInMixin,
                  (settings.ZMQ_APPNAME, section.hierarchy.name),
                  content=json.dumps(msg))
 
-        socket.send(json.dumps(e))
-        behave_socket_recv(socket)
+        zmq_proxy.send(json.dumps(e))
 
     def post(self, request):
         user = request.user
@@ -439,9 +410,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             pass
 
     def notify_group_user(self, section, user, notification):
-        socket = zmq_context.socket(zmq.REQ)
-        behave_socket_open(socket)
-        socket.connect(settings.WINDSOCK_BROKER_URL)
+        zmq_proxy = settings.ZMQ_PROXY()
         msg = dict(userId=user.id,
                    username=user.username,
                    hierarchy=section.hierarchy.name,
@@ -451,13 +420,10 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         e = dict(address="%s.%d" %
                  (settings.ZMQ_APPNAME, section.pk),
                  content=json.dumps(msg))
-        socket.send(json.dumps(e))
-        behave_socket_recv(socket)
+        zmq_proxy.send(json.dumps(e))
 
     def notify_facilitator(self, request, section, user, msg):
-        socket = zmq_context.socket(zmq.REQ)
-        behave_socket_open(socket)
-        socket.connect(settings.WINDSOCK_BROKER_URL)
+        zmq_proxy = settings.ZMQ_PROXY()
         notification = dict(
             data='',
             message=msg)
@@ -470,8 +436,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                  (settings.ZMQ_APPNAME, section.hierarchy.name),
                  content=json.dumps(msg))
 
-        socket.send(json.dumps(e))
-        behave_socket_recv(socket)
+        zmq_proxy.send(json.dumps(e))
 
     def post_curveball_select(self, request):
         '''Show the facilitator their choices for the curveball,
