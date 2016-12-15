@@ -2,7 +2,6 @@ from django.conf import settings
 from splinter import Browser
 
 from uelc.main.tests.factories import AdminUpFactory, UELCModuleFactory
-from uelc.main.views import zmq_context
 
 
 def before_all(context):
@@ -23,4 +22,3 @@ def after_step(context, step):
 def after_all(context):
     context.browser.quit()
     del context.browser
-    zmq_context.term()
