@@ -1,6 +1,6 @@
 from django.test import TestCase
 from pagetree.helpers import get_hierarchy
-from pagetree.models import Section, UserLocation, PageBlock
+from pagetree.models import Section, UserLocation
 from pagetree.tests.factories import ModuleFactory, UserPageVisitFactory
 from quizblock.models import Submission
 from quizblock.tests.test_models import FakeReq
