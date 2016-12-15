@@ -1166,3 +1166,73 @@ class TestFacilitatorView(TestCase):
         self.view.set_upv(user, section, 'complete')
         upv.refresh_from_db()
         self.assertEquals(upv.status, 'complete')
+
+    def test_post_curveball_select(self):
+        user = GroupUpFactory().user
+        section = Section.objects.filter(slug='curve-ball').first()
+        blk = section.pageblock_set.all()[1].block()
+
+        data = {
+            'user_id': user.id,
+            'curveball': blk.curveball_one.id,
+            'curveball-block-id': blk.id,
+            'curveball-select': True
+        }
+        self.view.request = RequestFactory().post('/', data)
+        self.view.post(self.view.request, 'home/')
+
+        qs = CurveballSubmission.objects.filter(
+            curveball=blk.curveball_one, group_curveball=user,
+            curveballblock=blk)
+        self.assertEquals(qs.count(), 1)
+
+    def test_post_gate_action(self):
+        user = GroupUpFactory().user
+        section = Section.objects.filter(slug='confirm-first-decision').first()
+        upv = UserPageVisitFactory(user=user, section=section)
+
+        data = {
+            'user_id': user.id,
+            'gate-action': 'submit',
+            'section': section.id
+        }
+        self.view.request = RequestFactory().post('/', data)
+        self.view.post(self.view.request, 'home/')
+
+        upv.refresh_from_db()
+        self.assertEquals(upv.status, 'complete')
+
+        qs = GateSubmission.objects.filter(section=section)
+        self.assertEquals(qs.count(), 1)
+
+    def test_get(self):
+        facilitator = FacilitatorUpFactory().user
+        self.client.login(username=facilitator.username, password='test')
+
+        case = self.h.case_set.first()
+        case.cohort.add(facilitator.profile.cohort)
+        group_user = GroupUpFactory()
+        facilitator.profile.cohort.user_profile_cohort.add(group_user)
+
+        section = Section.objects.filter(slug='home').first()
+        url = reverse('facilitator-view',
+                      kwargs={'hierarchy_name': self.h.name,
+                              'path': section.get_path()})
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.context['section'], section)
+        self.assertTrue(response.context['is_facilitator_view'])
+        self.assertEquals(response.context['case'], case)
+
+        self.assertEquals(len(response.context['user_sections']), 1)
+        user_sections = response.context['user_sections'][0]
+        self.assertEquals(user_sections[0], group_user.user)
+        self.assertEquals(user_sections[2].path, '/')
+
+        gates = user_sections[1]
+        self.assertEquals(len(gates), 5)
+        self.assertEquals(gates[0][0].slug, 'your-first-decision')
+        self.assertEquals(gates[1][0].slug, 'curve-ball')
+        self.assertEquals(gates[2][0].slug, 'confirm-first-decision')
+        self.assertEquals(gates[3][0].slug, 'discussion-of-impact')
+        self.assertEquals(gates[4][0].slug, 'results')
