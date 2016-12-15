@@ -133,7 +133,7 @@ class UELCPageView(LoggedInMixin,
 
     def notify_facilitators(self, request, path, notification):
         user = get_object_or_404(User, pk=request.user.pk)
-        zmq_proxy = settings.ZMQ_PROXY()
+        broker = settings.BROKER_PROXY()
         msg = dict()
 
         if(notification['message'] == 'Decision Submitted'):
@@ -163,7 +163,7 @@ class UELCPageView(LoggedInMixin,
                  (settings.ZMQ_APPNAME, self.section.hierarchy.name),
                  content=json.dumps(msg))
 
-        zmq_proxy.send(json.dumps(e))
+        broker.send(json.dumps(e))
 
     def check_user(self, request, path):
         if not request.user.is_superuser and self.section.get_depth() == 2:
@@ -350,7 +350,7 @@ class SubmitSectionView(LoggedInMixin,
     template_name = 'pagetree/page.html'
 
     def notify_facilitators(self, request, section, notification):
-        zmq_proxy = settings.ZMQ_PROXY()
+        broker = settings.BROKER_PROXY()
 
         msg = dict(
             userId=request.user.id,
@@ -361,7 +361,7 @@ class SubmitSectionView(LoggedInMixin,
                  (settings.ZMQ_APPNAME, section.hierarchy.name),
                  content=json.dumps(msg))
 
-        zmq_proxy.send(json.dumps(e))
+        broker.send(json.dumps(e))
 
     def post(self, request):
         user = request.user
@@ -410,7 +410,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             pass
 
     def notify_group_user(self, section, user, notification):
-        zmq_proxy = settings.ZMQ_PROXY()
+        broker = settings.BROKER_PROXY()
         msg = dict(userId=user.id,
                    username=user.username,
                    hierarchy=section.hierarchy.name,
@@ -420,10 +420,10 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         e = dict(address="%s.%d" %
                  (settings.ZMQ_APPNAME, section.pk),
                  content=json.dumps(msg))
-        zmq_proxy.send(json.dumps(e))
+        broker.send(json.dumps(e))
 
     def notify_facilitator(self, request, section, user, msg):
-        zmq_proxy = settings.ZMQ_PROXY()
+        broker = settings.BROKER_PROXY()
         notification = dict(
             data='',
             message=msg)
@@ -436,7 +436,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                  (settings.ZMQ_APPNAME, section.hierarchy.name),
                  content=json.dumps(msg))
 
-        zmq_proxy.send(json.dumps(e))
+        broker.send(json.dumps(e))
 
     def post_curveball_select(self, request):
         '''Show the facilitator their choices for the curveball,

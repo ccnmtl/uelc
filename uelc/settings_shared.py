@@ -129,7 +129,7 @@ CACHES = {
     }
 }
 
-ZMQ_PROXY = zmqproxy.ZMQProxy
+BROKER_PROXY = zmqproxy.ZMQProxy
 
 if 'test' in sys.argv or 'jenkins' in sys.argv or 'behave' in sys.argv:
     CACHES = {
