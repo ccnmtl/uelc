@@ -7,7 +7,7 @@ zmq_context = zmq.Context()
 
 class ZMQProxy():
     def send(self, msg):
-        socket = self.zmq_context.socket(zmq.REQ)
+        socket = zmq_context.socket(zmq.REQ)
         socket.connect(settings.WINDSOCK_BROKER_URL)
         socket.send(msg)
 
