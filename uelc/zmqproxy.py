@@ -31,3 +31,9 @@ class ZMQProxy():
         socket.connect(settings.WINDSOCK_BROKER_URL)
         socket.send(msg)
         behave_socket_recv(socket)
+
+
+class DummyProxy():
+    def send(self, msg):
+        # we do nothing
+        pass
