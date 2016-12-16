@@ -1,11 +1,15 @@
 from django.test import TestCase
-from quizblock.tests.test_models import FakeReq
 from pagetree.helpers import get_hierarchy
+from pagetree.models import Section, UserLocation
+from pagetree.tests.factories import ModuleFactory, UserPageVisitFactory
+from quizblock.models import Submission
+from quizblock.tests.test_models import FakeReq
+
 from gate_block.models import GateBlock
 from gate_block.tests.factories import (
     SectionSubmissionFactory, GateSubmissionFactory,
     GroupUserFactory, GateBlockFactory)
-from pagetree.tests.factories import ModuleFactory
+from uelc.main.tests.factories import GroupUpFactory, UELCModuleFactory
 
 
 class GateBlockTest(TestCase):
@@ -35,6 +39,63 @@ class GateBlockTest(TestCase):
     def test_unlocked_false(self):
         u = GroupUserFactory()
         self.assertFalse(self.gbf.unlocked(u, None))
+
+
+class TestGateBlockStatus(TestCase):
+
+    def setUp(self):
+        f = UELCModuleFactory()
+        self.h = f.root.hierarchy
+        self.group_user = GroupUpFactory().user
+        self.uloc = UserLocation.objects.create(user=self.group_user,
+                                                hierarchy=self.h)
+        self.section = Section.objects.get(slug='your-first-decision')
+        self.pageblocks = self.section.pageblock_set.all()
+        self.gate_block = self.section.pageblock_set.filter(
+            content_type__model='gateblock').first().block()
+
+    def test_status_to_be_reviewed(self):
+        status = self.gate_block.status(
+            self.section, self.group_user, self.h, self.uloc, self.pageblocks)
+        self.assertEquals(status, 'to be reviewed')
+
+    def test_status_paths_match(self):
+        self.uloc.path = self.section.get_path()
+        self.uloc.save()
+
+        status = self.gate_block.status(
+            self.section, self.group_user, self.h, self.uloc, self.pageblocks)
+        self.assertEquals(status, 'reviewing')
+
+    def test_status_user_page_visited(self):
+        UserPageVisitFactory(user=self.group_user, section=self.section)
+        status = self.gate_block.status(
+            self.section, self.group_user, self.h, self.uloc, self.pageblocks)
+        self.assertEquals(status, 'reviewing')
+
+    def test_status_gate_submitted(self):
+        GateSubmissionFactory(gateblock=self.gate_block,
+                              gate_user=self.group_user,
+                              section=self.section)
+        status = self.gate_block.status(
+            self.section, self.group_user, self.h, self.uloc, self.pageblocks)
+        self.assertEquals(status, 'reviewed')
+
+    def test_status_decision_block_submitted(self):
+        decision_block = self.section.pageblock_set.filter(
+            content_type__model='casequiz').first().block()
+        Submission.objects.create(quiz=decision_block, user=self.group_user)
+        status = self.gate_block.status(
+            self.section, self.group_user, self.h, self.uloc, self.pageblocks)
+        self.assertEquals(status, 'reviewed')
+
+    def test_status_section_submission_exists(self):
+        SectionSubmissionFactory(section=self.section,
+                                 user=self.group_user,
+                                 submitted=True)
+        status = self.gate_block.status(
+            self.section, self.group_user, self.h, self.uloc, self.pageblocks)
+        self.assertEquals(status, 'reviewed')
 
 
 class CreateGateBlockTest(TestCase):
