@@ -524,12 +524,13 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                 gateblock_section = g.pageblock().section
                 pageblocks = gateblock_section.pageblock_set.all()
                 part = hand.get_part_by_section(gateblock_section)
+                unlocked = g.unlocked(user, gateblock_section)
                 gate_section.append([
                     gateblock_section,
                     g,
-                    g.unlocked(user, section),
+                    unlocked,
                     self.get_tree_depth(gateblock_section),
-                    g.status(user, user_last_location, pageblocks),
+                    g.status(user, user_last_location, unlocked, pageblocks),
                     hand.can_show_gateblock(gateblock_section,
                                             part_usermap,
                                             part),

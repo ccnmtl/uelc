@@ -35,7 +35,7 @@ class GateBlock(BasePageBlock):
             gateblock_id=self.id,
             gate_user_id=user.id).exists()
 
-    def status(self, user, uloc, pageblocks):
+    def status(self, user, uloc, unlocked, pageblocks):
         """
         Takes self.pageblock().section, a User, Hierarchy, UserLocation,
         and optionally, a pageblock set.
@@ -51,7 +51,7 @@ class GateBlock(BasePageBlock):
         if Submission.objects.filter(user=user, quiz__id__in=quizzes).exists():
             return 'reviewed'
 
-        if self.unlocked(user, gate_section):
+        if unlocked:
             return 'reviewed'
 
         if gate_section.get_uservisit(user):
