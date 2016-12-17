@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.db import models
 from pagetree.generic.models import BasePageBlock
 from pagetree.models import Section
-from quizblock.models import Submission
 
 
 class GateBlock(BasePageBlock):
@@ -51,7 +50,7 @@ class GateBlock(BasePageBlock):
         quizzes = pageblocks.filter(
             content_type__app_label='main',
             content_type__model='casequiz').values_list('object_id', flat=True)
-        if Submission.objects.filter(user=user, quiz__id__in=quizzes).exists():
+        if user.submission_set.filter(quiz__id__in=quizzes).exists():
             return 'reviewed'
 
         if user.userpagevisit_set.filter(section__id=gate_section.id):
