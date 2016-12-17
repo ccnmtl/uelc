@@ -496,7 +496,8 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         cohort_user_profiles = cohort.user_profile_cohort.filter(
             profile_type='group_user').order_by(
             'user__username').select_related('user').prefetch_related(
-            'user__userlocation_set', 'user__section_user')
+            'user__userlocation_set', 'user__section_user',
+            'user__userpagevisit_set')
 
         gateblocks = GateBlock.objects.filter(
             pageblocks__section__hierarchy=hierarchy).prefetch_related(

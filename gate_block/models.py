@@ -54,7 +54,7 @@ class GateBlock(BasePageBlock):
         if Submission.objects.filter(user=user, quiz__id__in=quizzes).exists():
             return 'reviewed'
 
-        if gate_section.get_uservisit(user):
+        if user.userpagevisit_set.filter(section__id=gate_section.id):
             return "reviewing"
 
         if uloc.path == gate_section.get_path():
