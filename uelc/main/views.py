@@ -496,7 +496,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
         cohort_user_profiles = cohort.user_profile_cohort.filter(
             profile_type='group_user').order_by(
             'user__username').select_related('user').prefetch_related(
-            'user__userlocation_set')
+            'user__userlocation_set', 'user__section_user')
 
         gateblocks = GateBlock.objects.filter(
             pageblocks__section__hierarchy=hierarchy).prefetch_related(
@@ -532,14 +532,11 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                     self.get_tree_depth(gateblock_section),
                     g.status(user, user_last_location, unlocked, pageblocks),
                     hand.can_show_gateblock(gateblock_section,
-                                            part_usermap,
-                                            part),
+                                            part_usermap, part),
                     (part, part_usermap),
                     hand.is_curveball(gateblock_section, pageblocks),
                     hand.is_decision_block(
-                        gateblock_section,
-                        user,
-                        pageblocks),
+                        gateblock_section, user, pageblocks),
                     hand.is_next_curveball(gateblock_section)
                 ])
 

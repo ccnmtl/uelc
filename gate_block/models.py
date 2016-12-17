@@ -41,17 +41,17 @@ class GateBlock(BasePageBlock):
         and optionally, a pageblock set.
         """
 
+        if unlocked:
+            return 'reviewed'
+
         gate_section = self.pageblock().section
-        if gate_section.section_submitted.filter(user=user).exists():
+        if user.section_user.filter(section__id=gate_section.id):
             return 'reviewed'
 
         quizzes = pageblocks.filter(
             content_type__app_label='main',
             content_type__model='casequiz').values_list('object_id', flat=True)
         if Submission.objects.filter(user=user, quiz__id__in=quizzes).exists():
-            return 'reviewed'
-
-        if unlocked:
             return 'reviewed'
 
         if gate_section.get_uservisit(user):
