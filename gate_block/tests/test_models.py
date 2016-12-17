@@ -56,7 +56,7 @@ class TestGateBlockStatus(TestCase):
 
     def test_status_to_be_reviewed(self):
         status = self.gate_block.status(
-            self.section, self.group_user, self.h, self.uloc, self.pageblocks)
+            self.group_user, self.uloc, self.pageblocks)
         self.assertEquals(status, 'to be reviewed')
 
     def test_status_paths_match(self):
@@ -64,13 +64,13 @@ class TestGateBlockStatus(TestCase):
         self.uloc.save()
 
         status = self.gate_block.status(
-            self.section, self.group_user, self.h, self.uloc, self.pageblocks)
+            self.group_user, self.uloc, self.pageblocks)
         self.assertEquals(status, 'reviewing')
 
     def test_status_user_page_visited(self):
         UserPageVisitFactory(user=self.group_user, section=self.section)
         status = self.gate_block.status(
-            self.section, self.group_user, self.h, self.uloc, self.pageblocks)
+            self.group_user, self.uloc, self.pageblocks)
         self.assertEquals(status, 'reviewing')
 
     def test_status_gate_submitted(self):
@@ -78,7 +78,7 @@ class TestGateBlockStatus(TestCase):
                               gate_user=self.group_user,
                               section=self.section)
         status = self.gate_block.status(
-            self.section, self.group_user, self.h, self.uloc, self.pageblocks)
+            self.group_user, self.uloc, self.pageblocks)
         self.assertEquals(status, 'reviewed')
 
     def test_status_decision_block_submitted(self):
@@ -86,7 +86,7 @@ class TestGateBlockStatus(TestCase):
             content_type__model='casequiz').first().block()
         Submission.objects.create(quiz=decision_block, user=self.group_user)
         status = self.gate_block.status(
-            self.section, self.group_user, self.h, self.uloc, self.pageblocks)
+            self.group_user, self.uloc, self.pageblocks)
         self.assertEquals(status, 'reviewed')
 
     def test_status_section_submission_exists(self):
@@ -94,7 +94,7 @@ class TestGateBlockStatus(TestCase):
                                  user=self.group_user,
                                  submitted=True)
         status = self.gate_block.status(
-            self.section, self.group_user, self.h, self.uloc, self.pageblocks)
+            self.group_user, self.uloc, self.pageblocks)
         self.assertEquals(status, 'reviewed')
 
 

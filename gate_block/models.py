@@ -1,8 +1,9 @@
 from django import forms
-from django.db import models
 from django.contrib.auth.models import User
-from pagetree.models import Section
+from django.db import models
 from pagetree.generic.models import BasePageBlock
+from pagetree.models import Section
+from quizblock.models import Submission
 
 
 class GateBlock(BasePageBlock):
@@ -34,24 +35,21 @@ class GateBlock(BasePageBlock):
             gateblock_id=self.id,
             gate_user_id=user.id).exists()
 
-    def status(self, gate_section, user, hierarchy, uloc, pageblocks=None):
+    def status(self, user, uloc, pageblocks):
         """
         Takes self.pageblock().section, a User, Hierarchy, UserLocation,
         and optionally, a pageblock set.
         """
 
-        # @todo: could these be passed in?
-        pageblocks = self._get_pageblocks(pageblocks, gate_section)
-        ss_exists = gate_section.section_submitted.filter(user=user).exists()
+        gate_section = self.pageblock().section
+        if gate_section.section_submitted.filter(user=user).exists():
+            return 'reviewed'
 
-        for block in pageblocks:
-            if ss_exists and block.section == gate_section:
-                return 'reviewed'
-
-            bk = block.block()
-            if bk.display_name == "Decision Block" and \
-               bk.is_submitted(bk, user):
-                return 'reviewed'
+        quizzes = pageblocks.filter(
+            content_type__app_label='main',
+            content_type__model='casequiz').values_list('object_id', flat=True)
+        if Submission.objects.filter(user=user, quiz__id__in=quizzes).exists():
+            return 'reviewed'
 
         if self.unlocked(user, gate_section):
             return 'reviewed'
@@ -59,17 +57,10 @@ class GateBlock(BasePageBlock):
         if gate_section.get_uservisit(user):
             return "reviewing"
 
-        h_url = hierarchy.get_absolute_url()
-        uloc_path = h_url + uloc.path
-        if uloc_path == gate_section.get_absolute_url():
+        if uloc.path == gate_section.get_path():
             return "reviewing"
 
         return "to be reviewed"
-
-    def _get_pageblocks(self, pageblocks, gate_section):
-        if pageblocks is None:
-            pageblocks = gate_section.pageblock_set.all()
-        return pageblocks
 
     @classmethod
     def add_form(self):
