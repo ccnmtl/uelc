@@ -472,13 +472,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             self.post_curveball_select(request)
         return HttpResponseRedirect(request.path)
 
-    def dispatch(self, request, *args, **kwargs):
-        path = kwargs['path']
-        rv = self.perform_checks(request, path)
-        if rv is not None:
-            return rv
-        return super(FacilitatorView, self).dispatch(request, *args, **kwargs)
-
     def get(self, request, path):
         '''
         * get the section of each gateblock
