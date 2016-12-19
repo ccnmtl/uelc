@@ -2,7 +2,7 @@ from django import template
 from django.db.models.query_utils import Q
 from pagetree.models import PageBlock
 
-from uelc.main.models import UELCHandler
+from uelc.main.helper_functions import can_show
 
 
 register = template.Library()
@@ -39,8 +39,6 @@ def is_section_unlocked(request, section):
     return True
 
 
-# Need to make this its own tempalte tag as it requires pulling in
-# UELC Handler
 @register.assignment_tag
 def is_block_on_user_path(request, section, block, casemap_value):
     if not request.user.profile.is_group_user():
@@ -55,11 +53,7 @@ def is_block_on_user_path(request, section, block, casemap_value):
     if choice == 0:
         return True
 
-    handler = UELCHandler.objects.get_or_create(
-        hierarchy=section.hierarchy,
-        depth=0, path=section.hierarchy.base_url)[0]
-    can_show = handler.can_show(request, section, casemap_value)
-    return choice == can_show
+    return choice == can_show(request, section, casemap_value)
 
 
 @register.assignment_tag

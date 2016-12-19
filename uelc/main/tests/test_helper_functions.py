@@ -1,14 +1,19 @@
 from django.test import TestCase, RequestFactory
 from pagetree.models import Hierarchy, UserLocation, Section
+from django.test import TestCase
+from pagetree.models import Hierarchy, UserLocation, Section, PageBlock
+from pagetree.tests.factories import RootSectionFactory
+from quizblock.models import Submission, Question, Response
 from quizblock.tests.test_models import FakeReq
 
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
     admin_ajax_page_submit, admin_ajax_reset_page,
     page_submit, reset_page, get_user_map, get_user_last_location,
-    gen_fac_token, gen_group_token
-)
-from uelc.main.models import CaseQuiz, Cohort, Case, CaseMap
+    gen_fac_token, gen_group_token,
+    get_vals_from_casemap, get_partchoice_by_usermap, get_p1c1, can_show,
+    p1pre, is_curveball, is_decision_block)
+from uelc.main.models import CaseQuiz, Cohort, Case, CaseMap, CaseAnswer
 from uelc.main.tests.factories import (
     CaseFactory, CaseMapFactory, GroupUpFactory, GroupUserFactory,
     HierarchyFactory, UELCModuleFactory)
@@ -177,3 +182,81 @@ class TestUtils(TestCase):
                 '{}:uelc.{}:uelc.{}.{}:'.format(
                     gu.user.username, root.pk,
                     root.pk, gu.user.username)))
+
+
+class DummySection(object):
+    def get_tree(self):
+        return [self]
+
+
+class TestHandlerFunctions(TestCase):
+
+    def setUp(self):
+        UELCModuleFactory()
+
+    def test_get_vals_from_casemap(self):
+        self.assertEqual(get_vals_from_casemap([1]), [1])
+        self.assertEqual(get_vals_from_casemap([0, 2, 3]), [2, 3])
+
+    def test_get_partchoice_by_username(self):
+        class DummyUserMap(object):
+            value = [1]
+
+        self.assertEqual(get_partchoice_by_usermap(DummyUserMap()), 1)
+
+        d = DummyUserMap()
+        d.value = [9, 3]
+        r = get_partchoice_by_usermap(d)
+        self.assertTrue(2.29 < r < 2.31)
+
+    def test_get_p1c1(self):
+        self.assertEqual(get_p1c1([1, 2]), 2)
+
+    def test_can_show_empty(self):
+        r = can_show(None, DummySection(), [])
+        self.assertEqual(r, 0)
+
+    def test_can_show(self):
+        r = can_show(None, DummySection(), [7])
+        self.assertEqual(r, 7)
+
+    def test_p1pre(self):
+        self.assertEqual(p1pre([]), 0)
+        self.assertEqual(p1pre([1]), 0)
+        self.assertEqual(p1pre([1, 2]), 1)
+
+    def test_is_curveball(self):
+        r, block = is_curveball(None)
+        self.assertFalse(r)
+
+        section = RootSectionFactory(path='path')
+        section.add_pageblock_from_dict({
+            'block_type': 'Test Block',
+            'body': 'test body',
+        })
+
+        r, block = is_curveball(section)
+        self.assertFalse(r)
+
+    def test_is_decision_block(self):
+        user = GroupUpFactory().user
+        section = Section.objects.get(slug='home')
+        pageblocks = section.pageblock_set.all()
+        rv = is_decision_block(section, user, pageblocks)
+        self.assertEquals(rv, (False, None, None))
+
+        section = Section.objects.get(slug='your-first-decision')
+        pageblocks = section.pageblock_set.all()
+        quiz = PageBlock.objects.filter(
+            section=section, content_type__app_label='main',
+            content_type__model='casequiz').first().block()
+        rv = is_decision_block(section, user, pageblocks)
+        self.assertEquals(rv, (True, quiz, None))
+
+        s = Submission.objects.create(quiz=quiz, user=user)
+        q = Question.objects.filter(quiz=quiz).first()
+        a = CaseAnswer.objects.filter(answer__question=q).first()
+        Response.objects.create(
+            submission=s, question=q, value=a.answer.value)
+        rv = is_decision_block(section, user, pageblocks)
+        self.assertEquals(rv, (True, quiz, a))

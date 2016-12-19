@@ -9,7 +9,7 @@ from django.db import models
 from django.forms import widgets
 from django.utils.safestring import mark_safe
 from pageblocks.models import TextBlock
-from pagetree.models import Hierarchy, Section
+from pagetree.models import Hierarchy
 from pagetree.reports import ReportableInterface
 from quizblock.models import Quiz, Question, Submission, Response, Answer
 
@@ -362,127 +362,6 @@ class TextBlockDT(TextBlock):
             return self.body.replace("<", "&lt;")
         else:
             return self.body[:61].replace("<", "&lt;") + "..."
-
-
-class UELCHandler(Section):
-    ''' this class is used to handle the logic for
-        the decision tree. It translates the add_values
-        in the case map into the path for the user along
-        the pagetree
-    '''
-
-    def get_vals_from_casemap(self, casemap_value):
-        vals = [int(i) for i in casemap_value if int(i) > 0]
-        return vals
-
-    def get_part_by_section(self, section):
-        key = 'uelc.{}.get_part_by_section'.format(section.pk)
-        v = cache.get(key)
-        if v is not None:
-            return v
-
-        modules = section.get_root().get_children()
-        sec_module = section.get_module()
-        part = 0
-        for idx, module in enumerate(modules):
-            if module == sec_module:
-                part = idx
-
-        if part == 0:
-            v = 1
-        else:
-            v = float(2) + (part * .1)
-
-        cache.set(key, v)
-        return v
-
-    def get_partchoice_by_usermap(self, usermap):
-        vals = self.get_vals_from_casemap(usermap.value)
-        part = 1
-        if len(vals) >= 2:
-            part = float(2) + (vals[1] * .1)
-        if len(vals) >= 4:
-            part = part + float((vals[3] * .01))
-        return part
-
-    def get_p1c1(self, casemap_value):
-        return self.get_vals_from_casemap(casemap_value)[1]
-
-    def can_show(self, request, section, casemap_value):
-        cmvl = list(casemap_value)
-        tree = section.get_tree()
-        section_index = [sec for sec in
-                         range(len(tree))
-                         if tree[sec] == section][0] + 1
-        try:
-            content_value = [int(i) for i in
-                             reversed(cmvl[0:section_index])
-                             if int(i) > 0][0]
-        except IndexError:
-            content_value = 0
-
-        return content_value
-
-    def can_show_gateblock(self, gate_section, part_usermap,
-                           part_section=None):
-        if part_section is None:
-            part_section = self.get_part_by_section(gate_section)
-
-        can_show = False
-        if part_section == 1 or part_section == round(part_usermap, 1):
-            can_show = True
-        return can_show
-
-    def p1pre(self, casemap_value):
-        p1pre = 0
-        vals = self.get_vals_from_casemap(casemap_value)
-        if len(vals) > 1:
-            p1pre = vals[0]
-        return p1pre
-
-    def is_curveball(self, current_section, pageblocks=None):
-        block = None
-        if pageblocks is None and current_section is not None:
-            pageblocks = current_section.pageblock_set.all()
-
-        if pageblocks:
-            for pb in pageblocks:
-                block = pb.block()
-                if (hasattr(block, 'display_name') and
-                        block.display_name == "Curveball Block"):
-                    return (True, block)
-
-        return (False, block)
-
-    def is_decision_block(self, current_section, user, pageblocks):
-        for pb in pageblocks:
-            block = pb.block()
-            if (hasattr(block, 'display_name') and
-                    block.display_name == "Decision Block"):
-                ss = block.submission_set.filter(user=user).last()
-                ca = None
-                if ss:
-                    response = ss.response_set.filter(
-                        submission_id=ss.id).last()
-                    ca = CaseAnswer.objects.get(answer=response.answer())
-                return (True, block, ca)
-
-        return (False, None, None)
-
-    def is_next_curveball(self, section):
-        key = 'uelc.{}.is_next_curveball'.format(section.pk)
-        v = cache.get(key)
-        if v is not None:
-            return v
-
-        nxt = section.get_next()
-        is_cb = self.is_curveball(nxt)
-        if is_cb[0]:
-            cache.set(key, is_cb)
-            return is_cb
-        else:
-            cache.set(key, False)
-            return False
 
 
 class ImageUploadItem(models.Model):

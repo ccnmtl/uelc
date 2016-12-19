@@ -30,7 +30,13 @@ from uelc.main.helper_functions import (
 )
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap,
-    CaseAnswer, UELCHandler)
+    CaseAnswer)
+from uelc.main.templatetags.accessible import is_section_unlocked
+    gen_token, get_user_last_location, get_partchoice_by_usermap,
+    get_part_by_section,
+    can_show_gateblock, is_curveball, is_decision_block, is_next_curveball,
+    get_p1c1)
+from uelc.main.models import Cohort, UserProfile, Case, CaseMap, CaseAnswer
 from uelc.main.templatetags.accessible import is_section_unlocked
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
@@ -119,12 +125,12 @@ class UELCPageView(LoggedInMixin,
             path = self.no_root_fallback_url
         return HttpResponseRedirect(path)
 
-    def check_part_path(self, casemap, hand, part):
+    def check_part_path(self, casemap, part):
         if part > 1 and self.request.user.profile.is_group_user():
             # set user on right path
             # get user 1st par chice p1c1 and
             # forward to that part
-            p1c1 = hand.get_p1c1(casemap.value)
+            p1c1 = get_p1c1(casemap.value)
             p2_section = self.root.get_children()[p1c1]
             p2_url = p2_section.get_next().get_absolute_url()
             if not self.module == p2_section:
@@ -194,14 +200,9 @@ class UELCPageView(LoggedInMixin,
 
         hierarchy = self.module.hierarchy
 
-        # handler stuff
-        handler = UELCHandler.objects.get_or_create(
-            hierarchy=hierarchy,
-            depth=0,
-            path=hierarchy.base_url)[0]
         casemap = get_user_map(hierarchy, request.user)
-        part = handler.get_part_by_section(self.section)
-        tree_path = self.check_part_path(casemap, handler, part)
+        part = get_part_by_section(self.section)
+        tree_path = self.check_part_path(casemap, part)
 
         if tree_path[0]:
             return HttpResponseRedirect(tree_path[1])
@@ -499,9 +500,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                 'pageblocks__section__pageblock_set',
                 'pageblocks__section__section_submitted')
 
-        hand = UELCHandler.objects.get_or_create(
-            hierarchy=hierarchy, depth=0, path=hierarchy.base_url)[0]
-
         user_sections = []
         for user_profile in cohort_user_profiles:
             user = user_profile.user
@@ -512,14 +510,14 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                     user=user, hierarchy=hierarchy)
 
             um = get_user_map(hierarchy, user)
-            part_usermap = hand.get_partchoice_by_usermap(um)
+            part_usermap = get_partchoice_by_usermap(um)
 
             gate_section = []
 
             for g in gateblocks:
                 gateblock_section = g.pageblock().section
                 pageblocks = gateblock_section.pageblock_set.all()
-                part = hand.get_part_by_section(gateblock_section)
+                part = get_part_by_section(gateblock_section)
                 unlocked = g.unlocked(user, gateblock_section)
                 gate_section.append([
                     gateblock_section,
@@ -527,13 +525,13 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                     unlocked,
                     self.get_tree_depth(gateblock_section),
                     g.status(user, user_last_location, unlocked, pageblocks),
-                    hand.can_show_gateblock(gateblock_section,
-                                            part_usermap, part),
+                    can_show_gateblock(gateblock_section,
+                                       part_usermap, part),
                     (part, part_usermap),
-                    hand.is_curveball(gateblock_section, pageblocks),
-                    hand.is_decision_block(
+                    is_curveball(gateblock_section, pageblocks),
+                    is_decision_block(
                         gateblock_section, user, pageblocks),
-                    hand.is_next_curveball(gateblock_section)
+                    is_next_curveball(gateblock_section)
                 ])
 
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
