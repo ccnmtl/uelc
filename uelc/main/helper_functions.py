@@ -126,29 +126,9 @@ def fresh_token(request, hierarchy_name=None):
     return HttpResponse(
         json.dumps(
             dict(hierarchy=hierarchy.as_dict(),
-                 token=gen_token(request, "module_%02d" % hierarchy.pk),
+                 token=gen_fac_token(request, hierarchy),
                  websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE)),
         content_type='applicaton/json')
-
-
-def gen_token(request, hierarchy_name):
-    username = request.user.username
-    sub_prefix = "%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME,
-                                               hierarchy_name)
-    pub_prefix = sub_prefix + "." + username
-    now = int(time.mktime(datetime.now().timetuple()))
-    salt = randint(0, 2 ** 20)
-    ip_address = (request.META.get("HTTP_X_FORWARDED_FOR", "") or
-                  request.META.get("REMOTE_ADDR", ""))
-    hmc = hmac.new(settings.WINDSOCK_SECRET,
-                   '%s:%s:%s:%d:%d:%s' % (username, sub_prefix,
-                                          pub_prefix, now, salt,
-                                          ip_address),
-                   hashlib.sha1
-                   ).hexdigest()
-    return '%s:%s:%s:%d:%d:%s:%s' % (username, sub_prefix,
-                                     pub_prefix, now, salt,
-                                     ip_address, hmc)
 
 
 @login_required
@@ -161,9 +141,8 @@ def fresh_grp_token(request, section_id):
         content_type='applicaton/json')
 
 
-def gen_group_token(request, section_pk):
+def gen_token(request, sub_prefix):
     username = request.user.username
-    sub_prefix = "%s.%d" % (settings.ZMQ_APPNAME, section_pk)
     pub_prefix = sub_prefix + "." + username
     now = int(time.mktime(datetime.now().timetuple()))
     salt = randint(0, 2 ** 20)
@@ -178,6 +157,18 @@ def gen_group_token(request, section_pk):
     return '%s:%s:%s:%d:%d:%s:%s' % (username, sub_prefix,
                                      pub_prefix, now, salt,
                                      ip_address, hmc)
+
+
+def gen_fac_token(request, hierarchy):
+    hierarchy_name = "module_%02d" % hierarchy.pk
+    sub_prefix = "%s.pages/%s/facilitator/" % (settings.ZMQ_APPNAME,
+                                               hierarchy_name)
+    return gen_token(request, sub_prefix)
+
+
+def gen_group_token(request, section_pk):
+    sub_prefix = "%s.%d" % (settings.ZMQ_APPNAME, section_pk)
+    return gen_token(request, sub_prefix)
 
 
 def get_user_last_location(user, hierarchy):
