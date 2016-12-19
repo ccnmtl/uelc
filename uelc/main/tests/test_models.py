@@ -1,5 +1,12 @@
 import json
+
 from django.test import TestCase
+from pagetree.models import Hierarchy, PageBlock, Section
+from pagetree.tests.factories import RootSectionFactory
+from quizblock.models import Submission, Question, Response
+from quizblock.tests.test_models import FakeReq
+
+from uelc.main.models import TextBlockDT, CaseQuiz, CaseMap, CaseAnswer
 from uelc.main.tests.factories import (
     AdminUserFactory, AdminUpFactory, FacilitatorUpFactory,
     GroupUpFactory, CaseFactory, GroupUserFactory,
@@ -8,11 +15,6 @@ from uelc.main.tests.factories import (
     UELCModuleFactory, ImageUploadItemFactory, CaseAnswerFactory,
     AnswerFactory, QuestionFactory, QuizFactory
 )
-from uelc.main.models import TextBlockDT, CaseQuiz, CaseMap
-from pagetree.models import Hierarchy, PageBlock
-from pagetree.tests.factories import RootSectionFactory
-from quizblock.tests.test_models import FakeReq
-from quizblock.models import Submission
 
 
 class BasicModelTest(TestCase):
@@ -226,6 +228,35 @@ class UELCHandlerTest(TestCase):
 
         r, block = self.u.is_curveball(section)
         self.assertFalse(r)
+
+
+class UELCHandlerUtilityTest(TestCase):
+    def setUp(self):
+        UELCModuleFactory()
+
+    def test_is_decision_block(self):
+        handler = UELCHandlerFactory()
+        user = GroupUpFactory().user
+        section = Section.objects.get(slug='home')
+        pageblocks = section.pageblock_set.all()
+        rv = handler.is_decision_block(section, user, pageblocks)
+        self.assertEquals(rv, (False, None, None))
+
+        section = Section.objects.get(slug='your-first-decision')
+        pageblocks = section.pageblock_set.all()
+        quiz = PageBlock.objects.filter(
+            section=section, content_type__app_label='main',
+            content_type__model='casequiz').first().block()
+        rv = handler.is_decision_block(section, user, pageblocks)
+        self.assertEquals(rv, (True, quiz, None))
+
+        s = Submission.objects.create(quiz=quiz, user=user)
+        q = Question.objects.filter(quiz=quiz).first()
+        a = CaseAnswer.objects.filter(answer__question=q).first()
+        Response.objects.create(
+            submission=s, question=q, value=a.answer.value)
+        rv = handler.is_decision_block(section, user, pageblocks)
+        self.assertEquals(rv, (True, quiz, a))
 
 
 class ImageUploadItemTest(TestCase):
