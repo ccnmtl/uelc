@@ -31,6 +31,7 @@ from uelc.main.helper_functions import (
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap,
     CaseAnswer, UELCHandler)
+from uelc.main.templatetags.accessible import is_section_unlocked
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
@@ -253,7 +254,8 @@ class UELCPageView(LoggedInMixin,
             casemap=casemap,
             part=part,
             websockets_base=settings.WINDSOCK_WEBSOCKETS_BASE,
-            token=gen_group_token(request, self.section.pk)
+            token=gen_group_token(request, self.section.pk),
+            unlocked=is_section_unlocked(self.request, self.section)
         )
         context.update(self.get_extra_context())
         return render(request, self.template_name, context)
