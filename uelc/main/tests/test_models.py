@@ -6,7 +6,6 @@ from pagetree.tests.factories import RootSectionFactory
 from quizblock.models import Submission, Question, Response
 from quizblock.tests.test_models import FakeReq
 
-from uelc.local_settings import Timer
 from uelc.main.models import TextBlockDT, CaseQuiz, CaseMap, CaseAnswer
 from uelc.main.tests.factories import (
     AdminUserFactory, AdminUpFactory, FacilitatorUpFactory,
