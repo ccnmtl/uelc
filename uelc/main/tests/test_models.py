@@ -6,6 +6,7 @@ from pagetree.tests.factories import RootSectionFactory
 from quizblock.models import Submission, Question, Response
 from quizblock.tests.test_models import FakeReq
 
+from uelc.local_settings import Timer
 from uelc.main.models import TextBlockDT, CaseQuiz, CaseMap, CaseAnswer
 from uelc.main.tests.factories import (
     AdminUserFactory, AdminUpFactory, FacilitatorUpFactory,
@@ -238,14 +239,16 @@ class UELCHandlerUtilityTest(TestCase):
         handler = UELCHandlerFactory()
         user = GroupUpFactory().user
         section = Section.objects.get(slug='home')
-        rv = handler.is_decision_block(section, user, None)
+        pageblocks = section.pageblock_set.all()
+        rv = handler.is_decision_block(section, user, pageblocks)
         self.assertEquals(rv, (False, None, None))
 
         section = Section.objects.get(slug='your-first-decision')
+        pageblocks = section.pageblock_set.all()
         quiz = PageBlock.objects.filter(
             section=section, content_type__app_label='main',
             content_type__model='casequiz').first().block()
-        rv = handler.is_decision_block(section, user, None)
+        rv = handler.is_decision_block(section, user, pageblocks)
         self.assertEquals(rv, (True, quiz, None))
 
         s = Submission.objects.create(quiz=quiz, user=user)
@@ -253,7 +256,7 @@ class UELCHandlerUtilityTest(TestCase):
         a = CaseAnswer.objects.filter(answer__question=q).first()
         Response.objects.create(
             submission=s, question=q, value=a.answer.value)
-        rv = handler.is_decision_block(section, user, None)
+        rv = handler.is_decision_block(section, user, pageblocks)
         self.assertEquals(rv, (True, quiz, a))
 
 

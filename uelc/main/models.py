@@ -454,9 +454,7 @@ class UELCHandler(Section):
 
         return (False, block)
 
-    def is_decision_block(self, current_section, user, pageblocks=None):
-        if pageblocks is None:
-            pageblocks = current_section.pageblock_set.all()
+    def is_decision_block(self, current_section, user, pageblocks):
         for pb in pageblocks:
             block = pb.block()
             if (hasattr(block, 'display_name') and
@@ -468,6 +466,7 @@ class UELCHandler(Section):
                         submission_id=ss.id).last()
                     ca = CaseAnswer.objects.get(answer=response.answer())
                 return (True, block, ca)
+
         return (False, None, None)
 
     def is_next_curveball(self, section):
