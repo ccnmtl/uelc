@@ -2,12 +2,12 @@
 
 ## docker-compose setup
 
-Since tala relies on windsock and a broker, the simplest way to have a
+Since uelc relies on windsock and a broker, the simplest way to have a
 full local dev environment is to use Docker and
 [docker-compose](https://docs.docker.com/compose/). The rest of this
 assumes that you have those installed.
 
-### build tala image
+### build uelc image
 
 This ensures that you have the most recent version of everything:
 
