@@ -1,6 +1,7 @@
 {% extends 'pagetree/base_pagetree.html' %}
 {% load render %}
 {% load accessible %}
+{% is_section_unlocked request section as unlocked %}
 
 {% block js %}
     {% for block in section.pageblock_set.all %}
@@ -62,8 +63,6 @@
 {% endblock %}
 
 {% block content %}
-    {% is_section_unlocked request section as unlocked %}
-
     <div id="content">
         <div id="side-navigation">
             {% if module.get_children %}
@@ -198,7 +197,6 @@
             {% if next_section and section.hierarchy == next_section.hierarchy %}
                 {% is_not_last_group_user_section section part as not_last_sec %}
                 {% if not_last_sec %}
-                    {% is_section_unlocked request section as unlocked %}
                     <li class="next"><a class="{% if unlocked %}{% else %}disabled{%endif%}" href="{% if unlocked %}{{next_section.get_absolute_url}}{%endif%}">Next &rarr;</a></li>
                 {% endif %}
             {% endif %}
