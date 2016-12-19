@@ -1,7 +1,6 @@
 {% extends 'pagetree/base_pagetree.html' %}
 {% load render %}
 {% load accessible %}
-{% is_section_unlocked request section as unlocked %}
 
 {% block js %}
     {% for block in section.pageblock_set.all %}
