@@ -24,6 +24,9 @@ from uelc.main.forms import (
     EditUserPassForm, CaseAnswerForm, UELCCloneHierarchyForm
 )
 from uelc.main.helper_functions import (
+    get_partchoice_by_usermap, get_part_by_section, can_show_gateblock,
+    is_curveball, is_decision_block, is_next_curveball, get_p1c1)
+from uelc.main.helper_functions import (
     get_root_context, get_user_map,
     reset_page, page_submit, admin_ajax_page_submit,
     gen_group_token, gen_fac_token, get_user_last_location
@@ -31,12 +34,6 @@ from uelc.main.helper_functions import (
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap,
     CaseAnswer)
-from uelc.main.templatetags.accessible import is_section_unlocked
-    gen_token, get_user_last_location, get_partchoice_by_usermap,
-    get_part_by_section,
-    can_show_gateblock, is_curveball, is_decision_block, is_next_curveball,
-    get_p1c1)
-from uelc.main.models import Cohort, UserProfile, Case, CaseMap, CaseAnswer
 from uelc.main.templatetags.accessible import is_section_unlocked
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,

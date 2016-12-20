@@ -1,6 +1,4 @@
 from django.test import TestCase, RequestFactory
-from pagetree.models import Hierarchy, UserLocation, Section
-from django.test import TestCase
 from pagetree.models import Hierarchy, UserLocation, Section, PageBlock
 from pagetree.tests.factories import RootSectionFactory
 from quizblock.models import Submission, Question, Response
