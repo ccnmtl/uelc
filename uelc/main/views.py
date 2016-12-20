@@ -466,10 +466,10 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             admin_ajax_page_submit(section, user)
 
     def post(self, request, path):
-        if request.POST.get('gate-action'):
-            self.post_gate_action(request)
         if request.POST.get('curveball-select'):
             self.post_curveball_select(request)
+        if request.POST.get('gate-action'):
+            self.post_gate_action(request)
         return HttpResponseRedirect(request.path)
 
     def get(self, request, path):
