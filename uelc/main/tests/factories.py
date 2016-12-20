@@ -7,8 +7,7 @@ from quizblock.models import Quiz, Question, Answer
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap,
     CaseAnswer, ImageUploadItem,
-    TextBlockDT, UELCHandler,
-    CaseQuiz)
+    TextBlockDT, CaseQuiz)
 
 from curveball.models import CurveballBlock
 from curveball.tests.factories import CurveballFactory
@@ -139,14 +138,6 @@ class CaseAnswerFactory(factory.DjangoModelFactory):
 class TextBlockDTFactory(factory.DjangoModelFactory):
     class Meta:
         model = TextBlockDT
-
-
-class UELCHandlerFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = UELCHandler
-
-    depth = 1
-    hierarchy = factory.SubFactory(HierarchyFactory)
 
 
 class UELCModuleFactory(object):
