@@ -24,9 +24,9 @@ from uelc.main.forms import (
     EditUserPassForm, CaseAnswerForm, UELCCloneHierarchyForm
 )
 from uelc.main.helper_functions import (
-    get_root_context, get_user_map, gen_group_token,
+    get_root_context, get_user_map,
     reset_page, page_submit, admin_ajax_page_submit,
-    gen_token, get_user_last_location
+    gen_group_token, gen_fac_token, get_user_last_location
 )
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap,
@@ -539,7 +539,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
             gate_section.sort(cmp=lambda x, y: cmp(x[3], y[3]))
             user_sections.append([user, gate_section, user_last_location])
 
-        token = gen_token(request, "module_%02d" % section.hierarchy.pk)
+        token = gen_fac_token(request, section.hierarchy)
         context = dict(
             is_facilitator_view=True,
             section=section,

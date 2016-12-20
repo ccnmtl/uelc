@@ -1,11 +1,13 @@
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from pagetree.models import Hierarchy, UserLocation, Section
 from quizblock.tests.test_models import FakeReq
 
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
     admin_ajax_page_submit, admin_ajax_reset_page,
-    page_submit, reset_page, get_user_map, get_user_last_location)
+    page_submit, reset_page, get_user_map, get_user_last_location,
+    gen_fac_token, gen_group_token
+)
 from uelc.main.models import CaseQuiz, Cohort, Case, CaseMap
 from uelc.main.tests.factories import (
     CaseFactory, CaseMapFactory, GroupUpFactory, GroupUserFactory,
@@ -142,3 +144,36 @@ class TestUserLastLocation(TestCase):
         self.assertIsNone(get_user_last_location(user, self.h))
         qs = UserLocation.objects.filter(user=user, hierarchy=self.h)
         self.assertFalse(qs.exists())
+
+
+class TestUtils(TestCase):
+    def setUp(self):
+        UELCModuleFactory()
+        self.h = Hierarchy.objects.get(name='case-test')
+
+    def test_gen_fac_token(self):
+        r = RequestFactory()
+        gu = GroupUpFactory()
+        r.user = gu.user
+        r.META = {}
+        hierarchy_name = 'module_%02d' % self.h.pk
+
+        self.assertTrue(
+            gen_fac_token(r, self.h).startswith(
+                '{}:uelc.pages/{}/facilitator/:uelc.pages'
+                '/{}/facilitator/.{}:'.format(
+                    gu.user.username, hierarchy_name,
+                    hierarchy_name, gu.user.username)))
+
+    def test_gen_group_token(self):
+        r = RequestFactory()
+        gu = GroupUpFactory()
+        r.user = gu.user
+        r.META = {}
+        root = self.h.get_root()
+
+        self.assertTrue(
+            gen_group_token(r, root.pk).startswith(
+                '{}:uelc.{}:uelc.{}.{}:'.format(
+                    gu.user.username, root.pk,
+                    root.pk, gu.user.username)))
