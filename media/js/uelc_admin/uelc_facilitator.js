@@ -4,8 +4,14 @@ UELCAdmin = {
         this.init = function() {
             this.setFormClickHandler();
             this.separateParts();
-            this.setCurveballBlockHandler();
             this.setCurveballCommitAccess();
+
+            jQuery('form[name="curveball-form-select"]').submit(
+                    this.confirmCurveball);
+            jQuery('#confirm-curveball-modal .set-curveball').click(
+                    this.setCurveball);
+            jQuery('#confirm-curveball-modal .cancel-curveball').click(
+                    this.cancelCurveball);
         };
         this.setChoicesOnParts = function() {
             jQuery('.user-part2').each(function() {
@@ -30,61 +36,66 @@ UELCAdmin = {
                 jQuery(this).after(glyph);
             });
             this.setChoicesOnParts();
-
         };
         this.setCurveballCommitAccess = function() {
             jQuery('.curveball-commit-btn').each(function() {
-                var thisBtn = jQuery(this);
-                var decisionBadge = thisBtn.closest(
-                    '.gate-block').prev().find('.badge');
-                var decisionStatus = decisionBadge.text();
-                if (decisionStatus !== 'reviewed') {
-                    thisBtn.css('cursor', 'not-allowed');
-                    thisBtn.attr('data-toggle', '');
-                    thisBtn.click(function() {
-                        var msg = 'You must wait until the' +
-                        ' group has confirmed their decision!' +
-                        ' Please remind the group user to' +
-                        ' select a choice and confirm their' +
-                        ' choice.';
-                        alert(msg);
-                    });
-                }else {
-                    thisBtn.unbind('click');
-                    thisBtn.css('cursor', 'pointer');
-                    thisBtn.attr('data-toggle', 'modal');
+                var $btn = jQuery(this);
+                var $thisGate = $btn.closest('.gate-block');
+                var $prevGate = $thisGate.prev();
+                if ($prevGate.find('.badge').text() !== 'reviewed') {
+                    $btn.attr('disabled', 'disabled');
+                } else {
+                    $btn.removeAttr('disabled');
                 }
             });
         };
-        this.setCurveballBlockHandler = function() {
-            jQuery('.set-curveball').click(function() {
-                var lgf = jQuery(this).parent().parent().find(
-                    '.loading-spinner');
-                var modal = jQuery(this).closest('.modal');
-                var modId = modal.attr('id').split('CurveballModal-')[1];
-                var cbForm = jQuery('#curveball-form-' + modId);
-                var cbFormData = cbForm.serialize();
-                var postUrl = window.location.pathname;
-                var gate = jQuery(cbForm).parent().parent();
-                var prevForm = gate.parent().prev().find('.gate-button form');
-                var prevFormData = prevForm.serialize();
-                window.UA.tempForm = prevForm;
-                lgf.removeClass('hidden');
-                jQuery.post(postUrl, cbFormData).fail(function() {
-                    var msg = 'We are sorry! Something went wrong with ' +
-                    'setting the curveball. Please Try again.';
+        this.confirmCurveball = function(evt) {
+            evt.preventDefault();
+            var frm = evt.currentTarget;
+            var $thisGate = jQuery(this).closest('.gate-block');
+            var $prevGate = $thisGate.prev();
+
+            window.UA.curveballData = jQuery(frm).serialize() + '&' +
+                $prevGate.find('.gate-button form').serialize();
+
+            var $modal = jQuery('#confirm-curveball-modal');
+            $modal.find('.instructions').html(
+                'Are you sure? This cannot be undone');
+            $modal.find('.loading-spinner').addClass('hidden');
+            $modal.modal('show');
+            return false;
+        };
+        this.cancelCurveball = function(evt) {
+            delete window.UA.curveballData;
+            jQuery('#confirm-curveball-modal').modal('hide');
+        };
+        this.setCurveball = function(evt) {
+            // serialize data from the curveball form AND
+            // tack on data from the previous gateblock gate-button frm
+            var $modal = jQuery('#confirm-curveball-modal');
+
+            var $elt = $modal.find('.instructions');
+            $elt.html('Setting the curveball. One moment...');
+            $modal.find('.loading-spinner').removeClass('hidden');
+
+            jQuery.ajax({
+                type: 'POST',
+                url: '.',
+                data:  window.UA.curveballData,
+                error: function() {
+                    var msg = 'We\'re sorry! Something went wrong ' +
+                        'setting the curveball. Please try again.';
                     alert(msg);
-                }).success(function() {
-                    var formData = window.UA.tempForm.serialize();
-                    var postUrl = window.location.pathname;
-                    jQuery.post(postUrl, formData).fail(function() {
-                        var msg = 'We are sorry! Something went wrong ' +
-                        'with opening the gate. Please refresh your ' +
-                        'browser and continue.';
-                    });
-                }).done(function() {
+                    $modal.modal('hide');
+                },
+                success: function() {
+                    $elt.html('Curveball is set.<br /><br />Please wait ' +
+                              'while the facilitator panel is reloaded.');
                     window.location.reload();
-                });
+                },
+                done: function() {
+                    delete window.UA.curveballData;
+                }
             });
         };
         this.setFormClickHandler = function() {
