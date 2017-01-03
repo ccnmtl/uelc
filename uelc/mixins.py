@@ -71,4 +71,3 @@ class RestrictedModuleMixin(object):
                     return super(RestrictedModuleMixin,
                                  self).dispatch(*args, **kwargs)
         return HttpResponseForbidden("you don't have permission")
-
