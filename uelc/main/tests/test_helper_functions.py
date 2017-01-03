@@ -4,13 +4,15 @@ from pagetree.tests.factories import RootSectionFactory
 from quizblock.models import Submission, Question, Response
 from quizblock.tests.test_models import FakeReq
 
+from curveball.models import CurveballBlock
 from gate_block.models import GateBlock
 from uelc.main.helper_functions import (
     admin_ajax_page_submit, admin_ajax_reset_page,
     page_submit, reset_page, get_user_map, get_user_last_location,
     gen_fac_token, gen_group_token,
     get_vals_from_casemap, get_partchoice_by_usermap, get_p1c1, can_show,
-    p1pre, is_curveball, is_decision_block)
+    p1pre, is_curveball, is_decision_block,
+    content_blocks_by_hierarchy_and_class)
 from uelc.main.models import CaseQuiz, Cohort, Case, CaseMap, CaseAnswer
 from uelc.main.tests.factories import (
     CaseFactory, CaseMapFactory, GroupUpFactory, GroupUserFactory,
@@ -153,6 +155,16 @@ class TestUtils(TestCase):
     def setUp(self):
         UELCModuleFactory()
         self.h = Hierarchy.objects.get(name='case-test')
+
+    def test_content_blocks_by_hierarchy_and_class(self):
+        ids = content_blocks_by_hierarchy_and_class(self.h, CurveballBlock)
+
+        blks = PageBlock.objects.filter(
+            label__in=['curveball-block-1', 'curveball-block-2']).values_list(
+                'object_id', flat=True)
+
+        self.assertEquals(ids.count(), 2)
+        self.assertEquals(list(ids), list(blks))
 
     def test_gen_fac_token(self):
         r = RequestFactory()

@@ -1,13 +1,14 @@
-import django.contrib.auth.views
-import djangowind.views
 import os.path
-import uelc.main.helper_functions
 
+from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.conf import settings
+import django.contrib.auth.views
 from django.views.generic import TemplateView
+import djangowind.views
+
 from uelc.main import views
+import uelc.main.helper_functions
 from uelc.main.views import (
     UELCPageView, UELCEditView, FacilitatorView, UELCAdminView,
     UELCAdminCohortView, UELCAdminCreateHierarchyView,
@@ -17,8 +18,9 @@ from uelc.main.views import (
     UELCAdminDeleteCohortView, UELCAdminDeleteCaseView,
     UELCAdminCreateCaseView, UELCAdminDeleteUserView,
     AddCaseAnswerToQuestionView, EditCaseAnswerView, DeleteCaseAnswerView,
-    SubmitSectionView, CloneHierarchyWithCasesView
-)
+    SubmitSectionView, CloneHierarchyWithCasesView, ResetUserCaseProgress)
+
+
 admin.autodiscover()
 
 site_media_root = os.path.join(os.path.dirname(__file__), "../media")
@@ -88,6 +90,8 @@ urlpatterns = [
     url(r'^pages/(?P<hierarchy_name>[-\w]+)/edit/(?P<path>.*)$',
         UELCEditView.as_view()),
     url(r'^submit_section/', SubmitSectionView.as_view()),
+    url(r'^reset/(?P<case_id>\d+)/$',
+        ResetUserCaseProgress.as_view(), name='reset-user-case-progress'),
     url(r'^pages/(?P<hierarchy_name>[-\w]+)/instructor/(?P<path>.*)$',
         uelc.main.helper_functions.instructor_page),
     url(r'^facilitator/fresh_token/$', uelc.main.helper_functions.fresh_token),

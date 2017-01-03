@@ -253,7 +253,8 @@ class UELCModuleFactory(object):
                             },
                             {
                                 'block_type': 'Curveball Block',
-                                'description': 'Curveball description',
+                                'label': 'curveball-block-1',
+                                'description': 'curveball description 1',
                                 'curveball_one': CurveballFactory(),
                                 'curveball_two': CurveballFactory(),
                                 'curveball_three': CurveballFactory(),
@@ -300,7 +301,7 @@ class UELCModuleFactory(object):
         # Assert that the Quiz imported correctly.
         assert CurveballBlock.objects.count() == 1
         cb = CurveballBlock.objects.first()
-        assert cb.description == 'Curveball description'
+        assert cb.description == 'curveball description 1'
 
         root.add_child_section_from_dict({
             'label': 'Part 2 Choice 1',
@@ -317,8 +318,8 @@ class UELCModuleFactory(object):
                     'slug': 'curve-ball',
                     'pageblocks': [{
                         'block_type': 'Curveball Block',
-                        'label': 'Curveball Block',
-                        'description': 'Curveball description',
+                        'label': 'curveball-block-2',
+                        'description': 'curveball description 2',
                         'curveball_one': CurveballFactory(),
                         'curveball_two': CurveballFactory(),
                         'curveball_three': CurveballFactory(),
@@ -347,3 +348,4 @@ class UELCModuleFactory(object):
             }]
         })
         self.root = root
+        self.case = case

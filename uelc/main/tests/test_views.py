@@ -8,12 +8,17 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
 from pagetree.helpers import get_hierarchy
-from pagetree.models import Hierarchy, Section, UserPageVisit
+from pagetree.models import Hierarchy, Section, UserPageVisit, UserLocation
 from pagetree.tests.factories import ModuleFactory, UserPageVisitFactory
 from quizblock.models import Question, Answer
 
-from curveball.models import CurveballSubmission
-from gate_block.models import GateSubmission
+from curveball.models import CurveballSubmission, CurveballBlock
+from curveball.tests.factories import CurveballFactory,\
+    CurveballSubmissionFactory
+from gate_block.models import GateSubmission, SectionSubmission, GateBlock
+from gate_block.tests.factories import SectionSubmissionFactory,\
+    GateSubmissionFactory
+from uelc.main.helper_functions import content_blocks_by_hierarchy_and_class
 from uelc.main.models import Case, CaseMap, CaseQuiz, CaseAnswer
 from uelc.main.tests.factories import (
     GroupUpFactory, AdminUpFactory,
@@ -1238,3 +1243,201 @@ class TestFacilitatorView(TestCase):
         self.assertEquals(gates[2][0].slug, 'confirm-first-decision')
         self.assertEquals(gates[3][0].slug, 'discussion-of-impact')
         self.assertEquals(gates[4][0].slug, 'results')
+
+
+class TestResetUserCaseProgress(TestCase):
+
+    def set_up_alt_case(self):
+        self.alt_h = HierarchyFactory(name='alt-test',
+                                      base_url='/pages/alt-test/')
+
+        self.alt_case = CaseFactory(name='alt-case-test',
+                                    hierarchy=self.alt_h)
+
+        root = self.alt_h.get_root()
+        root.add_child_section_from_dict({
+            'label': 'Part 1',
+            'slug': 'part-1',
+            'children': [
+                {
+                    'label': 'Your First Decision',
+                    'slug': 'your-first-decision',
+                    'pageblocks': [
+                        {
+                            'block_type': 'Decision Block',
+                            'questions': [{
+                                'text': 'Select One',
+                                'question_type': 'single choice',
+                                'answers': [
+                                    {
+                                        'value': '1',
+                                        'title': 'Choice 1',
+                                    },
+                                ]
+                            }],
+                        },
+                        {
+                            'block_type': 'Gate Block',
+                            'label': 'First Decision Point'
+                        },
+                    ],
+                    'children': [{
+                        'label': 'Curve Ball',
+                        'slug': 'curve-ball',
+                        'pageblocks': [
+                            {
+                                'block_type': 'Gate Block',
+                                'label': 'Curveball',
+                            },
+                            {
+                                'block_type': 'Curveball Block',
+                                'label': 'alt-curveball-block-1',
+                                'description': 'alt description',
+                                'curveball_one': CurveballFactory(),
+                                'curveball_two': CurveballFactory(),
+                                'curveball_three': CurveballFactory(),
+                            },
+                        ],
+                        'children': [{
+                            'label': 'Confirm First Decision',
+                            'slug': 'confirm-first-decision',
+                            'pageblocks': [{
+                                'block_type': 'Gate Block',
+                                'label': 'Confirm First Decision',
+                            }],
+                        }]
+
+                    }]
+                },
+            ]
+        })
+
+    def setUp(self):
+        # create user1 history in primary and alt hierarchy
+        # create user2 history in primary hierarchy
+        # Tests will delete user1 history in primary hierarchy
+
+        f = UELCModuleFactory()
+        self.case = f.case
+        self.h = self.case.hierarchy
+
+        self.set_up_alt_case()
+
+        self.user1 = GroupUpFactory().user
+        self.user2 = GroupUpFactory().user
+
+        self.url = reverse('reset-user-case-progress',
+                           args=[self.case.id])
+        self.data = {'user-id': self.user1.id}
+
+        facilitator = FacilitatorUpFactory().user
+        self.client.login(username=facilitator.username, password='test')
+
+    def test_post_delete_case_maps(self):
+        # casemaps
+        cm1 = CaseMapFactory(case=self.case, user=self.user1)
+        cm2 = CaseMapFactory(case=self.alt_case, user=self.user1)
+        cm3 = CaseMapFactory(case=self.case, user=self.user2)
+
+        response = self.client.post(self.url, self.data)
+        self.assertEquals(response.status_code, 302)
+
+        with self.assertRaises(CaseMap.DoesNotExist):
+            CaseMap.objects.get(id=cm1.id)
+
+        self.assertEquals(cm2, CaseMap.objects.get(id=cm2.id))
+        self.assertEquals(cm3, CaseMap.objects.get(id=cm3.id))
+
+    def test_post_delete_user_visits(self):
+        s1 = Section.objects.get(hierarchy=self.h, slug='part-1')
+        alt1 = Section.objects.get(hierarchy=self.alt_h, slug='part-1')
+
+        uv1 = UserPageVisitFactory(user=self.user1, section=s1)
+        uv2 = UserPageVisitFactory(user=self.user1, section=alt1)
+        uv3 = UserPageVisitFactory(user=self.user2, section=s1)
+
+        response = self.client.post(self.url, self.data)
+        self.assertEquals(response.status_code, 302)
+
+        with self.assertRaises(UserPageVisit.DoesNotExist):
+            UserPageVisit.objects.get(id=uv1.id)
+
+        self.assertEquals(uv2, UserPageVisit.objects.get(id=uv2.id))
+        self.assertEquals(uv3, UserPageVisit.objects.get(id=uv3.id))
+
+    def test_post_delete_user_locations(self):
+        l1 = UserLocation.objects.create(user=self.user1, hierarchy=self.h)
+        l2 = UserLocation.objects.create(user=self.user1, hierarchy=self.alt_h)
+        l3 = UserLocation.objects.create(user=self.user2, hierarchy=self.h)
+
+        response = self.client.post(self.url, self.data)
+        self.assertEquals(response.status_code, 302)
+
+        with self.assertRaises(UserLocation.DoesNotExist):
+            UserLocation.objects.get(id=l1.id)
+
+        self.assertEquals(l2, UserLocation.objects.get(id=l2.id))
+        self.assertEquals(l3, UserLocation.objects.get(id=l3.id))
+
+    def test_post_delete_section_submissions(self):
+        s1 = Section.objects.get(hierarchy=self.h, slug='part-1')
+        alt1 = Section.objects.get(hierarchy=self.alt_h, slug='part-1')
+
+        ss1 = SectionSubmissionFactory(user=self.user1, section=s1)
+        ss2 = SectionSubmissionFactory(user=self.user1, section=alt1)
+        ss3 = SectionSubmissionFactory(user=self.user2, section=s1)
+
+        response = self.client.post(self.url, self.data)
+        self.assertEquals(response.status_code, 302)
+
+        with self.assertRaises(SectionSubmission.DoesNotExist):
+            SectionSubmission.objects.get(id=ss1.id)
+
+        self.assertEquals(ss2, SectionSubmission.objects.get(id=ss2.id))
+        self.assertEquals(ss3, SectionSubmission.objects.get(id=ss3.id))
+
+    def test_post_delete_curveballs(self):
+        cb1 = CurveballBlock.objects.get(description='curveball description 1')
+        cb2 = CurveballBlock.objects.get(description='alt description')
+
+        cs1 = CurveballSubmissionFactory(
+            curveballblock=cb1, group_curveball=self.user1)
+        cs2 = CurveballSubmissionFactory(
+            curveballblock=cb2, group_curveball=self.user1)
+        cs3 = CurveballSubmissionFactory(
+            curveballblock=cb1, group_curveball=self.user2)
+
+        response = self.client.post(self.url, self.data)
+        self.assertEquals(response.status_code, 302)
+
+        with self.assertRaises(CurveballSubmission.DoesNotExist):
+            CurveballSubmission.objects.get(id=cs1.id)
+
+        self.assertEquals(cs2, CurveballSubmission.objects.get(id=cs2.id))
+        self.assertEquals(cs3, CurveballSubmission.objects.get(id=cs3.id))
+
+    def test_post_delete_gateblocks(self):
+        ids = content_blocks_by_hierarchy_and_class(self.h, GateBlock)
+        gb1 = GateBlock.objects.get(id=ids[0])
+
+        ids = content_blocks_by_hierarchy_and_class(self.alt_h, GateBlock)
+        gb2 = GateBlock.objects.get(id=ids[0])
+
+        gs1 = GateSubmissionFactory(
+            gateblock=gb1, section=gb1.pageblock().section,
+            gate_user=self.user1)
+        gs2 = GateSubmissionFactory(
+            gateblock=gb2, section=gb2.pageblock().section,
+            gate_user=self.user1)
+        gs3 = GateSubmissionFactory(
+            gateblock=gb1, section=gb1.pageblock().section,
+            gate_user=self.user2)
+
+        response = self.client.post(self.url, self.data)
+        self.assertEquals(response.status_code, 302)
+
+        with self.assertRaises(GateSubmission.DoesNotExist):
+            GateSubmission.objects.get(id=gs1.id)
+
+        self.assertEquals(gs2, GateSubmission.objects.get(id=gs2.id))
+        self.assertEquals(gs3, GateSubmission.objects.get(id=gs3.id))
