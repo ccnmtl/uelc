@@ -42,16 +42,12 @@
                         {% endif %}
                     >
                         <div class="panel-body">
-                            <h3 class="text-center">
-                                <h3 class="facilitator-usrnm">Group {{u.0}}</h3> 
-                            </h3>
+                            <h3 class="facilitator-usrnm">Group {{u.0}}</h3>
+                            <button class="btn btn-xs btn-default pull-left reset-progress"
+                                data-user-id="{{u.0.id}}" data-username="{{u.0}}">
+                                reset
+                            </button>
                             <div class="user-icon
-                               {# crazy but works #}
-                               {% for sec in u.1 %}
-                               {% if sec.0.pk == u.2.id %}
-                               hidden
-                               {% endif %}
-                               {% endfor %}">
                                 <span class="glyphicon glyphicon-user pull-right" aria-hidden="true"></span>
                             </div>
                         </div>
@@ -181,4 +177,33 @@
         </div>
     </div>
 </div>
+
+<div id="confirm-reset-progress-modal" class="modal fade in" tabindex="-1"
+    role="dialog" aria-labelledby="Reset Progress" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                   Confirm Reset
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form method="post" action='{% url "reset-user-case-progress" case.id %}'>
+                    {% csrf_token %}
+                    <input type="hidden" name="user-id" value="" />
+                    <p>Are you sure? This action will completely reset <b><span class="username"></span>'s</b> progress.</p>
+                    <p><b>Important</b>: Before proceeding, direct the group user to exit the 
+                    session by clicking the Eldex logo in the top left of their screen. Once the progress is cleared,
+                    direct the user to reenter the session</p>
+                    <div class="hidden loading-spinner"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger">Reset Progress</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

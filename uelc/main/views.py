@@ -15,7 +15,7 @@ from pagetree.generic.views import (
     PageView, EditView, UserPageVisitor, CloneHierarchyView
 )
 from pagetree.models import UserPageVisit, Hierarchy, Section, UserLocation
-from quizblock.models import Question, Answer
+from quizblock.models import Question, Answer, Quiz
 
 from curveball.models import Curveball, CurveballBlock
 from gate_block.models import GateBlock, SectionSubmission, GateSubmission
@@ -25,7 +25,8 @@ from uelc.main.forms import (
 )
 from uelc.main.helper_functions import (
     get_partchoice_by_usermap, get_part_by_section, can_show_gateblock,
-    is_curveball, is_decision_block, is_next_curveball, get_p1c1)
+    is_curveball, is_decision_block, is_next_curveball, get_p1c1,
+    content_blocks_by_hierarchy_and_class)
 from uelc.main.helper_functions import (
     get_root_context, get_user_map,
     reset_page, page_submit, admin_ajax_page_submit,
@@ -33,7 +34,7 @@ from uelc.main.helper_functions import (
 )
 from uelc.main.models import (
     Cohort, UserProfile, Case, CaseMap,
-    CaseAnswer)
+    CaseAnswer, CaseQuiz)
 from uelc.main.templatetags.accessible import is_section_unlocked
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
@@ -1243,3 +1244,45 @@ class CloneHierarchyWithCasesView(CloneHierarchyView):
                     user=casemap.user)
 
         return rv
+
+
+class ResetUserCaseProgress(LoggedInFacilitatorMixin, View):
+
+    def post(self, request, case_id):
+        case = get_object_or_404(Case, id=case_id)
+        user = get_object_or_404(User, id=request.POST.get('user-id', None))
+
+        # delete user state for this case
+        h = case.hierarchy
+        user.casemap_set.filter(case=case).delete()
+
+        # get all CurveballBlocks blocks for this hierarchy
+        # delete submissions for curveballs
+        curveballs = content_blocks_by_hierarchy_and_class(h, CurveballBlock)
+        user.curveball_user.filter(curveballblock__id__in=curveballs).delete()
+
+        # get all GateBlocks for this hierarchy
+        # delete user submissions for gateblocks
+        gates = content_blocks_by_hierarchy_and_class(h, GateBlock)
+        user.gate_user.filter(gateblock__id__in=gates).delete()
+
+        # get all Quizzes for this hierarchy
+        # delete user submissions for quizzes
+        quizzes = content_blocks_by_hierarchy_and_class(h, CaseQuiz)
+        user.submission_set.filter(quiz__id__in=quizzes).delete()
+
+        # get all regular Quizzes for this hierarchy
+        # delete user submissions for quizzes
+        quizzes = content_blocks_by_hierarchy_and_class(h, Quiz)
+        user.submission_set.filter(quiz__id__in=quizzes).delete()
+
+        # delete SectionSubmission submission in this hierarchy
+        user.section_user.filter(section__hierarchy=h).delete()
+
+        # delete casemap, location & visit
+        user.casemap_set.filter(case=case).delete()
+        user.userlocation_set.filter(hierarchy=h).delete()
+        user.userpagevisit_set.filter(section__hierarchy=h).delete()
+
+        url = request.META.get('HTTP_REFERER')
+        return HttpResponseRedirect(url)

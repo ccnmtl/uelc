@@ -8,12 +8,13 @@ import time
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
 from pagetree.generic.views import generic_instructor_page, generic_edit_page
-from pagetree.models import Hierarchy, Section
+from pagetree.models import Hierarchy, Section, PageBlock
 
 from gate_block.models import GateSubmission
 from uelc.main.models import CaseMap, Case, CaseAnswer
@@ -309,3 +310,10 @@ def is_next_curveball(section):
     else:
         cache.set(key, False)
         return False
+
+
+def content_blocks_by_hierarchy_and_class(hierarchy, cls):
+    ctype = ContentType.objects.get_for_model(cls)
+    return PageBlock.objects.filter(
+        content_type__pk=ctype.pk, section__hierarchy=hierarchy).values_list(
+            'object_id', flat=True)

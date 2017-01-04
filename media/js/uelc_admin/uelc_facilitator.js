@@ -12,6 +12,10 @@ UELCAdmin = {
                     this.setCurveball);
             jQuery('#confirm-curveball-modal .cancel-curveball').click(
                     this.cancelCurveball);
+
+            jQuery('button.reset-progress').click(this.confirmResetProgress);
+            jQuery('#confirm-reset-progress-modal .btn-danger').click(
+                    this.resetProgress);
         };
         this.setChoicesOnParts = function() {
             jQuery('.user-part2').each(function() {
@@ -185,6 +189,27 @@ UELCAdmin = {
                     window.open(destination, '_blank');
                 });
             });
+        };
+        this.confirmResetProgress = function(evt) {
+            evt.preventDefault();
+            var userId = jQuery(evt.currentTarget).data('user-id');
+            var username = jQuery(evt.currentTarget).data('username');
+
+            var $modal = jQuery('#confirm-reset-progress-modal');
+            $modal.find('input[name="user-id"]').val(userId);
+            $modal.find('span.username').html(username);
+            $modal.find('.loading-spinner').addClass('hidden');
+            $modal.modal('show');
+            return false;
+        };
+        this.resetProgress = function(evt) {
+            // serialize data from the curveball form AND
+            // tack on data from the previous gateblock gate-button frm
+            var $modal = jQuery('#confirm-reset-progress-modal');
+            $modal.find('.loading-spinner').removeClass('hidden');
+
+            var $frm = $modal.find('form');
+            $frm.submit();
         };
 
         this.init();
