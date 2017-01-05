@@ -3,7 +3,6 @@ import json
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.core.cache import cache
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
@@ -392,17 +391,6 @@ class FacilitatorView(LoggedInFacilitatorMixin,
     template_name = "pagetree/facilitator.html"
     extra_context = dict()
 
-    def get_tree_depth(self, section):
-        key = 'uelc.{}.get_tree_depth'.format(section.pk)
-        v = cache.get(key)
-        if v is not None:
-            return v
-
-        for idx, sec in enumerate(section.get_tree()):
-            if sec == section:
-                cache.set(key, idx)
-                return idx
-
     def set_upv(self, user, section, status):
         upv = UserPageVisit.objects.filter(section=section, user=user).first()
         try:
@@ -521,7 +509,7 @@ class FacilitatorView(LoggedInFacilitatorMixin,
                     gateblock_section,
                     g,
                     unlocked,
-                    self.get_tree_depth(gateblock_section),
+                    gateblock_section.get_tree_depth(),
                     g.status(user, user_last_location, unlocked, pageblocks),
                     can_show_gateblock(gateblock_section,
                                        part_usermap, part),

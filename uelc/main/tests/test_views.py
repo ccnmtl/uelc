@@ -1141,22 +1141,6 @@ class TestFacilitatorView(TestCase):
         self.h = Hierarchy.objects.get(name='case-test')
         self.view = FacilitatorView()
 
-    def test_get_tree_depth(self):
-        section = Section.objects.get(slug='home')
-        self.assertEquals(self.view.get_tree_depth(section), 2)
-
-        section = Section.objects.get(slug='intro')
-        self.assertEquals(self.view.get_tree_depth(section), 3)
-
-        section = Section.objects.get(slug='challenges')
-        self.assertEquals(self.view.get_tree_depth(section), 4)
-
-        section = Section.objects.get(slug='your-first-decision')
-        self.assertEquals(self.view.get_tree_depth(section), 9)
-
-        section = Section.objects.filter(slug='curve-ball').first()
-        self.assertEquals(self.view.get_tree_depth(section), 10)
-
     def test_set_upv(self):
         user = GroupUpFactory().user
         section = Section.objects.get(slug='home')
