@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from pagetree.forms import CloneHierarchyForm
+from pagetree.models import Hierarchy
 from uelc.main.models import UserProfile, Cohort
 
 
@@ -60,6 +61,10 @@ class UELCCloneHierarchyForm(CloneHierarchyForm):
             # base_url isn't in the recognizable format, so assume it's
             # a slug.
             base_url = '/pages/%s/' % base_url
+            if Hierarchy.objects.filter(base_url=base_url).exists():
+                raise forms.ValidationError(
+                    'There\'s already a hierarchy with ' +
+                    'the base_url: {}'.format(base_url))
             self.cleaned_data['base_url'] = base_url
 
         return self.cleaned_data
