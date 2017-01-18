@@ -1023,6 +1023,36 @@ class CloneHierarchyWithCasesViewTest(TestCase):
         self.assertEqual(set(cloned_case.cohort.all()),
                          set(self.case.cohort.all()))
 
+    def test_post_with_duplicate_base_url(self):
+        url = reverse('clone-hierarchy', kwargs={
+            'hierarchy_id': self.h.pk
+        })
+        r = self.client.post(url, {
+            'name': 'Some Random Name',
+            'base_url': self.h.base_url,
+        }, follow=True)
+
+        self.assertEqual(r.status_code, 200)
+
+        self.assertEqual(Hierarchy.objects.count(), 1)
+        self.assertContains(
+            r,
+            'already a hierarchy with the base_url: {}'.format(
+                self.h.base_url))
+
+        r = self.client.post(url, {
+            'name': 'Some Random Name',
+            'base_url': 'case-test',
+        }, follow=True)
+
+        self.assertEqual(r.status_code, 200)
+
+        self.assertEqual(Hierarchy.objects.count(), 1)
+        self.assertContains(
+            r,
+            'already a hierarchy with the base_url: {}'.format(
+                self.h.base_url))
+
 
 class UELCPageViewTest(TestCase):
 
