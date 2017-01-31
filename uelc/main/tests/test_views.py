@@ -957,6 +957,22 @@ class CloneHierarchyWithCasesViewTest(TestCase):
             ca.title,
             'Choice 3: Initiate an Unofficial Investigation')
 
+        curveball_section = self.h.find_section_from_path(
+            'part-1/your-first-decision/curve-ball/')
+        block = curveball_section.pageblock_set.first()
+        cloned_section = cloned_h.find_section_from_path(
+            'part-1/your-first-decision/curve-ball/')
+        cloned_block = cloned_section.pageblock_set.first()
+        self.assertEqual(block.as_dict(), cloned_block.as_dict())
+
+        decision_section = self.h.find_section_from_path(
+            'part-1/your-first-decision/')
+        block = decision_section.pageblock_set.first()
+        cloned_section = cloned_h.find_section_from_path(
+            'part-1/your-first-decision/')
+        cloned_block = cloned_section.pageblock_set.first()
+        self.assertEqual(block.as_dict(), cloned_block.as_dict())
+
     def test_post_with_spaces_in_name(self):
         url = reverse('clone-hierarchy', kwargs={
             'hierarchy_id': self.h.pk

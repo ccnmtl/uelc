@@ -43,12 +43,14 @@ class CurveballBlock(BasePageBlock):
                                         related_name='curveball_three')
 
     def as_dict(self):
-        return dict(
-            description=self.description,
-            curveball_one=self.curveball_one.as_dict(),
-            curveball_two=self.curveball_two.as_dict(),
-            curveball_three=self.curveball_three.as_dict(),
-        )
+        d = super(CurveballBlock, self).as_dict()
+        d.update({
+            'description': self.description,
+            'curveball_one': self.curveball_one.as_dict(),
+            'curveball_two': self.curveball_two.as_dict(),
+            'curveball_three': self.curveball_three.as_dict(),
+        })
+        return d
 
     @classmethod
     def create_from_dict(cls, d):
