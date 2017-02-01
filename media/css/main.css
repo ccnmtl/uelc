@@ -177,6 +177,10 @@ table.heatmap .active
   min-height: 100%;
 }
 
+.page-body {
+    font-size: 18px !important;
+}
+
 /* LOGIN PAGE */
 .login-description {
     margin: 0px;
