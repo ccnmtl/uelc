@@ -202,7 +202,10 @@ class UELCModuleFactory(object):
                     'label': 'Your First Decision',
                     'slug': 'your-first-decision',
                     'pageblocks': [
-                        {'block_type': 'Text Block'},
+                        {
+                            'block_type': 'Text Block',
+                            'choice': 0,
+                        },
                         {
                             'block_type': 'Decision Block',
                             'allow_redo': False,
@@ -241,7 +244,10 @@ class UELCModuleFactory(object):
                             'block_type': 'Gate Block',
                             'label': 'First Decision Point',
                         },
-                        {'block_type': 'Text Block'},
+                        {
+                            'block_type': 'Text Block',
+                            'choice': 1,
+                        },
                     ],
                     'children': [{
                         'label': 'Curve Ball',
@@ -297,6 +303,15 @@ class UELCModuleFactory(object):
         answer = answers.get(value='1')
         ca = CaseAnswer.objects.get(answer=answer)
         assert ca.title == 'Choice 1: Full Disclosure'
+
+        # Assert that the "After Choice" field imported correctly
+        decision_section = hierarchy.find_section_from_path(
+            'part-1/your-first-decision/')
+        text_block = decision_section.pageblock_set.first()
+        assert text_block.block().choice == '0'
+
+        text_block = decision_section.pageblock_set.last()
+        assert text_block.block().choice == '1'
 
         # Assert that the Quiz imported correctly.
         assert CurveballBlock.objects.count() == 1

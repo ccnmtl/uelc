@@ -251,12 +251,12 @@ class Case(models.Model):
 
 class CustomSelectWidgetAC(widgets.Select):
     def render(self, name, value, attrs=None):
+        widget = super(CustomSelectWidgetAC, self).render(name, value, attrs)
         return mark_safe(
-            u'''<span class="after-choice">After Choice - \
-                <span class="small">the content that will \
-                show for the decision made. This is \
-                cohort-wide.</span></span>%s''' %
-            (super(CustomSelectWidgetAC, self).render(name, value, attrs)))
+            u'<span class="after-choice">After Choice - '
+            u'<span class="small">the content that will '
+            u'show for the decision made. This is '
+            u'cohort-wide.</span></span>{}'.format(widget))
 
 
 class CaseMap(models.Model):
@@ -313,6 +313,17 @@ class TextBlockDT(TextBlock):
     template_file = "pageblocks/textblock.html"
     display_name = "Text Block"
     choice = models.CharField(max_length=2, blank=True, default=0)
+
+    def as_dict(self):
+        d = super(TextBlockDT, self).as_dict()
+        d.update({
+            'choice': self.choice,
+        })
+        return d
+
+    @classmethod
+    def create_from_dict(cls, d):
+        return cls.objects.create(**d)
 
     @classmethod
     def add_form(cls):
