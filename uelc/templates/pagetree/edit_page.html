@@ -417,7 +417,7 @@
 
     {% if previous %}
     <li class="previous">
-        <a href="{{section.get_edit_url}}">
+        <a href="{{previous.get_edit_url}}">
             &larr; {{previous.label}}</a>
     </li>
     {% endif %}
@@ -425,7 +425,7 @@
 
     {% if next_section %}
     <li class="next">
-        <a href="{{section.get_edit_url}}">
+        <a href="{{next_section.get_edit_url}}">
             {{next_section.label}} &rarr;</a>
     </li>
     {% endif %}
