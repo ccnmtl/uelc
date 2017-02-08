@@ -1,8 +1,8 @@
-{% extends "base.html" %}
-{% load compress %}
-{% load bootstrap %}
+{% extends "pagetree/base_pagetree.html" %}
+{% load bootstrap3 %}
 {% load render %}
-{% load staticfiles %}
+{% load static %}
+
 {% block title %}{{section.label}} (edit){% endblock %}
 
 {% block bodyclass %}edit module-{{module.slug}}{% endblock %}
@@ -11,109 +11,91 @@
 
 {% block js %}
 
-<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'pagetree/css/jquery-ui.min.css' %}">
 
-{% compress css %}
 <style type="text/css">
-  .draghandle {float: left;}
-  #children-order-list {list-style-type: none; margin: 0; padding: 0;}
-  #children li { margin: 0 3px 3px 3px; padding: 0.4em;
-  padding-left: 1.5em; 
+    .draghandle {
+        cursor: move;
+        float: left;
+    }
+    #children-order-list {list-style-type: none; margin: 0; padding: 0;}
+    #children li { margin: 0 3px 3px 3px; padding: 0.4em;
+    padding-left: 1.5em;
           background-color: #ddd;
-  }
-  #children li span { position: absolute; margin-left: -1.3em; }
-  .dragging {background-color: #fee;}
-  </style>
-{% endcompress %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    }
+    #children li span { position: absolute; margin-left: -1.3em; }
+    .dragging {background-color: #fee;}
+</style>
+
+<!-- Prevent pagetree's jQuery and jQueryUI from interfering with the
+     main application's copy. -->
+<script>
+    var _pagetree_define_backup = window.define;
+    window.define = undefined;
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="{% static 'pagetree/js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'pagetree/js/jquery.cookie.js' %}"></script>
 <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
 <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
 
-
-<script type="text/javascript">
-var saveOrderOfChildren = function() {
-    var url = "{% url 'reorder-section-children' section.id %}?";
-    var worktodo = 0;
-    $("#children-order-list li").each(function(index,element) {
-       worktodo = 1;
-       var id = $(element).attr('id').split("-")[1];
-       url += "section_id_" + index + "=" + id + ";";
-    });
-    if (worktodo == 1) {
-        var req = new XMLHttpRequest();
-        req.open("POST",url,true);
-        req.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
-        req.send(null);
-    }
-};
-
-var saveOrderOfPageBlocks = function() {
-    var url = "{% url 'reorder-pageblocks' section.id %}?";
-    var worktodo = 0;
-    $("#edit-blocks-tab>.container-fluid>div.block-dragger").each(function(index,element) {
-      worktodo = 1;
-      var id = $(element).attr('id').split("-")[1];
-      url += "pageblock_id_" + index + "=" + id + ";";
-    });
-    if (worktodo == 1) {
-        /* only bother submitting if there are elements to be sorted */
-        var req = new XMLHttpRequest();
-        req.open("POST",url,true);
-        req.setRequestHeader("X-CSRFToken", '{{csrf_token}}');
-        req.send(null);
-    }
-}
-
+<script>
+    var pagetree = { $: jQuery.noConflict(true) };
+    window.define = _pagetree_define_backup;
 </script>
 
-<script type="text/javascript">
-$(function() {
-  $("#children-order-list").sortable({
-    containment : 'parent'
-    ,axis : 'y'
-    ,tolerance: 'pointer'
-    ,activeClass: 'dragging'
-    ,handle: '.draghandle'
-    ,stop: function (event,ui) { saveOrderOfChildren();}
-  });
-  $("#children-order-list").disableSelection();
-  $("#edit-blocks-tab").sortable({
-    items : 'div.block-dragger'
-    ,axis: 'y'
-    ,containment: 'parent'
-    ,handle: '.draghandle'
-    ,activeClass: 'dragging'
-    ,tolerance: 'pointer'
-    ,stop: function (event,ui) { saveOrderOfPageBlocks();}
-  });
+<script src="{% static 'pagetree/js/src/pagetree-admin.js' %}"></script>
+<script>
+(function($) {
+    $(document).ready(function() {
+        $("#children-order-list").sortable({
+            containment : 'parent'
+            ,axis : 'y'
+            ,tolerance: 'pointer'
+            ,activeClass: 'dragging'
+            ,handle: '.draghandle'
+            ,stop: function (event,ui) {
+                pagetree.saveOrderOfChildren(
+                    "{% url 'reorder-section-children' section.id %}?");
+            }
+        });
+        $("#children-order-list").disableSelection();
 
-  $("#edit-blocks-tab").disableSelection();
-});
+        $("#edit-blocks-tab").sortable({
+            items : 'div.block-dragger'
+            ,axis: 'y'
+            ,containment: 'parent'
+            ,handle: '.draghandle'
+            ,activeClass: 'dragging'
+            ,tolerance: 'pointer'
+            ,stop: function (event, ui) {
+                pagetree.saveOrderOfPageBlocks(
+                    "{% url 'reorder-pageblocks' section.id %}?");
+            }
+        });
+        $("#edit-blocks-tab").disableSelection();
+    });
+})(pagetree.$);
 </script>
 
 {% endblock %}
 
 {% block moduletabs %}
 
-<ul class="nav nav-pills nav-justified">
-  {% for section in modules %}
-  <li{% ifequal section.id module.id %} class="active"{% endifequal %}><a href="{{section.get_edit_url}}">{{section.label}}</a></li>
-  {% endfor %}
+<ul class="nav navbar-nav">
+    {% for section in modules %}
+    <li{% ifequal section.id module.id %} class="active"{% endifequal %}><a href="{{section.get_edit_url}}">{{section.label}}</a></li>
+    {% endfor %}
 </ul>
 
 {% endblock %}
 
 
 {% block sidenav %}
-  <!-- ###### Secondary Navigation ###### -->
-    {% with "/edit" as menu_base %}
-        {% include "pagetree/menu.html" %}
-    {% endwith %}
 {% endblock %}
 
 {% block navrightextra %}
-<li><a href="{{section.get_absolute_url}}" class="btn btn-success">view page</a></li>
+<a href="{{section.get_absolute_url}}" class="btn btn-success">view page</a>
 {% endblock %}
 
 {% block content %}
@@ -121,18 +103,18 @@ $(function() {
 
 <h1>{{ section.label }}</h1>
 
-<ul class="nav nav-tabs">
+<ul class="edit-page-nav nav nav-tabs">
     <li {% if is_root %}class="active"{% endif%}>
         <a href="#content-tree" data-toggle="tab">Hierarchy</a>
     </li>
     <li {% if not is_root %}class="active"{% endif%}>
         <a href="#edit-blocks-tab" data-toggle="tab">Edit Blocks</a>
     </li>
-  <li><a href="#children-tab" data-toggle="tab">Children</a></li>
-  <li><a href="#add-pageblock-tab" data-toggle="tab">Add Pageblock</a></li>
-  <li><a href="#edit-page-tab" data-toggle="tab">Edit Section</a></li>
-  <li><a href="#history-tab" data-toggle="tab">History</a></li>
-  <li><a href="#move-section-tab" data-toggle="tab">Move Section</a></li>  
+    <li><a href="#children-tab" data-toggle="tab">Children</a></li>
+    <li><a href="#add-pageblock-tab" data-toggle="tab">Add Pageblock</a></li>
+    <li><a href="#edit-page-tab" data-toggle="tab">Edit Section</a></li>
+    <li><a href="#history-tab" data-toggle="tab">History</a></li>
+    <li><a href="#move-section-tab" data-toggle="tab">Move Section</a></li>
 </ul>
 
 <div class="tab-content">
@@ -141,7 +123,7 @@ $(function() {
             <div class="btn-group pull-right">
                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                     Action
-                    <span class="caret"></span>
+                <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                     <li>
@@ -153,255 +135,239 @@ $(function() {
             </div>
             <h3 style="margin-top: 0;"><a href="{{root.get_edit_url}}">{{section.hierarchy.name}}</a></h3>
             <ul>
-                {% for s in root.get_descendants %}                 
-                    <li class="menu" style="list-style: none; line-height: 150%">
-                        <a href="{{s.get_absolute_url}}">{{s.label}}</a>{% ifequal s section %} <span class="glyphicon glyphicon-hand-left"></span>{% endifequal %}
-                        {% if s.get_children %}
-                            <ul>
+                {% for s in root.get_descendants %}
+                <li class="menu" style="list-style: none; line-height: 150%">
+                    {% ifequal s section %}
+                    <span class="glyphicon glyphicon-hand-right"></span>
+                    <strong>
+                    {% endifequal %}
+                        <span title="The number of pageblocks in this section"
+                              class="pagetree-pageblock-section-count">
+                            {{s.pageblock_set.count}}
+                        </span>
+                        &nbsp;&nbsp;
+                        <a href="{{s.get_edit_url}}"
+                           >{{s.label|default:"Empty Label"}}
+                            {% if s.label|length < 1 %} ({{s.slug}}) {% endif %}
+                        </a>
+                    {% ifequal s section %}
+                    </strong>
+                    <span class="glyphicon glyphicon-hand-left"></span>
+                    {% endifequal %}
+                    {% if s.get_children %}
+                    <ul>
                         {% else %}{% if s.is_last_child %}
-                            {% for lc in s.closing_children %}
-                                </ul>
-                            {% endfor %}
-                        {% endif %}{% endif %}     
-                     </li>
+                        {% for lc in s.closing_children %}
+                    </ul>
+                    {% endfor %}
+                    {% endif %}{% endif %}
+                </li>
                 {% endfor %}
-             </ul>
-         </div>
+            </ul>
+        </div>
     </div>
 
 
-<div id="edit-blocks-tab" class="tab-pane {% if not is_root %}active{% endif%}"/>
-{% if section.pageblock_set.count %}
+    <div id="edit-blocks-tab" class="tab-pane {% if not is_root %}active{% endif%}"/>
+    {% if section.pageblock_set.count %}
 
-<p>Drag the <span class="glyphicon glyphicon-resize-vertical"></span> arrows to reorder pageblocks:</p>
+    <p>Drag the <span class="glyphicon glyphicon-resize-vertical"></span> arrows to reorder pageblocks:</p>
 
-<div class="container-fluid">
-{% for block in section.pageblock_set.all %}
-<div class="row block-dragger" id="pageblock-{{block.id}}" style="margin-top: 5px; padding-top: 5px; border-top: 1px solid #eee;">
+    {% for pageblock in section.pageblock_set.all %}
+    {% with block=pageblock %}
+    <div class="row block-dragger" id="pageblock-{{pageblock.id}}">
 
-  <div class="col-sm-1 draghandle">
-    <span class="glyphicon glyphicon-resize-vertical"></span>
-  </div>
+        <div class="col-md-1 draghandle">
+            <span class="glyphicon glyphicon-resize-vertical"></span>
+        </div>
 
-  <div class="col-sm-2">
-    <b><a data-toggle="modal" href="#edit-pageblock-{{block.id}}">{{block.block.display_name}}</a></b>
-  </div>
+        <div class="col-md-2">
+            <b><a data-toggle="modal" href="#edit-pageblock-{{pageblock.id}}">{{pageblock.block.display_name}}</a></b>
+        </div>
 
-  <div class="col-sm-6">
-    <a data-toggle="modal" href="#edit-pageblock-{{block.id}}">{{block.label}}</a>
-{% rendersummary block %}
-  </div>
+        <div class="col-md-6">
+            <a data-toggle="modal" href="#edit-pageblock-{{pageblock.id}}">{{pageblock.label}}</a>
+            {% rendersummary pageblock %}
+        </div>
 
-  <div class="col-sm-3">
-    <div class="btn-group">
-      <a data-toggle="modal" class="btn btn-default btn-xs"
-       href="#edit-pageblock-{{block.id}}">
-    <span class="glyphicon glyphicon-edit"></span>
-      edit</a>
+        <div class="col-md-3">
+            <div class="btn-group">
+                <a data-toggle="modal" class="btn btn-default btn-sm"
+                   href="#edit-pageblock-{{pageblock.id}}" title="Edit">
+                    <span class="glyphicon glyphicon-edit"></span> edit</a>
 
-    <a href="#" class="btn
-    btn-danger btn-xs" data-toggle="modal" data-target="#delete-pageblock-{{block.id}}">
-      <span class="glyphicon glyphicon-trash"></span> delete
-    </a>
+                <a href="{% url 'delete-pageblock' pageblock.id %}"
+                   class="btn btn-danger btn-sm" title="Delete">
+                    <span class="glyphicon glyphicon-trash"></span></a>
+            </div>
 
-    <div id="delete-pageblock-{{block.id}}" class="modal fade">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Delete Page Block</h4>
-      </div>
-      <div class="modal-body">
-        <p>Are you Sure you want to delete the page block?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <a href="{% url 'delete-pageblock' block.id %}" class="btn
-    btn-danger">Yes, Delete Page Block!</a>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+            <div class="btn-group">
+                {% if pageblock.block.exportable %}
+                <a class="btn btn-sm"
+                   rel="tooltip" title="Download JSON dump of this block"
+                   id="export-{{pageblock.id}}"
+                   href="{% url 'export-pageblock-json' pageblock.id %}">
+                    <span class="glyphicon glyphicon-download"></span> export</a>
+                {% endif %}
+            </div>
+        </div>
 
 
-    {% if block.block.exportable %}
-    <a class="btn btn-xs"
-       rel="tooltip" title="Download JSON dump of this block"
-       id="export-{{block.id}}"
-       href="{% url 'export-pageblock-json' block.id %}"><span class="glyphicon glyphicon-download"></span> export</a>
+    </div>
+    {% endwith %}
+    {% endfor %}
 
+
+    {% for pageblock in section.pageblock_set.all %}
+    {% with block=pageblock %}
+    <div class="modal fade block-edit" id="edit-pageblock-{{pageblock.id}}" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h3>Edit {{pageblock.block.display_name}}</h3>
+                </div>
+                <div class="modal-body">
+
+                    {% if pageblock.block.importable %}
+                    <a href="{% url 'import-pageblock-json' pageblock.id %}">import json</a>
+                    {% endif %}
+
+                    <form action="{% url 'edit-pageblock' pageblock.id %}" method="post"
+                          class=""
+                          {% if pageblock.edit_form.is_multipart %}
+                          enctype="multipart/form-data"
+                          {% endif %}>
+                        {% csrf_token %}
+
+                        {% bootstrap_form pageblock.default_edit_form %}
+                        {% with pageblock.edit_form as ef %}
+                        {% bootstrap_form ef %}
+                        {% if ef.alt_text %}
+                        <div>{{ ef.alt_text|safe }}</div>
+                        {% endif %}
+                        {% endwith %}
+                </div>
+
+                <div class="modal-footer">
+                    <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+                    <input type="submit" value="Save"
+                           class="btn btn-primary" />
+                </div>
+
+                </form>
+        </div></div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+
+    {% else %}
+    <div class="alert">
+        <strong>Warning!</strong> There are no pageblocks on this page. You should add some.
+    </div>
     {% endif %}
-    </div>
-  </div>
-
-
-</div>
-{% endfor %}
-</div>
-
-{% for block in section.pageblock_set.all %}
-<div class="modal fade block-edit" id="edit-pageblock-{{block.id}}" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal">×</button>
-    <h3>Edit {{block.block.display_name}}</h3>
-  </div>
-  <div class="modal-body">
-
-<form action="{% url 'edit-pageblock' block.id %}" method="post"
-class=""
-{% if block.edit_form.is_multipart %}enctype="multipart/form-data"{% endif %}>{% csrf_token %}
-  {% if block.block.display_name == "Decision Block" %}
-  {% else %}
-    {{ block.default_edit_form|bootstrap }}
-  {% endif %}
-{% with block.edit_form as ef %}
-{{ ef|bootstrap }}
-{% if ef.alt_text %}
-<div>{{ ef.alt_text|safe }}</div>
-{% endif %}
-{% endwith %}
-</div>
-
-  <div class="modal-footer">
-    <a href="#" class="btn" data-dismiss="modal">Cancel</a>
-    <input type="submit" value="Save" 
-       class="btn btn-primary" />
-  </div>
-
-</form>
-</div></div>
-</div>
-{% endfor %}
-
-{% else %}
-<div class="alert">
-  <strong>Warning!</strong> There are no pageblocks on this page. You should add some.
-</div>
-{% endif %}
 
 </div>
 
 <div id="children-tab" class="tab-pane">
-<h2>Reorder Children</h2>
-<div class="well">
-<p>Drag and drop arrows to reorder children</p>
-<ul id="children-order-list">
-{% for child in section.get_children %}
-<li class="draggable"
-    id="child-{{child.id}}"><span title="drag to reorder pageblocks" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>
-  <a href="{{child.get_edit_url}}">{{child.label}}</a>
-</li>
-{% endfor %}
-</ul>
-</div>
+    <h2>Reorder Children</h2>
+    <div class="well">
+        <p>Drag and drop arrows to reorder children</p>
+        <ul id="children-order-list">
+            {% for child in section.get_children %}
+            <li class="draggable"
+                id="child-{{child.id}}"><span title="drag to reorder pageblocks" class="draghandle ui-icon ui-icon-arrowthick-2-n-s"></span>
+                <a href="{{child.get_edit_url}}">{{child.label}}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 
-<h2>Add Child</h2>
-<form action="{% url 'add-child-section' section.id %}" method="post"
-      class="well form-inline" >{% csrf_token %}
+    <h2>Add Child</h2>
+    <form action="{% url 'add-child-section' section.id %}" method="post"
+          class="well form-inline">
+        {% csrf_token %}
 
-{{ section.add_child_section_form|bootstrap }}
+        {% bootstrap_form section.add_child_section_form %}
 
-<input type="submit" value="add child section" class="btn btn-primary"
-       />
-</form>
+        <input type="submit" value="add child section" class="btn btn-primary"
+               />
+    </form>
 </div>
 
 
 <div id="add-pageblock-tab" class="tab-pane">
 
-  <ul>
-  {% for blocktype in available_pageblocks %}
-    <li><a data-toggle="modal"
-         href="#add-block-{{forloop.counter}}">Add {{blocktype.display_name}}</a>
-    {% if blocktype.display_name == "Text Block" %}
-      <span class="pull-right block_description">Add a section of text to your case page. May be used more than once per page.</span>
+    <ul>
+        {% for blocktype in available_pageblocks %}
+        <li><a data-toggle="modal"
+               href="#add-block-{{forloop.counter}}">Add {{blocktype.display_name}}</a></li>
+        {% endfor %}
+    </ul>
+
+    {% for blocktype in available_pageblocks %}
+    {% if blocktype %}
+
+    <div class="modal fade" id="add-block-{{forloop.counter}}" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{% url 'add-pageblock' section.id %}"
+                      {% if blocktype.add_form.is_multipart %}
+                      enctype="multipart/form-data"
+                      {% endif %}
+                      method="post">{% csrf_token %}
+
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h3>Add {{blocktype.display_name}}</h3>
+                    </div>
+                    <div class="modal-body">
+                        <fieldset>
+                            <input type="hidden" name="blocktype" value="{{blocktype.display_name}}"/>
+
+                            {% bootstrap_form section.add_pageblock_form %}
+                            {% bootstrap_form blocktype.add_form %}
+
+                        </fieldset>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+                        <input type="submit" value="add {{blocktype.display_name}}"
+                               class="btn btn-primary" />
+                    </div>
+                </form>
+        </div></div>
+    </div>
+
     {% endif %}
-    {% if blocktype.display_name == "Image Block" %}
-      <span class="pull-right block_description">Add an image with caption to your case page. May be used more than once per page.</span>
-    {% endif %}
-    {% if blocktype.display_name == "Decision Block" %}
-      <span class="pull-right block_description">Add a decision point to your case page. Use once per page.</span>
-    {% endif %}
-    {% if blocktype.display_name == "Gate Block" %}
-      <span class="pull-right block_description">Gate content for release by case assistants. Use once per page.</span>
-    {% endif %}
-    </li>
-  {% endfor %}
-  </ul>
-
-{% for blocktype in available_pageblocks %}
-{% if blocktype %}
-
-<div class="modal fade" id="add-block-{{forloop.counter}}" role="dialog" aria-hidden="true">
-<div class="modal-dialog">
-      <div class="modal-content">
-<form action="{% url 'add-pageblock' section.id %}"
-
-{% if blocktype.add_form.is_multipart %}
-enctype="multipart/form-data"
-{% endif %}
-method="post">{% csrf_token %}
-
-
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal">×</button>
-    <h3>Add {{blocktype.display_name}}</h3>
-  </div>
-  <div class="modal-body">
-<fieldset>
-<input type="hidden" name="blocktype" value="{{blocktype.display_name}}"/>
-<div id="block-form-{{ forloop.counter }}">
-  {% if blocktype.display_name == "Decision Block" %}
-    {{blocktype.add_form|bootstrap}}
-  {% elif blocktype.display_name == "Curveball Block"%}
-      {{blocktype.add_form|bootstrap}}
-  {% else %}
-    {{section.add_pageblock_form|bootstrap}}
-    {{blocktype.add_form|bootstrap}}
-  {% endif %}
-</div>
-  
-</fieldset>
-
-
-  </div>
-  <div class="modal-footer">
-    <a href="#" class="btn" data-dismiss="modal">Cancel</a>
-    <input type="submit" value="add {{blocktype.display_name}}" 
-       class="btn btn-primary" />
-  </div>
-</form>
-</div></div>
-</div>
-
-{% endif %}
-{% endfor %}
+    {% endfor %}
 </div>
 
 <div id="edit-page-tab" class="tab-pane">
 
-<form action="{% url 'edit-section' section.id %}" method="post"
-      class="form-horizontal well">
-{% csrf_token %}
-<fieldset><legend>Edit Page</legend>
+    <form action="{% url 'edit-section' section.id %}" method="post"
+          class="form-horizontal well">{% csrf_token %}
+        <fieldset><legend>Edit Page</legend>
 
-{{ section.edit_form|bootstrap }}
+            {% bootstrap_form section.edit_form %}
 
-<input type="submit" value="save" class="btn btn-primary" />
-</fieldset>
-</form>
+            <input type="submit" value="save" class="btn btn-primary" />
+        </fieldset>
+    </form>
 
 
-<div class="well">
-<a class="btn btn-danger" href="{% url 'delete-section' section.id %}">delete this page</a>
-</div>
+    <div class="well">
+        <a class="btn btn-danger" href="{% url 'delete-section' section.id %}">delete this page</a>
+    </div>
 
 </div>
 
 <div id="move-section-tab" class="tab-pane">
-    <form action="{% url 'move-section' section.id %}" method="post">{% csrf_token %}        
+    <form action="{% url 'move-section' section.id %}" method="post">
+        {% csrf_token %}
         <fieldset>
             <legend>Move "{{section.label}}" Section To...</legend>
             <p>
@@ -414,100 +380,56 @@ method="post">{% csrf_token %}
 
 <div id="history-tab" class="tab-pane">
 
-{% if section.version_set.count %}
-<table class="table table-bordered table-striped table-condensed">
-  <thead>
-    <tr>
-      <th>Saved At</th>
-      <th>User</th>
-      <th>Activity</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-{% for version in section.version_set.all %}
-    <tr>
-      <td>{{version.saved_at}}</td>
-      <td>{{version.user}}</td>
-      <td>{{version.activity}}</td>
-      <td><a href="{% url 'revert-to-version' version.id %}" class="btn
-      btn-sm btn-warning"><span class="glyphicon glyphicon-repeat"></span> revert</a></td>
-    </tr>
-{% endfor %}
-</tbody>
-</table>
-{% endif %}
+    {% if section.version_set.count %}
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>Saved At</th>
+                <th>User</th>
+                <th>Activity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for version in section.version_set.all %}
+            <tr>
+                <td>{{version.saved_at}}</td>
+                <td>{{version.user}}</td>
+                <td>{{version.activity}}</td>
+                <td><a href="{% url 'revert-to-version' version.id %}"
+                       class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-repeat"></span> revert</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
 </div>
+
 </div>
 {% endwith %}
 {% endblock %}
 
 {% block content-nav %}
-    <ul class="pager">
-        {% with previous=section.get_previous next_section=section.get_next %}
-            {% if not section.is_root %}
-                {% if previous %}
-                  <li class="previous">
-                        <a href="{{previous.get_edit_url}}">&larr; {{previous.label}}</a>
-                  </li>
-                {% endif %}
-            {% endif %}
-    
-            {% if next_section %}
-                <li class="next"><a href="{{next_section.get_edit_url}}">{{next_section.label}} &rarr;</a></li>
-            {% endif %}
-        {% endwith %}
-    </ul>
-{% if messages %}
-  {% for message in messages %}
-  {% if message.level_tag == 'error' %}
-    <div id="message-modal" class="modal fade" data-callback="{{message.extra_tags}}">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <div class="modal-header panel-heading">Message</div>
-              <div class="modal-body bg-danger">
-                <div id="edit-user" class="panel panel-default">
-                  <div class="panel-heading">{{ message.level_tag }}</div>
-                  <div class="panel-body">
-                        {{ message }}
-                  </div>
-                </div><!--end #hierarchiess-->
-                </div> <!--end modal-dialog-->
-          </div><!-- end modal-content-->
-      </div><!--end .model-body-->
-    </div><!--end #add-hierarchy-form-modal .modal-->
-  {% endif %}
+<ul class="pager">
+    {% with previous=section.get_previous next_section=section.get_next %}
+    {% if not section.is_root %}
 
-  {% if message.level_tag == 'success' %}
-    <div id="message-modal" class="modal fade" data-callback="{{message.extra_tags}}">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <div class="modal-header panel-heading">Message</div>
-              <div class="modal-body bg-success">
-                <div id="edit-user" class="panel panel-default">
-                  <div class="panel-heading">{{ message.level_tag }}</div>
-                  <div class="panel-body">
-                        {{ message }}
-                  </div>
-                </div><!--end #hierarchiess-->
-                </div> <!--end modal-dialog-->
-          </div><!-- end modal-content-->
-      </div><!--end .model-body-->
-    </div><!--end #add-hierarchy-form-modal .modal-->
-  {% endif %}
- {% endfor %}
+    {% if previous %}
+    <li class="previous">
+        <a href="{{section.get_edit_url}}">
+            &larr; {{previous.label}}</a>
+    </li>
+    {% endif %}
+    {% endif %}
 
- <script>
-jQuery(document).ready(function(){
-  if (jQuery('#message-modal').length > 0) {
-      window.modal = jQuery('#message-modal');
-      window.callback = modal.attr('data-callback');
-      modal.modal('show');
-  }
-})
-</script>
-{% endif %}
+    {% if next_section %}
+    <li class="next">
+        <a href="{{section.get_edit_url}}">
+            {{next_section.label}} &rarr;</a>
+    </li>
+    {% endif %}
+</ul>
+{% endwith %}
 
 {% endblock %}

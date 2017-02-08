@@ -385,12 +385,6 @@ ul.side-nav li li {
 
 
 /* Overrides  */
-.col-md-2{
-    width: 36.666667%;
-}
-.col-md-10 {
-    width: 53.333333%;
-}
 .button-confirmed{
     color: #999;
     display: inline-block;
