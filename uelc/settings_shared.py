@@ -28,6 +28,19 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'Custom',
         'width': '100%',
         'removePlugins': 'stylesheetparser',
+
+        'extraPlugins': 'awsimage',
+        'awsimageConfig': {
+            'backend': 's3',
+            'settings': {
+                # Configure these in local_settings.py
+                'bucket': None,
+                'region': 'US Standard',
+                'accessKeyId': None,
+                'secretAccessKey': None,
+            }
+        },
+
         'filebrowserBrowseUrl': '/admin/main/imageuploaditem/',
         'allowedContent': True,
         'autofocus': True,
