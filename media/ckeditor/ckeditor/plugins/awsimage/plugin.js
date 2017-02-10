@@ -4,6 +4,12 @@
 CKEDITOR.plugins.add('awsimage', {
     init: function(editor) {
         var uploadS3 = function(file) {
+            if (!file || !file.name) {
+                return new Promise(function(resolve, reject) {
+                    reject('No filename');
+                });
+            }
+
             var settings = editor.config.awsimageConfig.settings;
             AWS.config.update({
                 accessKeyId: settings.accessKeyId,
@@ -82,20 +88,16 @@ CKEDITOR.plugins.add('awsimage', {
         var backend = backends[editor.config.awsimageConfig.backend];
         backend.init();
 
-        function doNothing(e) { }
-        function orPopError(err) { alert(err); }
+        var doNothing = function(e) { };
+        var orPopError = function(err) { alert(err); };
 
-        var insertImage = function(href) {
-            var elem = editor.document.createElement('img', {
+        var insertImage = function(src) {
+            var e = editor.document.createElement('img', {
                 attributes: {
-                    src: href
+                    'src': src
                 }
             });
-
-            // TODO: should only insertElement in active instance
-            for (var key in CKEDITOR.instances) {
-                CKEDITOR.instances[key].insertElement(elem);
-            }
+            editor.insertElement(e);
         };
 
         var dropHandler = function(e) {
@@ -131,8 +133,9 @@ CKEDITOR.plugins.add('awsimage', {
         };
 
         CKEDITOR.on('instanceReady', function() {
-            var iframeBase = document.querySelector('iframe')
-                .contentDocument.querySelector('html');
+            var container = editor.container;
+            var iframe = jQuery(container.$).find('iframe')[0];
+            var iframeBase = iframe.contentDocument.querySelector('html');
             var iframeBody = iframeBase.querySelector('body');
 
             iframeBody.ondragover = doNothing;
