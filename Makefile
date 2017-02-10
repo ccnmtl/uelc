@@ -1,5 +1,5 @@
 APP=uelc
-JS_FILES=media/js/uelc_admin
+JS_FILES=media/js/uelc_admin media/ckeditor/ckeditor/plugins/awsimage/
 PY_DIRS=$(APP) gate_block curveball features
 MAX_COMPLEXITY=7
 
