@@ -3,6 +3,26 @@
 
 CKEDITOR.plugins.add('awsimage', {
     init: function(editor) {
+        // https://gist.github.com/mathewbyrne/1280286
+        var slugify = function(text) {
+            return text.toString().toLowerCase()
+                .replace(/\s+/g, '-')           // Replace spaces with -
+                .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+                .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+                .replace(/^-+/, '')             // Trim - from start of text
+                .replace(/-+$/, '');            // Trim - from end of text
+        };
+
+        var getUniqueFilename = function(filename) {
+            var split = filename.split('.');
+            var extension = split.pop();
+            var name = split.join('.');
+
+            var date = slugify(new Date().toISOString());
+
+            return name + date + '.' + extension;
+        };
+
         var uploadS3 = function(file) {
             if (!file || !file.name) {
                 return new Promise(function(resolve, reject) {
@@ -10,7 +30,9 @@ CKEDITOR.plugins.add('awsimage', {
                 });
             }
 
+            var filename = getUniqueFilename(file.name);
             var settings = editor.config.awsimageConfig.settings;
+
             AWS.config.update({
                 accessKeyId: settings.accessKeyId,
                 secretAccessKey: settings.secretAccessKey
@@ -19,7 +41,7 @@ CKEDITOR.plugins.add('awsimage', {
 
             var bucket = new AWS.S3({params: {Bucket: settings.bucket}});
             var params = {
-                Key: file.name,
+                Key: filename,
                 ContentType: file.type,
                 Body: file,
                 ACL: 'public-read'
