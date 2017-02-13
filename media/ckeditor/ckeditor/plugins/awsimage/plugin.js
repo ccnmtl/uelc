@@ -1,6 +1,16 @@
 /* global CKEDITOR, AWS */
 /* jshint esversion: 6 */
 
+/*
+ * (c) 2015
+ * Originally developed by Chris Kiehl:
+ * https://github.com/chriskiehl/Dropler
+ *
+ * (c) 2017
+ * Modified by Nik Nyby for the Center for Teaching and Learning at
+ * Columbia University.
+ */
+
 CKEDITOR.plugins.add('awsimage', {
     init: function(editor) {
         // https://gist.github.com/mathewbyrne/1280286
