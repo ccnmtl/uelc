@@ -126,6 +126,7 @@ CKEDITOR.plugins.add('awsimage', {
         var insertImage = function(src) {
             var e = editor.document.createElement('img', {
                 attributes: {
+                    'class': 'img-responsive',
                     'src': src
                 }
             });
