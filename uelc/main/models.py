@@ -394,8 +394,8 @@ class CaseQuiz(Quiz):
     def create(cls, request):
         return cls.objects.create(
             description=request.POST.get('description', ''),
-            rhetorical=request.POST.get('rhetorical', ''),
-            allow_redo=request.POST.get('allow_redo', ''),
+            rhetorical=request.POST.get('rhetorical', False),
+            allow_redo=request.POST.get('allow_redo', False),
             show_submit_state=request.POST.get('show_submit_state', False))
 
     @classmethod

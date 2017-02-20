@@ -185,7 +185,7 @@ class ImageUploadItemTest(TestCase):
 class CaseQuizTest(TestCase):
     def test_create(self):
         r = FakeReq()
-        r.POST = {'description': 'description', 'rhetorical': 'rhetorical',
+        r.POST = {'description': 'description', 'rhetorical': True,
                   'allow_redo': True, 'show_submit_state': False}
         casequiz = CaseQuiz.create(r)
         self.assertEquals(casequiz.description, 'description')
