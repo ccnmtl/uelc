@@ -60,7 +60,7 @@ factory_boy==2.8.1
 ldap3==2.2.1
 sqlparse==0.2.2
 django-ckeditor==5.2.1
-boto==2.45.0
+boto==2.46.1
 django-storages==1.5.2
 python-dateutil==2.6.0
 pyzmq==16.0.2
