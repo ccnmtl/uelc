@@ -2,6 +2,8 @@
 
 ## docker-compose setup
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ccnmtl/uelc.svg)](https://greenkeeper.io/)
+
 Since uelc relies on windsock and a broker, the simplest way to have a
 full local dev environment is to use Docker and
 [docker-compose](https://docs.docker.com/compose/). The rest of this
