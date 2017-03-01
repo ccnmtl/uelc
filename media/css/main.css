@@ -608,3 +608,7 @@ ul.gate-section-list{
     font-size: 16px;
     margin: 3px 15px 0px 15px;
 }
+
+footer .ctl-logo img {
+    margin-top: 15px;
+}
