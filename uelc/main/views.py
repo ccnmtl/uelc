@@ -31,14 +31,13 @@ from uelc.main.helper_functions import (
     reset_page, page_submit, admin_ajax_page_submit,
     gen_group_token, gen_fac_token, get_user_last_location
 )
-from uelc.main.models import (
-    Cohort, UserProfile, Case, CaseMap,
-    CaseAnswer, CaseQuiz)
+from uelc.main.models import (Cohort, UserProfile, Case, CaseAnswer, CaseQuiz)
 from uelc.main.templatetags.accessible import is_section_unlocked
 from uelc.mixins import (
     LoggedInMixin, LoggedInFacilitatorMixin,
     SectionMixin, LoggedInMixinAdmin, DynamicHierarchyMixin,
     RestrictedModuleMixin)
+from uelc.main.utils import random_string
 
 
 class IndexView(TemplateView):
@@ -1208,28 +1207,88 @@ class DeleteCaseAnswerView(LoggedInMixinAdmin,
 class CloneHierarchyWithCasesView(CloneHierarchyView):
     form_class = UELCCloneHierarchyForm
 
+    @staticmethod
+    def get_unused_cohort_name(hierarchy_name):
+        """Get a cohort name that's not in use."""
+        cohort_name = '{}-cohort'.format(hierarchy_name)
+        if not Cohort.objects.filter(name=cohort_name).exists():
+            return cohort_name
+        else:
+            return '{}-{}'.format(cohort_name, random_string(5))
+
+    @classmethod
+    def prepare_clone(cls, cloned_h, original_h):
+        """Do UELC-specific hierarchy cloning operations.
+
+        Returns a dictionary containing the created usernames
+        and the name of the created cohort.
+        """
+        original_cases = Case.objects.filter(hierarchy=original_h)
+        for case in original_cases:
+            # Clone the original hierarchy's cases
+            newcase = Case.objects.create(
+                hierarchy=cloned_h,
+                name=cloned_h.name,
+                description=case.description)
+
+            # Make a cohort for the cloned hierarchy.
+            cohort_name = cls.get_unused_cohort_name(cloned_h.name)
+            try:
+                cloned_cohort = Cohort.objects.create(name=cohort_name)
+            except IntegrityError:
+                cloned_cohort = Cohort.objects.create(
+                    name='{}-cohort-{}'.format(
+                        cloned_h.name, random_string(5)))
+
+            # Initialize the cohort with four users and one admin.
+
+            created_usernames = []
+
+            for i in range(4):
+                username = '{}-{}'.format(cloned_h.name, i + 1)
+                user = User.objects.create_user(
+                    username=username, password=username)
+                UserProfile.objects.create(
+                    user=user,
+                    profile_type='group_user',
+                    cohort=cloned_cohort)
+                created_usernames.append(username)
+
+            username = '{}-admin'.format(cloned_h.name)
+            user = User.objects.create_user(
+                username=username, password=username)
+            UserProfile.objects.create(
+                user=user,
+                profile_type='admin',
+                cohort=cloned_cohort)
+            created_usernames.append(username)
+
+            newcase.cohort.add(cloned_cohort)
+
+            return {
+                'usernames': created_usernames,
+                'cohort_name': cloned_cohort.name,
+            }
+
     def form_valid(self, form):
         rv = super(CloneHierarchyWithCasesView, self).form_valid(form)
+
+        # Pagetree has cloned the hierarchy, now do extra
+        # UELC-specific stuff.
         name = form.cleaned_data['name']
 
         clone = Hierarchy.objects.get(name=name)
         clone.get_root().clear_tree_cache()
+
         hierarchy_id = self.kwargs.get('hierarchy_id')
         original = get_object_or_404(Hierarchy, pk=hierarchy_id)
-        original_cases = Case.objects.filter(hierarchy=original)
 
-        for case in original_cases:
-            # Clone the original hierarchy's cases
-            newcase = Case.objects.create(
-                hierarchy=clone,
-                name=name,
-                description=case.description)
-            for cohort in case.cohort.all():
-                newcase.cohort.add(cohort)
-            for casemap in CaseMap.objects.filter(case=case):
-                CaseMap.objects.get_or_create(
-                    case=newcase,
-                    user=casemap.user)
+        d = self.prepare_clone(clone, original)
+        messages.success(self.request,
+                         'Users created: {}'.format(
+                             ', '.join(d['usernames'])))
+        messages.success(self.request,
+                         'Cohort created: {}'.format(d['cohort_name']))
 
         return rv
 
