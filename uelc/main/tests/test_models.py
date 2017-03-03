@@ -185,7 +185,7 @@ class ImageUploadItemTest(TestCase):
 class CaseQuizTest(TestCase):
     def test_create(self):
         r = FakeReq()
-        r.POST = {'description': 'description', 'rhetorical': 'rhetorical',
+        r.POST = {'description': 'description', 'rhetorical': True,
                   'allow_redo': True, 'show_submit_state': False}
         casequiz = CaseQuiz.create(r)
         self.assertEquals(casequiz.description, 'description')
@@ -213,27 +213,27 @@ class CaseQuizTest(TestCase):
         self.assertTrue(sub in cq.submission_set.filter(user=user))
 
     def test_make_casemap(self):
-        UELCModuleFactory()
+        m = UELCModuleFactory()
         cq = CaseQuizFactory()
         user = GroupUserFactory()
         cq.pageblocks.add(PageBlock.objects.last())
-        data = {'question': 1}
+        data = {'question': m.case.pk}
         cq.make_casemap(user, data, None, 'question')
         self.assertEqual(
-            CaseMap.objects.get(user=user, case_id=1).value,
-            '0000000000000000100000')
+            CaseMap.objects.get(user=user, case_id=m.case.pk).value,
+            '0000000000000000{}00000'.format(m.case.pk))
 
     def test_make_casemap_with_multiple_casemaps(self):
-        UELCModuleFactory()
+        m = UELCModuleFactory()
         cq = CaseQuizFactory()
         user = GroupUserFactory()
-        CaseMap.objects.create(user=user, case_id=1)
-        CaseMap.objects.create(user=user, case_id=1)
+        CaseMap.objects.create(user=user, case_id=m.case.pk)
+        CaseMap.objects.create(user=user, case_id=m.case.pk)
         cq.pageblocks.add(PageBlock.objects.last())
-        data = {'question': 1}
+        data = {'question': m.case.pk}
         cq.make_casemap(user, data, None, 'question')
         self.assertEqual(
-            CaseMap.objects.filter(user=user, case_id=1).count(),
+            CaseMap.objects.filter(user=user, case_id=m.case.pk).count(),
             2)
 
 

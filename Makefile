@@ -7,10 +7,10 @@ all: jenkins
 
 include *.mk
 
-travis: jenkins integration
+travis: integration
 
 integration: check
-	$(MANAGE) jenkins --settings=$(APP).settings_integration
+	$(MANAGE) test --settings=$(APP).settings_integration
 
 behave: check
 	$(MANAGE) behave
