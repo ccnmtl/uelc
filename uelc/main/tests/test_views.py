@@ -882,30 +882,31 @@ class CloneHierarchyWithCasesViewTest(TestCase):
             'hierarchy_id': self.h.pk
         })
         r = self.client.post(url, {
-            'name': 'test',
-            'base_url': 'test',
+            'name': 'cloned',
+            'base_url': 'cloned',
         }, follow=True)
 
         self.assertEqual(r.status_code, 200)
 
-        cloned_h = Hierarchy.objects.get(name='test')
-        self.assertEqual(cloned_h.base_url, '/pages/test/')
+        cloned_h = Hierarchy.objects.get(name='cloned')
+        self.assertEqual(cloned_h.base_url, '/pages/cloned/')
         self.assertEqual(Case.objects.filter(hierarchy=cloned_h).count(), 1)
 
+        orig_case = Case.objects.filter(hierarchy=self.h).first()
         cloned_case = Case.objects.filter(hierarchy=cloned_h).first()
-        self.assertEqual(cloned_case.name, 'test')
+        self.assertNotEqual(orig_case, cloned_case)
+        self.assertEqual(cloned_case.name, 'cloned')
         self.assertEqual(cloned_case.description, self.case.description)
         self.assertEqual(cloned_case.cohort.count(), self.case.cohort.count())
-        self.assertEqual(set(cloned_case.cohort.all()),
-                         set(self.case.cohort.all()))
+        self.assertNotEqual(set(cloned_case.cohort.all()),
+                            set(self.case.cohort.all()))
 
-        self.assertEqual(
-            CaseMap.objects.filter(
-                case=cloned_case,
-                user=self.profile.user).count(), 1)
-        cloned_casemap = CaseMap.objects.get(
-            case=cloned_case, user=self.profile.user)
-        self.assertEqual(cloned_casemap.value, '')
+        # Assert that the cloned hierarchy has a new cohort.
+        self.assertEqual(len(orig_case.cohorts), 1)
+        self.assertEqual(len(cloned_case.cohorts), 1)
+        self.assertNotEqual(orig_case.cohorts[0], cloned_case.cohorts[0])
+
+        self.assertEqual(CaseMap.objects.filter(case=cloned_case).count(), 0)
 
         # Find the "Decision Block" defined in UELCModuleFactory. This is
         # represented by the CaseQuiz class.
@@ -973,6 +974,23 @@ class CloneHierarchyWithCasesViewTest(TestCase):
         cloned_block = cloned_section.pageblock_set.first()
         self.assertEqual(block.as_dict(), cloned_block.as_dict())
 
+        # Verify that the clone process created a new cohort attached
+        # to the cloned case, with 4 users and an admin.
+        self.assertEqual(len(cloned_case.cohorts), 1)
+        cloned_cohort = cloned_case.cohorts[0]
+        self.assertEqual(len(cloned_cohort._get_users()), 5)
+        users = cloned_cohort._get_users()
+        self.assertEqual(
+            len(filter(lambda x: x.username == 'cloned-1', users)), 1)
+        self.assertEqual(
+            len(filter(lambda x: x.username == 'cloned-2', users)), 1)
+        self.assertEqual(
+            len(filter(lambda x: x.username == 'cloned-3', users)), 1)
+        self.assertEqual(
+            len(filter(lambda x: x.username == 'cloned-4', users)), 1)
+        self.assertEqual(
+            len(filter(lambda x: x.username == 'cloned-admin', users)), 1)
+
     def test_post_with_spaces_in_name(self):
         url = reverse('clone-hierarchy', kwargs={
             'hierarchy_id': self.h.pk
@@ -1003,8 +1021,8 @@ class CloneHierarchyWithCasesViewTest(TestCase):
         self.assertEqual(cloned_case.name, 'Test Case')
         self.assertEqual(cloned_case.description, self.case.description)
         self.assertEqual(cloned_case.cohort.count(), self.case.cohort.count())
-        self.assertEqual(set(cloned_case.cohort.all()),
-                         set(self.case.cohort.all()))
+        self.assertNotEqual(set(cloned_case.cohort.all()),
+                            set(self.case.cohort.all()))
 
     def test_post_with_name_different_than_url(self):
         url = reverse('clone-hierarchy', kwargs={
@@ -1036,8 +1054,8 @@ class CloneHierarchyWithCasesViewTest(TestCase):
         self.assertEqual(cloned_case.name, 'Some Random Name')
         self.assertEqual(cloned_case.description, self.case.description)
         self.assertEqual(cloned_case.cohort.count(), self.case.cohort.count())
-        self.assertEqual(set(cloned_case.cohort.all()),
-                         set(self.case.cohort.all()))
+        self.assertNotEqual(set(cloned_case.cohort.all()),
+                            set(self.case.cohort.all()))
 
     def test_post_with_duplicate_base_url(self):
         url = reverse('clone-hierarchy', kwargs={
