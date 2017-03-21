@@ -52,47 +52,41 @@
                   <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-case-form-modal-{{case.id}}" href="#edit-case-form-modal-{{case.id}}">Edit</button>
 
                   <div id="edit-case-form-modal-{{case.id}}" class="modal fade">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <div class="modal-header panel-heading">Edit Case</div>
-                        <div class="modal-body">
-                          <div id="edit-case" class="panel panel-default">
-                            <div class="panel-heading">Edit Case</div>
-                            <div class="panel-body">
-                              <form data-toggle="validator" id="edit-case-form" action="/uelcadmin/editcase/" method="post">{% csrf_token %}
-                                {{ case.edit_form|bootstrap }}
-                                <input type="hidden" name="case_id" value="{{case.id}}">
-                                <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                                <input type="reset" class="reset-button hidden" value="Reset" />
-                              </form>
-                            </div><!-- End Panel Body -->
-                          </div><!--end #edit-case-->
-                        </div> <!--end modal-body-->
-                      </div><!-- end modal-content-->
-                    </div><!--end .model-dialog-->
+                      <div class="modal-dialog">
+                          <div class="modal-content">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                              <div class="modal-header panel-heading">Edit Case</div>
+                              <div class="modal-body">
+                                  <form data-toggle="validator" id="edit-case-form-{{case.id}}" action="/uelcadmin/editcase/" method="post">{% csrf_token %}
+                                      {{ case.edit_form|bootstrap }}
+                                      <input type="hidden" name="case_id" value="{{case.id}}">
+                                      <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                                      <input type="reset" class="reset-button hidden" value="Reset" />
+                                  </form>
+                              </div> <!--end modal-body-->
+                          </div><!-- end modal-content-->
+                      </div><!--end .model-dialog-->
                   </div><!--end #edit-case-form-modal .modal-->
 
-                  <button class="btn btn-danger btn-sm" data-toggle="modal"  data-target="#delete-case-form-modal-{{case.id}}" href="#delete-case-form-modal-{{case.id}}">Delete</button>
+                  <button class="btn btn-danger btn-sm" data-toggle="modal"
+                          data-target="#delete-case-form-modal-{{case.id}}"
+                          href="#delete-case-form-modal-{{case.id}}">
+                      Delete
+                  </button>
 
                   <div id="delete-case-form-modal-{{case.id}}" class="modal fade">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <div class="modal-header panel-heading">Delete Case</div>
-                            <div class="modal-body">
-                              <div id="delete-case" class="panel panel-default">
-                                <div class="panel-heading">ARE YOU SURE?</div>
-                                <div class="panel-body">
-                                  <form data-toggle="validator" id="delete-case-form" action="/uelcadmin/deletecase/" method="post">{% csrf_token %}
-                                    <input type="hidden" name="case_id" value="{{case.id}}">
-                                    <input type="submit" class="btn btn-danger btn btn-primary form-submit" value="Confirm Delete">
+                      <div class="modal-dialog">
+                          <div class="modal-content">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                              <div class="modal-header panel-heading">Delete Case</div>
+                              <div class="modal-body">
+                                  <form data-toggle="validator" id="delete-case-form-{{case.id}}" action="/uelcadmin/deletecase/" method="post">{% csrf_token %}
+                                      <input type="hidden" name="case_id" value="{{case.id}}">
+                                      <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
                                   </form>
-                                </div><!--end panel-body-->
-                              </div><!--end #delete-case-->
-                            </div> <!--end modal-body-->
-                        </div><!-- end modal-content-->
-                    </div><!--end .modal-dialog-->
+                              </div> <!--end modal-body-->
+                          </div><!-- end modal-content-->
+                      </div><!--end .modal-dialog-->
                   </div>
                 </td>
               </tr>
@@ -158,12 +152,12 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <div class="modal-header panel-heading">Delete Hierarchy</div>
                             <div class="modal-body">
-                              <div id="delete-hierarchy" class="panel panel-default">
+                              <div id="delete-hierarchy-{{h.0.id}}" class="panel panel-default">
                                 <div class="panel-heading">ARE YOU SURE?</div>
                                 <div class="panel-body">
                                   <form data-toggle="validator" id="delete-hierarchy-form" action="/uelcadmin/deletehierarchy/" method="post">{% csrf_token %}
                                     <input type="hidden" name="hierarchy_id" value="{{h.0.id}}">
-                                    <input type="submit" class="btn btn-danger btn btn-primary form-submit" value="Confirm Delete">
+                                    <input type="submit" class="btn btn-danger btn-primary form-submit" value="Confirm Delete">
                                   </form>
                                 </div>
                               </div><!--end #hierarchiess-->
@@ -178,5 +172,5 @@
         </table>
       </div><!--end panel-body-->
   </div><!--end panel-->
-  
+
 {% endblock %}

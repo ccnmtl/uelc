@@ -15,23 +15,20 @@
         <li><strong>Assistants</strong> may facilitate case control, edit pages and preview content from the perspective of other profile types.</li>
         <li><strong>Group</strong> users are given to group leaders to register group decision-making in the system. Each group profile is given a decision path in the case control for the assistant and admin users to facilitate.</li>
          </ul>
- 
+
           <div id="add-user-form-modal" class="modal fade">
             <div class="modal-dialog">
               <div class="modal-content">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <div class="modal-header panel-heading">Add User</div>
                 <div class="modal-body">
-                  <div id="users" class="panel panel-default">
-                    <div class="panel-heading">Users</div>
-                    <div class="panel-body">
-                      <form role="form" data-toggle="validator" id="add-user-form" action="/uelcadmin/createuser/" method="post">{% csrf_token %}
-                        {{create_user_form|bootstrap}}
-                        <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                        <input type="reset" class="reset-button hidden" value="Reset" />
-                      </form>
+                    <div id="users">
+                        <form role="form" data-toggle="validator" id="add-user-form" action="/uelcadmin/createuser/" method="post">{% csrf_token %}
+                            {{create_user_form|bootstrap}}
+                            <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                            <input type="reset" class="reset-button hidden" value="Reset" />
+                        </form>
                     </div>
-                  </div><!--end #users-->
                 </div> <!--end modal-dialog-->
               </div><!-- end modal-content-->
           </div><!--end .model-body-->
@@ -81,28 +78,24 @@
                   <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-user-form-modal-{{user.id}}" href="#edit-user-form-modal-{{user.id}}">Edit</button>
 
                   <div id="edit-user-form-modal-{{user.id}}" class="modal fade">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <div class="modal-header panel-heading">Edit User</div>
-                            <div class="modal-body">
-                              <div id="edit-user" class="panel panel-default">
-                                <div class="panel-heading">Edit User</div>
-                                <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-user-form" action="{% url 'uelcadmin-edit-user' user.id %}" method="post">{% csrf_token %}
-                                    {% if user.profile %}
-                                    {{user.profile.edit_form|bootstrap}}
-                                    {% endif %}
-                                    <p><a target="_blank" href="/uelcadmin/edituserpass/{{user.id}}/">Change Password</a></p>
-                                    <input type="hidden" name="user_id" value="{{user.id}}">
-                                    <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                                    <input type="reset" class="reset-button hidden" value="Reset" />
+                      <div class="modal-dialog">
+                          <div class="modal-content">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                              <div class="modal-header panel-heading">Edit User</div>
+                              <div class="modal-body">
+                                  <form data-toggle="validator" id="edit-user-form-{{user.id}}"
+                                        action="{% url 'uelcadmin-edit-user' user.id %}" method="post">{% csrf_token %}
+                                      {% if user.profile %}
+                                          {{user.profile.edit_form|bootstrap}}
+                                      {% endif %}
+                                      <p><a target="_blank" href="/uelcadmin/edituserpass/{{user.id}}/">Change Password</a></p>
+                                      <input type="hidden" name="user_id" value="{{user.id}}">
+                                      <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                                      <input type="reset" class="reset-button hidden" value="Reset" />
                                   </form>
-                                </div>
-                              </div><!--end #hierarchiess-->
-                              </div> <!--end modal-dialog-->
-                        </div><!-- end modal-content-->
-                    </div><!--end .model-body-->
+                              </div> <!--end modal-body-->
+                          </div><!-- end modal-content-->
+                      </div><!--end .model-body-->
                   </div><!--end #edit-user-form-modal .modal-->
 
                   <button class="btn btn-danger btn-sm" data-toggle="modal"  data-target="#delete-user-form-modal-{{user.id}}" href="#delete-user-form-modal-{{user.id}}">Delete</button>
@@ -112,10 +105,10 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <div class="modal-header panel-heading">Delete User</div>
                             <div class="modal-body">
-                              <div id="edit-user" class="panel panel-default">
+                              <div id="delete-user-{{user.id}}" class="panel panel-default">
                                 <div class="panel-heading">ARE YOU SURE?</div>
                                 <div class="panel-body">
-                                  <form data-toggle="validator" id="edit-user-form" action="/uelcadmin/deleteuser/" method="post">{% csrf_token %}
+                                  <form data-toggle="validator" id="delete-user-form-{{user.id}}" action="/uelcadmin/deleteuser/" method="post">{% csrf_token %}
                                     <input type="hidden" name="user_id" value="{{user.id}}">
                                     <input type="submit" class="btn btn-danger btn btn-primary form-submit" value="Confirm Delete">
                                   </form>
