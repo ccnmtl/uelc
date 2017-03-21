@@ -73,7 +73,7 @@
                     </div><!--end .model-dialog-->
                   </div><!--end #edit-case-form-modal .modal-->
 
-                  <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-case-form-modal-{{case.id}}" href="#delete-case-form-modal-{{case.id}}">Delete</button>
+                  <button class="btn btn-danger btn-sm" data-toggle="modal"  data-target="#delete-case-form-modal-{{case.id}}" href="#delete-case-form-modal-{{case.id}}">Delete</button>
 
                   <div id="delete-case-form-modal-{{case.id}}" class="modal fade">
                     <div class="modal-dialog">
@@ -86,7 +86,7 @@
                                 <div class="panel-body">
                                   <form data-toggle="validator" id="delete-case-form" action="/uelcadmin/deletecase/" method="post">{% csrf_token %}
                                     <input type="hidden" name="case_id" value="{{case.id}}">
-                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
+                                    <input type="submit" class="btn btn-danger btn btn-primary form-submit" value="Confirm Delete">
                                   </form>
                                 </div><!--end panel-body-->
                               </div><!--end #delete-case-->
@@ -151,7 +151,7 @@
                 </td>
                 <td>
 
-                  <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-hierarchy-form-modal-{{h.0.id}}" href="#delete-hierarchy-form-modal-{{h.0.id}}">Delete</button>
+                  <button class="btn btn-danger btn-sm" data-toggle="modal"  data-target="#delete-hierarchy-form-modal-{{h.0.id}}" href="#delete-hierarchy-form-modal-{{h.0.id}}">Delete</button>
                   <div id="delete-hierarchy-form-modal-{{h.0.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -163,7 +163,7 @@
                                 <div class="panel-body">
                                   <form data-toggle="validator" id="delete-hierarchy-form" action="/uelcadmin/deletehierarchy/" method="post">{% csrf_token %}
                                     <input type="hidden" name="hierarchy_id" value="{{h.0.id}}">
-                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
+                                    <input type="submit" class="btn btn-danger btn btn-primary form-submit" value="Confirm Delete">
                                   </form>
                                 </div>
                               </div><!--end #hierarchiess-->
