@@ -25,10 +25,12 @@
         <p>Edit Password for: {{user.username}}
       </div>
 
-      <form role="form" data-toggle="validator" id="add-user-form" action="." method="post">{% csrf_token %}
-        {{edit_user_pass_form|bootstrap}}
-        <input type="submit" class="btn btn-primary form-submit" value="Submit">
-        <input type="reset" class="reset-button hidden" value="Reset" />
-      </form>
+      <div class="panel-body">
+          <form role="form" data-toggle="validator" id="add-user-form" action="." method="post">{% csrf_token %}
+              {{edit_user_pass_form|bootstrap}}
+              <input type="submit" class="btn btn-primary form-submit" value="Submit">
+              <input type="reset" class="reset-button hidden" value="Reset" />
+          </form>
+      </div>
   </div>
 {% endblock %}
