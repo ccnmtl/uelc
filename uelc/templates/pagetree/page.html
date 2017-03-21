@@ -53,7 +53,7 @@
 
 {% block navrightextra %}
     {% if not request.user.profile.is_group_user %}
-        <li><a href="{{section.get_edit_url}}" class="btn-success">edit page</a></li>
+        <li><a href="{{section.get_edit_url}}" class="btn btn-success">edit page</a></li>
     {% endif %}
 {% endblock %}
 

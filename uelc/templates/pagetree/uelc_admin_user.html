@@ -105,7 +105,7 @@
                     </div><!--end .model-body-->
                   </div><!--end #edit-user-form-modal .modal-->
 
-                  <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-user-form-modal-{{user.id}}" href="#delete-user-form-modal-{{user.id}}">Delete</button>
+                  <button class="btn btn-danger btn-sm" data-toggle="modal"  data-target="#delete-user-form-modal-{{user.id}}" href="#delete-user-form-modal-{{user.id}}">Delete</button>
                   <div id="delete-user-form-modal-{{user.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -117,7 +117,7 @@
                                 <div class="panel-body">
                                   <form data-toggle="validator" id="edit-user-form" action="/uelcadmin/deleteuser/" method="post">{% csrf_token %}
                                     <input type="hidden" name="user_id" value="{{user.id}}">
-                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
+                                    <input type="submit" class="btn btn-danger btn btn-primary form-submit" value="Confirm Delete">
                                   </form>
                                 </div>
                               </div><!--end #hierarchiess-->

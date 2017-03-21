@@ -65,7 +65,7 @@
                 </td>
                 <td>
 
-                <button class="btn-danger btn-sm" data-toggle="modal"  data-target="#delete-cohort-form-modal-{{cohort.id}}" href="#delete-cohort-form-modal-{{cohort.id}}">Delete</button>
+                <button class="btn btn-danger btn-sm" data-toggle="modal"  data-target="#delete-cohort-form-modal-{{cohort.id}}" href="#delete-cohort-form-modal-{{cohort.id}}">Delete</button>
                   <div id="delete-cohort-form-modal-{{cohort.id}}" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -77,7 +77,7 @@
                                 <div class="panel-body">
                                   <form data-toggle="validator" id="delete-cohort-form" action="/uelcadmin/deletecohort/" method="post">{% csrf_token %}
                                     <input type="hidden" name="cohort_id" value="{{cohort.id}}">
-                                    <input type="submit" class="btn-danger btn btn-primary form-submit" value="Confirm Delete">
+                                    <input type="submit" class="btn btn-danger btn btn-primary form-submit" value="Confirm Delete">
                                   </form>
                                 </div>
                               </div><!--end #hierarchiess-->
