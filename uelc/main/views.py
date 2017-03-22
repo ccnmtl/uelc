@@ -1284,11 +1284,15 @@ class CloneHierarchyWithCasesView(CloneHierarchyView):
         original = get_object_or_404(Hierarchy, pk=hierarchy_id)
 
         d = self.prepare_clone(clone, original)
-        messages.success(self.request,
-                         'Users created: {}'.format(
-                             ', '.join(d['usernames'])))
-        messages.success(self.request,
-                         'Cohort created: {}'.format(d['cohort_name']))
+
+        if d and d.get('usernames'):
+            messages.success(self.request,
+                             'Users created: {}'.format(
+                                 ', '.join(d['usernames'])))
+
+        if d and d.get('cohort_name'):
+            messages.success(self.request,
+                             'Cohort created: {}'.format(d['cohort_name']))
 
         return rv
 

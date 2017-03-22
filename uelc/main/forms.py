@@ -48,7 +48,7 @@ class CreateHierarchyForm(forms.Form):
 class UELCCloneHierarchyForm(CloneHierarchyForm):
     def clean(self):
         cleaned_data = super(UELCCloneHierarchyForm, self).clean()
-        base_url = cleaned_data['base_url']
+        base_url = cleaned_data.get('base_url')
 
         # Pagetree's clone() function expects a "base_url" parameter
         # to give to the new Hierarchy.  UELC's pagetree is set up to
@@ -65,9 +65,9 @@ class UELCCloneHierarchyForm(CloneHierarchyForm):
                 raise forms.ValidationError(
                     'There\'s already a hierarchy with ' +
                     'the base_url: {}'.format(base_url))
-            self.cleaned_data['base_url'] = base_url
+            cleaned_data['base_url'] = base_url
 
-        return self.cleaned_data
+        return cleaned_data
 
 
 class EditUserPassForm(forms.Form):

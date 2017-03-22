@@ -31,7 +31,7 @@ Feature: Admin
     Then I see the text "error"
     Then I see the text "Case already exists!"
 
-  Scenario: Create a case
+  Scenario: Create a case and clone it
     Given I am signed in as a "admin"
     When I visit "/uelcadmin/case/"
     When I click the button "Add Hierarchy Item"
@@ -49,6 +49,11 @@ Feature: Admin
     Then I don't see the text "error"
     Then I don't see the text "Case already exists!"
     Then the case "created_case" exists
+
+    When I click the button "Clone"
+    Then I see the text "Clone Case"
+    When I click the button "Confirm Clone"
+    # TODO: make some assertions that pass
 
   # Scenario: Add a hierarchy item
 
