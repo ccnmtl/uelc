@@ -14,15 +14,12 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <div class="modal-header panel-heading">Add Case</div>
                         <div class="modal-body">
-                          <div id="cases" class="panel panel-default">
-                            <div class="panel-heading">Cases</div>
-                            <div class="panel-body">
-                            <form role="form" data-toggle="validator" id="add-case-form" action="/uelcadmin/createcase/" method="post">{% csrf_token %}
-                              {{casemodel.add_form|bootstrap}}
-                              <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                              <input type="reset" class="reset-button hidden" value="Reset" />
-                            </form>
-                            </div>
+                          <div id="cases">
+                              <form role="form" data-toggle="validator" id="add-case-form" action="/uelcadmin/createcase/" method="post">{% csrf_token %}
+                                  {{casemodel.add_form|bootstrap}}
+                                  <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                                  <input type="reset" class="reset-button hidden" value="Reset" />
+                              </form>
                           </div><!--end #cases-->
                         </div> <!--end modal-dialog-->
                     </div><!-- end modal-content-->
@@ -109,15 +106,12 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <div class="modal-header panel-heading">Add Case Path</div>
                     <div class="modal-body">
-                      <div id="hierarchies" class="panel panel-default">
-                        <div class="panel-heading">Case Paths</div>
-                        <div class="panel-body">
+                      <div id="hierarchies">
                           <form data-toggle="validator" id="add-hierarchy-form" action="/uelcadmin/createhierarchy/" method="post">{% csrf_token %}
-                            {{create_hierarchy_form|bootstrap}}
-                            <input type="submit" class="btn btn-primary form-submit" value="Submit">
-                            <input type="reset" class="reset-button hidden" value="Reset" />
+                              {{create_hierarchy_form|bootstrap}}
+                              <input type="submit" class="btn btn-primary form-submit" value="Submit">
+                              <input type="reset" class="reset-button hidden" value="Reset" />
                           </form>
-                        </div>
                       </div>
                       </div> <!--end modal-dialog-->
                 </div><!-- end modal-content-->
