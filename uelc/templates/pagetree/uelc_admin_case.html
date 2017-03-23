@@ -45,7 +45,7 @@
                 <td class="td-cohorts">
                     {{ case.cohortnames }}
                 </td>
-                <td style="width: 140px;">
+                <td style="width: 180px;">
                   <button class="demo btn btn-info btn-sm" data-toggle="modal"  data-target="#edit-case-form-modal-{{case.id}}" href="#edit-case-form-modal-{{case.id}}">Edit</button>
 
                   <div id="edit-case-form-modal-{{case.id}}" class="modal fade">
@@ -65,12 +65,42 @@
                       </div><!--end .model-dialog-->
                   </div><!--end #edit-case-form-modal .modal-->
 
+                  <button class="btn btn-warning btn-sm" data-toggle="modal"
+                          data-target="#clone-case-form-modal-{{case.id}}"
+                          href="#clone-case-form-modal-{{case.id}}">Clone</button>
+                  <div id="clone-case-form-modal-{{case.id}}" class="modal fade">
+                      <div class="modal-dialog">
+                          <div class="modal-content">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                              <div class="modal-header panel-heading">Clone Case</div>
+                              <div class="modal-body">
+                                  <form data-toggle="validator"
+                                        id="clone-case-form-{{case.id}}"
+                                        action="/pagetree/clone_hierarchy/{{case.id}}/" method="post">{% csrf_token %}
+                                      <div class="form-group">
+                                          <label class="control-label" for="id_clone_name_{{case.id}}">
+                                              Cloned Case Name
+                                          </label>
+                                          <input id="id_clone_name_{{case.id}}" class="form-control"
+                                                 type="text" name="name" value="{{case.name}}-cloned">
+                                          <p class="help-block">
+                                              This will be the name of your new case.
+                                          </p>
+
+                                          <input type="hidden" name="base_url">
+                                      </div>
+                                      <button type="submit" class="btn btn-primary form-submit">Confirm Clone</button>
+                                  </form>
+                              </div> <!--end modal-body-->
+                          </div><!-- end modal-content-->
+                      </div><!--end .modal-dialog-->
+                  </div>
+
                   <button class="btn btn-danger btn-sm" data-toggle="modal"
                           data-target="#delete-case-form-modal-{{case.id}}"
                           href="#delete-case-form-modal-{{case.id}}">
                       Delete
                   </button>
-
                   <div id="delete-case-form-modal-{{case.id}}" class="modal fade">
                       <div class="modal-dialog">
                           <div class="modal-content">
