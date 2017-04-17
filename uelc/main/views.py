@@ -1218,57 +1218,14 @@ class CloneHierarchyWithCasesView(CloneHierarchyView):
 
     @classmethod
     def prepare_clone(cls, cloned_h, original_h):
-        """Do UELC-specific hierarchy cloning operations.
-
-        Returns a dictionary containing the created usernames
-        and the name of the created cohort.
-        """
+        """Do UELC-specific hierarchy cloning operations."""
         original_cases = Case.objects.filter(hierarchy=original_h)
         for case in original_cases:
             # Clone the original hierarchy's cases
-            newcase = Case.objects.create(
+            Case.objects.create(
                 hierarchy=cloned_h,
                 name=cloned_h.name,
                 description=case.description)
-
-            # Make a cohort for the cloned hierarchy.
-            cohort_name = cls.get_unused_cohort_name(cloned_h.name)
-            try:
-                cloned_cohort = Cohort.objects.create(name=cohort_name)
-            except IntegrityError:
-                cloned_cohort = Cohort.objects.create(
-                    name='{}-cohort-{}'.format(
-                        cloned_h.name, random_string(5)))
-
-            # Initialize the cohort with four users and one admin.
-
-            created_usernames = []
-
-            for i in range(4):
-                username = '{}-{}'.format(cloned_h.name, i + 1)
-                user = User.objects.create_user(
-                    username=username, password=username)
-                UserProfile.objects.create(
-                    user=user,
-                    profile_type='group_user',
-                    cohort=cloned_cohort)
-                created_usernames.append(username)
-
-            username = '{}-admin'.format(cloned_h.name)
-            user = User.objects.create_user(
-                username=username, password=username)
-            UserProfile.objects.create(
-                user=user,
-                profile_type='admin',
-                cohort=cloned_cohort)
-            created_usernames.append(username)
-
-            newcase.cohort.add(cloned_cohort)
-
-            return {
-                'usernames': created_usernames,
-                'cohort_name': cloned_cohort.name,
-            }
 
     def form_valid(self, form):
         rv = super(CloneHierarchyWithCasesView, self).form_valid(form)
@@ -1283,16 +1240,7 @@ class CloneHierarchyWithCasesView(CloneHierarchyView):
         hierarchy_id = self.kwargs.get('hierarchy_id')
         original = get_object_or_404(Hierarchy, pk=hierarchy_id)
 
-        d = self.prepare_clone(clone, original)
-
-        if d and d.get('usernames'):
-            messages.success(self.request,
-                             'Users created: {}'.format(
-                                 ', '.join(d['usernames'])))
-
-        if d and d.get('cohort_name'):
-            messages.success(self.request,
-                             'Cohort created: {}'.format(d['cohort_name']))
+        self.prepare_clone(clone, original)
 
         return rv
 
