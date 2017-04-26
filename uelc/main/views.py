@@ -774,12 +774,39 @@ class UELCAdminCreateCohortView(LoggedInMixinAdmin,
         name = request.POST.get('name', '')
         try:
             cohort = Cohort.objects.create(name=name)
-            cohort.save()
         except IntegrityError:
             error = ("A cohort with that name already exists! "
                      "Please change the name, "
                      "or use the existing cohort.")
             messages.error(request, error, extra_tags='createCohortViewError')
+
+            url = request.META.get('HTTP_REFERER')
+            return HttpResponseRedirect(url)
+
+        usernames = []
+
+        for i in range(4):
+            username = '{}-G{}'.format(cohort.name, i + 1)
+            user = User.objects.create_user(
+                username=username, password=username)
+            UserProfile.objects.create(
+                user=user,
+                profile_type='group_user',
+                cohort=cohort)
+            usernames.append(username)
+
+        username = '{}-F1'.format(cohort.name)
+        user = User.objects.create_user(
+            username=username, password=username)
+        UserProfile.objects.create(
+            user=user,
+            profile_type='assistant',
+            cohort=cohort)
+        usernames.append(username)
+
+        messages.success(
+            self.request,
+            'Users created: {}'.format(', '.join(usernames)))
 
         url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
