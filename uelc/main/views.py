@@ -102,22 +102,18 @@ class UELCPageView(LoggedInMixin,
 
         if not self.request.user.profile.is_group_user():
             # then root has no children yet
-            action_args = dict(
-                error="You just tried accessing a case that has \
-                      no content. You have been forwarded over \
-                      to the root page of the case so that you \
-                      can and add some content if you wish to.")
-            messages.error(self.request, action_args['error'],
-                           extra_tags='rootUrlError')
+            error = ("You just tried accessing a case that has "
+                     "no content. You have been forwarded over "
+                     "to the root page of the case so that you "
+                     "can and add some content if you wish to.")
+            messages.error(self.request, error, extra_tags='rootUrlError')
             path = section.hierarchy.base_url + 'edit/'
         else:
-            action_args = dict(
-                error="For some reason the case you tried to \
-                      access does not have any content yet. \
-                      Please choose another case, or alert \
-                      your facilitator.")
-            messages.error(self.request, action_args['error'],
-                           extra_tags='rootUrlError')
+            error = ("For some reason the case you tried to "
+                     "access does not have any content yet. "
+                     "Please choose another case, or alert "
+                     "your facilitator.")
+            messages.error(self.request, error, extra_tags='rootUrlError')
             path = self.no_root_fallback_url
         return HttpResponseRedirect(path)
 
@@ -603,11 +599,9 @@ class UELCAdminDeleteUserView(LoggedInMixinAdmin,
         if not user.is_superuser:
             user.delete()
         else:
-            action_args = dict(
-                error="Sorry, you are not permitted to \
-                      delete superuser accounts.")
-            messages.error(request, action_args['error'],
-                           extra_tags='deleteSuperUser')
+            error = ("Sorry, you are not permitted to "
+                     "delete superuser accounts.")
+            messages.error(request, error, extra_tags='deleteSuperUser')
         url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
 
@@ -680,10 +674,8 @@ class UELCAdminEditUserPassView(LoggedInMixinAdmin,
         password = request.POST.get('newPassword1', '')
         user.set_password(password)
         user.save()
-        action_args = dict(
-            success="User password has been updated!")
-        messages.success(request, action_args['success'],
-                         extra_tags='userPasswordSuccess')
+        success = "User password has been updated!"
+        messages.success(request, success, extra_tags='userPasswordSuccess')
         return HttpResponseRedirect(reverse('uelcadmin'))
 
 
@@ -698,10 +690,9 @@ class UELCAdminCreateHierarchyView(LoggedInMixinAdmin,
             hier = Hierarchy.objects.filter(Q(base_url=url) | Q(name=name))
 
             if hier.exists():
-                action_args = dict(
-                    error="Hierarchy exists! Please use the exisiting one,\
-                          or create one with a different name and url.")
-                messages.error(request, action_args['error'],
+                error = ("Hierarchy exists! Please use the exisiting one, "
+                         "or create one with a different name and url.")
+                messages.error(request, error,
                                extra_tags='createCaseViewError')
                 url = request.META.get('HTTP_REFERER')
                 return HttpResponseRedirect(url)
@@ -785,12 +776,10 @@ class UELCAdminCreateCohortView(LoggedInMixinAdmin,
             cohort = Cohort.objects.create(name=name)
             cohort.save()
         except IntegrityError:
-            action_args = dict(
-                error="A cohort with that name already exists!\
-                      Please change the name,\
-                      or use the existing cohort.")
-            messages.error(request, action_args['error'],
-                           extra_tags='createCohortViewError')
+            error = ("A cohort with that name already exists! "
+                     "Please change the name, "
+                     "or use the existing cohort.")
+            messages.error(request, error, extra_tags='createCohortViewError')
 
         url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
@@ -853,12 +842,10 @@ class UELCAdminEditCohortView(LoggedInMixinAdmin, TemplateView):
                 user.profile.save()
 
         except IntegrityError:
-            action_args = dict(
-                error="A cohort with that name already exists!\
-                      Please change the name,\
-                      or use the existing cohort.")
-            messages.error(request, action_args['error'],
-                           extra_tags='editCohortViewError')
+            error = ("A cohort with that name already exists! "
+                     "Please change the name, "
+                     "or use the existing cohort.")
+            messages.error(request, error, extra_tags='editCohortViewError')
 
         url = request.META.get('HTTP_REFERER')
         return HttpResponseRedirect(url)
@@ -877,30 +864,23 @@ class UELCAdminCreateCaseView(LoggedInMixinAdmin,
         case_exists_name = Case.objects.filter(name=name)
         case_exists_hier = Case.objects.filter(hierarchy=hierarchy)
         if case_exists_name.exists():
-            action_args = dict(
-                error="Case with this name already exists!\
-                      Please use existing case or rename.")
-            messages.error(request, action_args['error'],
-                           extra_tags='createCaseViewError')
+            error = ("Case with this name already exists! "
+                     "Please use existing case or rename.")
+            messages.error(request, error, extra_tags='createCaseViewError')
             url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(url)
         if case_exists_hier.exists():
-            action_args = dict(
-                error="Case already exists! A case has already\
-                      been created that is attached to the\
-                      selected hierarchy. Do you need to create\
-                      another hierarchy or should you use\
-                      an existing case?")
-            messages.error(request, action_args['error'],
-                           extra_tags='createCaseViewError')
+            error = ("Case already exists! A case has already "
+                     "been created that is attached to the "
+                     "selected hierarchy. Do you need to create "
+                     "another hierarchy or should you use "
+                     "an existing case?")
+            messages.error(request, error, extra_tags='createCaseViewError')
             url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(url)
         if hierarchy == "" or cohort == "":
-            action_args = dict(
-                error="Please make sure a hierarchy and\
-                      cohort is selected")
-            messages.error(request, action_args['error'],
-                           extra_tags='createCaseViewError')
+            error = "Please make sure a hierarchy and cohort is selected"
+            messages.error(request, error, extra_tags='createCaseViewError')
             url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(url)
 
@@ -941,30 +921,23 @@ class UELCAdminEditCaseView(LoggedInMixinAdmin,
         case_id = request.POST.get('case_id', '')
 
         if case_exists_name.count() > 1:
-            action_args = dict(
-                error="Case with this name already exists!\
-                      Please use existing case or rename.")
-            messages.error(request, action_args['error'],
-                           extra_tags='createCaseViewError')
+            error = ("Case with this name already exists! "
+                     "Please use existing case or rename.")
+            messages.error(request, error, extra_tags='createCaseViewError')
             url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(url)
         if case_exists_hier.count() > 1:
-            action_args = dict(
-                error="Case already exists! A case has already\
-                      been created that is attached to the\
-                      selected hierarchy. Do you need to create\
-                      another hierarchy or should you use\
-                      an existing case?")
-            messages.error(request, action_args['error'],
-                           extra_tags='createCaseViewError')
+            error = ("Case already exists! A case has already "
+                     "been created that is attached to the "
+                     "selected hierarchy. Do you need to create "
+                     "another hierarchy or should you use "
+                     "an existing case?")
+            messages.error(request, error, extra_tags='createCaseViewError')
             url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(url)
         if hierarchy == "" or cohorts == "":
-            action_args = dict(
-                error="Please make sure a hierarchy and\
-                      cohort is selected")
-            messages.error(request, action_args['error'],
-                           extra_tags='createCaseViewError')
+            error = "Please make sure a hierarchy and cohort is selected"
+            messages.error(request, error, extra_tags='createCaseViewError')
             return HttpResponseRedirect('/uelcadmin/')
 
         coh_obj = Cohort.objects.filter(id__in=cohorts)

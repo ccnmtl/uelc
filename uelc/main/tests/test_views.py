@@ -209,8 +209,8 @@ class TestAdminBasicViews(TestCase):
         self.assertEqual(response.status_code, 200)
         m = list(response.context['messages'])
         self.assertEqual(len(m), 1)
-        tmp_stg = "Hierarchy exists! Please use the exisiting one,\
-                          or create one with a different name and url."
+        tmp_stg = ("Hierarchy exists! Please use the exisiting one, "
+                   "or create one with a different name and url.")
         er_msg = str(m[0])
         self.assertEqual(tmp_stg.strip(), er_msg.strip())
 
@@ -461,8 +461,7 @@ class TestAdminBasicViews(TestCase):
         self.assertEqual(response.status_code, 200)
         m = list(response.context['messages'])
         self.assertEqual(len(m), 1)
-        tmp_stg = "Sorry, you are not permitted to \
-                      delete superuser accounts."
+        tmp_stg = "Sorry, you are not permitted to delete superuser accounts."
         er_msg = str(m[0])
         self.assertEqual(tmp_stg.strip(), er_msg.strip())
 
@@ -544,8 +543,8 @@ class TestAdminErrorHandlingInCaseViews(TestCase):
         m = list(response2.context['messages'])
         self.assertEqual(len(m), 1)
         self.assertEqual(len(list(response2.context['messages'])), 1)
-        tmp_stg = 'Case with this name already exists!' + \
-            '                      Please use existing case or rename.'
+        tmp_stg = ('Case with this name already exists! '
+                   'Please use existing case or rename.')
         er_msg = str(m[0]).strip()
         self.assertEqual(tmp_stg.strip(), er_msg)
 
@@ -573,12 +572,11 @@ class TestAdminErrorHandlingInCaseViews(TestCase):
         self.assertRedirects(response2, '/uelcadmin/')
         m = list(response2.context['messages'])
         self.assertEqual(len(m), 1)
-        tmp_stg = (
-            'Case already exists! A case has already' +
-            '                      been created that is attached to the' +
-            '                      selected hierarchy. Do you need to create' +
-            '                      another hierarchy or should you use' +
-            '                      an existing case?')
+        tmp_stg = ('Case already exists! A case has already '
+                   'been created that is attached to the '
+                   'selected hierarchy. Do you need to create '
+                   'another hierarchy or should you use '
+                   'an existing case?')
         er_msg = str(m[0])
         self.assertEqual(tmp_stg.strip(), er_msg.strip())
 
@@ -600,8 +598,8 @@ class TestAdminErrorHandlingInCaseViews(TestCase):
         self.assertRedirects(response, '/uelcadmin/')
         m = list(response.context['messages'])
         self.assertEqual(len(m), 1)
-        tmp_stg = 'Case with this name already exists!' + \
-            '                      Please use existing case or rename.'
+        tmp_stg = ('Case with this name already exists! '
+                   'Please use existing case or rename.')
         er_msg = str(m[0])
         self.assertEqual(tmp_stg.strip(), er_msg.strip())
 
