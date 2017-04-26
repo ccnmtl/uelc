@@ -19,7 +19,9 @@ from gate_block.models import GateSubmission, SectionSubmission, GateBlock
 from gate_block.tests.factories import SectionSubmissionFactory,\
     GateSubmissionFactory
 from uelc.main.helper_functions import content_blocks_by_hierarchy_and_class
-from uelc.main.models import Case, CaseMap, CaseQuiz, CaseAnswer
+from uelc.main.models import (
+    Case, CaseMap, CaseQuiz, CaseAnswer, Cohort, UserProfile
+)
 from uelc.main.tests.factories import (
     GroupUpFactory, AdminUpFactory,
     CaseFactory, CaseMapFactory, CohortFactory, FacilitatorUpFactory,
@@ -215,10 +217,27 @@ class TestAdminBasicViews(TestCase):
         self.assertEqual(tmp_stg.strip(), er_msg.strip())
 
     def test_uelc_admin_create_cohort(self):
-        request = self.client.post(
-            "/uelcadmin/createcohort/", {'name': 'NewCohort'},
+        r = self.client.post(
+            "/uelcadmin/createcohort/", {'name': 'NewCohort'}, follow=True,
             HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_REFERER="/uelcadmin/")
-        self.assertEqual(request.status_code, 302)
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(
+            r,
+            'Users created: NewCohort-G1, '
+            'NewCohort-G2, NewCohort-G3, NewCohort-G4, NewCohort-F1')
+
+        cohort = Cohort.objects.get(name='NewCohort')
+        self.assertEqual(
+            UserProfile.objects.filter(
+                cohort=cohort,
+                profile_type='group_user').count(),
+            4)
+        self.assertEqual(
+            UserProfile.objects.filter(
+                cohort=cohort,
+                profile_type='assistant').count(),
+            1)
+        self.assertEqual(UserProfile.objects.filter(cohort=cohort).count(), 5)
 
     def test_uelc_admin_create_already_existing_cohort(self):
         request = self.client.post(
