@@ -46,7 +46,7 @@ seconds).
 
 From now on, for the most part, this is all you need to do.
 
-For various maintenance-type tasks and debugging, you can also do, eg
+For various maintenance type tasks and debugging, you can also do, eg
 
     $ docker-compose run web shell
 
