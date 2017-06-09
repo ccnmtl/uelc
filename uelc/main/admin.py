@@ -30,6 +30,8 @@ class UserAdmin(UserAdmin):
 
 def section_hierarchy(obj):
     return obj.section.hierarchy.name
+
+
 section_hierarchy.short_description = 'Hierarchy'
 
 
