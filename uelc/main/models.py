@@ -587,4 +587,5 @@ class CaseAnswer(models.Model):
             'description': self.description,
         }
 
+
 ReportableInterface.register(CaseQuiz)
