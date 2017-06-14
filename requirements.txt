@@ -44,7 +44,7 @@ ipython==6.1.0
 
 rdflib==4.2.2
 
-selenium==2.47.3
+selenium==3.4.3
 coverage==4.4.1
 pyasn1==0.2.3
 pyOpenSSL==17.0.0
