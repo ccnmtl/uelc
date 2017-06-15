@@ -13,7 +13,7 @@ statsd==3.2.1
 pep8==1.7.0
 pyflakes==1.5.0
 mccabe==0.6.1
-pycodestyle==2.3
+pycodestyle==2.3.1
 enum34==1.1.6
 configparser==3.5.0
 flake8==3.3.0
@@ -40,11 +40,11 @@ prompt_toolkit==1.0.14
 pygments==2.2.0
 pytz==2017.2
 
-ipython==5.4.1
+ipython==5.4.1 # pyup: <6.0.0
 
 rdflib==4.2.2
 
-selenium==2.47.3
+selenium==2.47.3 # pyup: <3.0
 coverage==4.4.1
 pyasn1==0.2.3
 pyOpenSSL==17.0.0
@@ -62,7 +62,7 @@ editdistance==0.3.1
 pylint==1.7.1
 six==1.10.0
 ipaddress==1.0.18
-Faker==0.7.16
+Faker==0.7.17
 factory_boy==2.8.1
 ldap3==2.2.4
 sqlparse==0.2.3
