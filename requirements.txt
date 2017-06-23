@@ -68,7 +68,7 @@ ldap3==2.2.4
 sqlparse==0.2.3
 django-ckeditor==5.2.2
 boto==2.47.0
-django-storages==1.5.2
+django-storages==1.6.3
 python-dateutil==2.6.0
 pyzmq==16.0.2
 contextlib2==0.5.5
