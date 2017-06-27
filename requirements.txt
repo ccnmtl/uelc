@@ -105,7 +105,7 @@ django-markwhat==1.5.1
 django-pageblocks==1.1.0
 gunicorn==19.7.1
 django-infranil==1.1.0
-django-flatblocks==0.9.3
+django-flatblocks==0.9.4
 django-smtp-ssl==1.0
 python-memcached==1.58
 
