@@ -69,7 +69,7 @@ sqlparse==0.2.3
 django-js-asset==0.1.1  # django-ckeditor
 django-ckeditor==5.3.0
 boto==2.48.0
-django-storages==1.6.4
+django-storages==1.6.5
 python-dateutil==2.6.1
 pyzmq==16.0.2
 contextlib2==0.5.5
