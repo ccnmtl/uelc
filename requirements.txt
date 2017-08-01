@@ -1,4 +1,4 @@
-Django==1.11.3
+Django==1.11.4
 Jinja2==2.9.6
 MarkupSafe==1.0
 feedparser==5.2.1
