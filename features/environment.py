@@ -5,7 +5,7 @@ from uelc.main.tests.factories import AdminUpFactory, UELCModuleFactory
 
 
 def before_all(context):
-    context.browser = Browser('firefox')
+    context.browser = Browser('phantomjs', wait_time=4)
 
 
 def before_scenario(context, scenario):
