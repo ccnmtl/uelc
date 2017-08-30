@@ -7,7 +7,7 @@ from uelc.main.models import (
     CaseAnswer, TextBlockDT, ImageUploadItem)
 from curveball.models import CurveballBlock
 from pagetree.models import Hierarchy
-from pageblocks.models import TextBlock, ImageBlock
+from pageblocks.models import TextBlock
 from gate_block.models import GateBlock
 from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
@@ -52,7 +52,6 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Hierarchy)
 admin.site.register(TextBlock)
-admin.site.register(ImageBlock)
 admin.site.register(TextBlockDT)
 admin.site.register(Case)
 admin.site.register(CaseMap)
