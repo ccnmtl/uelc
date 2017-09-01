@@ -7,15 +7,15 @@ UELCAdmin = {
             this.setCurveballCommitAccess();
 
             jQuery('form[name="curveball-form-select"]').submit(
-                    this.confirmCurveball);
+                this.confirmCurveball);
             jQuery('#confirm-curveball-modal .set-curveball').click(
-                    this.setCurveball);
+                this.setCurveball);
             jQuery('#confirm-curveball-modal .cancel-curveball').click(
-                    this.cancelCurveball);
+                this.cancelCurveball);
 
             jQuery('button.reset-progress').click(this.confirmResetProgress);
             jQuery('#confirm-reset-progress-modal .btn-danger').click(
-                    this.resetProgress);
+                this.resetProgress);
         };
         this.setChoicesOnParts = function() {
             jQuery('.user-part2').each(function() {
@@ -186,6 +186,7 @@ UELCAdmin = {
                 var userId = jQuery(this).data('user');
                 var impersonateUrl = '/_impersonate/' + userId + '/';
                 $.get(impersonateUrl).complete(function() {
+                    // eslint-disable-next-line security/detect-non-literal-fs-filename
                     window.open(destination, '_blank');
                 });
             });

@@ -10,6 +10,7 @@ $(function() {
             type: 'get',
             dateType: 'json',
             error: function(evt) {
+                // eslint-disable-next-line scanjs-rules/call_setTimeout
                 setTimeout(updateToken, currentRefresh);
             },
             success: function(d) {
@@ -26,6 +27,7 @@ $(function() {
         if (currentRefresh > maxRefresh) {
             currentRefresh = maxRefresh;
         }
+        // eslint-disable-next-line scanjs-rules/call_setTimeout
         setTimeout(connectSocket, currentRefresh);
     };
 
@@ -49,7 +51,6 @@ $(function() {
         var data = JSON.parse(envelope.content);
         var groupId = data.userId; //data["user_id"];
         var sectionId = data.sectionPk; //["section_pk"];
-        var notificationType = data.notification; //["notification"];
         var groupColumnSelector = '#group-user-section-' + groupId;
         var sectionRowSelector = '[data-section-id="' +
             String(sectionId) + '"]';
@@ -73,7 +74,7 @@ $(function() {
         }
         if (data.notification.message === 'Decision Submitted' &&
             data.notification.data !== null
-           ) {
+        ) {
             msg = 'we just made a decision';
             action = 'made decision';
             setGroupMessage(jQuery(groupColumnSelector), msg);

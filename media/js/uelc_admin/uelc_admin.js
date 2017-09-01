@@ -1,3 +1,5 @@
+/* global admin: true */
+
 jQuery(document).ready(function() {
     // create Admin class
     var UELCAdmin = function() {
@@ -16,6 +18,7 @@ jQuery(document).ready(function() {
             });
 
             jQuery('form').on('reset', function() {
+                // eslint-disable-next-line scanjs-rules/call_setTimeout
                 setTimeout(function() {
                     jQuery('.hierarchy-select')
                         .multiselect().multiselect('destroy')
@@ -276,8 +279,7 @@ jQuery(document).ready(function() {
             this.setNavbarActiveTab();
         };
     };
-
-    //Instatntiate the class
+    //Instantiate the class
     window.admin = new UELCAdmin();
     admin.init();
 

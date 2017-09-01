@@ -14,8 +14,3 @@ integration: check
 
 behave: check
 	$(MANAGE) behave
-
-eslint: $(JS_SENTINAL)
-	$(NODE_MODULES)/.bin/eslint $(JS_FILES)
-
-.PHONY: eslint
