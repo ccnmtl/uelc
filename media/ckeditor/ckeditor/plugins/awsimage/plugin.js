@@ -1,4 +1,4 @@
-/* global CKEDITOR, AWS */
+/* global CKEDITOR, AWS, Promise */
 /* jshint esversion: 6 */
 
 /*
@@ -10,6 +10,7 @@
  * Modified by Nik Nyby for the Center for Teaching and Learning at
  * Columbia University.
  */
+/* eslint-disable no-useless-escape */
 
 CKEDITOR.plugins.add('awsimage', {
     init: function(editor) {
@@ -74,11 +75,13 @@ CKEDITOR.plugins.add('awsimage', {
                     'bucket', 'accessKeyId','secretAccessKey', 'region'
                 ],
                 init: function() {
+                    /* eslint-disable scanjs-rules/assign_to_src */
                     var script = document.createElement('script');
                     script.async = 1;
                     script.src =
                         'https://sdk.amazonaws.com/js/aws-sdk-2.10.0.min.js';
                     document.body.appendChild(script);
+                    /* eslint-enable scanjs-rules/assign_to_src */
                 }
             }
         };
@@ -87,7 +90,7 @@ CKEDITOR.plugins.add('awsimage', {
             if (!condition) {
                 throw Error(
                     'Assert failed' + (typeof message !== 'undefined' ?
-                                       ': ' + message : ''));
+                        ': ' + message : ''));
             }
         };
 
@@ -147,6 +150,7 @@ CKEDITOR.plugins.add('awsimage', {
             }
         };
 
+        // eslint-disable-next-line no-unused-vars
         var post = function(url, data, headers) {
             return new Promise(function(resolve, reject) {
                 var xhttp    = new XMLHttpRequest();
@@ -155,6 +159,7 @@ CKEDITOR.plugins.add('awsimage', {
                 xhttp.onreadystatechange = function() {
                     if (xhttp.readyState === 4) {
                         if (xhttp.status === 200) {
+                            // eslint-disable-next-line security/detect-non-literal-fs-filename
                             resolve(JSON.parse(xhttp.responseText).data.link);
                         } else {
                             reject(JSON.parse(xhttp.responseText));

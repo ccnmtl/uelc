@@ -11,6 +11,7 @@ $(function() {
             type: 'get',
             dateType: 'json',
             error: function(evt) {
+                // eslint-disable-next-line scanjs-rules/call_setTimeout
                 setTimeout(updateToken, currentRefresh);
             },
             success: function(d) {
@@ -28,6 +29,7 @@ $(function() {
         if (currentRefresh > maxRefresh) {
             currentRefresh = maxRefresh;
         }
+        // eslint-disable-next-line scanjs-rules/call_setTimeout
         setTimeout(connectSocket, currentRefresh);
     };
 
