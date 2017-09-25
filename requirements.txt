@@ -111,7 +111,7 @@ django-smtp-ssl==1.0
 python-memcached==1.58
 
 parse==1.8.2  # for behave
-parse-type==0.4.1  # for behave
+parse-type==0.4.2  # for behave
 enum34==1.1.6  # for behave
 behave==1.2.5
 behave-django==0.5.0
