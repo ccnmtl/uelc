@@ -11,5 +11,5 @@ def clear_handler_cache(node):
 def random_string(n):
     """Generate a random string of length n."""
     return ''.join(
-        random.choice(
+        random.choice(  # nosec
             string.ascii_uppercase + string.digits) for _ in range(n))
