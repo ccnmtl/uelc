@@ -252,7 +252,7 @@ class Case(models.Model):
 class CustomSelectWidgetAC(widgets.Select):
     def render(self, name, value, attrs=None):
         widget = super(CustomSelectWidgetAC, self).render(name, value, attrs)
-        return mark_safe(
+        return mark_safe(  # nosec
             u'<span class="after-choice">After Choice - '
             u'<span class="small">the content that will '
             u'show for the decision made. This is '
@@ -328,7 +328,7 @@ class TextBlockDT(TextBlock):
     @classmethod
     def add_form(cls):
         class AddForm(forms.Form):
-            EDITOR = 'editor-{}'.format(randint(0, 5000))
+            EDITOR = 'editor-{}'.format(randint(0, 5000))  # nosec
             CHOICES = ((0, '0'), (1, '1'), (2, '2'),
                        (3, '3'), (4, '4'), (5, '5'))
             choices = models.IntegerField(

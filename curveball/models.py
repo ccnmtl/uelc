@@ -135,7 +135,7 @@ class CurveballBlock(BasePageBlock):
     @staticmethod
     def add_form():
         class AddForm(forms.Form):
-            EDITOR = 'editor-{}'.format(randint(0, 5000))
+            EDITOR = 'editor-{}'.format(randint(0, 5000))  # nosec
             choice_one_title = forms.CharField(label="Choice One Label")
             choice_one_explanation = forms.CharField(
                 label="Choice One Content", widget=CKEditorWidget(

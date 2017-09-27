@@ -147,7 +147,7 @@ def gen_token(request, sub_prefix):
     username = request.user.username
     pub_prefix = sub_prefix + "." + username
     now = int(time.mktime(datetime.now().timetuple()))
-    salt = randint(0, 2 ** 20)
+    salt = randint(0, 2 ** 20)  # nosec
     ip_address = (request.META.get("HTTP_X_FORWARDED_FOR", "") or
                   request.META.get("REMOTE_ADDR", ""))
     hmc = hmac.new(settings.WINDSOCK_SECRET,
