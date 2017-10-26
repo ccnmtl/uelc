@@ -128,7 +128,7 @@ class CurveballBlock(BasePageBlock):
             if not unlocked and page_status == "incomplete":
                 status = "in progress"
                 return status
-        except:
+        except (UserLocation.MultipleObjectsReturned, ValueError):
             status = "incomplete"
         return status
 
