@@ -51,7 +51,7 @@ class BrokerConnectivity(SmokeTest):
             else:
                 raise IOError("Timeout connecting to broker")
             self.assertTrue(True)
-        except:
+        except:  # noqa
             self.assertTrue(False)
         finally:
             socket.close()
@@ -76,5 +76,5 @@ class WindsockConnectivity(SmokeTest):
                 settings.WINDSOCK_WEBSOCKETS_BASE + "?token=" + token)
             ws.close()
             self.assertTrue(True)
-        except:
+        except:  # noqa
             self.assertTrue(False)
