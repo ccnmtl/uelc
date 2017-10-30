@@ -72,7 +72,7 @@ django-ckeditor==5.3.1
 boto==2.48.0
 django-storages==1.6.5
 python-dateutil==2.6.1
-pyzmq==16.0.2
+pyzmq==16.0.3
 contextlib2==0.5.5
 
 websocket-client==0.44.0
