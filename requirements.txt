@@ -44,7 +44,7 @@ ipython==5.5.0 # pyup: <6.0.0
 
 rdflib==4.2.2
 
-selenium==3.4.3
+selenium==3.7.0
 coverage==4.4.2
 pyasn1==0.4.2
 pyOpenSSL==17.4.0
