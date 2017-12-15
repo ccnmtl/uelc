@@ -110,7 +110,7 @@ gunicorn==19.7.1
 django-infranil==1.1.0
 django-flatblocks==0.9.4
 django-smtp-ssl==1.0
-python-memcached==1.58
+python-memcached==1.59
 
 parse==1.8.2  # for behave
 parse-type==0.4.2  # for behave
