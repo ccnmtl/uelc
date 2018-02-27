@@ -115,7 +115,7 @@ python-memcached==1.59
 parse==1.8.2  # for behave
 parse-type==0.4.2  # for behave
 enum34==1.1.6  # for behave
-behave==1.2.5
+behave==1.2.6
 behave-django==1.1.0
 splinter==0.7.5 # pyup: <0.7.6
 
@@ -126,3 +126,5 @@ pbr==3.1.1
 PyYAML>=3.10.0 # MIT
 stevedore>=1.20.0 # Apache-2.0
 bandit==1.4.0
+traceback2==1.4.0
+linecache2==1.0.0
