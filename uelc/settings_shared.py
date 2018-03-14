@@ -87,7 +87,7 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-MIDDLEWARE_CLASSES += [  # noqa
+MIDDLEWARE += [  # noqa
     'django.middleware.csrf.CsrfViewMiddleware',
 ]
 
