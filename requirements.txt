@@ -75,7 +75,7 @@ python-dateutil==2.7.3
 pyzmq==17.0.0
 contextlib2==0.5.5
 
-websocket-client==0.48.0
+websocket-client==0.47.0 # pyup: <0.48.0
 
 djangowind==1.1.0
 requirements/src/sorl-3.1.tar.gz
