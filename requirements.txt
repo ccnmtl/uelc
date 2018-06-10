@@ -68,7 +68,7 @@ factory_boy==2.11.1
 ldap3==2.5
 sqlparse==0.2.4
 django-js-asset==1.1.0  # django-ckeditor
-django-ckeditor==5.4.0
+django-ckeditor==5.5.0
 boto==2.48.0
 django-storages==1.6.6
 python-dateutil==2.7.3
