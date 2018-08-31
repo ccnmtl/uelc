@@ -173,7 +173,8 @@
 
 {% block js %}{% endblock %}
 
-<script src="{% bootstrap_javascript_url %}"></script>
+{% bootstrap_javascript %}
+
 {% if STAGING_ENV %}
 <div class="alert alert-danger alert-dismissable" style="position: fixed; bottom: 0px;">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
