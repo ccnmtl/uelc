@@ -1,12 +1,7 @@
 language: python
 sudo: false
-addons:
-  firefox: "38.8.0esr"
 python:
   - "2.7.6"
-before_install:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
 install:
   - pip install -U pip wheel
   - pip install -U setuptools
@@ -14,6 +9,5 @@ install:
 script:
   - make flake8
   - make travis
-  - make behave
 notifications:
   slack: ccnmtl:GizSNscLWJLldjQrffB8mwgm
