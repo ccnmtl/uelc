@@ -37,7 +37,7 @@ pathlib2==2.3.2
 wcwidth==0.1.7
 prompt_toolkit==2.0.6
 pygments==2.2.0
-pytz==2018.5
+pytz==2018.7
 
 ipython==5.8.0 # pyup: <6.0.0
 
