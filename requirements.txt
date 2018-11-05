@@ -1,6 +1,6 @@
 Django==1.11.16 # pyup: <2.0
 Jinja2==2.10
-MarkupSafe==1.0
+MarkupSafe==1.1.0
 feedparser==5.2.1
 Markdown==2.6.11
 smartypants==2.0.1
