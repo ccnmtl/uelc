@@ -681,28 +681,28 @@ class UELCAdminEditUserPassView(LoggedInMixinAdmin,
 
 class UELCAdminCreateHierarchyView(LoggedInMixinAdmin,
                                    TemplateView):
-        template_name = "pagetree/uelc_admin.html"
-        extra_context = dict()
+    template_name = "pagetree/uelc_admin.html"
+    extra_context = dict()
 
-        def post(self, request):
-            name = request.POST.get('name', '')
-            url = '/pages/' + name + '/'
-            hier = Hierarchy.objects.filter(Q(base_url=url) | Q(name=name))
+    def post(self, request):
+        name = request.POST.get('name', '')
+        url = '/pages/' + name + '/'
+        hier = Hierarchy.objects.filter(Q(base_url=url) | Q(name=name))
 
-            if hier.exists():
-                error = ("Hierarchy exists! Please use the exisiting one, "
-                         "or create one with a different name and url.")
-                messages.error(request, error,
-                               extra_tags='createCaseViewError')
-                url = request.META.get('HTTP_REFERER')
-                return HttpResponseRedirect(url)
-
-            hier = Hierarchy.objects.create(
-                base_url=url,
-                name=name)
-            hier.save()
+        if hier.exists():
+            error = ("Hierarchy exists! Please use the exisiting one, "
+                     "or create one with a different name and url.")
+            messages.error(request, error,
+                           extra_tags='createCaseViewError')
             url = request.META.get('HTTP_REFERER')
             return HttpResponseRedirect(url)
+
+        hier = Hierarchy.objects.create(
+            base_url=url,
+            name=name)
+        hier.save()
+        url = request.META.get('HTTP_REFERER')
+        return HttpResponseRedirect(url)
 
 
 class UELCAdminDeleteHierarchyView(LoggedInMixinAdmin,
