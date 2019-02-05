@@ -70,7 +70,7 @@ django-js-asset==1.1.0  # django-ckeditor
 django-ckeditor==5.6.1
 boto==2.49.0
 django-storages==1.7.1
-python-dateutil==2.7.5
+python-dateutil==2.8.0
 pyzmq==17.1.2
 contextlib2==0.5.5
 
