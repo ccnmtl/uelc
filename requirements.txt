@@ -41,7 +41,6 @@ pytz==2018.9
 
 ipython==5.8.0 # pyup: <6.0.0
 
-rdflib==4.2.2
 
 selenium==2.47.3 # pyup: <2.48
 coverage==4.5.3
