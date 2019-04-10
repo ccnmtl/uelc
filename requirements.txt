@@ -110,7 +110,7 @@ django-flatblocks==0.9.4
 django-smtp-ssl==1.0
 python-memcached==1.59
 
-parse==1.11.1  # for behave
+parse==1.12.0  # for behave
 parse-type==0.4.2  # for behave
 enum34==1.1.6  # for behave
 behave==1.2.6
