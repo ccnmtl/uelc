@@ -68,7 +68,9 @@ sqlparse==0.3.0
 django-js-asset==1.2.2  # django-ckeditor
 django-ckeditor==5.6.1
 
-botocore>=1.13.0,<1.14.0
+botocore>=1.13.0,<1.14.0  # boto3
+jmespath>=0.7.1,<1.0.0    # boto3
+s3transfer>=0.2.0,<0.3.0  # boto3
 boto3>=1.10.0,<1.11.0
 
 django-storages==1.7.1
